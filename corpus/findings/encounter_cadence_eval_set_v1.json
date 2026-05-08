@@ -1,0 +1,159 @@
+[
+  {
+    "trigger_id": "C1E001_t1573",
+    "campaign": "C1", "episode": 1, "trigger_turn_number": 1573,
+    "expected_category": "environmental_materialization",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "v1_classification": "environmental_materialization",
+    "verdict_at_v1": "correct",
+    "failure_mode": null,
+    "notes": "Vines + ogres emerge mid-goblin-fight; long buildup. Defensible as wave/reinforcement but acceptable as env_materialization."
+  },
+  {
+    "trigger_id": "C1E020_t986",
+    "campaign": "C1", "episode": 20, "trigger_turn_number": 986,
+    "expected_category": "player_action_escalation",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "expected_player_action_caused": true,
+    "v1_classification": "interruption",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "player_action_escalation under-fires; trigger 'I'm going to have you guys roll initiative' doesn't match references-player regex",
+    "notes": "Orion's Polymorph->Silence on fleeing Hosin directly causes init"
+  },
+  {
+    "trigger_id": "C1E020_t993",
+    "campaign": "C1", "episode": 20, "trigger_turn_number": 993,
+    "expected_category": "interruption",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "v1_classification": "npc_turns_hostile",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "NPC_VOICING false positive on 'he goes and he does like a hand motion' from t986 leaking into t993's preceding window",
+    "notes": "Players searching body, scuffle/flash in hallway = textbook interruption"
+  },
+  {
+    "trigger_id": "C1E030_t379",
+    "campaign": "C1", "episode": 30, "trigger_turn_number": 379,
+    "expected_category": "environmental_materialization",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "v1_classification": "environmental_materialization",
+    "verdict_at_v1": "correct",
+    "failure_mode": null,
+    "notes": "Fog forms into humanoid, long buildup, no player cause"
+  },
+  {
+    "trigger_id": "C1E030_t517",
+    "campaign": "C1", "episode": 30, "trigger_turn_number": 517,
+    "expected_category": "wave_or_phase_shift",
+    "expected_is_fresh_encounter": false,
+    "expected_wave_subtype": "party_join",
+    "v1_classification": "wave_or_phase_shift",
+    "verdict_at_v1": "correct",
+    "failure_mode": null,
+    "notes": "Vampire ambush, sleeping party wakes mid-combat"
+  },
+  {
+    "trigger_id": "C1E049_t535",
+    "campaign": "C1", "episode": 49, "trigger_turn_number": 535,
+    "expected_category": "player_action_escalation",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "expected_player_action_caused": true,
+    "v1_classification": "npc_turns_hostile",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "player_action_escalation under-fires; trigger 'Initiative has now kicked in' should be a strong-positive trigger phrase",
+    "notes": "Sam rolls into camp singing in Resilient Sphere, orcs notice. Spec recon O3."
+  },
+  {
+    "trigger_id": "C1E049_t2434",
+    "campaign": "C1", "episode": 49, "trigger_turn_number": 2434,
+    "expected_category": "npc_turns_hostile",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "v1_classification": "npc_turns_hostile",
+    "verdict_at_v1": "correct",
+    "failure_mode": null,
+    "notes": "Sphinx delivers speech, becomes hostile via dialogue threat"
+  },
+  {
+    "trigger_id": "C1E049_t2812",
+    "campaign": "C1", "episode": 49, "trigger_turn_number": 2812,
+    "expected_category": "wave_or_phase_shift",
+    "expected_is_fresh_encounter": false,
+    "expected_wave_subtype": "phase_shift",
+    "v1_classification": "wave_or_phase_shift",
+    "verdict_at_v1": "correct",
+    "failure_mode": null,
+    "notes": "Time-flux room reroll mid-combat"
+  },
+  {
+    "trigger_id": "C2E001_t1136",
+    "campaign": "C2", "episode": 1, "trigger_turn_number": 1136,
+    "expected_category": "npc_turns_hostile",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "v1_classification": "interruption",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "npc_turns_hostile detection requires quoted dialogue; transformation-as-reveal not caught",
+    "notes": "Old man transforms into hostile creature (grey flesh, blood-red eyes); patch 6 widens npc_turns_hostile to catch this"
+  },
+  {
+    "trigger_id": "C2E020_t967",
+    "campaign": "C2", "episode": 20, "trigger_turn_number": 967,
+    "expected_category": "interruption",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "v1_classification": "interruption",
+    "verdict_at_v1": "defensible",
+    "failure_mode": null,
+    "notes": "Party catches up to gator. Approach-static-encounter case. Accepted as interruption per locked taxonomy; not splitting."
+  },
+  {
+    "trigger_id": "C2E045_t2014",
+    "campaign": "C2", "episode": 45, "trigger_turn_number": 2014,
+    "expected_category": "trap_activation",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "v1_classification": "environmental_materialization",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "trap_activation requires mechanism vocab in trigger text; mechanism narration was 16 turns prior; player interaction also outside immediate window",
+    "notes": "Cabinet teeth grab arms after 'we stick our hands in'. Spec recon O5. Patch 3 widens trap detection window to 15 turns."
+  },
+  {
+    "trigger_id": "C2E045_t2529",
+    "campaign": "C2", "episode": 45, "trigger_turn_number": 2529,
+    "expected_category": "npc_turns_hostile",
+    "expected_is_fresh_encounter": true,
+    "expected_wave_subtype": null,
+    "expected_player_action_caused": false,
+    "v1_classification": "player_action_escalation",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "player_action_caused over-fired; NPC dialogue ('I appreciate the offer, but I'm hungry') was the actual cause, not Travis's persuasion check",
+    "notes": "Patch 5 (proximity tiebreaker) should classify this correctly"
+  },
+  {
+    "trigger_id": "C2E045_t2568",
+    "campaign": "C2", "episode": 45, "trigger_turn_number": 2568,
+    "expected_category": "wave_or_phase_shift",
+    "expected_is_fresh_encounter": false,
+    "expected_wave_subtype": "reinforcement",
+    "v1_classification": "interruption",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "wave detection is literal-phrase only; semantic wave (summon entering existing combat) not caught",
+    "notes": "Marisha throws elemental gem, fire elemental joins existing dragon fight. Patch 2 catches this via summon-language semantic detection."
+  },
+  {
+    "trigger_id": "C2E045_t2678",
+    "campaign": "C2", "episode": 45, "trigger_turn_number": 2678,
+    "expected_category": "wave_or_phase_shift",
+    "expected_is_fresh_encounter": false,
+    "expected_wave_subtype": "party_join",
+    "v1_classification": "interruption",
+    "verdict_at_v1": "wrong",
+    "failure_mode": "wave detection is literal-phrase only; semantic wave (party falling through ceiling into existing combat) not caught",
+    "notes": "Beau + Jester drop into dragon fight from inter-dimensional space. Patch 2 catches this via init-active state + small-subset trigger."
+  }
+]

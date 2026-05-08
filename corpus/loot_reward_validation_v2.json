@@ -1,0 +1,884 @@
+{
+  "construction": {
+    "phase": "Phase 5b validation v2 (post blind judge)",
+    "construction_date": "2026-05-08T03:02:11Z",
+    "extractor_version": "loot_reward_v1",
+    "sample_seed": 9999,
+    "sample_size": 15,
+    "pool_episode_count": 123,
+    "excluded_handsample_episodes": [
+      "C1E007",
+      "C1E010",
+      "C1E052",
+      "C1E062",
+      "C1E089",
+      "C1E099",
+      "C2E007",
+      "C2E022",
+      "C2E030",
+      "C2E043"
+    ],
+    "excluded_recon_episodes": [
+      "C2E004",
+      "C2E010",
+      "C2E016",
+      "C2E019",
+      "C2E033",
+      "C2E035",
+      "C2E036"
+    ],
+    "mechanical_exclusion_satisfied": true,
+    "stratification": {
+      "method": "Proportional to pool size. C1 88/123=71% of pool \u2192 11 records split 4+4+3 early/mid/late. C2 35/123=28% of pool \u2192 4 records split 2+1+1 early/mid/late. Phase thirds by sorted episode number: C1 early C1E001\u2013C1E034, mid C1E035\u2013C1E075, late C1E076\u2013C1E115; C2 early C2E001\u2013C2E014, mid C2E015\u2013C2E029, late C2E031\u2013C2E046.",
+      "per_stratum": {
+        "C1_early": {
+          "episodes_parsed": [
+            "C1E016",
+            "C1E001",
+            "C1E033",
+            "C1E031"
+          ],
+          "records_sampled": 4
+        },
+        "C1_mid": {
+          "episodes_parsed": [
+            "C1E054",
+            "C1E072",
+            "C1E046",
+            "C1E073",
+            "C1E055"
+          ],
+          "records_sampled": 4
+        },
+        "C1_late": {
+          "episodes_parsed": [
+            "C1E107",
+            "C1E101"
+          ],
+          "records_sampled": 3
+        },
+        "C2_early": {
+          "episodes_parsed": [
+            "C2E005",
+            "C2E012"
+          ],
+          "records_sampled": 2
+        },
+        "C2_mid": {
+          "episodes_parsed": [
+            "C2E017"
+          ],
+          "records_sampled": 1
+        },
+        "C2_late": {
+          "episodes_parsed": [
+            "C2E041"
+          ],
+          "records_sampled": 1
+        }
+      }
+    },
+    "sampled_episodes": [
+      "C1E001",
+      "C1E016",
+      "C1E031",
+      "C1E033",
+      "C1E046",
+      "C1E054",
+      "C1E055",
+      "C1E072",
+      "C1E073",
+      "C1E101",
+      "C1E107",
+      "C2E005",
+      "C2E012",
+      "C2E017",
+      "C2E041"
+    ],
+    "raw_text_policy": "raw_text retained at full. Stripping happens at calibration time (after judging), not at construction time.",
+    "verdict_methodology": "Blind judge pass by Claude against locked spec \u00a74 taxonomy and \u00a75 Stage 0 rules. expected_* fields all null on input; populated by judgment on output."
+  },
+  "validation": [
+    {
+      "trigger_id": "C1E031_t1103",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "give you advantage",
+      "raw_text": "That's okay. Yeah, it's fine. But going forward, good to know. So it does give you advantage on all of your attacks.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "SAM",
+          "text": "Wait, did you not have-- Jesus, never use that thing again.",
+          "turn_number": 1098
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "I'm using it every time. (laughter)",
+          "turn_number": 1099
+        },
+        {
+          "speaker": "MATT",
+          "text": "Doing so gives you advantage on melee weapon attack rolls using strength during this turn. So yes, I apologize. It does give you advantage on all of your attacks. I misread that.",
+          "turn_number": 1100
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "(quietly) Oh, shitfuck. (louder) That's okay. That's okay!",
+          "turn_number": 1101
+        },
+        {
+          "speaker": "LIAM",
+          "text": "Stuff happens. Give him a bonus 15 HP or something.",
+          "turn_number": 1102
+        }
+      ],
+      "extracted_category": "MECHANICAL_GRANT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "MECHANICAL_GRANT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "correct",
+      "failure_family": null,
+      "judge_notes": null
+    },
+    {
+      "trigger_id": "C1E016_t1091",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "for your aid",
+      "raw_text": "\"-- for your aid.\"",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LAURA",
+          "text": "The holiest place?",
+          "turn_number": 1086
+        },
+        {
+          "speaker": "SAM",
+          "text": "Haggle with the pope.",
+          "turn_number": 1087
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "Shaking down the pope.",
+          "turn_number": 1088
+        },
+        {
+          "speaker": "MATT",
+          "text": "\"You want a monetary reward--\"",
+          "turn_number": 1089
+        },
+        {
+          "speaker": "LAURA",
+          "text": "I was just wondering.",
+          "turn_number": 1090
+        }
+      ],
+      "extracted_category": "NPC_FAVOR_GRATITUDE",
+      "is_in_npc_voice": true,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "QUEST_OFFER",
+      "expected_direction": "offered",
+      "expected_is_in_npc_voice": true,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "for_your_aid_misrouted_to_npc_favor",
+      "judge_notes": "\"-- for your aid.\" continues NPC speech \"You want a monetary reward... for your aid.\" NPC inquiring about/offering monetary payment. Trigger phrase \"for your aid\" routes to NPC_FAVOR_GRATITUDE but content is payment offer."
+    },
+    {
+      "trigger_id": "C1E033_t554",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "you recognize this",
+      "raw_text": "She goes underneath the chest and she pulls out two small glass vials and sets them on the side. She then reaches underneath and pulls up what looks to be a false bottom of the chest. Places it. At which point she reaches in and pulls out a metallic construction that you all see looks not unlike in shape and purpose as the Pepperbox that you've seen Percy use all this time, though it has only a single barrel and has a small rotating four-part chamber to it. It's a little more refined than his construction, and you can see now part of the alchemical setup she has in here actually is, and you recognize this as you get close, part of it is designed in the creation of ammunition and refining the powder that is used by this process. You see a series of notes that are off to the side that have sketches outlined of your Pepperbox, though not really accurate. Almost like they were recalled from various individuals that had seen it in person and given accounts of it. She's been keeping a very close log of eyewitness accounts of your weaponry, apparently, for some time.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LAURA",
+          "text": "Tell you what, I'll hold onto that armor for the time being.",
+          "turn_number": 549
+        },
+        {
+          "speaker": "MATT",
+          "text": "She's partway into it.",
+          "turn_number": 550
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Yeah, you can take it off. We'll put it in the Bag of Holding. You can put it on after we're done.",
+          "turn_number": 551
+        },
+        {
+          "speaker": "MATT",
+          "text": "(heavy sigh) She folds the tunic portion over the chest piece and hands it to you, pulls out some of the arm braces and leg guards and hands those over as well.",
+          "turn_number": 552
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "Show me your work.",
+          "turn_number": 553
+        }
+      ],
+      "extracted_category": "KNOWLEDGE_GRANT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "KNOWLEDGE_GRANT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "correct",
+      "failure_family": null,
+      "judge_notes": null
+    },
+    {
+      "trigger_id": "C1E033_t1695",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "You find 120 gold pieces",
+      "raw_text": "24? Okay. You search his body. You find 120 gold pieces on him. Not a whole lot. He doesn't keep his important shit on him, for the most part. You do find, however, the boots that he's wearing are very finely crafted, and unlike the rest of his wear, have a hand-stitching in it that is exemplary in construction and doesn't match with the rest of his ensemble. So it seems like something you'd wear more for function than for actual style. Pardon.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LAURA",
+          "text": "Wait. Let me see what's on him, first.",
+          "turn_number": 1690
+        },
+        {
+          "speaker": "MATT",
+          "text": "Okay. Make an investigation check.",
+          "turn_number": 1691
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "We don't want him coming back.",
+          "turn_number": 1692
+        },
+        {
+          "speaker": "MATT",
+          "text": "He's crumpled up against the desk in the corner, there's all these papers that got pushed off the side, there were a bunch of random scrawlings.",
+          "turn_number": 1693
+        },
+        {
+          "speaker": "LAURA",
+          "text": "24.",
+          "turn_number": 1694
+        }
+      ],
+      "extracted_category": "MATERIAL_LOOT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": true,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 120.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "MATERIAL_LOOT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "correct",
+      "failure_family": null,
+      "judge_notes": null
+    },
+    {
+      "trigger_id": "C1E073_t411",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "I'm thankful",
+      "raw_text": "\"Shh. That's far too fatalistic for the Vax'ildan that I-- number one. Number two, you have nothing to apologize for. Look, everything's on fire around us all the time. We all jump at whatever bit of comfort finds its way before us. And at the same time, I appreciate your honesty. And I'm thankful for the connection that we do have. And yes, heartbreak comes. But heartbreak goes. It's part of life. It just means that I need to find somebody who's a little more my speed.\"",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LIAM",
+          "text": "Yeah.",
+          "turn_number": 406
+        },
+        {
+          "speaker": "MATT",
+          "text": "\"How many is that for you now? Three?\"",
+          "turn_number": 407
+        },
+        {
+          "speaker": "LIAM",
+          "text": "It is three.",
+          "turn_number": 408
+        },
+        {
+          "speaker": "MATT",
+          "text": "\"Making a name for yourself. I'm proud of you.\" A few moments pass, and silence. And Gilmore walks back out, clutching a small tray with a few teacups. And as he's walking, he's twirling his finger and you can see a little spiral of flame encircling the tea kettle as it begins to heat up. He brings it over, sets it down on the table. Pulls his robe in and sits down across from you on this low slung tea table. Takes a bit and sips it. \"So, what brings you here this early in the morning, friend?\"",
+          "turn_number": 409
+        },
+        {
+          "speaker": "LIAM",
+          "text": "I think I might be dead in a couple of days. So I came here to apologize. If you think I have no feelings for you, you're kidding yourself. I care for you very deeply. I have for a long time. And I don't think I've treated you fairly. But I wasn't playing games. Shaun. It's been a little weird lately, and I understand why, but I want you to know that I love you as a dear, dear friend, and I really don't think I'm going to be here in a few days. And I would hate to think that I would be--",
+          "turn_number": 410
+        }
+      ],
+      "extracted_category": "NPC_FAVOR_GRATITUDE",
+      "is_in_npc_voice": true,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "NPC_FAVOR_GRATITUDE",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": true,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "correct",
+      "failure_family": null,
+      "judge_notes": null
+    },
+    {
+      "trigger_id": "C1E055_t1467",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "I'll allow you",
+      "raw_text": "At this point now, you hear a few footfalls, Vax. You see a splash in the pool next to you that almost scatters against you, bits of it hitting the edge of your armor, but the armor absorbs the blow, being attuned towards acid resistance. A few other steps as it begins to walk away. I'll allow you to make an attack of opportunity with disadvantage--",
+      "preceding_turns_last5": [
+        {
+          "speaker": "MATT",
+          "text": "18. So you guys both, being dexterous and quick, but also able to maintain your form-- the best you can at this turn-- manage to pull out of the way without too much impact. However, poor Shale is surrounded by the insects.",
+          "turn_number": 1462
+        },
+        {
+          "speaker": "CHRIS PERKINS",
+          "text": "Slow and half-deaf.",
+          "turn_number": 1463
+        },
+        {
+          "speaker": "MATT",
+          "text": "You take 12 points of piercing damage as the insects riddle you with bites and stings.",
+          "turn_number": 1464
+        },
+        {
+          "speaker": "SAM",
+          "text": "Shale, do you have any gold teeth or hidden savings accounts that we should also know about?",
+          "turn_number": 1465
+        },
+        {
+          "speaker": "LAURA",
+          "text": "She can't hear you, she's deaf.",
+          "turn_number": 1466
+        }
+      ],
+      "extracted_category": "MECHANICAL_GRANT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "MECHANICAL_GRANT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "correct",
+      "failure_family": null,
+      "judge_notes": null
+    },
+    {
+      "trigger_id": "C1E055_t462",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "I'll give you",
+      "raw_text": "No, that was its action. That's most of your turn, really, at this point. That was your movement to push through after the bonus attack, so you have your action. I'll give you your action.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "SAM",
+          "text": "He can fly?!",
+          "turn_number": 457
+        },
+        {
+          "speaker": "MATT",
+          "text": "Bigby's Hand!",
+          "turn_number": 458
+        },
+        {
+          "speaker": "SAM",
+          "text": "Not as fast as the dragon.",
+          "turn_number": 459
+        },
+        {
+          "speaker": "MATT",
+          "text": "Bigby's Hand can move up to 60 feet, so no, it's slower than the dragon. Starting to drag a little bit behind as it's moving.",
+          "turn_number": 460
+        },
+        {
+          "speaker": "SAM",
+          "text": "God. Okay! Hand can't do anything else, right?",
+          "turn_number": 461
+        }
+      ],
+      "extracted_category": "MATERIAL_LOOT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "NONE",
+      "expected_direction": null,
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "ill_give_you_your_action_turn_mechanics",
+      "judge_notes": "\"I'll give you your action\" \u2014 Matt restoring/clarifying that the player still has their action. Turn-mechanics adjudication, not material loot. Generic \"I'll give you\" trigger + non-loot non-mechanic-feature object."
+    },
+    {
+      "trigger_id": "C1E072_t313",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "12,000 platinum pieces",
+      "raw_text": "You get about 20 minutes of gathering gold and platinum pieces from the section you have access to. You could get more, if you continue to dig beneath, probably. You manage to pull roughly, between the three of you, 18,000 gold pieces and about 12,000 platinum pieces. (yelling)",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TRAVIS",
+          "text": "That's why I said we can't take that much.",
+          "turn_number": 308
+        },
+        {
+          "speaker": "LAURA",
+          "text": "But if it's platinum, it'll help.",
+          "turn_number": 309
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "More bang for our buck.",
+          "turn_number": 310
+        },
+        {
+          "speaker": "SAM",
+          "text": "What can we lose from the bag of holding?",
+          "turn_number": 311
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "I'm very emotional about some of this.",
+          "turn_number": 312
+        }
+      ],
+      "extracted_category": "MATERIAL_LOOT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 138000.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "MATERIAL_LOOT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "correct",
+      "failure_family": null,
+      "judge_notes": null
+    },
+    {
+      "trigger_id": "C1E101_t114",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "take a long rest",
+      "raw_text": "Did you guys take a long rest?",
+      "preceding_turns_last5": [
+        {
+          "speaker": "SAM",
+          "text": "And one, do we know where it is?",
+          "turn_number": 109
+        },
+        {
+          "speaker": "LAURA",
+          "text": "There's one up top that we heard about.",
+          "turn_number": 110
+        },
+        {
+          "speaker": "LIAM",
+          "text": "How much time do I have left on my wings? A lot, probably, like a half hour or 40 minutes? It wasn't that long.",
+          "turn_number": 111
+        },
+        {
+          "speaker": "MATT",
+          "text": "Well, no, actually, because when you used your wings outside, you guys came inside. Did you use your wings during the battle?",
+          "turn_number": 112
+        },
+        {
+          "speaker": "LIAM",
+          "text": "Yeah, I did.",
+          "turn_number": 113
+        }
+      ],
+      "extracted_category": "MECHANICAL_GRANT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": true,
+      "expected_category": "MECHANICAL_GRANT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "defensible",
+      "failure_family": "rest_inquiry_past_tense",
+      "judge_notes": "Past-tense interrogative \"Did you guys take a long rest?\" \u2014 Matt asking whether they took a rest, not granting one. Hand-sample REC 1 had similar interrogative shape (offering form) and was called defensible. This is past-tense inquiry, weaker case for grant. Borderline."
+    },
+    {
+      "trigger_id": "C1E107_t491",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "150 gold pieces",
+      "raw_text": "\"Three days' rental including a crew on board. That'll run you approximately 150 gold pieces. I require, to be in case you lose the ship or don't return with it, an additional 500 to hold in case you lose the ship. So a grand total of 650 up front with 500 to be returned upon your return.\"",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TALIESIN",
+          "text": "We would like to charter a crew also to maintain. We're going to be doing a bit of underwater search and rescue, so.",
+          "turn_number": 486
+        },
+        {
+          "speaker": "MATT",
+          "text": "\"Very well then.\"",
+          "turn_number": 487
+        },
+        {
+          "speaker": "SAM",
+          "text": "Will that be possible?",
+          "turn_number": 488
+        },
+        {
+          "speaker": "MATT",
+          "text": "\"Yes.\"",
+          "turn_number": 489
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Great. Wonderful.",
+          "turn_number": 490
+        }
+      ],
+      "extracted_category": "QUEST_OFFER",
+      "is_in_npc_voice": true,
+      "direction": "offered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 150.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "NONE",
+      "expected_direction": null,
+      "expected_is_in_npc_voice": true,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "sale_price_misread_with_refund_contingency",
+      "judge_notes": "Ship rental: \"150 gold pieces... 500 to hold... returned upon your return.\" Players are PAYING for rental. Phase 3.5 sale-price patch did not catch this because the refund-contingency language (\"upon your return\") mimics quest-offer contingency markers."
+    },
+    {
+      "trigger_id": "C1E107_t924",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "I'll give you",
+      "raw_text": "I'll give you advantage on this because it's a volcano punch.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TALIESIN",
+          "text": "Teach it to say your name!",
+          "turn_number": 919
+        },
+        {
+          "speaker": "MATT",
+          "text": "Roll a strength check.",
+          "turn_number": 920
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "(garbled) Say my name, bitch!",
+          "turn_number": 921
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Don't you get advantage?",
+          "turn_number": 922
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "I do. Only if I'm raging.",
+          "turn_number": 923
+        }
+      ],
+      "extracted_category": "MATERIAL_LOOT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "MECHANICAL_GRANT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "ill_give_you_advantage_misrouted_to_loot",
+      "judge_notes": "\"I'll give you advantage on this because it's a volcano punch.\" Generic \"I'll give you\" trigger routes to MATERIAL_LOOT but object is \"advantage\" \u2192 MECHANICAL_GRANT. RECURRING family from gate (was REC 25 / C2E036_t1103)."
+    },
+    {
+      "trigger_id": "C2E012_t2476",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "I'll give you",
+      "raw_text": "Sure. I'll say since you were helping her that I'll give you advantage on the roll.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TALIESIN",
+          "text": "It's okay. Someone had to do it.",
+          "turn_number": 2471
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Roll my proficiency plus my intelligence. Aw, my intelligence?! Why not wisdom? (laughter)",
+          "turn_number": 2472
+        },
+        {
+          "speaker": "LIAM",
+          "text": "Got to do it.",
+          "turn_number": 2473
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Nine.",
+          "turn_number": 2474
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "Is there any way I can help her? Like being also proficient in forging in this background and stuff?",
+          "turn_number": 2475
+        }
+      ],
+      "extracted_category": "QUEST_OFFER",
+      "is_in_npc_voice": true,
+      "direction": "offered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "MECHANICAL_GRANT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "ill_give_you_advantage_misrouted_to_loot_plus_npc_voice_misclass",
+      "judge_notes": "\"I'll say since you were helping her that I'll give you advantage on the roll.\" Matt OOC voice (\"I'll say\"), not NPC. Two failures: (a) is_in_npc_voice misclassified as True, (b) category routed to QUEST_OFFER on NPC-voice rule but actual object is \"advantage\" \u2192 MECHANICAL_GRANT."
+    },
+    {
+      "trigger_id": "C2E005_t2061",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "I can give you",
+      "raw_text": "\"Smoke we don't have. But drink, that I can give you.\"",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TALIESIN",
+          "text": "Was there beer downstairs? Was there ale?",
+          "turn_number": 2056
+        },
+        {
+          "speaker": "MATT",
+          "text": "You can go ask.",
+          "turn_number": 2057
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "I'm going to drop my things and run downstairs.",
+          "turn_number": 2058
+        },
+        {
+          "speaker": "MATT",
+          "text": "Okay. You come downstairs and there's nobody inside, this is not a tavern night for a lot of people. \"Right, can I help you?\"",
+          "turn_number": 2059
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "Is there drink? Is there smoke?",
+          "turn_number": 2060
+        }
+      ],
+      "extracted_category": "QUEST_OFFER",
+      "is_in_npc_voice": true,
+      "direction": "offered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "NONE",
+      "expected_direction": null,
+      "expected_is_in_npc_voice": true,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "npc_can_give_misrouted_to_quest_offer",
+      "judge_notes": "\"Smoke we don't have. But drink, that I can give you.\" Tavern keeper offering hospitality/service. Not a quest reward (no task contingency, no relational reward shape). NPC-voice \"I can give you [item]\" routed to QUEST_OFFER without contingency check."
+    },
+    {
+      "trigger_id": "C2E017_t74",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Upon returning",
+      "raw_text": "Daredevil Laura Bailey, ladies and gentlemen. Bringing it back in. The Mighty Nein in the city of Zadash. Long in the Dwendalian Empire, you've made a small name for yourself in a few factions. You've done a deed or two for the King's Hall here in service of the Crown. You've done a deed or two with the Knights of Requital, that involved getting caught up briefly in a manhunt, as you were loosely responsible for the death of the High-Richter, the high judge of the local court. Managed to make an introductory trade, a deal if you will, with The Gentleman, this subterranean figure of not the most legal of maneuvers. You delved deep into one of the subterranean river tunnels beneath the city of Zadash for him, managed to clear out and recover materials from a long-buried research facility from the Age of Arcanum. Upon returning, the deal was solid. You managed to smuggle out Horris, who needed to be away from the town for the time being while this investigation was happening. In doing so, also managed to clear your names of the death of the High-Richter. Upon returning back, getting a few deeds done, now waiting for this to blow over, and hearing word that there is no longer a manhunt for a number of you in cahoots to this, you begin to prepare for the coming Harvest Close Festival. Now we're getting close to the third of the month of Fessuran, you've all managed to prepare in the ways you want, got a few things on your side. You've delved into some of the mysteries of the beacon that you maintain. You've retrieved your Forever Alcoholic Flask. That's where we'll begin today. Friends, as the early morning creeps up upon you, the chilled morning air has left a bit of ice and mist crawling across areas of the city floor, from outside your window here in the Leaky Tap tavern. However, though it is a gloomy morning, there is already a general air of celebration around. Glancing across, more people are now shifting out into the street and city around you. Music is beginning to creep into the vicinity, and you can hear muffling through the nearby walls.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LAURA",
+          "text": "Is there tuna in here? I think there is.",
+          "turn_number": 69
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "No one really knows.",
+          "turn_number": 70
+        },
+        {
+          "speaker": "MATT",
+          "text": "Macaroni salad is the Wild West of culinary delights.",
+          "turn_number": 71
+        },
+        {
+          "speaker": "ASHLEY",
+          "text": "It's the tuna casserole you were talking about.",
+          "turn_number": 72
+        },
+        {
+          "speaker": "LAURA",
+          "text": "I'm not supposed to have tuna! (laughter)",
+          "turn_number": 73
+        }
+      ],
+      "extracted_category": "MATERIAL_LOOT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": true,
+      "expected_category": "NONE",
+      "expected_direction": null,
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "recap_state_should_reject_but_emits",
+      "judge_notes": "Episode-recap turn (\"The Mighty Nein in the city of Zadash. Long in the Dwendalian Empire, you've made a small name for yourself in a few factions...\") with is_recap_state=True flag set, but record emitted anyway. Per spec \u00a75 STATE rule, recap-state retrospective reward mentions are not new reward events. State-handling architectural bug \u2014 flag exists, rejection layer using it does not fire."
+    },
+    {
+      "trigger_id": "C2E041_t881",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "I'll give you",
+      "raw_text": "Make an intimidation check. Because he's stunned and beat to shit, I'll give you advantage on it.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TRAVIS",
+          "text": "Yeah!",
+          "turn_number": 876
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "I just turn to Fjord and go  Frumpkin listens to my commands!",
+          "turn_number": 877
+        },
+        {
+          "speaker": "MATT",
+          "text": "That ends Frumpkin's go. Fjord, you're up.",
+          "turn_number": 878
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "I will stand up after having getting the holy fucking shit knocked out of me from those longsword shots, and say: Friend! You better be real sure this is something you want to die for. I would suggest you drop your sword. You're outnumbered. I will take a step back.",
+          "turn_number": 879
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "Nice.",
+          "turn_number": 880
+        }
+      ],
+      "extracted_category": "MATERIAL_LOOT",
+      "is_in_npc_voice": false,
+      "direction": "delivered",
+      "absence_marker": false,
+      "has_perception_buildup": false,
+      "has_persistence_marker": false,
+      "currency_total_gp_equivalent": 0.0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "expected_category": "MECHANICAL_GRANT",
+      "expected_direction": "delivered",
+      "expected_is_in_npc_voice": false,
+      "expected_absence_marker": false,
+      "verdict_at_v2": "wrong",
+      "failure_family": "ill_give_you_advantage_misrouted_to_loot",
+      "judge_notes": "\"Because he's stunned and beat to shit, I'll give you advantage on it.\" Same family as RECs 11 and 12. Object=\"advantage\" \u2192 MECHANICAL_GRANT, not MATERIAL_LOOT."
+    }
+  ],
+  "notes": "Validation set v2 with blind-judge verdicts by Claude (Phase 5b). NONE category = should-have-been-rejected. Other category in expected_category = misclassification target. Strict precision 40.0% sits below calibration (67.7%) and gate (64.0%); n=15 binomial CI \u00b125pp; new FP families surfaced.",
+  "v2_summary": {
+    "judged_at": "2026-05-08T03:11:31.673623+00:00",
+    "judge": "Claude (Phase 5b validation blind pass)",
+    "total": 15,
+    "correct": 6,
+    "defensible": 1,
+    "wrong": 8,
+    "strict_precision": 0.4,
+    "defensible_included_precision": 0.4667,
+    "phase3_calibration_strict_precision": 0.7241,
+    "phase4_gate_strict_precision": 0.64,
+    "generalization_gap_from_handsample_pp": 32.4,
+    "generalization_gap_from_gate_pp": 24.0,
+    "binomial_ci_95_pp": "\u00b125 (Wilson) at n=15",
+    "failure_families": {
+      "ill_give_you_advantage_misrouted_to_loot": 2,
+      "for_your_aid_misrouted_to_npc_favor": 1,
+      "ill_give_you_your_action_turn_mechanics": 1,
+      "rest_inquiry_past_tense": 1,
+      "sale_price_misread_with_refund_contingency": 1,
+      "ill_give_you_advantage_misrouted_to_loot_plus_npc_voice_misclass": 1,
+      "npc_can_give_misrouted_to_quest_offer": 1,
+      "recap_state_should_reject_but_emits": 1
+    },
+    "per_category_strict": {
+      "KNOWLEDGE_GRANT": "1/1 = 100%",
+      "MATERIAL_LOOT": "2/6 = 33%",
+      "MECHANICAL_GRANT": "2/3 = 67%",
+      "NPC_FAVOR_GRATITUDE": "1/2 = 50%",
+      "QUEST_OFFER": "0/3 = 0%"
+    },
+    "recurring_families_from_gate": [
+      "ill_give_you_advantage_misrouted_to_loot",
+      "sale_price_misread"
+    ],
+    "new_families_in_validation": [
+      "for_your_aid_misrouted_to_npc_favor",
+      "ill_give_you_your_action_turn_mechanics",
+      "rest_inquiry_past_tense",
+      "sale_price_misread_with_refund_contingency",
+      "npc_can_give_misrouted_to_quest_offer",
+      "recap_state_should_reject_but_emits",
+      "ill_give_you_advantage_misrouted_to_loot_plus_npc_voice_misclass"
+    ]
+  }
+}

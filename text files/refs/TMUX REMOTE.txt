@@ -1,0 +1,36 @@
+TMUX REMOTE
+
+# === START / RESUME (after server reboot or fresh start) ===
+ssh jordaneal@100.93.209.31
+tmux new -s mobile
+claude --remote-control --name "Virgil"
+# Then: phone → Claude app → Code tab → tap "Virgil"
+
+# === DETACH (leave running, close terminal) ===
+# Inside tmux, press:
+Ctrl+b   then   d
+# Or just close Git Bash — claude keeps running on the server.
+
+# === REATTACH (come back to look at it) ===
+ssh jordaneal@100.93.209.31
+tmux attach -t mobile
+
+# === LIST WHICH TMUX SESSIONS EXIST ===
+tmux ls
+
+# === SCROLL THROUGH OUTPUT INSIDE TMUX ===
+Ctrl+b   then   [          # enter scroll mode
+# arrow keys / PgUp / PgDn to navigate
+q                          # exit scroll mode
+
+# === QUIT CLEANLY (kills the iPhone connection) ===
+# Inside the claude TUI:
+/quit
+# You're now back at a shell prompt inside tmux. Then:
+exit                       # closes the tmux session
+
+# === FORCE KILL (if claude is unresponsive) ===
+tmux kill-session -t mobile
+
+# === KILL ALL TMUX SESSIONS (nuclear) ===
+tmux kill-server

@@ -1,0 +1,762 @@
+[
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.199,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "24. You take about five minutes or so to concentrate, and while the distance and direction is relatively the same, there is very faint movement.",
+    "preceding_context_chars": 729,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 267,
+    "trigger_phrase": "five minutes",
+    "category": "in_scene_compression",
+    "granularity_bucket": "minutes",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": false,
+    "unknown_shape": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "MATT",
+        "text": "\"Learn from my mistakes.\"",
+        "turn_number": 256
+      },
+      {
+        "speaker": "SAM",
+        "text": "Why are they so singed? All right. Okay, let's focus up. Okay. Go on, strategize.",
+        "turn_number": 257
+      },
+      {
+        "speaker": "LIAM",
+        "text": "Time! We don't have a lot of time. So what are we going to do with it? Are we going to get allies? Are we going to talk to Allura again? Gilmore?",
+        "turn_number": 258
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Ooh, wait. First things first, do we know where he is? Don't you have the ability to like--",
+        "turn_number": 259
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Oh yeah. Is he still in the same place?",
+        "turn_number": 260
+      },
+      {
+        "speaker": "LIAM",
+        "text": "I don't know in here; I need to shove my head out the door for a sec.",
+        "turn_number": 261
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Well, shove your head out the door.",
+        "turn_number": 262
+      },
+      {
+        "speaker": "MATT",
+        "text": "All right. As you emerge into the heated air of the sub-ocean volcano, you take a moment and concentrate and you can sense the direction and distance seems to be approximately the same.",
+        "turn_number": 263
+      },
+      {
+        "speaker": "LAURA",
+        "text": "He hasn't moved at all?",
+        "turn_number": 264
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make a perception check, I guess.",
+        "turn_number": 265
+      },
+      {
+        "speaker": "LIAM",
+        "text": "24.",
+        "turn_number": 266
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.2213,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "All right. Finishing your wine, you all scatter to your various rooms throughout the mansion, prepare yourselves for an evening's rest. In the morning, journey to the cradle of civilization, Vasselheim.",
+    "preceding_context_chars": 730,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 297,
+    "trigger_phrase": "In the morning",
+    "category": "cumulative_anchor",
+    "granularity_bucket": "days",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": false,
+    "unknown_shape": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "TALIESIN",
+        "text": "Well, we've sent some word out to the world.",
+        "turn_number": 275
+      },
+      {
+        "speaker": "LIAM",
+        "text": "We've sent messages to Tary and to who else? There were two messages sent.",
+        "turn_number": 276
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Tary, the Ashari.",
+        "turn_number": 277
+      },
+      {
+        "speaker": "SAM",
+        "text": "Kaylie. I think.",
+        "turn_number": 278
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "We activated the beacons.",
+        "turn_number": 279
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "We activated the Chaos Orbs. Crisis Orbs. I always mess them up.",
+        "turn_number": 280
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "So we should rest and head to Vasselheim?",
+        "turn_number": 281
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "We're not any good to anybody at the moment, so I imagine so.",
+        "turn_number": 282
+      },
+      {
+        "speaker": "LIAM",
+        "text": "I think we'll all feel better after a night's sleep. Yeah.",
+        "turn_number": 283
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Scanlan, where are you sleeping tonight?",
+        "turn_number": 284
+      },
+      {
+        "speaker": "SAM",
+        "text": "In my room.",
+        "turn_number": 285
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Do we need to post guards outside?",
+        "turn_number": 286
+      },
+      {
+        "speaker": "SAM",
+        "text": "I have all the guards I need. Don't worry, I'll be safe.",
+        "turn_number": 287
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "We're not worried about you.",
+        "turn_number": 288
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "It'll be fine.",
+        "turn_number": 289
+      },
+      {
+        "speaker": "LAURA",
+        "text": "It'll be fine!",
+        "turn_number": 290
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "(laughs) It'll be great.",
+        "turn_number": 291
+      },
+      {
+        "speaker": "SAM",
+        "text": "So we're going to sleep and then to Vasselheim?",
+        "turn_number": 292
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "We rest and then we go.",
+        "turn_number": 293
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "That's the plan.",
+        "turn_number": 294
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Yeah.",
+        "turn_number": 295
+      },
+      {
+        "speaker": "SAM",
+        "text": "Okay, let's do it.",
+        "turn_number": 296
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.3145,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "All right. With that, you close your eyes. Beneath your breath, you recite the incantation. With that, you feel your body suddenly sucked into a dark void and thrust through the absence of space. And within a moment's time, before you can adjust to the sudden cold and dark vacuous void around you, your feet hit hard ground, your eyes focus again to the light, and you glance around and the center streets, not actually directly at the Trial Forge-- ooh, we got music, finally. In the streets around the Braving Grounds, you can see the smokestacks from the Trial Forge over the distance. You also notice that the sky above you is deep, dark gray clouds. It's as if there is a perpetual eclipse placed upon this ground. You look around in all directions, and you see this roiling gray cloud cluster that encompasses the entirety of the sky above you, which should be mid-morning or midday. It's blotted out by the storm-- rainfall is absent-- and you see flashes of light, occasionally framing strange shapes and clouds. Whether by illusion or by a trick of your mind, you swear you see shifting darkness and forms, images in the clouds: giant faces silently screaming, hundreds of feet across, that extend and push out of the clouds and draw back into the sky. Massive hands that push against them, only to slowly recede moments later. You blink and they're gone, leaving you unsettled regardless and uncertain as to whether or not that was just you or if everyone can see this. As your focus shifts from the sky above, you look around and you can see Bastions are stationed all across the perimeter walls of Vasselheim. You see large ballistae mounted and armed as watchers scour the distant horizon on all sides looking for any sign of something in the distance making its way towards the city, based on the warning you previously gave. Unlit beacons sit at every major structure and juncture of the stone walls, awaiting the burning sign that an assault is spotted. Militia and armored guard move with haste to stations across the city quarters. You can feel the air of war permeating the streets. The streets are far emptier than you recall, the stragglers returning to their homes with carts full of rations, produce, and weapons. Fear grips their face as they pass by. You glance off to your left, and you can see a wiry old man in the corner, his tangled silver and blond hair bouncing with fervor, as he shouts out, \"The reckoning of our opulence has come! The gods are away and the price of our hubris comes to consume us.\" But no one's paying him mind. His tattered bones jangling his knees across each other, as he makes his way through the streets, his face a glance of utter despair. You notice an argument between two Bastions and a middle-aged bearded man who is painting a familiar symbol on his front door, not too far from where you stand. A five-year-old girl cries and clings to his leg. What do you do?",
+    "preceding_context_chars": 771,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 422,
+    "trigger_phrase": "moments later",
+    "category": "scene_transition",
+    "granularity_bucket": "unspecified",
+    "is_anchored": true,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": true,
+    "unknown_shape": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "TALIESIN",
+        "text": "No, I feel it.",
+        "turn_number": 407
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Up and out to it. Up the volcano, up the water--",
+        "turn_number": 408
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Okay, you know what? Don't worry about it, let's go. Let's just Plane Shift.",
+        "turn_number": 409
+      },
+      {
+        "speaker": "MATT",
+        "text": "That's an arduous journey back to any possible tree.",
+        "turn_number": 410
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Wanted to talk that one out.",
+        "turn_number": 411
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Yeah. I Plane Shift us to Vasselheim.",
+        "turn_number": 412
+      },
+      {
+        "speaker": "MATT",
+        "text": "All right, so you Plane Shift to Vasselheim. As you guys encircle your hands once more, Keyleth, you focus on whereabouts in Vasselheim?",
+        "turn_number": 413
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "The Trial Forge?",
+        "turn_number": 414
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Or Melora's tree maybe? (laughter and applause)",
+        "turn_number": 415
+      },
+      {
+        "speaker": "SAM",
+        "text": "Residual magic.",
+        "turn_number": 416
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Trial Forge?",
+        "turn_number": 417
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Where will you not get arrested?",
+        "turn_number": 418
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "No one's going to even notice me. Yeah, they were ringing the bells and running around and getting prepared and stuff. Yeah, and if for some reason, somebody's like, \"That guy punched me in the face,\" we'll just punch them.",
+        "turn_number": 419
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "I agree with this plan.",
+        "turn_number": 420
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Trial Forge.",
+        "turn_number": 421
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.3785,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "\"Right now. She left not but an hour ago.\"",
+    "preceding_context_chars": 777,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 508,
+    "trigger_phrase": "an hour",
+    "category": null,
+    "granularity_bucket": "hours",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": true,
+    "unknown_shape": true,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "TALIESIN",
+        "text": "If we're going to make a sun appear--",
+        "turn_number": 501
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Let's do it at the temple of Sarenrae or the temple of Pelor.",
+        "turn_number": 502
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "All right, we go to the temple of Sarenrae!",
+        "turn_number": 503
+      },
+      {
+        "speaker": "MATT",
+        "text": "You make your way to the temple. You enter the interior, and you can see most everyone is in silent prayer. They're all either holding hands or clutching close their smaller kin, these renewed worshippers of the Everlight. Glancing around, you don't see Pike currently in the vicinity. All you see is one of the head priests, Coraline, who's currently off to the side is tending to a few of the folks from the interior.",
+        "turn_number": 504
+      },
+      {
+        "speaker": "LIAM",
+        "text": "(shouting) Pike?",
+        "turn_number": 505
+      },
+      {
+        "speaker": "MATT",
+        "text": "Coraline looks over and sees you guys enter. \"Oh!\" Rushes up to you. \"I'm sorry, she's not here, she went to the Platinum Sanctuary. Apparently, there's a discussion, a meeting of some kind.\"",
+        "turn_number": 506
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Right now?",
+        "turn_number": 507
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.4113,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "\"It, in the past 12 hours or so, has stretched across the Ozmit Sea and now seeks to consume as far as the east coast of Tal'Dorei. If this is what I believe it is, within the next half-to-full day the entirety of Exandria will be under the shaded sky of Vecna.\"",
+    "preceding_context_chars": 44,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 552,
+    "trigger_phrase": "12 hours",
+    "category": null,
+    "granularity_bucket": "hours",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": true,
+    "unknown_shape": true,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "LAURA",
+        "text": "Allura, does the sky look like this in Emon?",
+        "turn_number": 551
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.4367,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "There are two places in the Zenwick Mountains that would be of any interest, or historical lore-based elements. There is the Crypts of Thomara: it's a subterranean vault city, built around a precious metal vein cluster by the xenophobic dwarven Thomara clan in the early years of the Age of Arcana. It's said a terrible madness fed into their greed, leading to eventual cannibalism and collapse of the society thousands of years ago. It's now considered cursed and is largely avoided. The other location is known as the Silted Veil, a small, cold valley within the mountains that is comprised of ice-dusted, mineral-rich mud that was once rumored to carry natural healing properties when applied to wounds and restorative elements to aged skin. However, a large variety of dangerous creatures also discovered these features over time and moved into the valley, taking over and establishing a new violent ecosystem based around the soothing muck. Scanlan.",
+    "preceding_context_chars": 305,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 586,
+    "trigger_phrase": "It's now",
+    "category": null,
+    "granularity_bucket": "years",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": true,
+    "unknown_shape": true,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "TALIESIN",
+        "text": "What's a fair amount?",
+        "turn_number": 578
+      },
+      {
+        "speaker": "MATT",
+        "text": "If you feel confident in your ability to understand history. I would say putting it this way, those who have researched the lands that would probably be Percival and Scanlan.",
+        "turn_number": 579
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "Okay.",
+        "turn_number": 580
+      },
+      {
+        "speaker": "SAM",
+        "text": "27!",
+        "turn_number": 581
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "21.",
+        "turn_number": 582
+      },
+      {
+        "speaker": "MATT",
+        "text": "27? Okay! I'll make part of this a whisper.",
+        "turn_number": 583
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Wait, you'll make what? I didn't hear it!",
+        "turn_number": 584
+      },
+      {
+        "speaker": "SAM",
+        "text": "A live whisper.",
+        "turn_number": 585
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.4538,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "We'll take our break here. We'll return at that moment here in a number of minutes.",
+    "preceding_context_chars": 639,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 609,
+    "trigger_phrase": "a number of minutes",
+    "category": null,
+    "granularity_bucket": "minutes",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": false,
+    "unknown_shape": true,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "LAURA",
+        "text": "Yeah! We're mostly really good at that.",
+        "turn_number": 598
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"If you indeed carry the boons that your lady Pike has mentioned, then we need to keep Vecna and his force occupied to grant you entry. And we can do that. I certainly hope with the strength of our numbers that there is no way that he can see them coming. From the distant end of the central chamber here, a familiar voice echoes throughout the hallway. Oh, but I do, wyrm groveler.\"",
+        "turn_number": 599
+      },
+      {
+        "speaker": "SAM",
+        "text": "But the ring, man! We just got the ring!",
+        "turn_number": 600
+      },
+      {
+        "speaker": "MATT",
+        "text": "You haven't attuned to it yet.",
+        "turn_number": 601
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Fuck!",
+        "turn_number": 602
+      },
+      {
+        "speaker": "MATT",
+        "text": "And with that, we're going to go ahead and take our break. (cheering)",
+        "turn_number": 603
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Come on!",
+        "turn_number": 604
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "What all did we say?",
+        "turn_number": 605
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "What didn't we say?",
+        "turn_number": 606
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Shit!",
+        "turn_number": 607
+      },
+      {
+        "speaker": "LIAM",
+        "text": "What a piece of shit!",
+        "turn_number": 608
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.7712,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "\"It has been foreseen!\" I've been working on my costume.",
+    "preceding_context_chars": 796,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 1035,
+    "trigger_phrase": "It has been",
+    "category": null,
+    "granularity_bucket": "unspecified",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": true,
+    "unknown_shape": true,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "MATT",
+        "text": "Keyleth?",
+        "turn_number": 1018
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "I am doing a nature check.",
+        "turn_number": 1019
+      },
+      {
+        "speaker": "MATT",
+        "text": "Right, to find out?",
+        "turn_number": 1020
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "If it looks like a path has been bore through in a straight line, like it looks like it's going through. 24.",
+        "turn_number": 1021
+      },
+      {
+        "speaker": "MATT",
+        "text": "24? What you can tell from a nature check is that these are not natural formations in the ground. These are blunt trauma to the ground that has caused these large craters.",
+        "turn_number": 1022
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Does it look like a walking path? A very large walking path?",
+        "turn_number": 1023
+      },
+      {
+        "speaker": "MATT",
+        "text": "Percival?",
+        "turn_number": 1024
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "Natural 20, for 25.",
+        "turn_number": 1025
+      },
+      {
+        "speaker": "MATT",
+        "text": "Scanlan?",
+        "turn_number": 1026
+      },
+      {
+        "speaker": "SAM",
+        "text": "19 total.",
+        "turn_number": 1027
+      },
+      {
+        "speaker": "MATT",
+        "text": "Okay. Percival. And Keyleth. And Perc'ahlia. Not you Grog, sorry.",
+        "turn_number": 1028
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Holes!",
+        "turn_number": 1029
+      },
+      {
+        "speaker": "MATT",
+        "text": "You do notice, upon immediate view, that these large holes are patterned, staggered about every 350-400 feet. And they do almost present the gait of a walking creature.",
+        "turn_number": 1030
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "(anguished sounds)",
+        "turn_number": 1031
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Hey! You got that big fucking turtle you wanted!",
+        "turn_number": 1032
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "It is a giant turtle!",
+        "turn_number": 1033
+      },
+      {
+        "speaker": "LIAM",
+        "text": "The final miniature is just Matt.",
+        "turn_number": 1034
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.8085,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "\"Thank you,\" you hear emanate from J'mon as the cloud cover tends to spread a little bit and give a little bit of a good view. You travel on for about 25, 30 or so minutes before Vex, Vax, and Keyleth, you glance around the bend of the pass that you've just begun to curve around, and you see it: an impossibly immense entity, standing hundreds and hundreds of feet tall. A gigantic, bulky mass of jagged rock, slowly walking on two castle-width legs, each footfall sending a cloud-spray of earth into the air around it. (crashing) Quaking the surrounding lands with a terrifying crack and rumble. As the back leg lifts, sifting through the air, you can almost hear the air tear with a high-pitched whine, even at this distance, as its sheer mass and speed in which it's cutting through, breaking the atmosphere, slams down for its next step. (crashing) As you get a better view, the closer you get, it resembles the earth elemental form you've seen Keyleth take many times, only proportionally malformed, and terrifying on a scale you've never seen. Four colossal arms swing from its torso, battering rams of shifting stone, each over 150 feet wide. The closer you get, Grog, you sense a faint vibration in the Titanstone Knuckles.",
+    "preceding_context_chars": 102,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 1085,
+    "trigger_phrase": "You travel on",
+    "category": "travel_duration",
+    "granularity_bucket": "minutes",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": true,
+    "unknown_shape": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "MARISHA",
+        "text": "I do a bit of a Gust spell ahead of us to clear the path, give him a little more visual line of sight.",
+        "turn_number": 1084
+      }
+    ]
+  },
+  {
+    "campaign": "C1",
+    "episode": 109,
+    "episode_position_pct": 0.9195,
+    "speaker": "MATT",
+    "event_type": "time_mention",
+    "raw_text": "Okay, so you point this out to J'mon? All right. You hear the dragon voice boom up once more. \"Hold on!\" Goes into an intense dive trying to bring-- because previously you were about level, if not a little higher than Thar Amphala on the top of the entity. J'mon goes into a dive towards the hip area that you point out. The wind is pushing past you. You're holding on for dear life because any possible loss of grip not only is going to loose you from the dragon, which is going to be hard to find you, as you're all invisible, depending on the dragon's abilities, I guess. But as you begin to push down into this dive, I want you all to make strength saving throws, please.",
+    "preceding_context_chars": 367,
+    "extractor_version": "time_mention_v1_3",
+    "extracted_at": "2026-05-07T16:08:52Z",
+    "trigger_turn_number": 1234,
+    "trigger_phrase": "pushing past",
+    "category": "cumulative_anchor",
+    "granularity_bucket": "unspecified",
+    "is_anchored": false,
+    "time_anchor_turn_number": null,
+    "anchor_distance_turns": null,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "is_npc_dialogue_present": true,
+    "unknown_shape": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "MARISHA",
+        "text": "That's it?",
+        "turn_number": 1225
+      },
+      {
+        "speaker": "SAM",
+        "text": "Is it coming from the city or coming from the titan?",
+        "turn_number": 1226
+      },
+      {
+        "speaker": "MATT",
+        "text": "From the titan.",
+        "turn_number": 1227
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "He's leaking from the back of his calf.",
+        "turn_number": 1228
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Let's go in there, then.",
+        "turn_number": 1229
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "From the back of his hip.",
+        "turn_number": 1230
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "Let's see if we can land on that burst pimple, then.",
+        "turn_number": 1231
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "I don't think there's any landing. I think there's going to be-- yeah. But you know what? Let's see what happens.",
+        "turn_number": 1232
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Let's fly in close to that waterfall.",
+        "turn_number": 1233
+      }
+    ]
+  }
+]

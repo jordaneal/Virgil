@@ -1,0 +1,2893 @@
+{
+  "calibration": [
+    {
+      "trigger_id": "C1E003_t0",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "many weeks",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Recap intro narration. UNKNOWN_SHAPE acceptable per Lesson 2; recap-vocab caught.",
+      "sample_id": "C1E003_t0_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t364",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the evening",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Player asked the time, Matt establishes campaign-clock. Textbook cumulative_anchor.",
+      "sample_id": "C1E003_t364_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t452",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "25 minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Task duration (carving the umber hulk head). 25 minutes elapsed during a single in-scene action. Textbook in_scene_compression, not cumulative_anchor.",
+      "sample_id": "C1E003_t452_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t452",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "it is now",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn, 'it is now there on display' \u2014 'it is now' is locative not temporal. Should not have emitted a second record. DEDUP at extraction or ignore.",
+      "sample_id": "C1E003_t452_idx1"
+    },
+    {
+      "trigger_id": "C1E003_t458",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'it's been there for a while' \u2014 describing the campsite age. NOT a campaign-clock anchor, NOT a real time-mention category. Should be unknown_shape or filtered.",
+      "sample_id": "C1E003_t458_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t470",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'could have been there for more than a week or two' \u2014 speculation about how long a SYMBOL has been on the wall. Not a campaign-clock anchor.",
+      "sample_id": "C1E003_t470_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t484",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "few hours",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'The next few hours go by without incident' \u2014 clean overnight/long-rest transition. Textbook scene_transition.",
+      "sample_id": "C1E003_t484_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t868",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Walking off to the side of the cavern, single in-scene action. NO travel verb in the same clause (it's a few feet of movement, not party travel between locations). Should be in_scene_compression.",
+      "sample_id": "C1E003_t868_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t1879",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Bridge crossing pause. Active scene continues.",
+      "sample_id": "C1E003_t1879_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t1911",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'Been awhile since you've used those' \u2014 meta DM-banter about player's deck-shuffling card-trick mechanic, NOT campaign-clock. Should be DISCOURSE D3 (table-talk) or unknown_shape.",
+      "sample_id": "C1E003_t1911_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t2145",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "defensible",
+      "failure_mode": "'About a minute passes... you come back to your senses' \u2014 could be either. Defensible either way.",
+      "sample_id": "C1E003_t2145_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t2195",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moment passes",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'A moment passes and he kind of drifts back up' \u2014 combat micro-beat (dragon prone, drifts up). This is mid-combat. Should be is_combat_state OR D4 reject.",
+      "sample_id": "C1E003_t2195_idx0"
+    },
+    {
+      "trigger_id": "C1E003_t2847",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'next week we're gonna try and do a Q&A... we'll stay for an hour or more after' \u2014 production OOC, episode break. Should be D1 rejected. FALSE POSITIVE.",
+      "sample_id": "C1E003_t2847_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t77",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two weeks",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Inter-session bridge: party returned to Emon, fan camped two weeks. Should be scene_transition (between-session timeskip), not unknown_shape. v2 patch identified in validation \u00a76.",
+      "sample_id": "C1E024_t77_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t79",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'within a week's time, the Briarwoods are supposed to be arriving' \u2014 future deadline announcement. Genuinely unclassifiable in current taxonomy (would fit deadline_set_by_npc, filed for narrative_pressure_v1).",
+      "sample_id": "C1E024_t79_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t79",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a week",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn, same phrase repeated. Multi-mention rule should not double-count adjacent same-phrase mentions.",
+      "sample_id": "C1E024_t79_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t81",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "six weeks",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Laina says 'we've been working here for about six weeks'). is_npc_dialogue_present=true. Per OQ1 fallback flagged not rejected. Genuinely outside Matt-narration scope.",
+      "sample_id": "C1E024_t81_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t246",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Travel-time speculation discussion ('flying eagle would take two days'). NPC-dialogue-flagged. Not a real campaign-clock advance.",
+      "sample_id": "C1E024_t246_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t340",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five hours",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'I run the front... where you guys have stumbled into every single time' \u2014 phrase 'five hours' likely from NPC dialogue. NPC-flagged. cumulative_anchor wrong; should be unknown_shape with NPC flag.",
+      "sample_id": "C1E024_t340_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t355",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moment later",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'one moment...' then NPC pulls out box. Short transition with anchor. NPC dialogue present but Matt narrates the moment-elapsed.",
+      "sample_id": "C1E024_t355_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t389",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's getting",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's getting later in the day' \u2014 campaign-clock anchor.",
+      "sample_id": "C1E024_t389_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t389",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "later in",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same anchor; 'later in the day' is the same anchor as 'It's getting later in the day'.",
+      "sample_id": "C1E024_t389_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t389",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "around noon",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Different anchor in same turn: 'pre-noon, or around noon' \u2014 describes when business HAPPENS, slight stretch but acceptable as cumulative_anchor.",
+      "sample_id": "C1E024_t389_idx2"
+    },
+    {
+      "trigger_id": "C1E024_t433",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "A few minutes",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'A few minutes go by. Sherri comes back' \u2014 clean short transition. NPC follows but Matt-narrated time elapsed.",
+      "sample_id": "C1E024_t433_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t460",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moments later",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'A few moments later, she comes back down' \u2014 short transition, anchored to prior 'darts up the stairway'.",
+      "sample_id": "C1E024_t460_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t530",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (Gilmore quoting deal terms). Should be unknown_shape with NPC flag, not cumulative_anchor.",
+      "sample_id": "C1E024_t530_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t530",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a month",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue. Same turn. Should be unknown_shape.",
+      "sample_id": "C1E024_t530_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t530",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "a month",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Third record on the same turn for the SAME phrase 'a month' repeated. Multi-mention bug.",
+      "sample_id": "C1E024_t530_idx2"
+    },
+    {
+      "trigger_id": "C1E024_t632",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two rounds",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Spell duration mechanic ('Fly is concentration spell, amulet keeps it up for two rounds, which is 12 seconds'). NOT travel_duration. D2 spell-rules-duration should fire OR is_combat_state. Categorically wrong.",
+      "sample_id": "C1E024_t632_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t656",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "000 years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC backstory ('over the past 1,000 years'). Genuinely unclassifiable in v1. NPC-flagged.",
+      "sample_id": "C1E024_t656_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t704",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's getting",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'it's getting close to dusk' \u2014 clean campaign-clock anchor.",
+      "sample_id": "C1E024_t704_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t709",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It's been crafted for you' \u2014 present-perfect crafting, NOT a time anchor. Should not have emitted as cumulative_anchor.",
+      "sample_id": "C1E024_t709_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t726",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (smith says 'about two days'). Future task-time estimate, not a campaign-clock advance. NPC-flagged correctly.",
+      "sample_id": "C1E024_t726_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t731",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Continuation of NPC dialogue. Same.",
+      "sample_id": "C1E024_t731_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t766",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'a day of work' \u2014 describing what an NPC was doing today, idiomatic. NOT a campaign-clock advance. v2 idiom filter or unknown_shape.",
+      "sample_id": "C1E024_t766_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t770",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "30 minutes",
+      "expected_category": "travel_duration",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It will take you about 30 minutes' from Vax's current location to the keep. PARTY TRAVEL between locations. travel_duration not in_scene_compression.",
+      "sample_id": "C1E024_t770_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t812",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It's been used for a long time' \u2014 describes the bed, not campaign-clock. Same shape as C1E003_t458.",
+      "sample_id": "C1E024_t812_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t814",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moments later",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'A couple moments later, a voice comes from the other side' \u2014 short transition with anchor (NPC knock at door).",
+      "sample_id": "C1E024_t814_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t833",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "the next morning",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'rest up for the next morning, and at that point we're going to take our break. Five minutes, guys' \u2014 Matt mixes scene_transition framing with break announcement. D1 should reject the whole turn (locked \u00a711.5). v2 patch: D1 whole-turn vs phrase-span (Lesson 9 candidate).",
+      "sample_id": "C1E024_t833_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t833",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "Five minutes",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Production OOC ('strict five minutes break'). FALSE POSITIVE. Should be D1 reject.",
+      "sample_id": "C1E024_t833_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t833",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "five minutes",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same break-time. Duplicate FP.",
+      "sample_id": "C1E024_t833_idx2"
+    },
+    {
+      "trigger_id": "C1E024_t843",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "you wake",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'As you wake the next morning' \u2014 clean overnight transition.",
+      "sample_id": "C1E024_t843_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t843",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "the next morning",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn. Multi-mention duplicate.",
+      "sample_id": "C1E024_t843_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t847",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "you wake",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'As you wake up' continues the same morning narration. Either dedup or accept as scene continuation.",
+      "sample_id": "C1E024_t847_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t847",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "it's getting",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'it's getting pretty thick now' \u2014 describing facial hair length. NOT a time anchor. False positive on the 'it's getting' pattern.",
+      "sample_id": "C1E024_t847_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t933",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'you swear for a minute, you see' \u2014 combat micro-beat-adjacent but real in-scene moment of dwarf seeing the amulet. Defensible as in_scene_compression.",
+      "sample_id": "C1E024_t933_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t941",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a year",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('better part of a year to enchant'). Future task-time NPC quote. NPC-flagged correctly.",
+      "sample_id": "C1E024_t941_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t957",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's been a long time since you've been in this portion of the world' \u2014 Matt-narration about elapsed campaign time. Acceptable cumulative_anchor.",
+      "sample_id": "C1E024_t957_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t957",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "since you",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn, same anchor 'It's been a long time since you've been'. Duplicate.",
+      "sample_id": "C1E024_t957_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t1011",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue ('since you've left, we haven't had...'). NPC-flagged correctly. cumulative_anchor wrong.",
+      "sample_id": "C1E024_t1011_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1026",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It takes him about five minutes' counting coins. NPC-flagged but Matt-narrated. In-scene task duration.",
+      "sample_id": "C1E024_t1026_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1061",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "ten minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It takes about ten minutes before the keep doors open' \u2014 task duration.",
+      "sample_id": "C1E024_t1061_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1132",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "six days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'arriving now in six days' \u2014 future deadline, not a campaign-clock advance. deadline_set_by_npc-shape, filed for narrative_pressure_v1.",
+      "sample_id": "C1E024_t1132_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1244",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "you come to consciousness",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Overnight rest. 'morning sun rises... you come to consciousness'.",
+      "sample_id": "C1E024_t1244_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1278",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "over the next",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Multi-day construction montage. Defensible as scene_transition or in_scene_compression. Either acceptable.",
+      "sample_id": "C1E024_t1278_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1278",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "few days",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase 'over the next few days'. Multi-mention dup.",
+      "sample_id": "C1E024_t1278_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t1284",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'a few minutes' for the storm to gather. In-scene.",
+      "sample_id": "C1E024_t1284_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1290",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a round",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'stunned for a round' \u2014 combat mechanic. is_combat_state should fire (it doesn't due to OQ5 25-turn limit). Per Lesson 2 unknown_shape acceptable but is_combat_state would be better.",
+      "sample_id": "C1E024_t1290_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1327",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few hours",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'morning has come... you have a few hours' \u2014 overnight transition into pre-feast prep window.",
+      "sample_id": "C1E024_t1327_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1382",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "as the sun",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'as the sun begins to bring itself to the other side' \u2014 sunset transition to the feast.",
+      "sample_id": "C1E024_t1382_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1408",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "around dusk",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Asum: 'arriving around dusk'). NPC-flagged. Should NOT be cumulative_anchor.",
+      "sample_id": "C1E024_t1408_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1408",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "20 minutes",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Same NPC dialogue continuation.",
+      "sample_id": "C1E024_t1408_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t1435",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "three days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Asum) about feast schedule.",
+      "sample_id": "C1E024_t1435_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1450",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "ten years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue / backstory recall.",
+      "sample_id": "C1E024_t1450_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1461",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "ten minutes",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Asum coordinating).",
+      "sample_id": "C1E024_t1461_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1481",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue / instructions to staff.",
+      "sample_id": "C1E024_t1481_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1490",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "the next hour",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Matt narration: 'I flirt with her throughout the hour' is player; the next-hour narration is Matt's. Should be in_scene_compression with the flirting montage.",
+      "sample_id": "C1E024_t1490_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1494",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue speculation about Allura's time off.",
+      "sample_id": "C1E024_t1494_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1580",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a number of years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (Briarwoods). NOT a scene_transition. Should be unknown_shape.",
+      "sample_id": "C1E024_t1580_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1582",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC backstory dialogue.",
+      "sample_id": "C1E024_t1582_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1600",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue. travel_duration wrong. Should be unknown_shape with NPC flag.",
+      "sample_id": "C1E024_t1600_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1600",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "five years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Same NPC dialogue continuation, different mention.",
+      "sample_id": "C1E024_t1600_idx1"
+    },
+    {
+      "trigger_id": "C1E024_t1615",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'it's been completed' \u2014 present-perfect about an item, not time-elapsed. False positive.",
+      "sample_id": "C1E024_t1615_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1617",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a month",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Allura: 'about a month away from completing'). Future deadline.",
+      "sample_id": "C1E024_t1617_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1626",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "many years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (Lord Briarwood). Same shape as t1580. Wrong category.",
+      "sample_id": "C1E024_t1626_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1651",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a month",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Briarwoods).",
+      "sample_id": "C1E024_t1651_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1659",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few months",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C1E024_t1659_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1666",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Lady Briarwood).",
+      "sample_id": "C1E024_t1666_idx0"
+    },
+    {
+      "trigger_id": "C1E024_t1705",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'After about a minute of this' \u2014 Matt-narrated in-scene pause.",
+      "sample_id": "C1E024_t1705_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t199",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "By the time you",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Combat narration (Craven Edge swung at servants). Combat-active. NOT scene_transition. is_combat_state should fire.",
+      "sample_id": "C1E047_t199_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t289",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It takes a minute' for spell-casting.",
+      "sample_id": "C1E047_t289_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t320",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moment later",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'A moment later, they all return with a spectral cow' \u2014 short anchored transition.",
+      "sample_id": "C1E047_t320_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t380",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It's been a while since you wrestled a bear, so it's kind of fun' \u2014 meta-comment about player familiarity, not campaign-clock.",
+      "sample_id": "C1E047_t380_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t380",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "since you",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase shape.",
+      "sample_id": "C1E047_t380_idx1"
+    },
+    {
+      "trigger_id": "C1E047_t554",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Broom adjustment, in-scene task.",
+      "sample_id": "C1E047_t554_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t554",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "moments pass",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'a few moments pass' is a restatement of the 'few minutes' pattern in the same turn. Multi-mention dup of same fictional moment.",
+      "sample_id": "C1E047_t554_idx1"
+    },
+    {
+      "trigger_id": "C1E047_t593",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few hours",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'a few hours into the evening, Keyleth, you are just starting to doze off' \u2014 overnight scene transition. Defensible as cumulative_anchor too.",
+      "sample_id": "C1E047_t593_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t603",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Four years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Cerkonos).",
+      "sample_id": "C1E047_t603_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t636",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "many days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Vax-dream-sequence narration. Defensible cumulative_anchor or unknown_shape \u2014 accept either.",
+      "sample_id": "C1E047_t636_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t644",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "You wake",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Vax wakes from dream/visions. Scene transition.",
+      "sample_id": "C1E047_t644_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t644",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "it's been",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn dream-content reference.",
+      "sample_id": "C1E047_t644_idx1"
+    },
+    {
+      "trigger_id": "C1E047_t644",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "it's been",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Triple-fired same turn. Multi-mention bug.",
+      "sample_id": "C1E047_t644_idx2"
+    },
+    {
+      "trigger_id": "C1E047_t644",
+      "same_turn_record_index": 3,
+      "trigger_phrase": "since you",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Quadruple-fired same turn.",
+      "sample_id": "C1E047_t644_idx3"
+    },
+    {
+      "trigger_id": "C1E047_t644",
+      "same_turn_record_index": 4,
+      "trigger_phrase": "in the morning",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Quintuple-fired same turn \u2014 5 records on one turn. Egregious multi-mention bug.",
+      "sample_id": "C1E047_t644_idx4"
+    },
+    {
+      "trigger_id": "C1E047_t1039",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It's been a long time since then' referring to Marisha's character's lack of memory of trees. Meta-recall, not campaign-clock.",
+      "sample_id": "C1E047_t1039_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1062",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Travel-duration estimate (player asking about destination). NOT a campaign-clock advance \u2014 this is hypothetical travel-time discussion.",
+      "sample_id": "C1E047_t1062_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1062",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "three days",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn restating same travel estimate.",
+      "sample_id": "C1E047_t1062_idx1"
+    },
+    {
+      "trigger_id": "C1E047_t1081",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Spell-doorway opening; in-scene transition through plant magic, defensible. Could also be travel_duration but the in-scene framing is clean.",
+      "sample_id": "C1E047_t1081_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1085",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Hypothetical travel-time discussion ('on horseback... on foot...') \u2014 not a campaign-clock advance.",
+      "sample_id": "C1E047_t1085_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1085",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a day",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase repeated.",
+      "sample_id": "C1E047_t1085_idx1"
+    },
+    {
+      "trigger_id": "C1E047_t1085",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "a day",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn 4th repetition. Multi-mention bug egregious.",
+      "sample_id": "C1E047_t1085_idx2"
+    },
+    {
+      "trigger_id": "C1E047_t1085",
+      "same_turn_record_index": 3,
+      "trigger_phrase": "two days",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn 5th.",
+      "sample_id": "C1E047_t1085_idx3"
+    },
+    {
+      "trigger_id": "C1E047_t1085",
+      "same_turn_record_index": 4,
+      "trigger_phrase": "two days",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn 6th repetition. SIX records on one turn.",
+      "sample_id": "C1E047_t1085_idx4"
+    },
+    {
+      "trigger_id": "C1E047_t1271",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Reginald).",
+      "sample_id": "C1E047_t1271_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1273",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (Reginald). NOT travel_duration.",
+      "sample_id": "C1E047_t1273_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1299",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (Reginald). NOT in_scene_compression.",
+      "sample_id": "C1E047_t1299_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1328",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "years later",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Backstory recall \u2014 describing how someone changed years later. NOT a scene_transition.",
+      "sample_id": "C1E047_t1328_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1449",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue 'let me get loose here for a minute' \u2014 idiomatic 'a minute', not actual time. Should be filtered.",
+      "sample_id": "C1E047_t1449_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1451",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC 'since you mention it' or similar idiom. The phrase 'since' here doesn't anchor time.",
+      "sample_id": "C1E047_t1451_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1466",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('been half a day since breakfast'). NPC-flagged.",
+      "sample_id": "C1E047_t1466_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1466",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a day",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same NPC line.",
+      "sample_id": "C1E047_t1466_idx1"
+    },
+    {
+      "trigger_id": "C1E047_t1603",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "few days",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Validation \u00a76 already flagged this. Fragmented narration about buildings still standing \u2014 possibly post-Thordak-attack but not a clear time anchor.",
+      "sample_id": "C1E047_t1603_idx0"
+    },
+    {
+      "trigger_id": "C1E047_t1605",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it has been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Phrase 'it has been' likely refers to the Margrave's house location/role, not time. Need full context but appears non-time.",
+      "sample_id": "C1E047_t1605_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t216",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the afternoon",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It is quite a busy time in the afternoon' \u2014 campaign-clock anchor. Recap-flag is wrong though (it's not actually recap; first scene of the episode but not retelling past).",
+      "sample_id": "C1E057_t216_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t263",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue, recap-flagged. Real backstory.",
+      "sample_id": "C1E057_t263_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t302",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It has been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Vanessa, 'It has been some time').",
+      "sample_id": "C1E057_t302_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t791",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "many years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Cosmology lore narration \u2014 Raven Queen pre-history. Backstory, not campaign-clock.",
+      "sample_id": "C1E057_t791_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t840",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "one day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue idiom 'one day' = 'someday'.",
+      "sample_id": "C1E057_t840_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1061",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'after about five minutes or so' grinding spear-tip. Task duration.",
+      "sample_id": "C1E057_t1061_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1093",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Deidre, 'return here in about an hour'). Future task estimate.",
+      "sample_id": "C1E057_t1093_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1255",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few hours",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It takes you a few hours and gets you into the early parts of the evening' \u2014 task duration.",
+      "sample_id": "C1E057_t1255_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1266",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "As the sun",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'As the sun begins to set in Vasselheim... night goes dark' \u2014 sunset transition.",
+      "sample_id": "C1E057_t1266_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1279",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it has been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'most of it has been turned black through soot' \u2014 present-perfect about state of nightgown, NOT time. False positive.",
+      "sample_id": "C1E057_t1279_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1303",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It has been",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It has been steeped way too long' \u2014 tea steeping comment. Borderline; defensible cumulative_anchor too.",
+      "sample_id": "C1E057_t1303_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1734",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "One day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC future-speculation idiom.",
+      "sample_id": "C1E057_t1734_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1757",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's early",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'it's early afternoon' - clean clock anchor.",
+      "sample_id": "C1E057_t1757_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t1878",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "one day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue idiom 'one day to wear clothes...'",
+      "sample_id": "C1E057_t1878_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2020",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "as the sun",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'as the sun sets' - sunset transition to dinner.",
+      "sample_id": "C1E057_t2020_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2035",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "15 minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'Within the next 15 minutes or so, before food is brought... Allura finally enters' - Matt narration of dinner-prep duration. Should be in_scene_compression, not unknown_shape (NPC flag triggered but content is Matt narration).",
+      "sample_id": "C1E057_t2035_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2041",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'since you first saw her' - meta-comment about player familiarity with Kima. Not campaign clock.",
+      "sample_id": "C1E057_t2041_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2079",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Allura - research timeline).",
+      "sample_id": "C1E057_t2079_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2262",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (about white dragon reports).",
+      "sample_id": "C1E057_t2262_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2270",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few weeks",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue about defense system construction.",
+      "sample_id": "C1E057_t2270_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2279",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C1E057_t2279_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2282",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue continuation.",
+      "sample_id": "C1E057_t2282_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2313",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the morning",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Realmseer farewell).",
+      "sample_id": "C1E057_t2313_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2483",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "A lot of time passes",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Bare clean transition phrase.",
+      "sample_id": "C1E057_t2483_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2485",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "A few hours",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'A few hours pass before she returns' - clean.",
+      "sample_id": "C1E057_t2485_idx0"
+    },
+    {
+      "trigger_id": "C1E057_t2543",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "time has passed",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('a lot has happened these recent months') - actually borderline; 'time has passed' would be better as cumulative_anchor if it weren't NPC voice.",
+      "sample_id": "C1E057_t2543_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t643",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's now",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Mid-Earthbreaker-Groon-fight - combat narration. is_combat_state should fire.",
+      "sample_id": "C1E085_t643_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t872",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's now",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Combat continuation, same fight.",
+      "sample_id": "C1E085_t872_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t889",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'since you are stunned' - combat condition narration. NOT cumulative_anchor.",
+      "sample_id": "C1E085_t889_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t988",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's now",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It's now his turn' - combat turn narration. NOT cumulative_anchor.",
+      "sample_id": "C1E085_t988_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t1267",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'Scanlan's been out for almost a day' - elapsed time for Scanlan being unconscious. Real campaign-clock state.",
+      "sample_id": "C1E085_t1267_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t1331",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since last",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C1E085_t1331_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t1716",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Kaylie's idiom 'in a minute').",
+      "sample_id": "C1E085_t1716_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t1949",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Player meta-comment 'It's been a while, but yeah' (about Pike sailing the sea). Not Matt narration of time. Borderline FP.",
+      "sample_id": "C1E085_t1949_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t2018",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "The next morning",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'The next morning comes around' - clean transition.",
+      "sample_id": "C1E085_t2018_idx0"
+    },
+    {
+      "trigger_id": "C1E085_t2264",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Since you",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Fragment. 'Since you discovered the body' - referring to Pike's body discovery story logic, not campaign-clock advance.",
+      "sample_id": "C1E085_t2264_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t114",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a long rest",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'Did you guys take a long rest?' - Matt asking the players a question, NOT a scene transition. Should be filtered.",
+      "sample_id": "C1E101_t114_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t125",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Over the next",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'Over the next 15 or so minutes' gathering corpses. Task duration.",
+      "sample_id": "C1E101_t125_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t418",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'You chew for a minute' - in-scene action.",
+      "sample_id": "C1E101_t418_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t435",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "over the next",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'over the next 20 minutes or so' scanning.",
+      "sample_id": "C1E101_t435_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t435",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "20 minutes",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase: 'over the next 20 minutes' is one mention.",
+      "sample_id": "C1E101_t435_idx1"
+    },
+    {
+      "trigger_id": "C1E101_t481",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'over an hour or so of doing this' - in-scene Earth Glide spell. Travel through rock - borderline travel_duration but in_scene fits better. cumulative_anchor wrong.",
+      "sample_id": "C1E101_t481_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t503",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'a little over an hour or so' - duration of breaching the dome. Defensible as travel_duration too.",
+      "sample_id": "C1E101_t503_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t597",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's early",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's early evening' - clean anchor.",
+      "sample_id": "C1E101_t597_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t633",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since the",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'about mid-height on the ziggurat' - 'since the' is not a real time-anchor here. Truncated context but appears non-temporal.",
+      "sample_id": "C1E101_t633_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t635",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it has been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Eskil).",
+      "sample_id": "C1E101_t635_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t641",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "six months",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C1E101_t641_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t746",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'Within an hour or so, you are presented with a bowl' - kitchen prep duration.",
+      "sample_id": "C1E101_t746_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t760",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two months",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue, food preparation backstory.",
+      "sample_id": "C1E101_t760_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t790",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it is now",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'as it is now getting close to the midnight hour' - clean clock anchor.",
+      "sample_id": "C1E101_t790_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t877",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since the",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'research you've done since the name has come up' - present-perfect about research, idiomatic. NOT campaign-clock.",
+      "sample_id": "C1E101_t877_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t1069",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "the following morning",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'rested for the evening and found yourself the following morning' - clean overnight transition.",
+      "sample_id": "C1E101_t1069_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t1069",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "You come to consciousness",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn: 'the following morning... You come to consciousness' = same fictional event.",
+      "sample_id": "C1E101_t1069_idx1"
+    },
+    {
+      "trigger_id": "C1E101_t1225",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's early",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's early morning' - clean anchor.",
+      "sample_id": "C1E101_t1225_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t1435",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a round",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Mid-combat ('22 points of necrotic damage'). is_combat_state should fire (OQ5 lookback limit).",
+      "sample_id": "C1E101_t1435_idx0"
+    },
+    {
+      "trigger_id": "C1E101_t1836",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "many months",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue about siphon-building.",
+      "sample_id": "C1E101_t1836_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t265",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's now",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's now probably just past midnight' - clean clock anchor.",
+      "sample_id": "C2E002_t265_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t316",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the morning",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Truncated but the phrase 'in the morning' isn't a clear anchor here - context describes the bushy-bearded man's appearance. Need fuller context but appears non-temporal description.",
+      "sample_id": "C2E002_t316_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t419",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few minutes",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue ('they came in not but a few minutes before you did').",
+      "sample_id": "C2E002_t419_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t683",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the morning",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'one o'clock in the morning at this time' - clean clock anchor.",
+      "sample_id": "C2E002_t683_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t789",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a night",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'falling into a night's rest' - overnight transition.",
+      "sample_id": "C2E002_t789_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t789",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "As evening comes",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn: 'a night's rest. As evening comes to a close and the morning brings...' = same scene transition described twice.",
+      "sample_id": "C2E002_t789_idx1"
+    },
+    {
+      "trigger_id": "C2E002_t800",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the morning",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'Coming to consciousness... 8:00 or 9:00 in the morning' - clean overnight transition + anchor.",
+      "sample_id": "C2E002_t800_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t858",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "you come to consciousness",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same morning, restated transition. Possibly different PCs but same fictional moment.",
+      "sample_id": "C2E002_t858_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1171",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "35 years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (had a son 35 years ago). NPC-flagged correctly. cumulative_anchor wrong.",
+      "sample_id": "C2E002_t1171_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1381",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (Rinaldo). cumulative_anchor wrong.",
+      "sample_id": "C2E002_t1381_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1381",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "few months",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same NPC line.",
+      "sample_id": "C2E002_t1381_idx1"
+    },
+    {
+      "trigger_id": "C2E002_t1398",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C2E002_t1398_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1407",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a year",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue (last circus, year ago). NOT scene_transition.",
+      "sample_id": "C2E002_t1407_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1407",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a week",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same NPC line.",
+      "sample_id": "C2E002_t1407_idx1"
+    },
+    {
+      "trigger_id": "C2E002_t1554",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a couple hours",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'You take a couple hours wandering through the Northward' - investigation duration.",
+      "sample_id": "C2E002_t1554_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1577",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moment passes",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'A moment passes and you hear...' - short transition.",
+      "sample_id": "C2E002_t1577_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1609",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "ten minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It does take ten minutes' - task duration.",
+      "sample_id": "C2E002_t1609_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1920",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "the next hour",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'spend the next hour' - eyelash bit. In-scene.",
+      "sample_id": "C2E002_t1920_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1926",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'About an hour passes' - clean compression.",
+      "sample_id": "C2E002_t1926_idx0"
+    },
+    {
+      "trigger_id": "C2E002_t1926",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "Two hours",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn: 'an hour... Two hours pass' is sequential narration of single passage of time.",
+      "sample_id": "C2E002_t1926_idx1"
+    },
+    {
+      "trigger_id": "C2E002_t1926",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "in the morning",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Continues in same turn 'around the third...' - all part of one extended scene transition.",
+      "sample_id": "C2E002_t1926_idx2"
+    },
+    {
+      "trigger_id": "C2E018_t158",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It's been a while since-- a giant's face' - mid-sentence narration cutoff. Not actually a time anchor (probably 'It's been a while since I [Matt] said giant's face').",
+      "sample_id": "C2E018_t158_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t158",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a week",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same fragment.",
+      "sample_id": "C2E018_t158_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t359",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's now",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Combat turn narration ('It's now the giant's turn'). Should be is_combat_state.",
+      "sample_id": "C2E018_t359_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t603",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a short rest",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Hit dice mechanic explanation ('only when you're taking a short rest'). D2 spell/rules duration.",
+      "sample_id": "C2E018_t603_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t666",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's been a number of rounds' - explicit mid-combat round count. cumulative_anchor wrong; is_combat_state correct.",
+      "sample_id": "C2E018_t666_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t666",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a number of rounds",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase shape.",
+      "sample_id": "C2E018_t666_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t748",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "three rounds",
+      "expected_category": "is_combat_state_required",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Combat-mechanic, gladiator pit. is_combat_state should fire (OQ5 lookback miss).",
+      "sample_id": "C2E018_t748_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t873",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the evening",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'nine o'clock in the evening' - clean clock anchor.",
+      "sample_id": "C2E018_t873_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t875",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It has been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It has been' - bare 2-word answer to player's 'has Pumat's place been open this late?' - confirmation, not anchor.",
+      "sample_id": "C2E018_t875_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t977",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It has been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('It has been a pleasure, Yasha').",
+      "sample_id": "C2E018_t977_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t987",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Trent farewell).",
+      "sample_id": "C2E018_t987_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1064",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Over the next",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'Over the next 20 minutes or so' overhearing conversation. Task duration.",
+      "sample_id": "C2E018_t1064_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1064",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "20 minutes",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase. travel_duration also wrong category.",
+      "sample_id": "C2E018_t1064_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t1121",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Truncated, but appears to be NPC dialogue (Darrow). NPC-flagged.",
+      "sample_id": "C2E018_t1121_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1125",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "seven months",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C2E018_t1125_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1147",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a year",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C2E018_t1147_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1176",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue ('Maybe in a week') - future estimate. NOT scene_transition.",
+      "sample_id": "C2E018_t1176_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1210",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Since you",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Matt answering player Q about elapsed time in town. Real campaign-clock anchor.",
+      "sample_id": "C2E018_t1210_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1210",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a week",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same answer.",
+      "sample_id": "C2E018_t1210_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t1210",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "two weeks",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn 'a week and a half to two weeks' = single answer.",
+      "sample_id": "C2E018_t1210_idx2"
+    },
+    {
+      "trigger_id": "C2E018_t1362",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "A minute",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'A minute passes. Two minutes pass' - time-passing narration.",
+      "sample_id": "C2E018_t1362_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1362",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "Two minutes",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn continuation.",
+      "sample_id": "C2E018_t1362_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t1368",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five minutes",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'About five minutes pass before she enters' - clean short transition.",
+      "sample_id": "C2E018_t1368_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1812",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the morning",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "OOC: 'we're going to come back in the morning' (production break announcement). Should be D1 reject.",
+      "sample_id": "C2E018_t1812_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1930",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "the last day",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'sunlight came through the last day have completely absconded' - Matt narration of weather change. Should be scene_transition (morning of new day with stormy weather), not unknown_shape.",
+      "sample_id": "C2E018_t1930_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1932",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moments later",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'a few moments later... shouts out' - short transition.",
+      "sample_id": "C2E018_t1932_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t1932",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "since the",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn.",
+      "sample_id": "C2E018_t1932_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t1967",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (commander).",
+      "sample_id": "C2E018_t1967_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2055",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "200 years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (mage tomes lecture).",
+      "sample_id": "C2E018_t2055_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2072",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "by the time you",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'by the time you've gotten here, it'd be about noon' - time-progression with anchor. Defensible cumulative_anchor.",
+      "sample_id": "C2E018_t2072_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2089",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It has been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It has been frustrating, but fine' - NPC's emotional comment, not time. False positive.",
+      "sample_id": "C2E018_t2089_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2095",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the afternoon",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'three in the afternoon now' - clean clock anchor.",
+      "sample_id": "C2E018_t2095_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2104",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "150 years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Backstory in tome content. cumulative_anchor wrong.",
+      "sample_id": "C2E018_t2104_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2139",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'it's been a number of hours' - real elapsed-time check.",
+      "sample_id": "C2E018_t2139_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2139",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "a number of hours",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase.",
+      "sample_id": "C2E018_t2139_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t2259",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five minutes",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'About five minutes pass' - clean short transition.",
+      "sample_id": "C2E018_t2259_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2330",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Jasna Bree).",
+      "sample_id": "C2E018_t2330_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2384",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Per validation \u00a76: borderline 'few days' merchant guild prep narration. Genuinely unclassifiable.",
+      "sample_id": "C2E018_t2384_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2405",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (legionnaire history).",
+      "sample_id": "C2E018_t2405_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2405",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "three months",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same NPC turn continuation.",
+      "sample_id": "C2E018_t2405_idx1"
+    },
+    {
+      "trigger_id": "C2E018_t2422",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "eight weeks",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C2E018_t2422_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2462",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "over the next",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'discuss this over the next week if you want' - meta-procedural Matt remark to players, NOT campaign-clock advance. Should be filtered.",
+      "sample_id": "C2E018_t2462_idx0"
+    },
+    {
+      "trigger_id": "C2E018_t2545",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's late",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's late afternoon at this point' - clean clock anchor.",
+      "sample_id": "C2E018_t2545_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t79",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a round",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Recap-state, episode opener. 'sent them on their way' refers to fight. Probably part of the recap. Granularity 'rounds' is wrong - this isn't combat-rounds.",
+      "sample_id": "C2E024_t79_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t79",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "in the evening",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same recap turn.",
+      "sample_id": "C2E024_t79_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t79",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "As the sun",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same recap turn third mention.",
+      "sample_id": "C2E024_t79_idx2"
+    },
+    {
+      "trigger_id": "C2E024_t79",
+      "same_turn_record_index": 3,
+      "trigger_phrase": "as the sun",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same recap turn fourth mention.",
+      "sample_id": "C2E024_t79_idx3"
+    },
+    {
+      "trigger_id": "C2E024_t93",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a round",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue: 'You owe me a round' - drink idiom. FP1 idiom-set should catch this.",
+      "sample_id": "C2E024_t93_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t302",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "15 minutes",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'the better part of 15 minutes pass' - clean short transition.",
+      "sample_id": "C2E024_t302_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t341",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "later on",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('Hold that till later on').",
+      "sample_id": "C2E024_t341_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t403",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Truncated context but appears to be reference to Hour of Honor (event name). Idiomatic. NPC-flagged.",
+      "sample_id": "C2E024_t403_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t445",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "few years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('rough few years').",
+      "sample_id": "C2E024_t445_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t517",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('Once a week, there's a contest').",
+      "sample_id": "C2E024_t517_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t529",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C2E024_t529_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t533",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Mixed: 'You've probably been here for the better part of an hour or two' (Matt narration) followed by NPC quote 'another hour before it begins'. Phrase-span issue. The Matt-narration part should be in_scene_compression; defensible unknown_shape.",
+      "sample_id": "C2E024_t533_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t584",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (working girl).",
+      "sample_id": "C2E024_t584_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t594",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (price quote).",
+      "sample_id": "C2E024_t594_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t719",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Per validation \u00a76: 'as bright a day as it is' idiom OR similar. Validation already flagged this. Should be filtered.",
+      "sample_id": "C2E024_t719_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t997",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Truncated but 'since you've been here' or 'It has uses since you' - present-perfect construct, not time anchor.",
+      "sample_id": "C2E024_t997_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t997",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "three weeks",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Probably tavern flavor narration about events. NPC-flagged.",
+      "sample_id": "C2E024_t997_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t1029",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "200 years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Backstory describing gnomish age range. Defensible cumulative_anchor too but unknown_shape acceptable.",
+      "sample_id": "C2E024_t1029_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1094",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'a voice that grates like it's been slammed across a hundred years of seawater' - simile/imagery, not actual time. False positive.",
+      "sample_id": "C2E024_t1094_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1094",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "hundred years",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same simile.",
+      "sample_id": "C2E024_t1094_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t1242",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a round",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'gaining a round' = gaining a victory in a drinking contest. NOT combat round. Idiom.",
+      "sample_id": "C2E024_t1242_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1302",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two rounds",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'these last two rounds' = drinking contest rounds. NOT combat or time.",
+      "sample_id": "C2E024_t1302_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1327",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'crowd backs up for a minute' - in-scene pause.",
+      "sample_id": "C2E024_t1327_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1330",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a minute",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue 'Wait a minute' - idiom, not time.",
+      "sample_id": "C2E024_t1330_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1354",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the morning",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('We will in the morning').",
+      "sample_id": "C2E024_t1354_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1413",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "moment passes",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'a moment passes before Jester begins leading you' - short transition.",
+      "sample_id": "C2E024_t1413_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1476",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "as the sun",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Overnight to morning transition.",
+      "sample_id": "C2E024_t1476_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1476",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "at daybreak",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same morning anchor.",
+      "sample_id": "C2E024_t1476_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t1558",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Shortly after",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'Shortly after the competition' - clean anchored short transition.",
+      "sample_id": "C2E024_t1558_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1634",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "over the next",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'over the next 30 minutes' breakfast service.",
+      "sample_id": "C2E024_t1634_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1634",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "30 minutes",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn same phrase.",
+      "sample_id": "C2E024_t1634_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t1836",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Since the",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('Since the whole war's going on').",
+      "sample_id": "C2E024_t1836_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1865",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (sealed-off automaton, two years).",
+      "sample_id": "C2E024_t1865_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t1865",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "two years",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same NPC line.",
+      "sample_id": "C2E024_t1865_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t1958",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('family name when it's been through the ringer') - idiom about family reputation, not time.",
+      "sample_id": "C2E024_t1958_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2028",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "ten years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Ol' Blemmy backstory).",
+      "sample_id": "C2E024_t2028_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2057",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (worker pay).",
+      "sample_id": "C2E024_t2057_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2070",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (forge workers idiom 'pissing for a week').",
+      "sample_id": "C2E024_t2070_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2095",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "an hour",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Rissa quoting walk distance). Travel-discussion not actual travel.",
+      "sample_id": "C2E024_t2095_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2097",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "25 minutes",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue continuation.",
+      "sample_id": "C2E024_t2097_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2291",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C2E024_t2291_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2291",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "six months",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same NPC turn.",
+      "sample_id": "C2E024_t2291_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t2293",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "six months",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "World-lore exposition ('every six months a tax man comes through'). Recurring schedule, not a campaign-clock anchor.",
+      "sample_id": "C2E024_t2293_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2313",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('It's been six months').",
+      "sample_id": "C2E024_t2313_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2313",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "six months",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same NPC line.",
+      "sample_id": "C2E024_t2313_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t2371",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "three days",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Matt answering Caleb's player question about elapsed time. Real campaign-clock state. travel_duration is wrong category.",
+      "sample_id": "C2E024_t2371_idx0"
+    },
+    {
+      "trigger_id": "C2E024_t2371",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "Since you",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same answer in same turn.",
+      "sample_id": "C2E024_t2371_idx1"
+    },
+    {
+      "trigger_id": "C2E024_t2436",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the afternoon",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'one or two in the afternoon' - clean clock anchor.",
+      "sample_id": "C2E024_t2436_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t69",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "ten years",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Matt's joke about a photo taken 'ten years ago' - cast banter about Marisha's headshot. Production OOC.",
+      "sample_id": "C2E031_t69_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t73",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two weeks",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'roughly two weeks of downtime' - explicit downtime period scene-transition.",
+      "sample_id": "C2E031_t73_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t151",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue ('would only take maybe two days') - future task estimate.",
+      "sample_id": "C2E031_t151_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t151",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "Since you",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn (or non-temporal 'since you' meaning 'because you').",
+      "sample_id": "C2E031_t151_idx1"
+    },
+    {
+      "trigger_id": "C2E031_t301",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "30 days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Truncated context but appears NPC/lore. Acceptable as unknown.",
+      "sample_id": "C2E031_t301_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t305",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Truncated; phrase 'it's been' likely from another idiom or non-temporal use. Need fuller context but cumulative_anchor unlikely.",
+      "sample_id": "C2E031_t305_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t363",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "six weeks",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Pumat about commission).",
+      "sample_id": "C2E031_t363_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t392",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "40 minutes",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Pumat III errand estimate).",
+      "sample_id": "C2E031_t392_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t436",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since the",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'since the blade has been broken' - causal 'since', not time. False positive.",
+      "sample_id": "C2E031_t436_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t502",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue future estimate.",
+      "sample_id": "C2E031_t502_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t518",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "since you",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'since you're looking for possibly other purchases' - causal 'since', not time. False positive.",
+      "sample_id": "C2E031_t518_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t603",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "five days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue.",
+      "sample_id": "C2E031_t603_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t605",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('it's been a pleasure') - idiom.",
+      "sample_id": "C2E031_t605_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t719",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a day",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Per validation \u00a76: 'as bright a day as it is' idiom. Correctly UNKNOWN_SHAPE.",
+      "sample_id": "C2E031_t719_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t805",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "40 minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'It takes the better part of 30 or 40 minutes' - Matt narration of bag-pulling task duration. NOT unknown_shape; real in-scene compression.",
+      "sample_id": "C2E031_t805_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t870",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a week",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Travel-distance discussion ('Nicodranas... over a week to get there'). Hypothetical travel time.",
+      "sample_id": "C2E031_t870_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t878",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "It's been",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'It's been a series of dead ends' - real Matt-narration about Fjord's frustration over time. Defensible.",
+      "sample_id": "C2E031_t878_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t890",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "the following morning",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'the following morning Caleb is very tired-looking'.",
+      "sample_id": "C2E031_t890_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t904",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "30 days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue ('been gone for about 30 days').",
+      "sample_id": "C2E031_t904_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t931",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'a chamber you haven't been in in a while' - real elapsed-time reference for chamber visit. Defensible cumulative_anchor.",
+      "sample_id": "C2E031_t931_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t931",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "since you",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn restated.",
+      "sample_id": "C2E031_t931_idx1"
+    },
+    {
+      "trigger_id": "C2E031_t931",
+      "same_turn_record_index": 2,
+      "trigger_phrase": "since you",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn third firing.",
+      "sample_id": "C2E031_t931_idx2"
+    },
+    {
+      "trigger_id": "C2E031_t933",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "Four days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Tubo training).",
+      "sample_id": "C2E031_t933_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t933",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "four days",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same NPC turn.",
+      "sample_id": "C2E031_t933_idx1"
+    },
+    {
+      "trigger_id": "C2E031_t941",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's getting",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'it's getting frustrated' - describing Beau's emotional state. NOT time anchor.",
+      "sample_id": "C2E031_t941_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1010",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "four days",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Tubo).",
+      "sample_id": "C2E031_t1010_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1027",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "600 years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Tome content / lore exposition.",
+      "sample_id": "C2E031_t1027_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1033",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "time passes",
+      "expected_category": "NOT_TIME_MENTION",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "'time is a constant... rate at which time passes' - philosophical exposition about time itself, not a time-mention. Tome content.",
+      "sample_id": "C2E031_t1033_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1035",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "1500 years",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Tome content - historical reference.",
+      "sample_id": "C2E031_t1035_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1051",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "few days",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'Practicing the next few days' - downtime task narration. Defensible scene_transition.",
+      "sample_id": "C2E031_t1051_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1055",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "By the time you",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'By the time you've returned, it's been the better part of the two-week period' - clean anchored transition.",
+      "sample_id": "C2E031_t1055_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1055",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "it's been",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn anchor.",
+      "sample_id": "C2E031_t1055_idx1"
+    },
+    {
+      "trigger_id": "C2E031_t1063",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "20 minutes",
+      "expected_category": "in_scene_compression",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'wait for about 20 minutes or so' - waiting at tavern.",
+      "sample_id": "C2E031_t1063_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1071",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it's been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "correct",
+      "failure_mode": "NPC dialogue (Gentleman).",
+      "sample_id": "C2E031_t1071_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1101",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "it has been",
+      "expected_category": "UNKNOWN_SHAPE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "NPC dialogue ('I have started a new life here, and it has been serving me well') - state, not time-elapsed. Should be unknown_shape with NPC flag.",
+      "sample_id": "C2E031_t1101_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1166",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the evening",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'most of the day, and in the evening he appears to go nap' - daily-routine narration. Defensible UNKNOWN_SHAPE too (recurring pattern not a single anchor) - leaning correct.",
+      "sample_id": "C2E031_t1166_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1194",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "in the evening",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "Matt clarifying when Jester's group approaches - clock anchor.",
+      "sample_id": "C2E031_t1194_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1196",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "a few hours",
+      "expected_category": "cumulative_anchor",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'a few hours after sundown' - clock anchor.",
+      "sample_id": "C2E031_t1196_idx0"
+    },
+    {
+      "trigger_id": "C2E031_t1196",
+      "same_turn_record_index": 1,
+      "trigger_phrase": "in the evening",
+      "expected_category": "DUPLICATE",
+      "verdict_at_v1": "wrong",
+      "failure_mode": "Same turn restating evening.",
+      "sample_id": "C2E031_t1196_idx1"
+    },
+    {
+      "trigger_id": "C2E031_t1566",
+      "same_turn_record_index": 0,
+      "trigger_phrase": "two weeks",
+      "expected_category": "scene_transition",
+      "verdict_at_v1": "correct",
+      "failure_mode": "'spent the majority of these two weeks handling your business' - downtime arc transition.",
+      "sample_id": "C2E031_t1566_idx0"
+    }
+  ]
+}

@@ -1,0 +1,2241 @@
+Avrae Command List
+
+CharGenerator
+Random character generator.
+
+
+!randchar [level]
+
+Rolls up a random 5e character.
+
+![randname|name] [race] [option]
+
+Generates a random name, optionally from a given race.
+
+!rollstats
+
+Rolls random stats.
+
+Servers can customize their stat rolling requirements via !servsettings.
+
+Core
+Core utilty and general commands.
+
+
+![about|stats|info]
+
+Information about the bot.
+
+!changelog
+
+Prints a link to the official changelog.
+
+Subcommands
+!changelog [follow|subscribe]
+
+Subscribes to the changelog in this channel.
+
+You must have Manage Webhooks permissions to run this command.
+
+!ddb
+
+Displays information about your D&D Beyond account link.
+
+!dderror
+
+Causes an error on purpose to test datadog error reporting.
+
+!invite
+
+Prints a link to invite Avrae to your server.
+
+!ping
+
+Checks the ping time to the bot.
+
+Customization
+Commands to help streamline using the bot.
+
+
+!alias <kwargs>
+
+Creates a custom user command.
+After an alias has been added, you can run the command with !<alias_name>.
+
+If a user and a server have aliases with the same name, the user alias will take priority.
+Note that aliases cannot call other aliases.
+
+Attach a UTF-8 file instead of code to upload large aliases.
+
+Check out the Aliasing Basics and Aliasing Documentation for more information.
+
+Subcommands
+!alias autofix
+
+Ensures that all server and subscribed workshop aliases have unique names.
+
+!alias [delete|remove] <name>
+
+Deletes a alias.
+
+!alias [deleteall|removeall]
+
+Deletes ALL user aliases.
+
+!alias list [page=1]
+
+Lists all aliases.
+
+!alias rename <old_name> <new_name>
+
+Renames an alias or subscribed workshop alias to a new name.
+
+!alias serve <name>
+
+Sets an alias as a server alias or subscribes the server to the workshop collection it is found in.
+
+!alias [subscribe|sub] <url>
+
+Subscribes to all aliases and snippets in a workshop collection.
+
+!alias [unsubscribe|unsub] <name>
+
+Unsubscribes from all aliases and snippets in a given workshop collection.
+
+!cvar [name] [value]
+
+Commands to manage character variables for use in snippets and aliases.
+Attach a UTF-8 file instead of a value to set large character variables.
+See the aliasing guide for more help.
+
+Subcommands
+!cvar [deleteall|removeall]
+
+Deletes ALL character variables for the active character.
+
+!cvar list
+
+Lists all cvars for the currently active character.
+
+!cvar [remove|delete] <name>
+
+Deletes a cvar from the currently active character.
+
+![globalvar|gvar] [name]
+
+Commands to manage global, community variables for use in snippets and aliases.
+If run without a subcommand, shows the value of a global variable.
+Global variables are readable by all users, but only editable by the creator.
+Global variables must be accessed through scripting, with get_gvar(gvar_id).
+Global variables also support reading file attachments when creating or editing.
+See https://avrae.io/cheatsheets/aliasing for more help.
+
+Subcommands
+!globalvar create [value]
+
+Creates a global variable.
+A name will be randomly assigned upon creation.
+Attach a UTF-8 file instead of a value to create large global variables.
+
+!globalvar edit <name> [value]
+
+Edits a global variable.
+Attach a UTF-8 file instead of a value to edit large global variables.
+
+!globalvar editor <name> [user]
+
+Toggles the editor status of a user.
+
+!globalvar list
+
+Lists all global variables for the user.
+
+!globalvar [remove|delete] <name>
+
+Deletes a global variable.
+
+!multiline <cmds>
+
+Runs each line as a separate command, with a 1 second delay between commands.
+
+Usage:
+"!multiline
+!roll 1d20
+!spell Fly
+!monster Rat"
+
+!prefix [prefix]
+
+Sets the bot's prefix for this server.
+
+You must have Manage Server permissions or a role called "Bot Admin" to use this command. Due to a possible Discord conflict, a prefix beginning with / will require confirmation.
+
+Forgot the prefix? Reset it with "@Avrae#6944 prefix !".
+
+![servalias|serveralias] <kwargs>
+
+Adds an alias that the entire server can use.
+Requires Administrator Discord permissions or a role called "Server Aliaser" or "Dragonspeaker".
+If a user and a server have aliases with the same name, the user alias will take priority.
+Attach a UTF-8 file instead of code to upload large server aliases.
+
+Subcommands
+!servalias autofix
+
+Ensures that all server and subscribed workshop aliases have unique names.
+
+!servalias [delete|remove] <name>
+
+Deletes a server alias.
+
+!servalias list [page=1]
+
+Lists all server aliases.
+
+!servalias rename <old_name> <new_name>
+
+Renames a server alias or subscribed workshop server alias to a new name.
+
+!servalias [subscribe|sub] <url>
+
+Subscribes to all aliases and snippets in a workshop collection.
+
+!servalias [unsubscribe|unsub] <name>
+
+Unsubscribes from all aliases and snippets in a given workshop collection.
+
+![server_settings|servsettings]
+
+Opens the server settings menu. You must have Manage Server permissions to edit any settings here
+
+![servervar|svar] [name] [value]
+
+Commands to manage server variables for use in snippets and aliases.
+
+Server variables may only be set by those with permissions to create server aliases (see !help servalias),
+must be explicitly retrieved in an alias, and are read-only.
+
+These are usually used to set server-wide defaults for aliases without editing the code.
+
+Attach a UTF-8 file instead of a value to set large server variables.
+
+See https://avrae.io/cheatsheets/aliasing for more help.
+
+Subcommands
+!servervar list
+
+Lists all svars for the server.
+
+!servervar [remove|delete] <name>
+
+Deletes a svar from the server.
+
+![servsnippet|serversnippet] <kwargs>
+
+Creates a snippet that the entire server can use.
+Requires Administrator Discord permissions or a role called "Server Aliaser" or "Dragonspeaker".
+If a user and a server have snippets with the same name, the user snippet will take priority.
+Attach a UTF-8 file instead of code to upload large server snippets.
+
+Subcommands
+!servsnippet autofix
+
+Ensures that all server and subscribed workshop aliases have unique names.
+
+!servsnippet [delete|remove] <name>
+
+Deletes a server snippet.
+
+!servsnippet list [page=1]
+
+Lists all server snippets.
+
+!servsnippet rename <old_name> <new_name>
+
+Renames a server snippet or subscribed workshop server snippet to a new name.
+
+!servsnippet [subscribe|sub] <url>
+
+Subscribes to all aliases and snippets in a workshop collection.
+
+!servsnippet [unsubscribe|unsub] <name>
+
+Unsubscribes from all aliases and snippets in a given workshop collection.
+
+!snippet <kwargs>
+
+Creates a snippet to use in certain commands.
+Ex: !snippet sneak -d "2d6[slashing]" can be used as !a sword sneak.
+
+If a user and a server have snippets with the same name, the user snippet will take priority.
+
+Attach a UTF-8 file instead of code to upload large snippets.
+
+Check out the Aliasing Basics and Aliasing Documentation for more information.
+
+Subcommands
+!snippet autofix
+
+Ensures that all server and subscribed workshop aliases have unique names.
+
+!snippet [delete|remove] <name>
+
+Deletes a snippet.
+
+!snippet [deleteall|removeall]
+
+Deletes ALL user snippets.
+
+!snippet list [page=1]
+
+Lists all snippets.
+
+!snippet rename <old_name> <new_name>
+
+Renames a snippet or subscribed workshop snippet to a new name.
+
+!snippet serve <name>
+
+Sets a snippet as a server snippet or subscribes the server to the workshop collection it is found in.
+
+!snippet [subscribe|sub] <url>
+
+Subscribes to all aliases and snippets in a workshop collection.
+
+!snippet [unsubscribe|unsub] <name>
+
+Unsubscribes from all aliases and snippets in a given workshop collection.
+
+!tembed <teststr>
+
+Parses teststr as if it were in an alias, for testing, then creates and prints an Embed.
+Note: Not recommended to be used in actual aliases, as it can lead to unexpected behaviour. You will probably want to use !embed instead.
+
+Arguments: -title [title]
+-desc [description text]
+-thumb [image url]
+-image [image url]
+-footer [footer text]
+-f ["Field Title|Field Text"]
+-color [hex color] or <color> for character color, leave blank for random color.
+-t [timeout (0..600)]
+
+!test <teststr>
+
+Parses teststr as if it were in an alias, for testing.
+Note: Not recommended to be used in actual aliases, as it can lead to unexpected behaviour. You will probably want to use !echo instead.
+
+![uservar|uvar] [name] [value]
+
+Commands to manage user variables for use in snippets and aliases.
+User variables can be called in the -phrase tag by surrounding the variable name with {} (calculates) or <> (prints).
+Arguments surrounded with {{}} will be evaluated as a custom script.
+Attach a UTF-8 file instead of a value to set large user variables.
+See https://avrae.io/cheatsheets/aliasing for more help.
+
+Subcommands
+!uservar [deleteall|removeall]
+
+Deletes ALL user variables.
+
+!uservar list
+
+Lists all uvars for the user.
+
+!uservar [remove|delete] <name>
+
+Deletes a uvar from the user.
+
+Dice
+Dice and math related commands.
+
+
+![iterroll|rrr] <iterations> <dice> [dc] [args]
+
+Rolls dice in xdy format, given a set dc.
+Usage: !rrr <iterations> <xdy> <DC> [args]
+
+![monattack|ma|monster_attack] <monster_name> [atk_name] [args]
+
+Rolls a monster's attack.
+Valid Arguments
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+
+Subcommands
+!monattack list <monster_name>
+
+Lists a monster's attacks.
+
+![moncast|mcast|monster_cast] <monster_name> <spell_name> [args]
+
+Casts a spell as a monster.
+Valid Arguments
+Spellcasting
+-i - Ignores Spellbook restrictions (e.g. when casting from an item, as a ritual, etc.)
+-l <level> - Specifies the level to cast the spell at.
+-mod <spellcasting mod> - Overrides the value of the spellcasting ability modifier.
+-with <int/wis/cha> - Uses a different skill base for DC/AB (will not account for extra bonuses)
+noconc - Ignores concentration requirements.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+
+![moncheck|mc|monster_check] <monster_name> <check> [args]
+
+Rolls a check for a monster.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the check roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-rr <iterations> - How many checks to roll.
+str/dex/con/int/wis/cha - Rolls using a different skill base (e.g. Strength (Intimidation)).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the check. Replaces [name] with caster's name and [cname] with the check's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one check.
+
+![monsave|ms|monster_save] <monster_name> <save_stat> [args]
+
+Rolls a save for a monster.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the save roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Starry Form: Dragon, Trance of Order)
+-rr <iterations> - How many saves to roll (does not apply to Death Saves).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the save. Replaces [name] with caster's name and [sname] with the save's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one save.
+
+![multiroll|rr] <iterations> <dice>
+
+Rolls dice in xdy format a given number of times.
+Usage: !rr <iterations> <dice>
+
+![roll|r] [dice=1d20]
+
+Roll is used to roll any combination of dice in the XdY format. (1d6, 2d8, etc)
+
+Multiple rolls can be added together as an equation. Standard Math operators and Parentheses can be used: () + - / *
+
+Roll also accepts adv and dis for Advantage and Disadvantage. Rolls can also be tagged with [text] for informational purposes. Any text after the roll will assign the name of the roll.
+
+Examples
+!r or !r 1d20 - Roll a single d20, just like at the table
+!r 1d20+4 - A skill check or attack roll
+!r 1d8+2+1d6 - Longbow damage with Hunter’s Mark
+
+!r 1d20+1 adv - A skill check or attack roll with Advantage
+!r 1d20-3 dis - A skill check or attack roll with Disadvantage
+
+!r (1d8+4)*2 - Warhammer damage against bludgeoning vulnerability
+
+!r 1d10[piercing]+2d6[cold] Ice Knife - The Ice Knife Spell does cold and piercing damage
+
+Advanced Options
+Operators
+Operators are always followed by a selector, and operate on the items in the set that match the selector.
+A set can be made of a single or multiple entries i.e. 1d20 or (1d6,1d8,1d10)
+
+These operations work on dice and sets of numbers
+k - keep - Keeps all matched values.
+p - drop - Drops all matched values.
+
+These operators only work on dice rolls.
+rr - reroll - Rerolls all matched die values until none match.
+ro - reroll - once - Rerolls all matched die values once.
+ra - reroll and add - Rerolls up to one matched die value once, add to the roll.
+mi - minimum - Sets the minimum value of each die.
+ma - maximum - Sets the maximum value of each die.
+e - explode on - Rolls an additional die for each matched die value. Exploded dice can explode.
+
+Selectors
+Selectors select from the remaining kept values in a set.
+X | literal X
+lX | lowest X
+hX | highest X
+>X | greater than X
+<X | less than X
+
+Examples
+!r 2d20kh1+4 - Advantage roll, using Keep Highest format
+!r 2d20kl1-2 - Disadvantage roll, using Keep Lowest format
+!r 4d6mi2[fire] - Elemental Adept, Fire
+!r 10d6ra6 - Wild Magic Sorcerer Spell Bombardment
+!r 4d6ro<3 - Great Weapon Fighting
+!r 2d6e6 - Explode on 6
+!r (1d6,1d8,1d10)kh2 - Keep 2 highest rolls of a set of dice
+
+Additional Information can be found at:
+https://d20.readthedocs.io/en/latest/start.html#dice-syntax
+
+GameLog
+Link your D&D Beyond campaign to a Discord channel to see players' rolls in real time!
+
+
+!campaign [campaign_link]
+
+Links a D&D Beyond campaign to this channel, displaying rolls made on players' character sheets in real time.
+
+You must be the DM of the campaign to link it to a channel.
+
+This link should be the url visible on your web browser when you are viewing your campaign and not the join link.
+
+Not seeing a player's rolls? Link their D&D Beyond and Discord accounts here, and check with the !ddb command!
+
+Subcommands
+!campaign list
+
+Lists all campaigns connected to this channel.
+
+!campaign remove <name>
+
+Unlinks a campaign from this channel.
+
+You must be the DM of the campaign or have Manage Server permissions to remove it from a channel.
+
+GameTrack
+Commands to help track game resources.
+
+
+!cast <spell_name> [args]
+
+Casts a spell.
+Valid Arguments
+Spellcasting
+-i - Ignores Spellbook restrictions (e.g. when casting from an item, as a ritual, etc.)
+-l <level> - Specifies the level to cast the spell at.
+-mod <spellcasting mod> - Overrides the value of the spellcasting ability modifier.
+-with <int/wis/cha> - Uses a different skill base for DC/AB (will not account for extra bonuses)
+noconc - Ignores concentration requirements.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+
+![customcounter|cc] [name] [modifier]
+
+Commands to implement custom counters.
+If a modifier is not supplied, prints the value and metadata of the counter name.
+Otherwise, changes the counter name by modifier. Supports dice.
+
+The following can be put after the counter name to change how the modifier is applied:
+mod - Add modifier counter value
+set - Sets the counter value to modifier
+
+Ex:
+!cc Test 1
+!cc Test -2*2d4
+!cc Test set 1d4
+
+Subcommands
+!customcounter create <name> [args]
+
+Creates a new custom counter.
+Valid Arguments
+-title <title> - Sets the title for the output when modifying the counter. [name] will be replaced with the player's name.
+-desc <desc> - Sets the description when setting or viewing the counter.
+-reset <short|long|none> - Counter will reset to max on a short/long rest, or not ever when "none". Default - will reset on a call of !cc reset.
+-max <max value> - The maximum value of the counter.
+-min <min value> - The minimum value of the counter.
+-value <value> - The initial value for the counter.
+-type <bubble|square|hex|star|default> - Whether the counter displays bubbles/squares/hexes/stars to show remaining uses or numbers. Default - numbers.
+-resetto <value> - The value to reset the counter to. Default - maximum.
+-resetby <value> - Rather than resetting to a certain value, modify the counter by this much per reset. Supports annotated dice strings.
+
+!customcounter [delete|remove] <name>
+
+Deletes a custom counter.
+
+!customcounter edit <name> [args]
+
+Edits an existing custom counter replacing passed arguments.
+
+Pass none to remove an argument entirely.
+Will clamp counter value to new limits if needed.
+
+Valid Arguments
+-name <name> - Rename the counter.
+-title <title> - Sets the title for the output when modifying the counter. [name] will be replaced with the player's name.
+-desc <desc> - Sets the description when setting or viewing the counter.
+-reset <short|long|none> - Counter will reset to max on a short/long rest, or not ever when "none". Default - will reset on a call of !cc reset.
+-max <max value> - The maximum value of the counter.
+-min <min value> - The minimum value of the counter.
+-type <bubble|square|hex|star|default> - Whether the counter displays bubbles/squares/hexes/stars to show remaining uses or numbers. Default - numbers.
+-resetto <value> - The value to reset the counter to. Default - maximum.
+-resetby <value> - Rather than resetting to a certain value, modify the counter by this much per reset. Supports annotated dice strings.
+
+!customcounter reset [args...]
+
+Resets custom counters, hp, death saves, and spell slots.
+Will reset all if name is not passed, otherwise the specific passed one.
+A counter can only be reset if it has a maximum value.
+Reset hierarchy: short < long < default < none
+Valid Arguments
+-h - Hides the character summary output.
+
+!customcounter [summary|list] [page=1]
+
+Prints a summary of all custom counters.
+Use !cc list <page> to view pages if you have more than 25 counters.
+
+![game|g]
+
+Commands to help track character information in a game. Use !help game to view subcommands.
+
+Subcommands
+!game [coinpurse|coins|coin] [args]
+
+Manage your character's coinpurse.
+Valid Subcommands
+!game coins - Show your current coinpurse.
+!game coins [pp|gp|ep|sp|cp] - Show the amount of a single currency contained in your coinpurse.
+!game coins <amount> - Add or remove a given amount of currency. The amount can either be a number like +102.13 (gold pieces), or explicit numbers of currencies like +10pp +2gp +1sp +3cp.
+
+Subcommands
+!game coinpurse [convert|consolidate]
+
+Converts all of your coins into the highest value coins possible.
+100cp turns into 1gp, 5sp turns into 1ep, etc.
+
+!game [deathsave|ds] [args]
+
+Commands to manage character death saves.
+Valid Arguments
+See !help save.
+
+Subcommands
+!game deathsave [fail|f]
+
+Adds a failed death save.
+
+!game deathsave reset
+
+Resets all death saves.
+
+!game deathsave [success|s|save]
+
+Adds a successful death save.
+
+!game [hp|HP] [hp]
+
+Modifies the HP of the current active character.
+
+Subcommands
+!game hp max
+
+Sets the character's HP to their maximum.
+
+!game hp mod <hp>
+
+Modifies the character's current HP.
+
+!game hp set <hp>
+
+Sets the character's HP to a certain value.
+
+!game [longrest|lr] [args...]
+
+Performs a long rest, resetting applicable counters.
+Valid Arguments
+-h - Hides the character summary output.
+
+!game [shortrest|sr] [args...]
+
+Performs a short rest, resetting applicable counters.
+Valid Arguments
+-h - Hides the character summary output.
+
+!game [spellbook|sb]
+
+DEPRECATED - use !spellbook instead.
+
+!game [spellslot|ss] [level] [value] [args...]
+
+Views or sets your remaining spell slots.
+Valid Arguments
+nopact - Modifies normal spell slots first instead of a Pact Magic slots, if applicable.
+
+!game [status|summary]
+
+Prints the status of the current active character.
+
+!game thp [thp]
+
+Modifies the temp HP of the current active character.
+If positive, assumes set; if negative, assumes mod.
+
+![spellbook|sb] [args...]
+
+Commands to display a character's known spells and metadata.
+Valid Arguments
+all - Display all of a character's known spells, including unprepared ones.
+
+Subcommands
+!spellbook add <spell_name> [args]
+
+Adds a spell to the spellbook override.
+
+Valid Arguments
+Note: These arguments do not support calculations.
+-dc <dc> - When cast, this spell always uses this DC.
+-b <sab> - When cast, this spell always uses this spell attack bonus.
+-mod <mod> - When cast, this spell always uses this as the value of its casting stat (usually for healing spells).
+
+!spellbook remove <spell_name>
+
+Removes a spell from the spellbook override.
+
+!spellbook [remove_all|removeall]
+
+Removes all spell overrides from the spellbook.
+
+Homebrew
+Commands to manage homebrew in Avrae.
+
+
+!bestiary [name]
+
+Commands to manage homebrew monsters.
+When called without an argument, lists the current bestiary and the monsters in it.
+When called with a name, switches to a different bestiary.
+
+Subcommands
+!bestiary delete <name>
+
+Deletes a bestiary from Avrae.
+
+!bestiary import <url>
+
+Imports a bestiary from Bestiary Builder or CritterDB.
+Bestiary Builder:
+To share a bestiary with Avrae, make sure it is Public or Unlisted.
+
+CritterDB:
+To share a bestiary with Avrae, enable Link Sharing in the sharing menu of your bestiary!
+
+If your attacks don't seem to be importing properly, you can add a hidden line to the description to set it:
+<avrae hidden>NAME|TOHITBONUS|DAMAGE</avrae>
+
+For more complex automation, you can create an attack on the Avrae Dashboard and copy the exported YAML into the CritterDB attack description as follows:
+<avrae hidden>YAML</avrae>
+
+!bestiary list
+
+Lists your available bestiaries.
+
+!bestiary server
+
+Toggles whether the active bestiary should be viewable by anyone on the server.
+Requires Manage Server permissions or a role named "Server Brewer" or "Dragonspeaker" to run.
+
+Subcommands
+!bestiary server list
+
+Shows what bestiaries are currently active on the server.
+
+!bestiary server [remove|delete] <bestiary_name>
+
+Removes a server bestiary.
+
+!bestiary update
+
+Updates the active bestiary from Bestiary Builder or CritterDB.
+
+!pack [name]
+
+Commands to manage homebrew items.
+When called without an argument, lists the current pack and its description.
+When called with a name, switches to a different pack.
+
+Subcommands
+!pack editor <user>
+
+Allows another user to edit your active pack.
+
+!pack list
+
+Lists your available packs.
+
+!pack server
+
+Toggles whether the active pack should be viewable by anyone on the server.
+Requires Manage Server permissions or a role named "Server Brewer" or "Dragonspeaker" to run.
+
+Subcommands
+!pack server list
+
+Shows what packs are currently active on the server.
+
+!pack server [remove|delete] <pack_name>
+
+Removes a server pack.
+
+!pack [subscribe|sub] <url>
+
+Subscribes to another user's pack.
+
+!pack [unsubscribe|unsub] <name>
+
+Unsubscribes from another user's pack.
+
+!tome [name]
+
+Commands to manage homebrew spells.
+When called without an argument, lists the current tome and its description.
+When called with a name, switches to a different tome.
+
+Subcommands
+!tome editor <user>
+
+Allows another user to edit your active tome.
+
+!tome list
+
+Lists your available tomes.
+
+!tome server
+
+Toggles whether the active tome should be viewable by anyone on the server.
+Requires Manage Server permissions or a role named "Server Brewer" or "Dragonspeaker" to run.
+
+Subcommands
+!tome server list
+
+Shows what tomes are currently active on the server.
+
+!tome server [remove|delete] <tome_name>
+
+Removes a server tome.
+
+!tome [subscribe|sub] <url>
+
+Subscribes to another user's tome.
+
+!tome [unsubscribe|unsub] <name>
+
+Unsubscribes from another user's tome.
+
+InitTracker
+Initiative tracking commands. Use !help init for more details.
+To use, first start combat in a channel by saying "!init begin".
+Then, each combatant should add themselves to the combat with "!init add ".
+To hide a combatant's HP, add them with "!init add -h".
+Once every combatant is added, each combatant should set their max hp with "!init hp max ".
+Then, you can proceed through combat with "!init next".
+Once combat ends, end combat with "!init end".
+For more help, the !help command shows applicable arguments for each command.
+
+
+![init|i|I]
+
+Commands to help track initiative.
+
+Subcommands
+!init add <modifier> <name> [args]
+
+Adds a generic combatant to the initiative order.
+
+Generic combatants have a 10 in every stat and +0 to every modifier by default.
+If you're adding multiple combatants with the -n argument, use "#" in the name for auto-numbering, e.g. "Boat#".
+
+To join combat with a character, use !init join instead.
+To add monsters to combat, use !init madd instead.
+Valid Arguments
+-n <number or dice> - Adds multiple combatants at a time. Use "#" in the name for auto-numbering.
+-h - Hides HP, AC, resistances, and attack list.
+-p <value> - Places combatant at the given modifier, instead of rolling
+-controller <controller> - Pings a different person on turn.
+-group <group> - Adds the combatant to a group.
+adv/dis - Rolls the initiative check with advantage/disadvantage.
+-hp <hp> - Sets starting HP. Default: None.
+-thp <thp> - Sets starting THP. Default: 0.
+-ac <ac> - Sets the combatant's AC. Default: None.
+-pb <pb> - Sets the combatant's proficiency bonus. Default: 0
+-strength <str> - Sets the combatant's strength score. Default: 10
+-dexterity <dex> - Sets the combatant's dexterity score. Default: 10
+-constitution <con> - Sets the combatant's constitution score. Default: 10
+-intelligence <int> - Sets the combatant's intelligence score. Default: 10
+-wisdom <wis> - Sets the combatant's wisdom score. Default: 10
+-charisma <cha> - Sets the combatant's charisma score. Default: 10
+-save <ability> - Gives the combatant proficiency in the given ability saving throw.
+-prof <skill> - Gives the combatant proficiency in the given skill.
+-exp <skill> - Gives the combatant expertise in the given skill.
+-resist <damage type> - Gives the combatant resistance to the given damage type.
+-immune <damage type> - Gives the combatant immunity to the given damage type.
+-vuln <damage type> - Gives the combatant vulnerability to the given damage type.
+-cr <cr> Sets the combatant's CR.
+-type <creature type> Sets the combatant's creature type.
+-note <note> - Sets the combatant's note.
+
+!init [attack|a|action] [atk_name] [args]
+
+Rolls an attack against another combatant.
+Valid Arguments
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+custom - Modifier to indicate that the (arbitrarily-named) attack is custom, with custom to hit and damage values. Use -b and -d like this: !init attack "pizza" custom -b 3 -d 1
+
+Subcommands
+!init attack list [args...]
+
+Lists the active combatant's attacks.
+
+!init begin [args]
+
+Begins combat in the channel the command is invoked in.
+Valid Arguments
+dyn - Dynamic initiative; Rerolls all initiatives at the start of a round.
+turnnotif - Notifies the controller of the next combatant in initiative.
+deathdelete - Disables deleting monsters below 0 hp.
+initscore - Use initiative scores instead of rolling initiative for monsters by default.
+-name <name> - Sets a name for the combat instance.
+norecord - If the server has opted in to the Natural Language Training project, omit this combat from recording.
+
+!init cast <spell_name> [args]
+
+Casts a spell against another combatant.
+Valid Arguments
+Spellcasting
+-i - Ignores Spellbook restrictions (e.g. when casting from an item, as a ritual, etc.)
+-l <level> - Specifies the level to cast the spell at.
+-mod <spellcasting mod> - Overrides the value of the spellcasting ability modifier.
+-with <int/wis/cha> - Uses a different skill base for DC/AB (will not account for extra bonuses)
+noconc - Ignores concentration requirements.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+
+!init [check|c] <check> [args]
+
+Rolls an ability check as the current combatant.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the check roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-rr <iterations> - How many checks to roll.
+str/dex/con/int/wis/cha - Rolls using a different skill base (e.g. Strength (Intimidation)).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the check. Replaces [name] with caster's name and [cname] with the check's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one check.
+
+!init effect <target_name> <effect_name> [args]
+
+Attaches a status effect to a combatant.
+[args] is a set of args that affects a combatant in combat.
+See !help init re to remove effects.
+Valid Arguments
+-dur <duration> - Sets the duration of the effect, in rounds.
+conc - Makes the effect require concentration. Will end any other concentration effects.
+end - Makes the effect duration tick on the end of turn, rather than the beginning.
+-t <target> - Specifies more combatants to target, chainable (e.g., "-t or1 -t or2").
+-parent <"[combatant]|[effect]"> - Sets a parent effect from a specified combatant.
+-tickon <combatant> - Specifies the combatant in whose turn the effect timer would tick.
+Attacks
+adv/dis - Give advantage or disadvantage to all attack rolls.
+-b <bonus> - Adds a bonus to hit.
+-d <damage> - Adds additional damage.
+magical - Makes all damage from the combatant magical.
+silvered - Makes all damage from the combatant silvered.
+-attack <"[hit]|[damage]|[description]"> - Adds an attack to the combatant. The effect name will be the name of the attack. No [hit] will autohit (e.g., -attack "|1d6[fire]|You just got burned!")
+Resists
+-resist <damage type> - Gives the combatant resistance to the given damage type.
+-immune <damage type> - Gives the combatant immunity to the given damage type.
+-vuln <damage type> - Gives the combatant vulnerability to the given damage type.
+-neutral <damage type> - Removes the combatant's immunity, resistance, or vulnerability to the given damage type.
+Checks/Saves
+-sb <save bonus> - Adds a bonus to all saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4+1d3|dex will result in a bonus of 1d4+1d3 to dex saves.)
+-sadv/sdis <ability> - Gives advantage/disadvantage on saving throws for the provided ability, or "all" for all saves.
+-dc <dc> - Adds a bonus to all saving throw DCs.
+-cb <check bonus> - Adds a bonus to all ability checks.
+-cadv/cdis <ability> - Gives advantage/disadvantage on ability checks for the provided ability, or "all" for all checks. If a base ability is passed, affects all skills based on that ability.
+General
+-ac <ac> - modifies ac temporarily; adds if starts with +/- or sets otherwise.
+-maxhp <hp> - modifies maximum hp temporarily; adds if starts with +/- or sets otherwise.
+-desc <description> - Adds a description of the effect.
+
+!init end [args]
+
+Ends combat in the channel.
+
+!init [hp|HP] <name> [hp]
+
+Modifies the HP of a combatant.
+
+Subcommands
+!init hp max <name> [hp]
+
+Sets a combatant's max HP, or sets HP to max if no max is given.
+
+!init hp mod <name> <hp>
+
+Modifies a combatant's current HP.
+
+!init hp set <name> <hp>
+
+Sets a combatant's HP to a certain value.
+
+!init [join|cadd|dcadd] [args]
+
+Adds the current active character to combat. A character must be loaded through the SheetManager module first.
+Valid Arguments
+adv/dis - Give advantage or disadvantage to the initiative roll.
+-b <condition bonus> - Adds a bonus to the combatants' Initiative roll.
+-p <value> - Places combatant at the given value, instead of rolling.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness)
+str/dex/con/int/wis/cha - Rolls using a different stat base
+
+-title <title> - Changes the title of the attack. Replaces [name] with caster's name and [cname] with the check's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-phrase <phrase> - Adds flavor text.
+-thumb <thumbnail URL> - Adds flavor image.
+
+-h - Hides HP, AC, Resists, etc.
+-group <group> - Adds the combatant to a group.
+-note <note> - Sets the combatant's note.
+[user snippet]
+
+!init [list|summary] [args...]
+
+Lists the combatants.
+Valid Arguments
+private - Sends the list in a private message.
+
+!init madd <monster_name> [args]
+
+Adds a monster to combat.
+Valid Arguments
+-name <name> - Sets the combatant's name. Use "#" for auto-numbering, e.g. "Orc#"
+-n <number or dice> - Adds more than one monster. Supports dice.
+-h - Hides HP, AC, Resists, etc. Default: True.
+-p <value> - Places combatant at the given value, instead of rolling.
+-controller <controller> - Pings a different person on turn.
+-group <group> - Adds the combatant to a group.
+adv/dis - Give advantage or disadvantage to the initiative roll.
+-b <condition bonus> - Adds a bonus to the combatant's initiative roll.
+initscore - Uses the monster's Initiative score instead of rolling. Applies adv/dis as ±5 bonuses.
+rollhp - Rolls the monsters HP, instead of using the default value.
+-hp <hp> - Sets starting HP.
+-thp <thp> - Sets starting THP.
+-ac <ac> - Sets the combatant's starting AC.
+-note <note> - Sets the combatant's note.
+
+!init [meta|metaset] [settings]
+
+Changes the settings of the active combat.
+Valid Settings
+dyn - Dynamic initiative; Rerolls all initiatives at the start of a round.
+turnnotif - Notifies the controller of the next combatant in initiative.
+deathdelete - Toggles removing monsters below 0 HP.
+initscore - Use initiative scores instead of rolling initiative for monsters by default.
+-name <name> - Sets a name for the combat instance.
+-combatdm <@mention> - Changes this combat's DM.
+
+!init [move|goto] [target]
+
+Moves to a certain initiative.
+target can be either a number, to go to that initiative, or a name.
+If not supplied, goes to the first combatant that the user controls.
+
+!init [next|n]
+
+Moves to the next turn in initiative order.
+It must be your turn or you must be a DM to use this command.
+A DM is the user who started combat and anyone with the "DM", "GM", "Dungeon Master" or "Game Master" role.
+
+!init nlp
+
+Commands to manage the server's contributions to the Natural Language AI Training project.
+When run without a subcommand, displays the server's contribution status.
+
+Subcommands
+!init nlp list
+
+Displays a list of all channels in this server with active combat recordings.
+
+!init nlp stopall
+
+Stops the recording of messages in any currently active combats immediately.
+Requires the Manage Messages Discord permission.
+
+!init note <name> [note]
+
+Attaches a note to a combatant.
+
+Subcommands
+!init note [remove|delete] <name>
+
+Removes a note from a combatant.
+
+!init [offturnattack|aoo|offturnaction|oa] <combatant_name> [atk_name] [args]
+
+Rolls an attack as another combatant.
+Valid Arguments
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+custom - Modifier to indicate that the (arbitrarily-named) attack is custom, with custom to hit and damage values. Use -b and -d like this: !init attack "pizza" custom -b 3 -d 1
+
+!init [offturncast|rc|reactcast] <combatant_name> <spell_name> [args]
+
+Casts a spell as another combatant.
+Valid Arguments
+Spellcasting
+-i - Ignores Spellbook restrictions (e.g. when casting from an item, as a ritual, etc.)
+-l <level> - Specifies the level to cast the spell at.
+-mod <spellcasting mod> - Overrides the value of the spellcasting ability modifier.
+-with <int/wis/cha> - Uses a different skill base for DC/AB (will not account for extra bonuses)
+noconc - Ignores concentration requirements.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+
+!init [offturncheck|oc] <combatant_name> <check> [args]
+
+Rolls an ability check as another combatant.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the check roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-rr <iterations> - How many checks to roll.
+str/dex/con/int/wis/cha - Rolls using a different skill base (e.g. Strength (Intimidation)).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the check. Replaces [name] with caster's name and [cname] with the check's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one check.
+
+!init [offturnsave|os] <combatant_name> <save> [args]
+
+Rolls an ability save as another combatant.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the save roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Starry Form: Dragon, Trance of Order)
+-rr <iterations> - How many saves to roll (does not apply to Death Saves).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the save. Replaces [name] with caster's name and [sname] with the save's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one save.
+
+!init [opt|opts] <name> [args]
+
+Edits the options of a combatant.
+Valid Arguments
+-h - Hides HP, AC, Resists, etc.
+-p <value> - Changes the combatants' placement in the Initiative. Adds if starts with +/- or sets otherwise.
+-name <name> - Changes the combatants' name.
+-controller <controller> - Pings a different person on turn.
+-ac <ac> - Modifies combatants' AC. Adds if starts with +/- or sets otherwise.
+-resist <damage type> - Gives the combatant resistance to the given damage type.
+-immune <damage type> - Gives the combatant immunity to the given damage type.
+-vuln <damage type> - Gives the combatant vulnerability to the given damage type.
+-neutral <damage type> - Removes the combatants' immunity, resistance, or vulnerability to the given damage type.
+-group <group> - Adds the combatant to a group. To remove them from group, use -group None.
+-max <maxhp> - Modifies the combatants' Max HP. Adds if starts with +/- or sets otherwise.
+-hp <hp> - Modifies current HP. Adds if starts with +/- or sets otherwise.
+
+!init [prev|previous|rewind]
+
+Moves to the previous turn in initiative order.
+
+!init re <name> [effect]
+
+Removes a status effect from a combatant or group. Removes all if effect is not passed.
+
+!init remove <name>
+
+Removes a combatant or group from the combat.
+Usage: !init remove <NAME>
+
+!init [reroll|shuffle] [args]
+
+Rerolls initiative for all combatants, and starts a new round of combat.
+Valid Arguments
+-restart - Resets the round counter (effectively restarting initiative).
+-effects - Removes all effects from all combatants
+
+!init [save|s] <save> [args]
+
+Rolls an ability save as the current combatant.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the save roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Starry Form: Dragon, Trance of Order)
+-rr <iterations> - How many saves to roll (does not apply to Death Saves).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the save. Replaces [name] with caster's name and [sname] with the save's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one save.
+
+!init [skipround|round|skiprounds] [numrounds=1]
+
+Skips one or more rounds of initiative.
+
+!init status [name] [args...]
+
+Gets the status of a combatant or group.
+If no name is specified, it will default to current combatant.
+Valid Arguments
+private - If you are the combat DM or controller of the target, PMs you the full unhidden status.
+
+!init thp <name> <thp>
+
+Modifies the temporary HP of a combatant.
+Usage: !init thp <NAME> <HP>
+Sets the combatants' THP if hp is positive, modifies it otherwise (i.e. !i thp Avrae 5 would set Avrae's THP to 5 but !i thp Avrae -2 would remove 2 THP).
+
+Lookup
+Commands to help look up items, status effects, rules, etc.
+
+
+!background <name>
+
+Looks up a background.
+
+!class <name> [level]
+
+Looks up a class, or all features of a certain level.
+
+!classfeat <name>
+
+Looks up a class feature.
+
+![condition|status] [name]
+
+Looks up a condition.
+
+!feat <name>
+
+Looks up a feat.
+
+!item <name>
+
+Looks up an item.
+
+!monimage <name>
+
+Shows a monster's image.
+Valid Arguments
+-h - Hides the monster statblock name.
+
+!monster <name>
+
+Looks up a monster.
+If you are not a Dungeon Master, this command may display partially hidden information. See !servsettings
+to view which roles on a server count as Dungeon Master roles.
+Valid Arguments
+-h - Shows the obfuscated stat block, even if you can see the full stat block.
+
+![race|species] <name>
+
+Looks up a species.
+
+![racefeat|speciesfeat] <name>
+
+Looks up a species feature.
+
+![rule|reference] [name]
+
+Looks up a rule.
+
+!spell <name>
+
+Looks up a spell.
+
+!subclass <name>
+
+Looks up a subclass.
+
+!token [name] [args]
+
+Shows a monster or your character's token.
+Valid Arguments
+-border <plain|none (player token only)> - Overrides the token border.
+-h - Hides the monster statblock name.
+
+PBPUtils
+Commands to help streamline playing-by-post over Discord.
+
+
+!br
+
+Prints a scene break.
+
+!echo <msg>
+
+Echos a message.
+
+!embed <args>
+
+Creates and prints an Embed.
+Valid Arguments
+-title <title>
+-desc <description text>
+-thumb <image url>
+-image <image url>
+-footer <footer text>
+-f "<Field Title>|<Field Text>[|inline]"
+(e.g. "Donuts|I have 15 donuts|inline" for up to 3 inline fields on a single line, or "Donuts|I have 15 donuts" for one with its own line.)
+-color [hex color]
+Leave blank for random color.
+-t <timeout (0..600)>
+-reply <message_id>
+Makes the bot's message a reply to the specified message.
+
+!techo <seconds> <msg>
+
+Echos a message, and deletes it after a number of seconds (0-600).
+
+SheetManager
+Commands to load a character sheet into Avrae, and supporting commands to modify the character, as well as basic macros.
+
+
+![action|a|attack] [atk_name] [args]
+
+Performs an action (attack or ability) for the current active character.
+Valid Arguments
+Targeting
+-t "<target>" - Sets targets for the attack. You can pass as many as needed.
+-t "<target>|<args>" - Sets a target, and also allows for specific args to apply to them. (e.g, -t "OR1|hit" to force the attack against OR1 to hit)
+-rr <num> - How many attacks to make at each target.
+
+An italicized argument below means the argument supports ephemeral arguments - e.g. -d1 applies damage to the first hit, -b1 applies a bonus to one attack, and so on.
+
+To Hit
+adv/dis - Give advantage or disadvantage to the attack roll(s).
+eadv - Elven Accuracy, double advantage on the attack roll.
+hit - The attack automatically hits.
+miss - The attack automatically misses.
+-attackroll <value> - Force the rolled attack to be a fixed number plus modifiers.
+-attackmin <value> - Minimum value of the rolled attack before modifiers.
+crit - The attack automatically crits.
+-ac <target ac> - Overrides target AC.
+-b <bonus> - Adds a bonus to hit.
+-criton <value> - The number the attack crits on if rolled on or above.
+
+Saves
+pass - Target automatically succeeds the saving throw.
+fail - Target automatically fails the saving throw.
+sadv/sdis - Gives the target advantage/disadvantage on the saving throw.
+-dc <dc> - Overrides the DC of the save.
+-dc <+X/-X> - Modifies the DC by a certain amount.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-save <save type> - Overrides the spell save type (e.g. -save str).
+
+Damage
+max - Maximizes damage rolls.
+nocrit - Does not double the dice on a crit.
+-d <damage> - Adds additional damage.
+-c <damage> - Adds additional damage for when the attack crits, not doubled.
+-mi <value> - Minimum value of each die on the damage roll.
+savage - Rolls two sets of the base damage dice, choosing the higher of the two.
+-cantripdice <amount> - Overrides how many dice to use for cantrip scaling.
+-critdice <amount> - Adds or removes additional crit dice from the weapon dice on a crit.
+
+Damage Types
+magical - Makes the damage type of the attack magical.
+silvered - Makes the damage type of the attack silvered.
+-dtype <new type> - Changes all damage types to a new damage type.
+-dtype "old>new" - Changes all parts of the damage roll that do "old" damage type to deal "new" damage type (e.g. -dtype fire>cold)
+-resist <damage type> - Gives the target resistance to the given damage type.
+-immune <damage type> - Gives the target immunity to the given damage type.
+-vuln <damage type> - Gives the target vulnerability to the given damage type.
+-neutral <damage type> - Removes the target's immunity, resistance, or vulnerability to the given damage type.
+
+Effects
+-dur <duration> - Overrides the duration of any effect applied by the attack.
+
+Counters
+-amt <amount> - Overrides the amount of the resource used.
+-l <level> - Specifies the level of the spell slot to use.
+nopact - Uses a normal spell slot instead of a Pact Magic slot, if applicable.
+-i - Skips using any resources.
+
+Checks
+-ability <ability> - Overrides the check roll's ability (e.g. -ability arcana, -ability sleightOfHand).
+-cb <bonus> - Adds a bonus to ability checks.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-cdc <dc> - Overrides the DC of the ability check.
+-cdc <+X/-X> - Modifies the DC by a certain amount.
+cadv/cdis - Gives the target advantage/disadvantage on the ability check.
+cpass/cfail - Target automatically succeeds or fails the ability check if a DC is given.
+
+Contest Against Caster Checks
+> The following are arguments when the automation causes the target to roll a contested check against you (a Grapple contest, for example).
+> Use these arguments to modify your roll(s), and use the regular Check arguments above to modify the target's rolls.
+-selfability <ability> - Overrides the check roll's ability for you.
+-selfcb <bonus> - Adds a bonus to your ability checks.
+selfcadv/selfcdis - Gives you advantage/disadvantage on your ability checks.
+-selfmc <minimum roll value> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+
+Other
+-choice <choice> - Provides input to the attack. Not all attacks will utilize this argument.
+-h - Hides rolled values.
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the attack. Replaces [name] with the caster's name, [aname] with the action's name, and [verb] with the action's verb.
+-f "Field Title|Field Text" - Creates a field with the given title and text.
+-thumb <url> - Adds a thumbnail to the attack.
+[user snippet] - Allows the user to use snippets on the attack.
+
+Subcommands
+!action [add|create] <name> [args]
+
+Adds an attack to the active character.
+Valid Arguments
+-d <damage> - How much damage the attack should do.
+-b <to-hit> - The to-hit bonus of the attack.
+-desc <description> - A description of the attack.
+-verb <verb> - The verb to use for this attack. (e.g. "Padellis <verb> a dagger!")
+proper - This attack's name is a proper noun.
+-criton <#> - This attack crits on a number other than a natural 20.
+-phrase <text> - Some flavor text to add to each attack with this attack.
+-thumb <image url> - The attack's image.
+-c <extra crit damage> - How much extra damage (beyond doubling dice) this attack does on a crit.
+-activation <value> - The activation type of the action (e.g. action, bonus, etc). | Action Type | Value | +==============+=======+ | Action | 1 | | No Action | 2 | | Bonus Action | 3 | | Reaction | 4 | | Minute | 6 | | Hour | 7 | | Special | 8 | | Legendary | 9 | | Mythic | 10 | | Lair | 11 |
+
+!action [delete|remove] <name>
+
+Deletes an attack override.
+
+!action import <data>
+
+Imports an attack from JSON or YAML exported from the Avrae Dashboard.
+
+!action list [args...]
+
+Lists the active character's actions.
+Valid Arguments
+-v - Verbose: Displays each action's character sheet description rather than the effect summary.
+attack - Only displays the available attacks.
+action - Only displays the available actions.
+bonus - Only displays the available bonus actions.
+reaction - Only displays the available reactions.
+legendary - Only displays the available legendary actions.
+mythic - Only displays the available mythic actions.
+lair - Only displays the available lair actions.
+other - Only displays the available actions that have another activation time.
+
+![character|char] [name]
+
+View or change your current active character.
+Displays the current active character and any assigned channel, server or global character.
+
+Optional Arguments
+name - The name of the character you want to use. Example: !character Froedrick Frankenstien
+
+Subcommands
+!character channel [name]
+
+Sets the passed in character name as the channel character.
+
+All commands in the channel that use your active character will instead use the new channel character, even if the active character is changed elsewhere.
+
+Required Arguments
+name - The name of the character you want to set as your channel character.
+e.g. !character channel "Character Name"
+
+Subcommands
+!character channel [reset|unset]
+
+This will reset the current channel character and leave you with no currently set channel character.
+
+!character delete <name>
+
+Deletes a character.
+
+This command deletes a character from the user's character list. The user is asked to confirm the deletion before
+the character is deleted. If the user has no characters, a message is sent to the user and the command ends.
+
+Args:
+ctx (Context): The context in which the command was called.
+name (str): The name of the character to delete.
+
+Returns:
+None
+
+!character list
+
+Lists the characters owned by the user.
+
+This command retrieves all the characters owned by the user from the database, and sends an embed containing
+the names of these characters. If the user has an active character, it is highlighted in the embed.
+
+Args:
+ctx (Context): The context in which the command was called.
+
+Returns:
+None
+
+!character resetall
+
+This will unset any channel and server-specific characters that have been set and force the current global character to be used everywhere on this server.
+
+!character server [name]
+
+Sets the passed in character name as the server character.
+
+All commands in the server that use your active character will instead use the server character, even if the active character is changed elsewhere.
+
+Required Arguments
+name - The name of the character you want to set as your server character.
+e.g. !character server "Character Name"
+
+Subcommands
+!character server [reset|unset]
+
+This will reset the current server character and leave you with no currently set server character.
+
+![check|c] <check> [args]
+
+Rolls a check for your current active character.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the check roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Reliable Talent, Glibness).
+-rr <iterations> - How many checks to roll.
+str/dex/con/int/wis/cha - Rolls using a different skill base (e.g. Strength (Intimidation)).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the check. Replaces [name] with caster's name and [cname] with the check's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one check.
+
+!csettings [args...]
+
+Opens the Character Settings menu.
+
+In this menu, you can change your character's cosmetic and gameplay settings, such as their embed color,
+crit range, extra crit dice, and more.
+
+!desc
+
+Prints or edits a description of your currently active character.
+
+Subcommands
+!desc [remove|delete]
+
+Removes the character description, returning to the default.
+
+!desc [update|edit] <desc>
+
+Updates the character description.
+
+!import <url> [version] [args]
+
+Loads a character sheet from one of the accepted sites:
+D&D Beyond
+Dicecloud v1
+Dicecloud v2
+GSheet v2.1 (auto)
+GSheet v1.4 (manual)
+
+Valid Arguments
+-nocc - Do not automatically create custom counters for class resources and features.
+-noprep - Import all known spells as prepared.
+
+Valid Versions
+2014 - 2014 D&D 5e Ruleset.
+2024 - 2024 D&D 5e Ruleset.
+
+Sheet-specific Notes
+D&D Beyond:
+Private sheets can be imported if you have linked your DDB and Discord accounts. Otherwise, the sheet needs to be publicly shared.
+
+Dicecloud v1:
+Share your character with avrae on Dicecloud v1 to import private sheets, and give edit permissions for live updates.
+
+Dicecloud v2:
+Share your character with avrae on Dicecloud v2 to import private sheets. Tag actions, spells, and features with avrae:no_import if you don't want them to be imported, spells with avrae:no_action or avrae:no_spell if you don't want the spell imported as an action or into the spellbook respectively, and actions with avrae:parse_only if you don't want them to be loaded from Beyond.
+
+Gsheet:
+The sheet must be shared with directly with Avrae or be publicly viewable to anyone with the link.
+Avrae's google account is avrae-320@avrae-bot.iam.gserviceaccount.com.
+
+!portrait
+
+Shows or edits the image of your currently active character.
+
+Subcommands
+!portrait [remove|delete]
+
+Removes the character portrait, returning to the default.
+
+!portrait [update|edit] <url>
+
+Updates the character portrait.
+
+![save|s] <skill> [args]
+
+Rolls a save for your current active character.
+Valid Arguments
+adv/dis - Give advantage/disadvantage to the save roll(s).
+-b <bonus> - Adds a bonus to the roll.
+-dc <dc> - Sets a DC and counts successes/failures.
+-sb <bonus> - Adds a bonus to saving throws. Per-stat bonuses can be specified using the stat's 3 letter abbreviation. (e.g. -sb 1d4|dex)
+-mc <minimum roll> - Sets the minimum roll on the dice (e.g. Starry Form: Dragon, Trance of Order)
+-rr <iterations> - How many saves to roll (does not apply to Death Saves).
+
+-phrase <phrase> - Adds flavor text.
+-title <title> - Changes the title of the save. Replaces [name] with caster's name and [sname] with the save's name.
+-f "Field Title|Field Text" - Creates a field with the given title and text (see !help embed).
+-thumb <url> - Adds a thumbnail to the result.
+-h - Hides the name and image of the caster.
+[user snippet]
+
+An italicized argument means the argument supports ephemeral arguments - e.g. -b1 applies a bonus to one save.
+
+Subcommands
+!save death [args]
+
+Equivalent to !game deathsave
+
+!sheet
+
+Prints the embed sheet of your currently active character.
+
+!transferchar <user>
+
+Gives a copy of the active character to another user.
+
+!update [args]
+
+Updates the current character sheet, preserving all settings.
+Valid Arguments
+-v - Shows character sheet after update is complete.
+-nocc - Do not automatically create or update custom counters for class resources and features.
+-noprep - Import all known spells as prepared.
+
+Tutorials
+Commands to help learn how to use the bot.
+
+
+!help [command]
+
+Shows the help for the bot or a specific command.
+Valid Arguments
+-here - Sends help to the channel instead of PMs.
+
+!tutorial [name]
+
+Shows the current tutorial objective, lists the available tutorials if one is not active, or begins a new tutorial.
+
+Subcommands
+!tutorial end
+
+Ends the current tutorial.
+
+!tutorial list
+
+Lists the available tutorials.
+
+!tutorial skip
+
+Skips the current objective, and moves on to the next part of the tutorial.

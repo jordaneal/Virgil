@@ -1,0 +1,154 @@
+{
+  "generated_at": "2026-05-08T04:11:33Z",
+  "extractor_version": "loot_reward_v1 (Phase 3.6 full corpus)",
+  "total_episodes_crd3": 140,
+  "episodes_parsed": 140,
+  "episodes_with_records": 134,
+  "episodes_zero_records": 6,
+  "zero_record_episodes": [
+    "C1E050",
+    "C1E061",
+    "C1E064",
+    "C1E088",
+    "C1E109",
+    "C2E002"
+  ],
+  "total_records": 568,
+  "sources": {
+    "handsample_eps": 10,
+    "recon_eps": 7,
+    "full_v36_eps": 123
+  },
+  "per_episode_distribution": {
+    "mean": 4.06,
+    "median": 4.0,
+    "stdev": 2.97,
+    "min": 0,
+    "max": 19
+  },
+  "category_breakdown": {
+    "MECHANICAL_GRANT": {
+      "count": 154,
+      "pct": 27.1
+    },
+    "QUEST_OFFER": {
+      "count": 121,
+      "pct": 21.3
+    },
+    "MATERIAL_LOOT": {
+      "count": 104,
+      "pct": 18.3
+    },
+    "KNOWLEDGE_GRANT": {
+      "count": 88,
+      "pct": 15.5
+    },
+    "NPC_FAVOR_GRATITUDE": {
+      "count": 88,
+      "pct": 15.5
+    },
+    "ENVIRONMENTAL_DISCOVERY": {
+      "count": 13,
+      "pct": 2.3
+    }
+  },
+  "campaign_split": {
+    "C1": {
+      "episodes": 89,
+      "records": 355,
+      "per_ep": 3.99
+    },
+    "C2": {
+      "episodes": 45,
+      "records": 213,
+      "per_ep": 4.73
+    }
+  },
+  "boolean_flags": {
+    "is_in_npc_voice": {
+      "count": 211,
+      "pct": 37.1
+    },
+    "has_persistence_marker": {
+      "count": 2,
+      "pct": 0.4
+    },
+    "has_perception_buildup": {
+      "count": 42,
+      "pct": 7.4
+    },
+    "is_combat_state": {
+      "count": 1,
+      "pct": 0.2
+    },
+    "is_recap_state": {
+      "count": 10,
+      "pct": 1.8
+    },
+    "absence_marker": {
+      "count": 0,
+      "pct": 0.0
+    }
+  },
+  "direction_breakdown": {
+    "delivered": {
+      "count": 447,
+      "pct": 78.7
+    },
+    "offered": {
+      "count": 121,
+      "pct": 21.3
+    }
+  },
+  "currency_gp_equivalent": {
+    "material_loot": 528523,
+    "quest_offer": 468285
+  },
+  "buildup_flagged_by_category": {
+    "MECHANICAL_GRANT": 6,
+    "KNOWLEDGE_GRANT": 10,
+    "ENVIRONMENTAL_DISCOVERY": 3,
+    "MATERIAL_LOOT": 19,
+    "QUEST_OFFER": 1,
+    "NPC_FAVOR_GRATITUDE": 3
+  },
+  "persistence_flagged_by_category": {
+    "QUEST_OFFER": 1,
+    "MECHANICAL_GRANT": 1
+  },
+  "v35_vs_v36_full_parse_delta": {
+    "episodes": 123,
+    "v35_total": 486,
+    "v36_total": 474,
+    "delta": -12,
+    "category_delta": {
+      "ENVIRONMENTAL_DISCOVERY": 0,
+      "KNOWLEDGE_GRANT": -1,
+      "MATERIAL_LOOT": -28,
+      "MECHANICAL_GRANT": 21,
+      "NPC_FAVOR_GRATITUDE": 0,
+      "QUEST_OFFER": -4
+    },
+    "patch_a_effect": "MATERIAL_LOOT/QUEST_OFFER → MECHANICAL_GRANT reclassification for object-aware give/grant routing",
+    "patch_b_effect": "recap-state rejection (bounded 15-turn lookback replaces whole-episode scan)"
+  },
+  "precision_surfaces": {
+    "handsample_calibration": {
+      "n_judged": 29,
+      "correct": 21,
+      "precision": 0.724
+    },
+    "gate_held_out": {
+      "n_judged": 25,
+      "correct": 17,
+      "precision": 0.68,
+      "note": "C2E036_t1103 reclassified correct by Patch A; verdict_at_v2 stale in JSON"
+    },
+    "validation_mechanically_excluded": {
+      "n_judged": 15,
+      "correct": 10,
+      "precision": 0.667,
+      "note": "3 reclassified by Patch A + 1 cleared by Patch B; verdict_at_v2 stale in JSON for 3 records"
+    }
+  }
+}
