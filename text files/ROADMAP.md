@@ -467,4 +467,4 @@ Solo and multiplayer are EQUALLY important. Multiplayer may be more important. T
 The current solo flow exercises canonical entities, scene mode, transitions, autocomplete, and skeleton grounding. The multiplayer-only friction (actor name reconciliation, turn-based action gating verified in production) is what Phase 6 closes before friends join.
 
 
-testing
+ROADMAP_PROBE_XQ7M : testing sync
