@@ -465,3 +465,6 @@ Solo and multiplayer are EQUALLY important. Multiplayer may be more important. T
 **Multiplayer is NOT deferred.**
 
 The current solo flow exercises canonical entities, scene mode, transitions, autocomplete, and skeleton grounding. The multiplayer-only friction (actor name reconciliation, turn-based action gating verified in production) is what Phase 6 closes before friends join.
+
+
+testing
