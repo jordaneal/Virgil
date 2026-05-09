@@ -77,7 +77,8 @@ Virgil Project/
 ├── research/                         # PC-authored research scratch (deep-research-report.md)
 ├── website/                          # virgildm.com source (index.html, website.md)
 ├── media/                            # assets — don't touch unless asked
-└── patches/                          # legacy patch scripts (archived; don't touch)
+├── patches/                          # legacy patch scripts (archived; don't touch)
+└── _trash/                           # PC-only soft-delete bin — files staged for manual deletion
 ```
 
 **Notes:**

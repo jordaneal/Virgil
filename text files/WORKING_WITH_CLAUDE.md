@@ -10,8 +10,8 @@ This file is for Claude. Read it at the start of every session and honor it. Not
 4. `ROADMAP.md` — what's next, gating bars, candidate next layers
 5. `WHY.md` — only if asked or if architectural reasoning is needed for the current decision
 6. `SESSIONS.md` — append-only ledger; consult for historical context on a specific session
-7. `DOCTRINE.md` — 65+ numbered architectural lessons (§1–§N), promoted from session work; consult by §N reference
-8. `FAILURES.md` — 50+ numbered failure entries (§F-01–§F-N); consult by F-NN reference
+7. `DOCTRINE.md` — 73 numbered architectural lessons (§1–§73), promoted from session work; consult by §N reference
+8. `FAILURES.md` — 57 numbered failure entries (§F-01–§F-57); consult by F-NN reference
 
 The three-doc split (`SESSIONS.md` / `DOCTRINE.md` / `FAILURES.md`) replaced the prior single-file `SESSIONS.md` to reduce context load — fresh chats read the ledger for current context and consult doctrine/failures on demand instead of paying ~280k for everything.
 
@@ -30,6 +30,22 @@ The project runs on a three-role split.
 **Claude Code is the implementer.** Reads the prompt Claude wrote, walks the implementation, ships code + tests + doc updates + live-verify, produces a structured handoff at the end of each session. Operates against the locked spec, not against open architectural questions. When it surfaces something unexpected, Claude (in conversation with Jordan) decides what to do about it.
 
 The boundary between Claude and Code is load-bearing. Claude does not implement; Code does not architect. Code's spec-drafting sessions are an exception — Code can draft specs because the format is mechanical (read templates, walk decisions, produce structured artifact), but the decisions inside those specs go back to Jordan for locking before any implementation lands.
+
+---
+
+## Planner file access — local-files MCP
+
+The planner (Claude in this conversation) has read/write access to Jordan's PC project docs via the `local-files` MCP server, scoped to `C:\Users\Jordan\Documents\Virgil Project\`. This replaces the prior workflow where planner-side doc additions required producing a patch markdown for Jordan to manually apply locally — the MCP lets the planner ship the edit directly.
+
+**Capabilities:** `read_multiple_files`, `edit_file` (line-based old/newText matching), `get_file_info`, `search_files`, `list_directory`, `write_file`, `move_file`, `read_media_file`. Use it to read the file-load order docs at session start instead of asking Jordan to paste them.
+
+**Discipline:**
+
+- **Planner edits PC-side mirror copies.** Server-side (`/home/jordaneal/virgil-docs/`) is canonical because Code reads from there at session start. After planner edits, the file must be pushed back to the server for Code to see it. Jordan handles this push, or the planner explicitly flags "push needed" at end of session.
+- **Source-of-truth precedence:** if Code and planner have edited in the same window, the server version wins. Re-read PC docs after a Code session before assuming PC state is current.
+- **Production code is off-limits to the planner.** The MCP can technically reach `python scripts\`, `dnd_engine.py`, etc. — those are mirror copies for reference reading only. Planner does not edit production code; the role split is load-bearing (Code implements; planner architects).
+- **Coordinate with Code's update territory.** Doc edits that touch DOCTRINE, ROADMAP, SESSIONS, or VIRGIL_MASTER during an active Code session should be coordinated — don't race Code to the same file.
+- **Patch-and-apply remains the fallback** if the MCP isn't reachable for any reason.
 
 ---
 
@@ -76,6 +92,21 @@ The dominant work pattern since Session 16 is three-session cycles for any archi
 This cadence has produced clean ships for: Consequence Surfacing v1 (Session 16), Committed Action Resolution v1 (Session 19), Combat Initiation Orchestration v1 (Session 20). The cadence is the protection — pre-locking architectural decisions in a separate review session prevents implementation drift.
 
 Smaller fixes (single-purpose, no architectural choices) skip the cadence and ship in one session. The B2/B2.1 attack directive fix and the S22-S25 observability batch were single-session ships.
+
+**Code model + effort selection (named by planner in the prompt header sent to Code):**
+
+| Session shape | Model | Effort |
+|---|---|---|
+| Spec drafting against clear precedent (templating an existing pattern) | Sonnet | medium |
+| Spec drafting with architectural synthesis (novel surface, no precedent) | Opus | medium |
+| Review doc drafting (walking §11 trade-offs, surfacing additions) | Opus | medium |
+| Implementation against locked spec (clear architecture, ~30-50 tests) | Sonnet | medium |
+| Implementation with non-trivial design (rippling consequences, multi-module) | Opus | medium |
+| Foundational primitive ships (load-bearing for downstream cluster) | Opus | high |
+| Spec patch / lock pass (incremental update to existing spec) | Sonnet | medium |
+| Doc-only edits (status updates, doctrine appends, ROADMAP cleanups) | Sonnet | low–medium |
+
+Heuristic in one line: **Sonnet** for templated/constrained work; **Opus medium** for architectural synthesis (novel specs, reviews with real trade-offs, implementations with design choices); **Opus high** for ships whose architecture echoes forward into multiple downstream ships. If unsure, lean Sonnet medium for execution-y work and Opus medium for synthesis-y work — bumping up mid-session is cheaper than over-spending on every prompt.
 
 ---
 
@@ -176,23 +207,24 @@ External reviews repeatedly propose architectures that violate Virgil's locks. L
 
 Claude Code runs directly on the Virgil server. Jordan works primarily from his PC but can prompt Code from any device including his phone when he's away from the keyboard. The PC is no longer required for sessions to run — Code's session is server-side, persistent across PC power state.
 
-**Backups are Jordan's job, not Code's.** Code's session does NOT run `push-all-to-pc.sh` between ships, at end of ship, or at any other time without explicit instruction from Jordan in the chat. **This rule has been violated multiple times across sessions** — Code reaches for `push-all-to-pc.sh` autonomously when wrapping up, treating it as part of "good hygiene." It is not. The script touches files Jordan didn't ask Code to push, can clobber in-flight edits Jordan is making locally, and breaks the explicit-consent contract on backups.
+**`push-all-to-pc.sh` is reserved for Jordan's hand.** Code's session does NOT run `push-all-to-pc.sh` — between ships, at end of ship, or at any other time. **This rule has been violated multiple times across sessions** — Code reaches for `push-all-to-pc.sh` autonomously when wrapping up, treating it as part of "good hygiene." It is not. The script touches files Jordan didn't ask Code to push, can clobber in-flight edits Jordan is making locally, and is the one rsync surface Jordan owns end-to-end.
 
-**Two acceptable behaviors:**
-1. **Default:** Code does not run `push-all-to-pc.sh` at all. Jordan runs it on his timing.
-2. **When Jordan says "push" / "push your changes" / "push the files you touched":** Code uses targeted SCP/rsync of *only the files it edited this session*, never `push-all-to-pc.sh`. The whole-tree script is reserved for Jordan's hand.
+**Targeted file pushes are expected, not gated.** Code uses targeted SCP/rsync of *only the files it edited this session* as part of end-of-session hygiene. This is the default cadence, not on-demand on a "push" command. The whole-tree script is the only forbidden mechanism — anything narrower (single-file rsync, multi-file rsync of just the touched paths) is fine and expected.
 
-If Code is unsure whether to push, the answer is no. Backup cadence is whatever Jordan decides — typically end-of-session or end-of-day.
+If Code is unsure which files to push, the answer is "the files this session touched." If Code is unsure whether to use `push-all-to-pc.sh`, the answer is no — always.
 
 **Bot service:** `systemctl --user restart virgil-discord` (user service). Code restarts after each ship for live-verify. The brief restart window is acceptable; Discord users will see one missed turn at most.
 
 **Syntax check before restart:** `python3 -c "import ast; ast.parse(open('/path/to/file.py').read())"` runs as part of every Code ship. A syntax error takes the whole bot down, so this is mandatory.
 
-**Live-verify happens during the ship**, not after. Code restarts the bot, runs the canonical scenario, greps logs, confirms expected behavior, then declares shipped. If the canonical scenario doesn't fire as expected, Code surfaces and stops rather than declaring shipped on incomplete verification.
+**Structural verify happens during the ship; behavioral verify is a human-in-the-loop handoff afterward** (Doctrine §73, learned S27). Code restarts the bot ONCE at end of session, confirms structural soundness (tests pass, syntax check, modules import, migration applied), then produces a numbered list of Discord prompts for Jordan with expected behavior per step. Jordan walks the prompts in Discord and replies "ok done." Code reads `journalctl` and verifies expected log shapes. If verification fails, the fix ships in a new session — never two restarts in the same session. Module-import validation runs via `python3 -c "import <module>"`, never via `systemctl restart`. Restart is the deploy step, not the feedback loop.
+
+**Cloudflare-WAF amplifier (S27 evidence):** cluster-restarts hit Cloudflare's edge-tier rate limit (Discord error 40062), distinct from Discord's per-endpoint application rate limits. The cooldown is multi-hour to overnight, decays per-endpoint not globally (login can thaw before message-send/typing endpoints — a 4-minute login latency is the canary signal that endpoints are still cold). Systemd hardening caps restart attempts via `StartLimitIntervalSec=300` + `StartLimitBurst=3` in the unit file; after 3 failures in 5 min, manual intervention required. Do not bypass the cap to retry faster — it's the structural fix for the amplifier.
 
 **Session management:**
 - `/compact` between major phases of a long session (after spec drafting completes, after implementation phases, before doc updates). Preserves trace; keeps context manageable.
-- **Never `/clear` mid-session.** /clear is destructive — it wipes the conversational trace that audits how each ship got built. The few times this came up in earlier sessions cost real audit trail.
+- **`/clear` is for topic boundaries, not bloat management.** Code's session is cleared only when switching to a new topic/implementation AND testing on the prior one is complete. A ship that's been verified live and promoted to ✅ is a clean break; a ship that's still mid-verify or has live-debug work pending is not, even if context is getting heavy. Within a continuous topic, bloat gets handled with `/compact` (preserves trace), never `/clear` (wipes the audit trail of how the ship got built).
+- Jordan decides when to clear — not Code, not the planner. If Code or the planner thinks a clear would help, surface the suggestion; don't act on it unilaterally.
 - New sessions start fresh; the project files are the durable memory.
 
 ---

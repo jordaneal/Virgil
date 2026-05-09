@@ -622,6 +622,41 @@ Plus `build_advisory_context` in S25 — sixth instance.
 
 **Applied in:** S27 closeout (Track 4 #3 live verification handoff). S27 mid-session §73 refinement (multi-hour correction added after the same cooldown the doctrine was written about persisted past the 30-minute assumption). S27 systemd unit hardening (`virgil-discord.service` patched with `StartLimitIntervalSec=300` + `StartLimitBurst=3`).
 
+## §74. Aesthetic transport endpoints soft-fail
+
+**Learned:** Session 27 (Track 4 #3 verify-attempt-1 blocked by Cloudflare-edge 429 on `POST /channels/{id}/typing`). Shipped + reaffirmed Session 28 (Bug 4).
+**Trigger:** S27 verify-attempt-1 of Track 4 #3 hit a hung `/play` — the slash command never replied to the user. Root cause: `async with narration_ch.typing():` raised `discord.HTTPException: 429 Too Many Requests (error code: 40062)` from Cloudflare's edge layer (residual cooldown from earlier in the session). The exception propagated through `app_commands._do_call` → `CommandInvokeError`, surfacing to the user as "spinning slash command, no reply." Track 4 #3's code did NOT error — `scene state initialized for campaign 20` fired before the 429 hit. The bug was purely Discord transport: the typing indicator (an aesthetic "user is typing..." dot that decays after ~10s) was wired such that its 429 could block the entire narration handler.
+**Doctrine:** Discord's HTTP layer is tiered. **Aesthetic endpoints** (typing, presence, status updates — anything where failure has zero narrative consequence and the indicator decays on its own) must be wrapped in `try/except (discord.HTTPException, asyncio.TimeoutError)` at every call site, with the handler body executing regardless of whether the aesthetic context succeeded. **Semantic endpoints** (message send, embed post — anything that delivers content the player will read) keep their existing per-handler boundaries and may legitimately surface failures up the stack. Handlers should not have to know which transport tier any given endpoint belongs to; the soft-fail wrapper at the call site is what makes the distinction operational. Per-site telemetry (e.g. `typing_indicator_failed: command={...} err={repr}`) fires only on the exception path, so transport-tier degradation is observable without log noise on the happy path.
+
+**Soft-fail shape — Shape A (preferred for short bodies):** wrap the context manager in try/except, duplicate the handler body under except. Two-fold execution path: aesthetic context wins → body runs inside it; aesthetic context raises → body runs without it. The duplicated body is acceptable because it's typically 1–4 lines and the alternative (helper function) only pays off at ~10+ lines.
+
+```python
+try:
+    async with channel.typing():
+        # body
+except (discord.HTTPException, asyncio.TimeoutError) as e:
+    log(f"typing_indicator_failed: command={label} err={e!r}")
+    # body  (duplicated, no aesthetic context)
+```
+
+**Why this is locked rather than handler-by-handler discretion:** without a structural rule, the next aesthetic endpoint added to a handler (presence updates, reaction adds, etc.) repeats the S27 failure mode — a handler-author who wasn't around for the 429-hung-`/play` outage assumes the context manager is safe and skips the wrapper. The doctrine says: every aesthetic Discord call gets the wrapper, no exceptions, no judgment calls.
+
+**Cross-references:** §59 (pure-function-in-orchestration / soft-fail at call site — sibling pattern; §74 specializes §59 for transport-tier endpoints rather than orchestration helpers). §73 (Discord verification is a human-in-the-loop handoff — surfaced the cooldown that surfaced §74).
+
+**Applied in:** S28 Bug 4 ship — three Shape A wrappers in `discord_dnd_bot.py` at `_advisory_respond` (line 1574), `_dm_respond_and_post` (line 1707), and `/play` (line 2950). All three are `async with channel.typing():` sites. Per-site `typing_indicator_failed:` telemetry. S28 verify confirmed the wrappers don't change happy-path behavior (zero exception-path log lines fired during three live `/play` invocations).
+
+## §75. `INSERT OR REPLACE` is structurally hostile to ALTER TABLE-added columns
+
+**Learned:** Session 29 (Bug 5 / ROADMAP 4d — surfaced by 4b's state-aware footer verify-walk).
+**Trigger:** S29 verify of 4b's `/play` footer wiring on campaign 21 showed `Day 1, Morning` instead of the expected `Day 5, Evening` (S28 had directly written `(5, 'Evening')` to `dnd_scene_state` via SQL). 4b's wiring was correct — the value rendered IS what was in the DB. The bug was upstream: `init_scene_state` was using `INSERT OR REPLACE` listing only the original-schema columns. Every column added via ALTER TABLE migration since the original schema (`campaign_day`, `day_phase`, `current_location_id`, `turn_counter`, `last_dm_response`, `tension_int`, `progress_clocks`) was absent from the column list. SQLite's `INSERT OR REPLACE` is a delete-then-insert: the existing row is removed entirely, a new row is inserted with the listed columns set to their VALUES, and unlisted columns fall back to schema defaults. Track 4 #3's `advance_time()` writes survived in-session, but the moment `/play` ran (which calls `init_scene_state` unconditionally), the migrated columns flipped back to `(1, 'Morning')`. The audit log in `dnd_time_advancements` was untouched (separate table), so the live scene state lied while the audit trail told the truth.
+**Doctrine:** When a table accumulates columns via ALTER TABLE migration, any writer using `INSERT OR REPLACE` with a fixed column list silently regresses every column added since the writer was authored. The bug is invisible at write time (no error), invisible in tests that don't exercise the migrated columns, and surfaces only when a downstream feature depends on the migrated column's persistence across writes. **Default to `INSERT INTO ... ON CONFLICT(pk) DO UPDATE SET` listing only the fields the writer actually intends to set.** New rows still get full schema defaults via the plain INSERT path; existing rows preserve every column the writer doesn't explicitly touch. This is the correct pattern for any `upsert`-shaped writer on a table that has ever been migrated, and for tables that may be migrated in the future. The narrow alternative (add the missing columns to the existing list) closes the immediate bug but ships a time bomb — the next ALTER TABLE-added column repeats the failure on whatever future feature depends on its persistence. Cost difference between narrow and structural is typically zero (same line count); the structural fix earns its keep on the next migration.
+
+**Cross-references:** §70 (fix blast radius can be wider than the bug — sibling pattern; §70 covers SELECT regressions, §75 covers INSERT regressions, both in the same migration-history shape). §47 (specs drift from code over time — this is a structural fork: drift in writer column lists vs schema column count is silent regression, not declared drift).
+
+**Applied in:** S29 (`dnd_engine.py:init_scene_state` switched from `INSERT OR REPLACE INTO dnd_scene_state (...12 original columns...) VALUES (...)` to `INSERT INTO ... VALUES (...) ON CONFLICT(campaign_id) DO UPDATE SET last_scene_change=excluded.last_scene_change, updated_at=excluded.updated_at`. Live-verified by re-seeding campaign 21 to `(5, 'Evening')`, running `/play`, and confirming sqlite post-`/play` still showed `21|5|Evening|<refreshed timestamp>` — day/phase preserved, only `updated_at` rotated. Pre-fix the same sequence produced `(1, 'Morning')`).
+
+**Audit trail:** other writers in the codebase using `INSERT OR REPLACE` against migrated tables should be reviewed at the next opportunity. Not urgent unless a user-visible regression surfaces; the pattern is now known and documented for future migration safety.
+
 ---
 
-*Order: §1-§73 are append-only. New doctrines get appended; existing numbers are stable for cross-reference from SESSIONS.md.*
+*Order: §1-§75 are append-only. New doctrines get appended; existing numbers are stable for cross-reference from SESSIONS.md.*

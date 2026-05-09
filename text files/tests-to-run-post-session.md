@@ -975,15 +975,19 @@ Expected: both columns present; `dnd_time_advancements` table + two indexes exis
 
 **Step 1 — bot restart + footer baseline.**
 
+**Bug 4 cross-verify:** Step 1's `/play` incidentally verifies Bug 4 — a clean response with no `typing_indicator_failed:` line in the journal means both ships are live.
+
 Restart bot, then in #dm-narration:
 
 ```
 /play
 ```
 
-Expected footer line in the opening narration embed: `📖 Exploration · Day 1, Morning`.
+**Footer note (S28 verify-surfaced — pending `/play` footer-wiring follow-up, ROADMAP item 4b):** `/play`'s opening embed currently renders a hardcoded onboarding footer (`"Type your actions in this channel. Roll with Avrae (!check, !save, !attack, !cast)."`) rather than `render_state_footer`. The state-aware footer + `state_footer:` log line do NOT fire on `/play`; they fire on the next narration turn (the `_dm_respond_and_post` path). Until 4b ships, this step verifies only the `is_first_session` gate + opening narration. The state-aware `· Day 1, Morning` footer is verified in Step 2 onward.
 
-Grep:
+Expected (post-4b ship): footer line in the opening narration embed reads `📖 Exploration · Day 1, Morning`.
+
+Grep (post-4b ship):
 
 ```
 journalctl --user -u virgil-discord --since "5 minutes ago" --no-pager | grep "state_footer:" | tail -3
@@ -1023,15 +1027,24 @@ journalctl --user -u virgil-discord --since "2 minutes ago" --no-pager | grep "t
 
 Should show `phase_delta=0` (NOT a Late-Night jump).
 
-**Step 4 — Avrae `!lr` advances +1 day, sets phase=Morning.**
+**Step 4 — Avrae long rest advances per locked §11.I math (set_phase + days_delta).**
 
 Stage some non-Morning phase first (e.g. via Step 5 below) then trigger an Avrae long rest (any user types):
 
 ```
-!lr
+!game lr
 ```
 
-Expected: footer carries `Day {N+1}, Morning` regardless of pre-rest phase.
+(`!lr` shortcut may not be aliased on every guild; `!game lr` is canonical Avrae syntax. `!game longrest` also works.)
+
+**Expected math (locked §11.I + §5 normalization formula):** `total_steps = before_idx + resolved_phase_delta + days_delta*6`. `_handle_rest_event` calls `advance_time(c, days_delta=1, phase_delta=0, set_phase='Morning')`. The writer ignores `phase_delta`, computes `resolved_phase_delta = (Morning_idx - before_idx) mod 6`, and adds it to `total_steps` along with `days_delta*6`. **Day count is therefore phase-dependent:**
+
+- From Morning (idx 0): `total_steps = 0 + 0 + 6 = 6` → `+1 day`. Land at `Day N+1, Morning`.
+- From Midday (idx 1): `total_steps = 1 + 5 + 6 = 12` → `+2 days`. Land at `Day N+2, Morning`.
+- From Evening (idx 3): `total_steps = 3 + 3 + 6 = 12` → `+2 days`. Land at `Day N+2, Morning`.
+- From Late Night (idx 5): `total_steps = 5 + 1 + 6 = 12` → `+2 days`. Land at `Day N+2, Morning`.
+
+This matches the locked test pattern at `test_advance_time.py:test_set_phase_evening_to_morning_long_rest` (Evening start → +2 days). The narrative shorthand "long rest jumps to next morning" is over-simplified — the math captures `set_phase` as modular forward-distance from current phase, which crosses a day boundary for any non-Morning start, and `days_delta=1` adds another full day on top. **Phase always resolves to Morning regardless of pre-rest phase; day count varies.**
 
 Grep:
 
@@ -1039,7 +1052,7 @@ Grep:
 journalctl --user -u virgil-discord --since "2 minutes ago" --no-pager | grep "time_advance:.*rest_long" | tail -1
 ```
 
-Should show `source=rest_long ... set_phase=Morning resolved_phase_delta={N}` (the resolved delta varies by pre-rest phase).
+Should show `source=rest_long ... set_phase=Morning resolved_phase_delta={N}` where `{N}` is `(0 - before_idx) mod 6` — i.e. 0 from Morning, 5 from Midday, 4 from Afternoon, 3 from Evening, 2 from Night, 1 from Late Night.
 
 **Step 5 — `/advance` phase bump.**
 
@@ -1076,10 +1089,12 @@ Should show all three values: `phase_delta=0 resolved_phase_delta={N} set_phase=
 **Step 7 — `/advance` short rest equivalent.**
 
 ```
-!sr
+!game sr
 ```
 
-Expected: footer phase rolls forward one slot via the Avrae short-rest path.
+(`!sr` shortcut may not be aliased on every guild; `!game sr` is canonical Avrae syntax. `!game shortrest` also works.)
+
+Expected: footer phase rolls forward one slot via the Avrae short-rest path. No Discord-side clock confirmation message — Avrae rest events update state silently; the footer surfaces on the next narration turn.
 
 Grep:
 
@@ -1089,15 +1104,33 @@ journalctl --user -u virgil-discord --since "1 minute ago" --no-pager | grep "ti
 
 **Step 8 — `/purgecampaign` cascade integrity.**
 
-Switch to a different campaign, then in #dm-narration:
+`/purgecampaign` is gated on TWO independent prerequisites: the target campaign must be archived (status flipped via `/deletecampaign`), and the active campaign cannot be purged (must `/setcampaign` away first). The confirmation phrase format is `DELETE <campaign_name>` typed exactly, case-sensitive — not just `DELETE`. Three-command sequence:
+
+**Step 8a — switch off the test campaign:**
 
 ```
-/purgecampaign confirm:DELETE
+/setcampaign id:{some-other-campaign-id}
 ```
 
-(target the test campaign you've been advancing the clock on — confirm the exact phrase per `/purgecampaign` UX).
+(Or `/newcampaign name:scratch` to create + auto-activate one if no other campaign exists on this guild.)
 
-Expected: `dnd_time_advancements` rows for that campaign drop to 0.
+**Step 8b — archive the test campaign:**
+
+```
+/deletecampaign campaign_ids:{test-campaign-id}
+```
+
+Soft-deletes / archives. Reversible.
+
+**Step 8c — purge the test campaign:**
+
+```
+/purgecampaign campaign_id:{test-campaign-id} confirm_phrase:DELETE {test-campaign-name}
+```
+
+The `confirm_phrase` must match the canonical campaign name exactly (e.g. `DELETE Thomas`).
+
+Expected: `dnd_time_advancements` rows for the purged campaign drop to 0; cascade summary embed lists per-table counts.
 
 Grep:
 
@@ -1112,6 +1145,84 @@ journalctl --user -u virgil-discord --since "1 minute ago" --no-pager | grep "ca
 ```
 
 Should include `'dnd_time_advancements': {N>=1}` in the `rows_deleted` dict.
+
+**Step 9 (optional — §J.3 skeleton seed end-to-end coverage).**
+
+Steps 1–8 verify the runtime advance path (`advance_time()` writes both columns + audit log). Step 9 covers the *initialization-only* seed-write — `skeleton_loader.apply_starting_time_seed()` writes `dnd_scene_state.campaign_day` / `day_phase` directly during first `/play`, bypasses `advance_time()`, and does NOT append a row to `dnd_time_advancements` per §11.D=a + §J.3 narrow exception. Not gating for v1 promotion; run if you want full coverage of both writers.
+
+**Setup:** Pick or create a test campaign whose `dnd_scene_state` is at defaults (`campaign_day=1`, `day_phase='Morning'`). The idempotency guard only fires when defaults are intact. Verify before starting:
+
+```
+sqlite3 /mnt/virgil_storage/virgil.db "SELECT campaign_day, day_phase FROM dnd_scene_state WHERE campaign_id={N}"
+```
+
+Should return `1|Morning`. If not, pick a different campaign or run `/purgecampaign` and recreate.
+
+Edit the campaign's `skeleton.md` at `/home/jordaneal/scripts/campaigns/{N}/skeleton.md` to include a non-default `## Starting time` section:
+
+```
+## Starting time
+
+day=5
+phase=Evening
+```
+
+**Trigger:** in #dm-narration:
+
+```
+/setcampaign id:{N}
+/play
+```
+
+**Expected (DB-truth verification — load-bearing):** `dnd_scene_state` is written directly to `(campaign_day=5, day_phase='Evening')`, bypassing `advance_time()`.
+
+```
+sqlite3 /mnt/virgil_storage/virgil.db "SELECT campaign_day, day_phase FROM dnd_scene_state WHERE campaign_id={N}"
+```
+
+Expected: `5|Evening`.
+
+**Visual footer note (S28 verify-surfaced — pending `/play` footer-wiring follow-up, ROADMAP item 4b):** `/play`'s opening embed currently renders the hardcoded onboarding footer, not the state-aware footer. The seed write IS load-bearing for visual confirmation of the seed feature, but until item 4b ships, the seed is observable only via sqlite + the `apply_starting_time_seed:` log line. **Once 4b ships, the visual check will read** `📖 Exploration · Day 5, Evening`.
+
+Journal grep:
+
+```
+journalctl --user -u virgil-discord --since "2 minutes ago" --no-pager | grep -E "apply_starting_time_seed:|play_first_session_hint" | tail -5
+```
+
+Should show:
+- `apply_starting_time_seed: campaign={N} seeded day=5 phase='Evening'` (the seed fired)
+- `play_first_session_hint: campaign={N} fired=1` (confirms `is_first_session=True` gate opened)
+
+**Verify §J.3 audit-log no-write:**
+
+```
+sqlite3 /mnt/virgil_storage/virgil.db "SELECT COUNT(*) FROM dnd_time_advancements WHERE campaign_id={N}"
+```
+
+Expected: `0`. The seed write does NOT append to the advancement audit log — that's the §J.3 narrow framing (campaign initialization is not an advancement event).
+
+**Idempotency-guard check:** advance the clock with a real call, then re-trigger the seed code path and confirm it does NOT re-fire.
+
+```
+/advance phases:1
+```
+
+Then exit and re-`/play`:
+
+```
+/play
+```
+
+Grep:
+
+```
+journalctl --user -u virgil-discord --since "1 minute ago" --no-pager | grep "apply_starting_time_seed:" | tail -1
+```
+
+The seed line should indicate skipped / no-op (the contract is "seed write does NOT fire when scene_state is past defaults"). Footer should reflect the post-`/advance` state, NOT re-seed back to Day 5, Evening.
+
+**If Step 9 fails:** the bug is in `skeleton_loader.apply_starting_time_seed()`, not in `advance_time()`. Steps 1–8 isolate the runtime writer; Step 9 isolates the seed writer.
 
 ### Quick grep — all time signals in one block
 

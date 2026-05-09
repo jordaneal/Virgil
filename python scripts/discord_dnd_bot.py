@@ -188,20 +188,6 @@ WELCOME_PIN_BODY = (
 # Channel topic for #welcome — short, points at the site.
 WELCOME_CHANNEL_TOPIC = "New here? Start at https://virgildm.com"
 
-# /play first-session hint (S23 #4). Appended to the embed description
-# of the opening narration on the FIRST /play of a campaign — detected
-# via prior scene_state == None at /play entry. Suppressed on subsequent
-# /play calls (scene_state row exists from the first call's
-# init_scene_state). Three commands match what the site's "first night"
-# section will list once Jordan re-syncs the Artifact source.
-PLAY_FIRST_SESSION_HINT = (
-    "\n\n──────\n\n"
-    "**First time here?** Run these three commands in order:\n"
-    "1. `/bindchar` — pick your character\n"
-    "2. `/refresh` — pull your latest sheet from Avrae\n"
-    "3. Narrate your action in #dm-narration when ready"
-)
-
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger('discord').setLevel(logging.WARNING)
@@ -1570,7 +1556,13 @@ async def _advisory_respond(message: discord.Message):
 
     # ── Route to LLM (no chroma_search, no narration directives) ────
     try:
-        async with message.channel.typing():
+        try:
+            async with message.channel.typing():
+                text, provider = await asyncio.to_thread(
+                    cloud_route, messages, "advisory", system_prompt, False,
+                )
+        except (discord.HTTPException, asyncio.TimeoutError) as e:
+            log(f"typing_indicator_failed: command=advisory_respond err={e!r}")
             text, provider = await asyncio.to_thread(
                 cloud_route, messages, "advisory", system_prompt, False,
             )
@@ -1697,7 +1689,14 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
         log(f"buffer.consume: {len(avrae_events)} events for "
             f"actors={actor_names_canonical} roll_kinds={roll_kinds}")
 
-        async with channel.typing():
+        try:
+            async with channel.typing():
+                response = await asyncio.to_thread(
+                    dm_respond, campaign, characters, combined_action, avrae_events,
+                    actor_names, transition_context, first_user_id, actions
+                )
+        except (discord.HTTPException, asyncio.TimeoutError) as e:
+            log(f"typing_indicator_failed: command=_dm_respond_and_post err={e!r}")
             response = await asyncio.to_thread(
                 dm_respond, campaign, characters, combined_action, avrae_events,
                 actor_names, transition_context, first_user_id, actions
@@ -2933,7 +2932,14 @@ async def play(interaction: discord.Interaction, scene: str = None):
 
     # Open scene gets full DM treatment — knowledge_search will pull Mercer
     # campaign openings since we tag this as a "scene transition."
-    async with narration_ch.typing():
+    try:
+        async with narration_ch.typing():
+            opening = await asyncio.to_thread(
+                dm_respond, campaign, chars, f"[Open the scene] {seed}", [],
+                None
+            )
+    except (discord.HTTPException, asyncio.TimeoutError) as e:
+        log(f"typing_indicator_failed: command=play err={e!r}")
         opening = await asyncio.to_thread(
             dm_respond, campaign, chars, f"[Open the scene] {seed}", [],
             None
@@ -2943,21 +2949,68 @@ async def play(interaction: discord.Interaction, scene: str = None):
     update_scene(campaign['id'], opening[:500])
 
     opening_md = opening.replace('<b>', '**').replace('</b>', '**').replace('<i>', '*').replace('</i>', '*')
-    if is_first_session:
-        # Append the three-command hint inside the embed body, capped to
-        # Discord's 4000-char limit.
-        body = (opening_md + PLAY_FIRST_SESSION_HINT)[:4000]
-    else:
-        body = opening_md[:4000]
+    body = opening_md[:4000]
     embed = discord.Embed(
         title=f"⚔  {campaign['name']}",
         description=body,
         color=discord.Color.dark_red()
     )
-    embed.set_footer(text="Type your actions in this channel. Roll with Avrae (!check, !save, !attack, !cast).")
+
+    # State-aware footer (4b). Mirrors `_dm_respond_and_post` assembly:
+    # state header (mode glyph + ` · Day N, Phase` after Track 4 #3 §J.3
+    # seed) + identity line (📍 location + 🗒️ active quests). No actor
+    # field on /play — the DM is opening the scene, no player just acted.
+    # Soft-fail at the call site per Doctrine §59: footer issues never
+    # block the opening narration.
+    state_header = ''
+    state_signals = {}
+    identity_bits = []
+    try:
+        scene_state = get_scene_state(campaign['id'])
+        active_turn = get_active_turn(campaign['id'])
+        combatants_payload = get_combatants(campaign['id'])
+        bound_pcs = get_bound_character_names(campaign['id']) or []
+        state_header, state_signals = orch.render_state_footer(
+            scene_state, active_turn, combatants_payload, bound_pcs
+        )
+    except Exception as e:
+        log(f"/play: state footer render failed: {e}")
+        state_header = ''
+        state_signals = {}
+
+    try:
+        current_loc = get_current_location(campaign['id'])
+        if current_loc:
+            identity_bits.append(f"📍 {current_loc['canonical_name']}")
+    except Exception as e:
+        log(f"/play: current_location footer lookup failed: {e}")
+
+    try:
+        active_quests = get_active_quests(campaign['id'])
+        if active_quests:
+            titles = []
+            for q in active_quests:
+                t = q.get('title') or q.get('name') or ''
+                if t:
+                    titles.append(t.strip())
+            if titles:
+                quest_line = "🗒️ " + ", ".join(titles)
+                if len(quest_line) > 200:
+                    quest_line = quest_line[:197] + "..."
+                identity_bits.append(quest_line)
+    except Exception as e:
+        log(f"/play: quest reminder footer lookup failed: {e}")
+
+    identity_line = " ".join(identity_bits)
+    footer_text = state_header + identity_line if state_header else identity_line
+    if len(footer_text) > 2048:
+        footer_text = footer_text[:2045] + "..."
+    if footer_text:
+        embed.set_footer(text=footer_text)
+
     await narration_ch.send(embed=embed)
-    log(f"play_first_session_hint: campaign={campaign['id']} "
-        f"fired={1 if is_first_session else 0}")
+    log(f"state_footer: campaign={campaign['id']} "
+        f"{orch.state_footer_log_summary(state_signals)}")
     await interaction.followup.send(f"{E['ok']} Scene opened in {narration_ch.mention}.", ephemeral=True)
 
 

@@ -878,3 +878,65 @@ Durable lesson: **model uncertainty as NULL, not as a default value**. A NULL te
 For corpus-extraction methodology and durable lessons, see
 `corpus_builder/corpus_builder_lessons_v2.md` (current lessons doc — Lessons 1–11,
 covering Ships 1 and 2). v2 supersedes v1.
+
+---
+
+## Track 4 #3 + Bug 4 (Sessions 27–28)
+
+### Why `.typing()` context managers wrap with try/except in three places (Bug 4, S28)
+
+Discord's HTTP layer is tiered. `POST /channels/{id}/typing` is aesthetic (a "user is typing..." indicator that decays after ~10s and produces no narrative consequence if it never fires). `POST /channels/{id}/messages` is semantic (the actual narration that the player reads). S27 verify-attempt-1 ate a Cloudflare-edge 429 on the typing endpoint mid-`/play`, the `discord.HTTPException` propagated up through `app_commands._do_call` → `CommandInvokeError`, and the slash command hung silently with no narration posted. The user sees "spinning slash command, no reply" — narratively indistinguishable from a hard crash. **Aesthetic transport must never block semantic transport.** The Shape A wrapper (try/except around the typing context, with handler body duplicated under except) makes the soft-fail explicit at every site where Virgil opens a typing indicator. Per-site `typing_indicator_failed:` telemetry surfaces transport-tier degradation without requiring handler-layer awareness of WAF behavior.
+
+### Why Track 4 #3's `set_phase` semantic combines with `days_delta` rather than replacing it
+
+§11.I of TRACK_4_3_SPEC.md locks Option (a): `set_phase: str | None = None` parameter on `advance_time()`. When set, the writer ignores `phase_delta` and computes `resolved_phase_delta = (target_idx - current_idx) mod 6`. The locked §5 normalization formula is `total_steps = before_idx + resolved_phase_delta + days_delta*6`, with new_day = before_day + total_steps // 6. This means `set_phase='Morning'` from a non-Morning start with `days_delta=1` (the long-rest call shape) produces +2 days, not +1 — the modular forward-distance from current phase to target Morning crosses a day boundary that combines with the explicit `days_delta=1` to produce a two-day jump.
+
+The lock-text comment "Long rest: jump to next morning regardless of current phase" is **narrative shorthand** that S28 verify-attempt-2 surfaced as misleading — the verify doc's "Day {N+1}, Morning regardless of pre-rest phase" expected text was built from the comment, not from the formula. The test suite (`test_set_phase_evening_to_morning_long_rest`) asserts the formula explicitly: from Day 1, Evening, long rest lands at Day 3, Morning (+2 days), with `resolved_phase_delta=3`. The math is the spec; the comment is recovered by the test.
+
+**Why we kept this semantic rather than re-locking §11.I:** `set_phase` semantics that "set absolutely without interacting with days_delta" would require either (a) callers to track day rollovers themselves (Doctrine §17 violation — multiple sites reproducing modular phase math), or (b) the writer to special-case `set_phase` differently from `phase_delta` (breaks the §5 normalization formula's uniformity). Both create more complexity than the comment-vs-test divergence the verify doc had. The locked semantic is also operator-meaningful: long rest from Late Night IS narratively a "next day" event (you went to bed at 2am, woke up at dawn the next day), so the +2-day jump from non-Morning starts has internal consistency even if it surprises a reader of the lock-text alone.
+
+### Why `/play`'s footer is hardcoded onboarding text rather than the state-aware operational footer (S28-surfaced; ROADMAP 4b filed)
+
+`/play` predates the state-aware footer system. When `render_state_footer` was extended in Track 4 #3 to carry `· Day N, Phase`, only the narration-batcher path (`_dm_respond_and_post`) was wired. `/play` constructs its embed inline at lines 2965–2974 of `discord_dnd_bot.py` with `embed.set_footer(text="Type your actions in this channel. Roll with Avrae (!check, !save, !attack, !cast).")` — a canned onboarding hint. The hint was right for first-session UX (S23 #4) but wrong for operational re-entry (every subsequent `/play` after a session pause). The existing `is_first_session` gate at `/play` already differentiates first-time-onboarding (append the three-command hint to the body) from returning-narration; the footer should follow the same gate, OR — cleaner — the state-aware footer should always render and the onboarding hint should land in the body rather than the footer.
+
+**Why this is a v1.x ship rather than part of Track 4 #3:** Track 4 #3 v1's promotion criteria key off "footer carries `· Day N, Phase` after every advancement," not "after every embed post." `/play` is initialization, not advancement. The narration-batcher path verifies the footer-wiring contract correctly. The skeleton-seed feature (§J.3) does have an operator-UX gap — the seed write is observable via sqlite + the `apply_starting_time_seed:` log line, but a DM authoring `## Starting time` and running `/play` cannot visually confirm the seed worked because of `/play`'s canned footer. That gap is what motivates ROADMAP 4b as a small standalone follow-up rather than scope-creeping into Track 4 #3 v1.
+
+### Why Step 8's `/purgecampaign` requires three commands rather than one
+
+The verify doc's `/purgecampaign confirm:DELETE` was a five-way wrong: the parameter name is `confirm_phrase` (not `confirm`), the format is `DELETE <campaign_name>` (not bare `DELETE`), the campaign must be archived first (`/deletecampaign campaign_ids:N` flips status), the active campaign cannot be purged (must `/setcampaign` away first), and the doc didn't carry the campaign-name dependency at all. **The two independent gates before destruction** (archive state + typed phrase) are the design — neither alone is sufficient, and `/setcampaign` away is the third practical prerequisite because no one wants to purge the campaign they're actively playing on. The doc was over-condensed; correcting it to the three-command sequence makes the gates visible to operators reading the verify scenario.
+
+## Track 4 #3 + Bug 5 — Structural-vs-narrow fix call (Session 29)
+
+### Why we shipped the structural fix instead of the narrow one
+
+S29's 4b verify surfaced Bug 5: `init_scene_state` in `dnd_engine.py` was using `INSERT OR REPLACE` listing only the original-schema columns. Every column added via ALTER TABLE migration since (`campaign_day`, `day_phase`, `current_location_id`, `turn_counter`, `last_dm_response`, `tension_int`, `progress_clocks`) was being clobbered to schema defaults on every `/play`. Track 4 #3's day/phase persistence broke across `/play` invocations — `advance_time()` writes survived in-session but evaporated the moment the DM re-opened the scene next session.
+
+Two fix shapes were on the table:
+
+- **(A) Narrow.** Add `campaign_day` and `day_phase` to the existing `INSERT OR REPLACE` column list. Closes Track 4 #3 specifically. Same line count as (B).
+- **(B) Structural.** Switch from `INSERT OR REPLACE` to `INSERT ... ON CONFLICT(campaign_id) DO UPDATE SET` listing only the fields the writer intends to set. All other columns preserved on existing rows; new rows still get schema defaults via plain INSERT path. Same line count as (A).
+
+Code's first instinct was (A) — the narrow read of "the bug is `campaign_day` and `day_phase` aren't in the column list, so add them." That's true but incomplete. The bug isn't about which two columns are missing; it's about the writer's column list being a fixed snapshot of the schema at authoring time, which silently regresses every time the schema gains a column. (A) closes the immediate bug and ships a time bomb: the next ALTER TABLE-added column on `dnd_scene_state` repeats the failure on whatever future feature depends on its persistence.
+
+**Planner pushed (B).** The reasoning was simple: if (A) and (B) are the same line count, and (B) closes the structural pattern while (A) leaves it open, (B) is free risk reduction. The narrow fix earns its keep only when it's measurably cheaper or the structural alternative is materially riskier. Neither was true here.
+
+The structural fix means the writer says: "I intend to set `last_scene_change` and `updated_at`; everything else, leave alone." That's the correct contract for an `init_scene_state` writer — the function's job is to ensure a row exists with a fresh seed timestamp, not to ground-truth every other column. The new contract survives migrations because it doesn't enumerate them.
+
+### Why this isn't an audit-everything-now moment
+
+Doctrine §75 (filed S29) notes that other writers in the codebase using `INSERT OR REPLACE` against migrated tables should be reviewed at the next opportunity. The deliberate choice was NOT to chase down every such writer right now. Reasons:
+
+1. **No user-visible regression surfaces from the unaudited writers yet.** The pattern is silent until a feature depends on a migrated column's persistence across writes. Track 4 #3 was the first such feature; that's why it surfaced. If another feature surfaces a similar dependency, the audit can be done then with the actual failure mode in hand rather than as a speculative sweep.
+2. **Doctrine §74 sweep would be premature.** Reviewing every `INSERT OR REPLACE` writer for migration-safety without a forcing function risks burning effort on writers that don't need to change — e.g. writers that genuinely intend to reset all columns on conflict (rare, but legitimate). Speculative audit produces false positives.
+3. **The doctrine is now documented.** Future writers will use `ON CONFLICT DO UPDATE SET` by default per §75, so the population of vulnerable writers is bounded by what was authored before S29. Pre-S29 writers stay on `INSERT OR REPLACE` until something forces an audit.
+
+The principle: catch the structural defect when it surfaces, fix it structurally, document the doctrine, move on. Don't preemptively rewrite working code on the basis of a pattern that hasn't yet failed elsewhere. Sibling to the project's broader "observed friction informs, not anticipated friction" rule.
+
+### Why combined-session shipping was the right call
+
+Doctrine §73 caps restarts at one per session. Bug 5 surfaced mid-verify of 4b; the natural reading of §73 might be "file Bug 5, ship next session." That reading is wrong. §73 constrains restart count, not ship count. Bug 5's fix was small (~10 lines, single function), the test surface was clear (re-seed + `/play` + sqlite check), and waiting a session would have left Track 4 #3's persistence broken in production for the gap.
+
+The combined-session ship still hit one restart total: 4b's restart was Code's deploy step, the engine fix landed before the restart, and the verify-walk covered both ships. §73's discipline is preserved — restart count is one, not two. Shipping a structural fix in the same window as the feature that surfaced it is the correct application of §73, not a violation.
+
+**General rule:** when a verify-walk surfaces a fix that's small, well-scoped, and blocks the feature's full correctness claim, the combined-session ship is preferred over file-and-defer. The forcing function is whether the deferred fix would leave the feature claiming ✅ SHIPPED LIVE while a known correctness gap exists — if yes, ship combined; if no (e.g. the surfaced bug is in adjacent territory and doesn't affect the feature's contract), file and defer.
+

@@ -1116,14 +1116,21 @@ def get_scene_state(campaign_id: int):
 
 
 def init_scene_state(campaign_id: int, seed: str = ''):
-    """Create or replace the scene state for a campaign with a seed."""
+    """Ensure a scene_state row exists for this campaign and stamp the latest
+    scene-change seed. New rows get schema defaults across the board; existing
+    rows preserve everything (mode, location, day/phase, clocks, NPCs, etc.)
+    and only refresh `last_scene_change` + `updated_at`. /play is reopening
+    a scene, not resetting it — gameplay-advanced state must survive."""
     conn = sqlite3.connect(DB_PATH)
     conn.execute(
-        "INSERT OR REPLACE INTO dnd_scene_state "
+        "INSERT INTO dnd_scene_state "
         "(campaign_id, location, mode, focus, established_details, active_npcs, "
         "active_threats, open_questions, tension, last_player_action, "
         "last_scene_change, updated_at) "
-        "VALUES (?, '', 'exploration', '', '[]', '[]', '[]', '[]', 'low', '', ?, ?)",
+        "VALUES (?, '', 'exploration', '', '[]', '[]', '[]', '[]', 'low', '', ?, ?) "
+        "ON CONFLICT(campaign_id) DO UPDATE SET "
+        "last_scene_change=excluded.last_scene_change, "
+        "updated_at=excluded.updated_at",
         (campaign_id, seed[:500], datetime.datetime.now().isoformat())
     )
     conn.commit()

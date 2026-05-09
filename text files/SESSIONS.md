@@ -1039,3 +1039,150 @@ The skeleton-loader `apply_starting_time_seed` introduces the project's first **
 - `tests-to-run-post-session.md` — 8-step canonical scenario appended (Step 0 preflight + Steps 1–8 covering all four call sites + cascade integrity)
 - F-54 (FAILURES.md) — surface 1 closure (the world doesn't visibly evolve); other surfaces remain open siblings under the motion-systems thread
 - Doctrine §1a anchor — second post-§1a/§1b-split spec to write the §1a side explicitly (Track 6 #5.1 was the §1b inaugural; this is the §1a sibling)
+
+---
+
+# Session 28 — Bug 4 ship + Track 4 #3 verify-attempt-2 (joint promotion)
+
+S27 closeout left two ships at ⏳ pending: Track 4 #3 (Time Progression v1) blocked on Cloudflare-edge typing-endpoint cooldown that ate `/play` mid-verify-attempt-1, and a freshly-surfaced Bug 4 (`.typing()` context manager hard-fails on `discord.HTTPException`). S28 ships Bug 4, restarts once, and walks the full 9-step Track 4 #3 verify (Step 0 preflight + Steps 1–8 + optional §J.3 Step 9). Both ships promote ✅ jointly.
+
+## What shipped (Bug 4)
+
+Three Shape A wrappers in `discord_dnd_bot.py` — each `async with channel.typing():` site wrapped in `try/except (discord.HTTPException, asyncio.TimeoutError)` with handler body duplicated under the except for soft-fail:
+
+- Line 1574 (`_advisory_respond`) — typing context around the `cloud_route` call for #dm-aside Q&A
+- Line 1707 (`_dm_respond_and_post`) — typing context around the narration-batcher's `dm_respond` call
+- Line 2950 (`/play`) — typing context around the opening-scene `dm_respond` call (the site that ate the 429 in S27 verify-attempt-1)
+
+Telemetry: per-site `typing_indicator_failed: command={advisory_respond|_dm_respond_and_post|play} err={repr}` log line, fires only on the exception path. No new imports — `discord` and `asyncio` were already module-level. No code-path branching for `/play` vs other surfaces; same wrapper everywhere.
+
+Single-restart deploy per Doctrine §73. Login latency ~6s post-restart (canary clean). No `typing_indicator_failed:` lines fired during any of the three live `/play` invocations during S28's verify walk — endpoints fully thawed since S27 closeout.
+
+## Live verification
+
+✅ **Track 4 #3 + Bug 4 jointly promoted.** Full 9-step walk against the locked `tests-to-run-post-session.md` scenario (Step 0 preflight + Steps 1–8 + Step 9 §J.3 seed). All 6 promotion criteria for Track 4 #3 met:
+
+1. ✅ All 8 steps complete without error in real Discord (+ Step 9 §J.3 also clean)
+2. ✅ `time_advance:` for all four sources observed: `travel` (×2 — Steps 2–3), `advance` (×2 — Steps 5–6), `rest_long` (Step 4), `rest_short` (Step 7)
+3. ✅ Footer correctly carries `· Day N, Phase` after every advancement, per locked §11.I formula. **The verify-doc Step 4 expected text was the bug, not the implementation** — see Doctrinal notes below.
+4. ⚠️ `parse_elapsed:` 2/3 strings observed in S28 (`'two days'`, `'a day'`); structurally validated by 27 unit tests; will continue accumulating in subsequent live sessions.
+5. ✅ `/purgecampaign` cascades clean — 6 `dnd_time_advancements` rows deleted for campaign 20, count → 0.
+6. ✅ Zero exception-path `time_advance: ... err=` lines.
+
+Bug 4 cross-verify: ✅ — three live `/play` invocations during S28 (Step 1 on campaign 20, post-Step-8 `/play` on campaign 17, Step 9 `/play` on campaign 21) all completed cleanly with zero `typing_indicator_failed:` lines fired. The 429-recovery path is grep-verifiable but didn't fire because no 429 occurred. Bug 4's soft-fail is structurally proven via Shape A.
+
+Step 9 (§J.3 skeleton seed): seed_test campaign (id 21) created with `## Starting time / day=5 / phase=Evening` in `/home/jordaneal/scripts/campaigns/21/skeleton.md`. First `/play` triggered `apply_starting_time_seed: campaign=21 seeded day=5 phase='Evening'` and `play_first_session_hint: campaign=21 fired=1`. DB confirmed `dnd_scene_state` directly written `(5, Evening)`; zero `dnd_time_advancements` rows for campaign 21 (§J.3 narrow exception holds — initialization is not an advancement).
+
+## What broke and was surfaced (no fix mid-verify; filed for next ship)
+
+Six doc-deltas + one new ROADMAP entry surfaced during S28's walk; all landed at promotion (no mid-verify code ships per Doctrine §73):
+
+1. **Step 1 grep correction.** `state_footer:` doesn't fire on `/play` — `/play` builds its embed inline with a hardcoded onboarding footer (`"Type your actions in this channel..."`) and never calls `render_state_footer`. Step 1 grep expectation flagged as post-4b-ship contingent.
+2. **Step 4 expected text rewrite.** Verify doc said "Day {N+1}, Morning regardless of pre-rest phase" — that's an over-simplification of the locked §11.I formula. Actual math (`total_steps = before_idx + resolved_phase_delta + days_delta*6`, with `set_phase` writing `resolved_phase_delta = (target - current) mod 6` to total_steps): from Morning → +1 day, from any non-Morning start → +2 days. The implementation matches the locked spec + the `test_set_phase_evening_to_morning_long_rest` test pattern. Doc rewritten to expose the math.
+3. **Step 9 visual-check correction.** Same `/play` footer-wiring gap — until ROADMAP 4b ships, Step 9's seed feature is observable only via sqlite + the `apply_starting_time_seed:` log line. Visual confirmation deferred to post-4b.
+4. **Step 8 input correction.** Verify doc said `/purgecampaign confirm:DELETE` — wrong parameter name (`confirm` vs `confirm_phrase`), missing campaign_id, missing campaign-name suffix on phrase, no archive prerequisite. Rewritten to the correct three-command sequence (`/setcampaign` away, `/deletecampaign campaign_ids:N`, `/purgecampaign campaign_id:N confirm_phrase:DELETE <name>`).
+5. **Avrae rest syntax correction.** Step 4 + Step 7 inputs `!lr` / `!sr` are aliases that may not be configured per-guild. Canonical Avrae syntax is `!game lr` / `!game sr` (or `!game longrest` / `!game shortrest`). The bot's `avrae_listener._classify_kind` matches on Avrae's resulting embed title text, so the rest-handler routing is correct regardless of input syntax — only the doc's input string needed fixing.
+6. **`/play` footer-wiring follow-up — new ROADMAP item 4b.** Operator-UX gap: skeleton-seed feature (Track 4 #3 §J.3) writes scene_state directly on first `/play`, but `/play`'s hardcoded footer hides the seed. DM authoring `## Starting time` and running `/play` cannot visually confirm the seed worked. `/play` post-session-pause is operational re-entry (the existing `is_first_session` gate already differentiates first-time hint vs returning narration), so the state-aware footer belongs there for the same reason it belongs on every narration turn. Small standalone ship.
+
+## Doctrinal notes
+
+**Doctrine §59 reaffirmed** (pure-function-in-orchestration / soft-fail at call site). Bug 4's three call sites are the seventh, eighth, and ninth applications of the soft-fail-at-call-site pattern. Each Discord transport call gets its own try/except boundary; the handler body executes regardless of whether the aesthetic context manager succeeded.
+
+**New Doctrine §74 candidate — aesthetic transport endpoints soft-fail.** Discord's HTTP layer is tiered: `POST /channels/{id}/typing` is aesthetic (a "user is typing..." indicator that decays after ~10s with no harm if it never fires), while `POST /channels/{id}/messages` is semantic (the actual narration). Aesthetic endpoints get `try/except (HTTPException, TimeoutError)` wrappers at every call site; semantic endpoints get the existing per-handler boundaries (and may bubble up legitimately on actual failure). The principle: **transport reliability tiers are routing-layer concerns, not handler-layer concerns** — handlers should not have to know which endpoints might 429 from Cloudflare's WAF vs which are guaranteed-or-fail. Filed as §74 in DOCTRINE.md.
+
+**§11.I locked semantic clarification.** S28 verify-walk surfaced an internal-doc inconsistency in TRACK_4_3_SPEC.md: §11.I lock-text says "Long rest: jump to next morning regardless of current phase" (narrative shorthand) but the §5 normalization formula + §11.I `set_phase` precedence invariant produce phase-dependent day jumps when combined with `days_delta=1`. The math is locked correctly and the test suite asserts it (`test_set_phase_evening_to_morning_long_rest`); the narrative shorthand was the bit that misled the verify-doc author into writing "regardless of pre-rest phase." Spec is correct; verify doc is corrected. Filed as a load-bearing learning: **narrative shorthand in spec lock-text can mask phase-dependent math.** No spec amendment — the formula and test pattern are the spec; the comment is recovered by the test.
+
+**Operator-UX gap as second-order ship trigger.** Track 4 #3 ship #1 (deterministic clock) is structurally complete. ROADMAP 4b emerges from S28 verify because the seed feature's value is conditional on visual confirmation, and `/play` was the first call site we expected the state-aware footer on (per the verify-doc Steps 1 and 9). This is a **second-order ship**: the primitive ships clean per spec, but a downstream operator-UX surface needs wiring to make the primitive observable in the live system. Filed for v1.x scope rather than re-opening §11.
+
+## Cross-references
+
+- `tests-to-run-post-session.md` — five doc-deltas landed (Steps 1, 4, 7, 8, 9). Step 4 expected text now anchors to locked §11.I formula + test pattern; Step 8 input now matches `/purgecampaign`'s actual signature; Avrae syntax updated to canonical `!game lr` / `!game sr`.
+- `ROADMAP.md` — 4a (Bug 4) flipped to ✅ SHIPPED LIVE; item 5 (Track 4 #3) flipped to ✅ SHIPPED LIVE; new item 4b filed for `/play` footer wiring follow-up.
+- `VIRGIL_MASTER.md` — `typing_indicator_failed:` already in telemetry primitives section (added in Bug 4 ship pre-verify).
+- `DOCTRINE.md` §74 — new doctrine: aesthetic transport endpoints soft-fail.
+- `WHY.md` — Bug 4 / aesthetic-vs-semantic transport entry appended.
+- `TRACK_4_3_SPEC.md` v1.2 LOCKED — no amendment; verify-doc was the divergence, not the spec.
+- F-54 closure (FAILURES.md) confirmed live: scene-progression visibility now demonstrable end-to-end.
+
+---
+
+# Session 29 — ROADMAP 4b ship + Bug 5 surfacing & fix (combined session)
+
+4b shipped clean per the planner-locked spec. Verify-walk surfaced a critical correctness defect in `init_scene_state` (Bug 5) — not a 4b bug, but 4b made it visible. Combined-session call: fix the engine bug in the same window rather than wait for a separate ship cycle. Both ships promoted ✅ jointly via single restart per Doctrine §73.
+
+## What shipped (4b)
+
+Single file, `discord_dnd_bot.py`. Three changes:
+
+1. **`PLAY_FIRST_SESSION_HINT` constant deleted.** The three-command bullet list (`/bindchar`, `/refresh`, narrate-in-#dm-narration) was redundant with virgildm.com onboarding — by the time `/play` fires, players have already done DDB account setup, Avrae link, `!beyond` import, and `/bindchar`. Wrong audience, wrong channel (`#dm-narration` is the immersion lane; OOC slash-command guidance belongs in `#commands`), wrong trigger. Better orientation triggers filed as ROADMAP 4c (post-`/newcampaign` or `/setup`-pinned `#commands` message; decision deferred to spec time).
+
+2. **`/play` footer assembly mirrors `_dm_respond_and_post`.** State header via `render_state_footer` (mode glyph + ` · Day N, Phase`) prepended to identity line (📍 location + 🗒️ quests). No actor field on `/play` — the DM is opening the scene, no player just acted. Soft-fail at the call site per Doctrine §59: footer issues never block opening narration.
+
+3. **`play_first_session_hint:` log removed; replaced with per-call `state_footer:` log.** `/play` is now greppable like every narration turn. `is_first_session` capture stays (still needed for `apply_starting_time_seed` gate); only the description-append branch and the hint log go away.
+
+`test_play_first_session.py` deleted — every assertion was hint-content on a constant that no longer exists.
+
+## What shipped (Bug 5 / ROADMAP 4d)
+
+Single file, `dnd_engine.py:init_scene_state`. One change:
+
+Switched from `INSERT OR REPLACE INTO dnd_scene_state (...12 original columns...) VALUES (...)` to `INSERT INTO dnd_scene_state (...) VALUES (...) ON CONFLICT(campaign_id) DO UPDATE SET last_scene_change=excluded.last_scene_change, updated_at=excluded.updated_at`. The ON CONFLICT clause is valid because `campaign_id INTEGER PRIMARY KEY` provides the conflict target. New rows still get full schema defaults via the plain INSERT path; existing rows preserve every column the function doesn't explicitly intend to set.
+
+## Bug 5 root cause
+
+During 4b verify, the seed visibility check on campaign 21 (post-S28 manual `(5, 'Evening')` write) returned `Day 1, Morning`. The 4b wiring was correct — the value rendered IS what was in `dnd_scene_state` for that campaign. The bug was upstream: `dnd_scene_state` itself was clobbered by `init_scene_state` on the `/play` call.
+
+`init_scene_state` was using `INSERT OR REPLACE` listing only the original-schema columns. Every column added via ALTER TABLE migration since (campaign_day, day_phase, current_location_id, turn_counter, last_dm_response, tension_int, progress_clocks) was absent from the column list. `INSERT OR REPLACE` is a delete-then-insert under the hood: unlisted columns fall back to schema defaults on the new row.
+
+**Sequence on campaign 21 during S29 verify (pre-fix):**
+1. S28 had set `(campaign_day=5, day_phase='Evening')` directly via SQL.
+2. S29 `/play` entered → `prior_scene` returns the existing row → `is_first_session = False`.
+3. `init_scene_state` runs unconditionally → `INSERT OR REPLACE` wipes row → `campaign_day=1, day_phase='Morning'` (schema defaults).
+4. `apply_starting_time_seed` is gated on `is_first_session` — skipped (correctly, per its idempotency guard, but the moot point: it wouldn't have re-seeded a row that just got wiped to defaults anyway).
+5. Footer correctly renders the now-wiped state: `Day 1, Morning`.
+
+**Track 4 #3 impact (pre-fix):** any time advancement via `advance_time()` (travel, `!game lr`, `!game sr`, `/advance`) survived in-session, but the moment the DM ran `/play` to re-open the scene next session, `dnd_scene_state.campaign_day` / `day_phase` flipped back to `(1, Morning)`. The audit log in `dnd_time_advancements` survived (separate table, untouched), but the live state lied post-`/play`. Same clobber pattern hit location pointer, turn counter, commitment-directive's last DM response, tension/clocks.
+
+## Structural-vs-narrow fix call
+
+Two plausible fix shapes surfaced:
+
+- **(A) Narrow.** Add `campaign_day` and `day_phase` to the existing column list; write current values when row exists, defaults on first init. Closes Track 4 #3 specifically. Leaves the structural pattern broken — next ALTER TABLE-added column on `dnd_scene_state` clobbers on next `/play`.
+- **(B) Structural.** Switch from `INSERT OR REPLACE` to `INSERT ... ON CONFLICT DO UPDATE SET` listing only the fields the function intends to set. All other columns preserved on existing rows; new rows still get schema defaults. This is the correct pattern.
+
+Code's first instinct was (A). Planner pushed (B). (A) ships a known time bomb — next column added to the schema repeats the bug. (B) closes the structural pattern: future migrations are safe by default. Cost difference is zero (same ~10-line diff). (B) shipped.
+
+## Live verification
+
+✅ **4b + Bug 5 jointly promoted.** Combined verify-walk:
+
+| Check | Result |
+|---|---|
+| Code-side: import clean | ✓ |
+| Code-side: zero `PLAY_FIRST_SESSION_HINT` matches | ✓ |
+| Code-side: zero `play_first_session_hint:` log matches | ✓ |
+| Discord: `/play` footer renders state-aware | ✓ (`📖 Exploration · Day 5, Evening 📍 ... 🗒️ Investigate the Crystal Cave`) |
+| Discord: no three-command hint in body | ✓ |
+| Journal: `state_footer:` log fires on `/play` with `day=5 phase=Evening` | ✓ |
+| Journal: zero `play_first_session_hint:` matches | ✓ |
+| sqlite post-`/play`: campaign 21 still `(5, Evening)` | ✓ (`21\|5\|Evening\|2026-05-09 11:59:48`) |
+| sqlite post-`/play`: only `updated_at` refreshed | ✓ |
+
+The sqlite post-`/play` check is the structural verification of Bug 5's fix: a row that had `campaign_day=5, day_phase='Evening'` BEFORE `/play` still has `campaign_day=5, day_phase='Evening'` AFTER `/play`. Pre-fix, that same sequence would have produced `(1, Morning)`.
+
+## Doctrinal notes
+
+**Doctrine §59 reaffirmed.** `/play`'s state-footer assembly is wrapped in try/except per the soft-fail-at-call-site pattern. Aesthetic footer issues never block the opening narration.
+
+**New Doctrine §75 candidate — `INSERT OR REPLACE` is structurally hostile to ALTER TABLE-added columns.** When a table accumulates columns via ALTER TABLE migration, any writer using `INSERT OR REPLACE` with a fixed column list silently regresses to schema defaults on those added columns at every write. The bug is invisible at write time (no error), invisible in tests that don't exercise the migrated columns, and surfaces only when a downstream feature depends on the migrated column's persistence across writes (Track 4 #3 was the first feature to depend on a migrated column surviving `/play`). The structural fix is `ON CONFLICT(pk) DO UPDATE SET` listing only the fields the writer actually intends to set. Sibling to §70 (fix blast radius can be wider than the bug): §70 covers `SELECT` regressions; this covers `INSERT` regressions in the same migration-history shape. Filed as §75 in DOCTRINE.md.
+
+**Combined-session ship as the right call.** Doctrine §73 caps restarts at one per session. Bug 5 surfaced mid-verify; the fix was small (~10 lines, single function), the test surface was clear (re-seed + `/play` + sqlite check), and waiting a session would have left Track 4 #3's persistence broken in production for the gap. Combined-session was the correct choice — shipping a structural fix in the same window as the feature that surfaced it doesn't violate §73 because it's still one restart total. The doctrine constrains restart count, not ship count.
+
+## Cross-references
+
+- `ROADMAP.md` — 4b flipped ✅ SHIPPED LIVE (S29); 4d (Bug 5) flipped ✅ SHIPPED LIVE (S29, combined with 4b); item 5 (Track 4 #3) updated to reflect S29 persistence fix.
+- `DOCTRINE.md` §75 — `INSERT OR REPLACE` is structurally hostile to ALTER TABLE-added columns; sibling to §70.
+- `WHY.md` — entry on the structural-vs-narrow fix call (planner pushed (B); Code's instinct was (A); narrow ships a time bomb).
+- `tests-to-run-post-session.md` — Steps 1 + 9 visual-confirmation notes can drop the "sqlite-only until 4b ships" caveat (Code already deleted `test_play_first_session.py` since every assertion was hint-content).
+- `VIRGIL_MASTER.md` — header refreshed to S29; bones → footings verbiage applied; `init_scene_state` semantics clarified if the document referenced the old `INSERT OR REPLACE` shape.
+- F-54 closure stays confirmed; Track 4 #3 v1 is now complete end-to-end including persistence across `/play`.
