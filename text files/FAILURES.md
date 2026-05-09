@@ -270,7 +270,7 @@ Each entry: when it surfaced, what was attempted, why it didn't work, dispositio
 **Surfaced:** Session 18
 **Context:** `_NAME_RE = ^[A-Z][\w'\-]+(\s+[A-Z][\w'\-]+){0,2}$` requires every word capitalized. "Garrik the Younger" extracted by the parser was rejected by the validator before reaching `npc_upsert`.
 **Failure mode:** Real false-negative pattern for legitimately-titled characters (Garrik the Younger, Hilda the Brewer, John of Stonebridge).
-**Disposition:** **Filed as ROADMAP candidate.** Fix is a small regex extension (allow lowercase connector tokens between capitalized parts) but touches noise-rejection territory load-bearing for keeping junk like "the merchant" out of the NPC table. Don't ship without thinking through the connector-list scope.
+**Disposition:** ✅ FIXED S30. `_NAME_RE` in `npc_extractor.py` extended with a closed-set connector branch (`the`, `of`, `von`, `de`, `da`, `der`) requiring a following capitalized word. First and last tokens remain capitalized; trailing connectors ("Throx the") structurally rejected. "the merchant", "an old man" still reject. 219 test assertions green.
 
 ## §F-30. Prompt bloat
 

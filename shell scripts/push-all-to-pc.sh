@@ -90,6 +90,11 @@ run_rsync $RSYNC \
   /home/jordaneal/scripts/ \
   "${SSH_TARGET}:${PC_BASE}/calibration and test files/"
 
+# Brief pause after calibration step — Cygwin rsync 3.2.7 occasionally crashes
+# with EAGAIN on the receiver; the sleep lets the PC's sshd recover before the
+# next connection attempt.
+sleep 2
+
 # 1d) scripts/dm_philosophy.md -> Virgil Project/text files/
 #     (Live file lives in scripts/ on virgil; on PC it groups with the other docs.)
 echo "==> scripts/dm_philosophy.md -> Virgil Project/text files/"

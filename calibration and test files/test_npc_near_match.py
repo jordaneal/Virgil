@@ -212,6 +212,75 @@ check('loc_update_branch: no near_match log', len([m for m in captured if 'near_
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Tests 10-15: npc_token_prefix_match (S30 Ship 4)
+# ──────────────────────────────────────────────────────────────────────────────
+
+def prefix_logs():
+    return [m for m in captured if 'npc_token_prefix_match' in m]
+
+CAMP_C = create_campaign('guild-token-prefix', 'Token Prefix Campaign C')
+
+# Test 10: prefix_to_full — new is bare name, existing is full name
+# Insert "Lira Songheart" first, then insert "Lira" → "Lira"'s full == existing's first token
+captured.clear()
+npc_upsert(CAMP_C, 'Lira Songheart')   # first insert
+captured.clear()
+npc_upsert(CAMP_C, 'Lira')             # insert branch; "Lira" == first token of "Lira Songheart"
+pl = prefix_logs()
+check('prefix_to_full: exactly one log', len(pl), 1)
+check_truthy('prefix_to_full: new=Lira in log', "new='Lira'" in pl[0])
+check_truthy('prefix_to_full: existing=Lira Songheart', "existing='Lira Songheart'" in pl[0])
+check_truthy('prefix_to_full: relation correct', 'relation=prefix_to_full' in pl[0])
+
+# Test 11: full_to_prefix — new is full name, existing is bare name
+# "Lira" already in CAMP_C; insert "Lira Stormwind" → "Lira Stormwind"'s first token == "Lira"
+captured.clear()
+npc_upsert(CAMP_C, 'Lira Stormwind')   # insert branch; "Lira" == existing "Lira" full name
+pl = prefix_logs()
+check('full_to_prefix: exactly one log', len(pl), 1)
+check_truthy('full_to_prefix: new=Lira Stormwind', "new='Lira Stormwind'" in pl[0])
+check_truthy('full_to_prefix: existing=Lira', "existing='Lira'" in pl[0])
+check_truthy('full_to_prefix: relation correct', 'relation=full_to_prefix' in pl[0])
+
+# Test 12: case-insensitive — "lira" canonicalizes to "Lira" so check via npc engine
+# (engine calls canonicalize_name before upsert; the comparison uses .lower())
+# Test it via a name that is already canonicalized (uppercase first letter, rest lowercase)
+captured.clear()
+npc_upsert(CAMP_C, 'Lira Brightwater')  # first token "Lira" matches existing "Lira" (case-insensitive)
+pl = prefix_logs()
+check('case_insensitive: full_to_prefix fires', len(pl) >= 1, True)
+check_truthy('case_insensitive: relation=full_to_prefix', any('relation=full_to_prefix' in l for l in pl))
+
+# Test 13: negative — no token-prefix match when first tokens diverge
+CAMP_D = create_campaign('guild-token-no-match', 'Token No Match Campaign D')
+captured.clear()
+npc_upsert(CAMP_D, 'Bob Smith')         # insert
+captured.clear()
+npc_upsert(CAMP_D, 'Lira')             # "Lira" != "Bob" (first token of "Bob Smith")
+pl = prefix_logs()
+check('negative_no_match: no prefix log', len(pl), 0)
+
+# Test 14: negative — shared first token but neither is the other's full name
+# "Lira Songheart" vs "Lira Stormwind": first tokens match but neither equals
+# the other's full string → no fire
+CAMP_E = create_campaign('guild-token-shared-prefix', 'Shared First Token Campaign E')
+captured.clear()
+npc_upsert(CAMP_E, 'Lira Songheart')
+captured.clear()
+npc_upsert(CAMP_E, 'Lira Stormwind')   # first token "Lira" == "Lira" but full strings differ
+pl = prefix_logs()
+check('shared_first_token: no prefix log (neither is the other full string)', len(pl), 0)
+
+# Test 15: cross-campaign isolation
+# "Lira" in CAMP_C should not fire for "Lira Songheart" insert in CAMP_E
+CAMP_F = create_campaign('guild-token-cross', 'Cross Campaign F')
+captured.clear()
+npc_upsert(CAMP_F, 'Lira Songheart')   # CAMP_F is empty; no CAMP_C rows visible
+pl = prefix_logs()
+check('cross_campaign: no prefix log across campaign boundary', len(pl), 0)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Cleanup
 # ──────────────────────────────────────────────────────────────────────────────
 

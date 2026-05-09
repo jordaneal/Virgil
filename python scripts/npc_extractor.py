@@ -48,9 +48,20 @@ from dnd_engine import log, canonicalize_name, names_overlap
 # Validator
 # ─────────────────────────────────────────────────────────
 
-# Strict format per PHASE_12_SPEC §7: 1-3 capitalized words.
-# Each word: uppercase letter then one+ word chars / apostrophes / hyphens.
-_NAME_RE = re.compile(r"^[A-Z][\w'\-]+(\s+[A-Z][\w'\-]+){0,2}$")
+# Format: first token capitalized; then 0-3 groups of either a lowercase
+# connector (closed set) followed by a capitalized word, or just a
+# capitalized word. Last token is always capitalized — trailing connectors
+# like "Throx the" are structurally rejected because the connector branch
+# requires a capitalized word to follow it. (F-29 fix, S30.)
+_NAME_RE = re.compile(
+    r"^[A-Z][\w'-]+"                                           # first word
+    r"(?:"
+    r"\s+(?:the|of|von|de|da|der)\s+[A-Z][\w'-]+"             # connector + cap word
+    r"|"
+    r"\s+[A-Z][\w'-]+"                                         # plain cap word
+    r"){0,3}"
+    r"$"
+)
 
 # First-word rejection: articles, pronouns, demonstratives, numerics. If the
 # parser emits "The Guard", "He Frowns", "A Stranger" — drop on first word.

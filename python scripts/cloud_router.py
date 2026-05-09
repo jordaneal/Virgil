@@ -223,6 +223,11 @@ def call_provider(provider, messages, system_prompt=None, max_tokens=1000, task_
         if response.status_code == 200:
             data = response.json()
             text = data["choices"][0]["message"]["content"]
+            finish_reason = data["choices"][0].get("finish_reason", "unknown")
+            prompt_chars = sum(len(m.get("content") or "") for m in msgs)
+            print(f"cloud_router_finish_reason: provider={provider['name']} "
+                  f"task={task_type} finish_reason={finish_reason} "
+                  f"prompt_chars={prompt_chars} response_chars={len(text or '')}")
             latency = time.time() - t0
             increment_usage(provider["name"])
             record_success(provider["name"], latency)
@@ -242,6 +247,13 @@ def route(messages, task_type="general", system_prompt=None, force_local=False):
     Static lists define eligibility per task type.
     Dynamic scoring sorts within the eligible pool.
     """
+    # DnD narration gets a larger budget: reasoning tokens on Groq count against
+    # the same max_tokens window as output tokens, and narration regularly hits
+    # 1000-token truncation (Bug 2, S25 #3). All other task types keep the 1000
+    # default — bumping across the board would just burn tokens on extraction /
+    # advisory / chat calls that don't need the headroom.
+    max_tokens = 3000 if task_type == "dnd" else 1000
+
     if force_local or task_type in PRIVATE_TASKS:
         provider = next(p for p in PROVIDERS if p["name"] == "local")
         success, text, code = call_provider(provider, messages, system_prompt, task_type=task_type)
@@ -301,7 +313,8 @@ def route(messages, task_type="general", system_prompt=None, force_local=False):
             continue
 
         print(f"[router] Trying {provider_name} (reason={routing_reason}, score={provider_score(provider_name):.2f})...")
-        success, text, code = call_provider(provider, messages, system_prompt, task_type=task_type)
+        success, text, code = call_provider(provider, messages, system_prompt,
+                                             max_tokens=max_tokens, task_type=task_type)
 
         if success:
             print(f"[router] Success via {provider_name}")

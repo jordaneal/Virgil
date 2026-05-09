@@ -1250,3 +1250,92 @@ Expected: 89 pytest-runnable + 27 + 9 standalone = 125 (a subset; others run via
 4. `parse_elapsed:` handles at least three observed-during-play strings cleanly (no `result=none` for common DM phrases).
 5. `/purgecampaign` cascades clean `dnd_time_advancements` rows for the test campaign.
 6. No exception-path `time_advance: ... err=` lines in the logs from the verify pass.
+
+---
+
+## §S30 — Small-items batch (May 9, 2026)
+
+Four new log-line shapes landed in this session. All four can be verified in one short Discord narration turn (one `/play` + one player action).
+
+### Ship 1 — Bug 2: `cloud_router_finish_reason`
+
+**Shape:**
+```
+cloud_router_finish_reason: provider={name} task={type} finish_reason={value} prompt_chars={N} response_chars={N}
+```
+
+**Fires:** Every successful cloud-provider call (not local Ollama). Fires on the happy path, not just on errors.
+
+**Verify grep:**
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" --no-pager | grep "cloud_router_finish_reason"
+```
+
+**Expected fields:** `provider=groq_heavy` (or whichever wins the DND priority override), `task=dnd`, `finish_reason=stop` on normal turns. `finish_reason=length` is the failure-mode signal — if it appears, the narration was truncated.
+
+**Also verify:** max_tokens bump is active — DnD path no longer cuts at 1000 tokens. If `finish_reason=stop` is now seen where it used to be `length`, the fix is working.
+
+---
+
+### Ship 2 — F-29: titled-NPC regex
+
+**What changed:** `_NAME_RE` in `npc_extractor.py` now passes "Garrik the Younger", "John of Stonebridge", "Marcus von Helder". No new log line — verify by introducing a titled NPC in narration and checking `npc_upsert: insert` fires (not `bad_name_format` rejection).
+
+**Verify grep:**
+```bash
+journalctl --user -u virgil-discord --since "10 minutes ago" --no-pager | grep -E "npc_upsert: insert|bad_name_format"
+```
+
+**Expected:** Named NPCs with lowercase connectors (`the`, `of`, `von`, `de`, `da`, `der`) now reach `npc_upsert: insert`. `bad_name_format` rejections no longer appear for titled names.
+
+---
+
+### Ship 3 — S26 follow-up: `commitment_empty_response`
+
+**Shape:**
+```
+commitment_empty_response: campaign={N} prompt_chars={N} fired=1 directive_chars={N}
+```
+
+**Fires:** Only when BOTH conditions hold in the same turn: (1) LLM returned empty/too-short narration (`dm_respond: EMPTY response from LLM` fires first), AND (2) commitment directive also fired that turn (`commitment_directive: ... fired=1`). Silent on non-empty turns and when commitment didn't fire.
+
+**Verify grep (runs passively — fires only on the failure mode):**
+```bash
+journalctl --user -u virgil-discord --since "1 hour ago" --no-pager | grep "commitment_empty_response"
+```
+
+**Signal interpretation:** If this fires → commitment directive contributed to prompt bloat on an empty-narration turn. High rate over multiple sessions → investigate commitment directive prompt compression as the fix. Low/zero rate → empty narration has a different root cause.
+
+---
+
+### Ship 4 — Token-prefix fragmentation: `npc_token_prefix_match`
+
+**Shape:**
+```
+npc_token_prefix_match: campaign={N} new='{new}' existing='{existing}' relation={prefix_to_full|full_to_prefix}
+```
+
+**Fires:** Only on `npc_upsert` INSERT branch, when the new canonical name and an existing canonical name are related by token-prefix: either the new name's full string equals the existing name's first token (`prefix_to_full`, e.g. new="Lira" existing="Lira Songheart"), or the new name's first token equals the existing name's full string (`full_to_prefix`, e.g. new="Lira Songheart" existing="Lira"). Silent on update branch. Silent when no token-prefix relationship exists.
+
+**Verify grep:**
+```bash
+journalctl --user -u virgil-discord --since "1 session ago" --no-pager | grep "npc_token_prefix_match"
+```
+
+**Signal interpretation:** If this fires → bare-name vs full-name NPC fragmentation is occurring in the campaign. `prefix_to_full` = the bare form just got inserted alongside the full form; `full_to_prefix` = the full form just got inserted alongside the bare form. Human review: are these the same character? If yes, future auto-merge ship has real data to calibrate against.
+
+---
+
+### Verify 5 — Phantom-location channel: CLOSED
+
+**Result (S30):** `set_current_location` has exactly one runtime caller in production code (`discord_dnd_bot.py:3123`, inside `/travel`). Journal from May 7–9 (since Track 7 #2 ship): every `set_current_location:` line is paired with a `/travel:` line — zero orphaned location writes. §17 single-write-path holds. ROADMAP item 11 dropped.
+
+**No ongoing verification needed.** Channel is structurally closed.
+
+---
+
+### Quick S30 sweep grep
+
+```bash
+journalctl --user -u virgil-discord --since "30 minutes ago" --no-pager | grep -E "cloud_router_finish_reason|commitment_empty_response|npc_token_prefix_match|npc_upsert: insert"
+```

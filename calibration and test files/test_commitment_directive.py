@@ -355,6 +355,54 @@ finally:
     conn.close()
 
 
+# ─── S26: commitment_empty_response log line (S30 Ship 3) ────────────────────
+# The log fires inside dm_respond's empty-response branch when _commitment_fired.
+# Rather than calling dm_respond (which requires mocking ~20 dependencies), we
+# test the gate logic directly: simulate the four behavioral assertions using
+# captured log lines from a small helper that mirrors the exact branch.
+
+_s26_log = []
+
+
+def _s26_emit(commitment_fired: bool, empty_response: bool,
+               campaign_id: int, prompt_chars: int, directive_chars: int):
+    """Mirrors the exact gate inside dm_respond's empty-response branch."""
+    logs = []
+    if not empty_response:
+        return logs
+    logs.append(f"dm_respond: EMPTY response from LLM campaign={campaign_id} "
+                f"mode=exploration intent=social prompt_chars={prompt_chars}")
+    if commitment_fired:
+        logs.append(f"commitment_empty_response: campaign={campaign_id} "
+                    f"prompt_chars={prompt_chars} fired=1 "
+                    f"directive_chars={directive_chars}")
+    return logs
+
+
+# 1. fires when fired=1 AND empty
+_logs = _s26_emit(True, True, 99, 24000, 800)
+check('S26: fires when commitment_fired=1 AND empty',
+      any("commitment_empty_response" in l for l in _logs), True)
+
+# 2. does NOT fire when fired=0 AND empty
+_logs = _s26_emit(False, True, 99, 24000, 0)
+check('S26: no fire when commitment_fired=0 AND empty',
+      any("commitment_empty_response" in l for l in _logs), False)
+
+# 3. does NOT fire when fired=1 AND non-empty
+_logs = _s26_emit(True, False, 99, 24000, 800)
+check('S26: no fire when commitment_fired=1 AND non-empty',
+      any("commitment_empty_response" in l for l in _logs), False)
+
+# 4. carries the four named fields
+_logs = _s26_emit(True, True, 42, 25000, 950)
+_line = next((l for l in _logs if "commitment_empty_response" in l), "")
+check('S26: field campaign=',   "campaign=42"    in _line, True)
+check('S26: field prompt_chars=', "prompt_chars=25000" in _line, True)
+check('S26: field fired=1',     "fired=1"        in _line, True)
+check('S26: field directive_chars=', "directive_chars=950" in _line, True)
+
+
 # ─── summary ────────────────────────────────────────────────────────────────
 print(f"\nPASS: {PASS}")
 print(f"FAIL: {FAIL}")

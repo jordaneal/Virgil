@@ -147,11 +147,12 @@ check('single_letter',
       _validate_npc({'name': 'X', 'role': '', 'location_hint': '', 'description_fragment': ''}),
       (False, 'bad_name_format'))
 
-# Mixed-case mid-word breaks regex (lowercase "the" between caps)
-check('mid_lowercase',
+# F-29 fix: "Garrick the Smith" is a valid titled NPC and now passes _NAME_RE.
+# The old test expected rejection because the old regex required all-caps words.
+check('mid_lowercase_now_valid',
       _validate_npc({'name': 'Garrick the Smith', 'role': '', 'location_hint': '',
                      'description_fragment': ''}),
-      (False, 'bad_name_format'))
+      (True, None))
 
 # Numeric or symbolic
 for name in ['12-Year-Old', '#Garrick', '!Mira', 'Garrick!']:
@@ -159,9 +160,14 @@ for name in ['12-Year-Old', '#Garrick', '!Mira', 'Garrick!']:
           _validate_npc({'name': name, 'role': '', 'location_hint': '', 'description_fragment': ''}),
           (False, 'bad_name_format'))
 
-# Four-word names exceed the 3-word cap
-check('four_word',
+# F-29: new regex uses {0,3} → 4 tokens total allowed. "John James Robert Smith"
+# is 4 cap words and now passes. Five-word names still reject.
+check('four_word_now_valid',
       _validate_npc({'name': 'John James Robert Smith', 'role': '', 'location_hint': '',
+                     'description_fragment': ''}),
+      (True, None))
+check('five_word_exceeds_cap',
+      _validate_npc({'name': 'John James Robert Smith Jones', 'role': '', 'location_hint': '',
                      'description_fragment': ''}),
       (False, 'bad_name_format'))
 
@@ -618,6 +624,57 @@ result = parse_npcs("Donovan Ruby waves.", pc_names=[])
 result_names = [n['name'] for n in result]
 check('parse_npcs: empty pc_names no filter',
       result_names, ['Donovan Ruby'])
+
+
+# ── F-29: titled-NPC connector regex (S30 Ship 2) ──
+# Positive: names with closed-set connectors must PASS _NAME_RE
+from npc_extractor import _NAME_RE as _NRE
+
+_f29_positive = [
+    "Garrik the Younger",
+    "Hilda the Brewer",
+    "John of Stonebridge",
+    "Marcus von Helder",
+    "Anne de Beaumont",
+    "Karl der Grosse",
+    # pre-existing passing names must still pass
+    "Garrick",
+    "Donovan",
+]
+for _name in _f29_positive:
+    check(f'F-29 _NAME_RE PASS: {_name!r}',
+          bool(_NRE.match(_name)), True)
+
+# Negative: junk must still FAIL _NAME_RE
+_f29_negative = [
+    "the merchant",      # first word lowercase
+    "an old man",        # first word lowercase
+    "Throx the",         # trailing connector — no cap word follows
+    "of Stonebridge",    # first word is connector (lowercase)
+    "the the",           # first word lowercase
+    "the",               # lone connector
+]
+for _name in _f29_negative:
+    check(f'F-29 _NAME_RE FAIL: {_name!r}',
+          bool(_NRE.match(_name)), False)
+
+# Pre-existing rejection cases still reject through _validate_npc
+_reject_cases = [
+    ("camelCase", "bad_name_format"),
+    ("lowercase name", "bad_name_format"),
+]
+for _n, _reason in _reject_cases:
+    check(f'F-29 validate still rejects {_n!r}',
+          _validate_npc(_NPC_TEMPLATE(_n)),
+          (False, _reason))
+
+# Full _validate_npc pass for a connector name (end-to-end)
+check('F-29 validate: Garrik the Younger passes',
+      _validate_npc(_NPC_TEMPLATE('Garrik the Younger')),
+      (True, None))
+check('F-29 validate: John of Stonebridge passes',
+      _validate_npc(_NPC_TEMPLATE('John of Stonebridge')),
+      (True, None))
 
 
 # ── Report ──

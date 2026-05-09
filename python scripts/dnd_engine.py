@@ -2614,6 +2614,23 @@ def npc_upsert(campaign_id: int, name: str, role: str = '',
                 if _d <= 2:
                     log(f"npc_near_match: new='{canonical}' "
                         f"existing='{_ex_name}' distance={_d}")
+                # Token-prefix diagnostic (S30 Ship 4): surface bare-name vs
+                # full-name fragmentation (e.g. "Lira" + "Lira Songheart").
+                # Levenshtein distance between these is high (>> 2) so
+                # npc_near_match misses them. Pure observability — no merge.
+                _tp_new = canonical.lower()
+                _tp_ex = _ex_name.lower()
+                if _tp_new != _tp_ex:
+                    _tp_new_first = canonical.split()[0].lower()
+                    _tp_ex_first = _ex_name.split()[0].lower()
+                    if _tp_new == _tp_ex_first:
+                        log(f"npc_token_prefix_match: campaign={campaign_id} "
+                            f"new='{canonical}' existing='{_ex_name}' "
+                            f"relation=prefix_to_full")
+                    elif _tp_ex == _tp_new_first:
+                        log(f"npc_token_prefix_match: campaign={campaign_id} "
+                            f"new='{canonical}' existing='{_ex_name}' "
+                            f"relation=full_to_prefix")
 
             cur = conn.execute(
                 "INSERT INTO dnd_npcs "
@@ -5873,6 +5890,14 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
             log(f"dm_respond: EMPTY response from LLM "
                 f"campaign={campaign['id']} mode={mode} intent={intent} "
                 f"prompt_chars={len(system)}")
+            # S26 follow-up: measure how often commitment directive + empty
+            # response co-occur. High rate → commitment prompt bloat implicated.
+            # Low rate → empty narration has a different root. Fires ONLY when
+            # both conditions hold; silent on non-empty turns (§39 baseline).
+            if _commitment_fired:
+                log(f"commitment_empty_response: campaign={campaign['id']} "
+                    f"prompt_chars={len(system)} fired=1 "
+                    f"directive_chars={len(commitment_text)}")
 
         # Track 7 #2 — Post-LLM verification pass. verify_narration checks
         # the response against the bound ArbitrationResult and canonical
