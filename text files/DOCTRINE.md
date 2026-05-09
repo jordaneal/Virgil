@@ -80,6 +80,8 @@ Each entry: when it was learned (which session), what triggered it, the doctrine
 - §71. [Verify computed claims in specs before locking](#71-verify-computed-claims-in-specs-before-locking)
 - §72. [Outer guard required even when inner function already catches](#72-outer-guard-required-even-when-inner-function-already-catches)
 - §73. [Discord verification is a human-in-the-loop handoff, not a Code task](#73-discord-verification-is-a-human-in-the-loop-handoff)
+- §74. [Aesthetic transport endpoints soft-fail](#74-aesthetic-transport-endpoints-soft-fail)
+- §75. [`INSERT OR REPLACE` is structurally hostile to ALTER TABLE-added columns](#75-insert-or-replace-is-structurally-hostile-to-alter-table-added-columns)
 
 ---
 
@@ -134,7 +136,7 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Learned:** Session 8
 **Trigger:** Jordan said "I really don't want to be doing any / commands in Discord, I just want to roleplay." First Phase 3 sketch was auto-extraction with a proposal queue, lifecycle states, and per-feature extraction threads — premature abstraction.
 **Doctrine:** The system evolves from OBSERVED friction, not ANTICIPATED friction. Ship the smallest change that makes the friction visible. Watch usage. Let data drive what comes next.
-**Applied in:** S12 (`/travel` and autocomplete shipped from real-session friction, not the spec), S14 (S6 cache-warming, COMBAT_RX cleanup, sentinel — all from observed gaps), S16 (operating-model reframe formalizes this).
+**Applied in:** S14 (S6 cache-warming, COMBAT_RX cleanup, sentinel — all from observed gaps), S16 (operating-model reframe formalizes this).
 
 ## §7. Discard the first design
 
@@ -148,7 +150,7 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Learned:** Session 8
 **Trigger:** Every Phase 2 patch shipped to the server, was tested in Discord, and produced the expected log lines BEFORE the next step started.
 **Doctrine:** One live session per step is the discipline. Don't batch. Live verification per patch is cheap insurance, high payoff.
-**Applied in:** S11, S12, S13, S15, S18 (with the addition of `tests-to-run-post-session.md` as a standing artifact).
+**Applied in:** S15, S18 (with the addition of `tests-to-run-post-session.md` as a standing artifact).
 
 ## §9. Don't engineer against model limits
 
@@ -176,7 +178,7 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Learned:** Session 11 (formalized as a third instance after Session 6 scene extraction and Session 9 Phase 3 auto-execute)
 **Trigger:** Phase 11.1 mechanical hints needed a small dedicated LLM whose only job is reading Virgil's narration and emitting Avrae bookkeeping suggestions.
 **Doctrine:** Advisory parser pattern: bounded text input → small LLM → strict structured output → deterministic validator → whitelist-restricted side effect. Reusable across domains.
-**Applied in:** S12A (npc_extractor), S12B (location_extractor), S12C (skeleton_loader is an authored variant), S13 (S9 capability check), S15 (PC contamination filter), S16 (consequence_extractor — dual-pass), S22 #2 (loot generation — pure-function variant). Six-plus instances by Session 16.
+**Applied in:** S16 (consequence_extractor — dual-pass), S22 #2 (loot generation — pure-function variant). Pattern also applied in S12A/B/C, S13, S15 — six-plus instances total.
 
 ## §13. Suggestion-only forever
 
@@ -211,7 +213,7 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Learned:** Session 12
 **Trigger:** Phase 12 enforced single write paths for `dnd_npcs` (through five-branch behavior matrix in `npc_upsert`) and for `dnd_scene_state.current_location_id` (through `set_current_location` only).
 **Doctrine:** Each mutable field has exactly one writer. New code paths add behavior to the existing writer; they do not introduce parallel writers. The constraint is load-bearing for invariant enforcement (§16) and for cascade correctness (§19).
-**Applied in:** S13 (`campaign_set_status` is the sole status writer outside `create_campaign`), S16 (`consequence_upsert`, `consequence_emit_surface` — separate write paths for separate lifecycle stages), S21 (`update_combatants_from_init_list`, `clear_combatants` are sole writers of `dnd_combatant_state`), S22 #1 (`add_item`/`remove_item` for `dnd_inventory`), S22 #2 (`enqueue_loot`/`mark_loot_surfaced` for `dnd_loot_pending`), S27 (`advance_time` is the sole runtime writer of `dnd_scene_state.campaign_day` / `day_phase` and `dnd_time_advancements`).
+**Applied in:** S22 #1 (`add_item`/`remove_item` for `dnd_inventory`), S27 (`advance_time` is the sole runtime writer of `dnd_scene_state.campaign_day` / `day_phase` and `dnd_time_advancements`). Pattern applies across every mutable field in the system.
 
 **Narrow-exception framing (S27).** When a second writer is genuinely needed, frame the exception narrowly enough that it cannot grow. Track 4 #3's `apply_starting_time_seed` is the project's first explicit narrow exception: campaign initialization writes `campaign_day` / `day_phase` directly during the first `/play`, bypasses `advance_time()`, and does NOT append to the audit log. The framing: *"`advance_time()` is the sole writer for runtime time advancement. Campaign initialization has a separate one-shot writer in the skeleton loader, scoped to the first-scene_state seed only, idempotent because the seed only fires when the row is at defaults."* Three guards keep the exception narrow: (1) one-shot — only fires on first `/play`, (2) idempotent — refuses to overwrite an advanced clock, (3) different audit channel — does not pollute the runtime advancement log. Future "second writer" temptations need this same narrow framing or they should be promoted to a real source enum value on the existing writer.
 
@@ -241,7 +243,7 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Learned:** Session 13 (named in S13; reinforced as a recurring meta-principle in S16 and S18)
 **Trigger:** When `/purgecampaign` rejected the seemingly-correct phrase, my first instinct was to ship a fix. Jordan asked for the diagnostic first. The Python codepoint comparison showed the strings were byte-identical when manually typed — the issue was in transit from Discord, not in the comparison logic.
 **Doctrine:** Always ask for current data before prescribing. Don't ship a fix while a diagnostic is still pending. The diagnostic IS the architecture step, not the fix.
-**Applied in:** S15 (Donovan/Ruby fix verification — first move was grepping for bot PID/restart status), S16 (`godmode_gap` log line shipped before any constraint layer; race condition acknowledged but not fixed), S18 (entire S22-S25 batch is pure-observability before any constraint).
+**Applied in:** S16 (`godmode_gap` log line shipped before any constraint layer), S18 (entire S22-S25 batch is pure-observability before any constraint).
 
 ## §22. Re-stage from most recent output
 
@@ -269,7 +271,7 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Learned:** Session 14 (Track 3 entry — pacing, central thread, philosophy)
 **Trigger:** Phase 1/12 solved "what is true?" / "what exists?" / "what can the player do?". Existing state — tension, clocks, hooks — was being declared in the prompt but ignored as decoration. The fix wasn't to build new state; it was to convert state into imperative directives.
 **Doctrine:** Convert state from declaration to instruction. "Force a decision" beats "the air feels tense." Imperative-not-descriptive phrasing is the entire difference between Track 3 working and not working. Generalizes: most "the bot doesn't do X" complaints in a directive-driven system are "we need to convert state Y into a directive Z that says do X."
-**Applied in:** S16 (consequence directive — concrete state pinned with manifestation-not-restate guard), S21 (combat persistence directive — concrete combatants block), S22 #2 (loot directive — AUTHORITATIVE/EXHAUSTIVE framing), S23 #2 (combat redirect — explanatory pressure on on-turn combat narration).
+**Applied in:** S22 #2 (loot directive — AUTHORITATIVE/EXHAUSTIVE framing), S23 #2 (combat redirect — explanatory pressure on on-turn combat narration).
 
 ## §26. Ever-growing exception lists
 
@@ -318,7 +320,7 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Learned:** Session 16
 **Trigger:** Initial CONSEQUENCE_SURFACING_SPEC.md surfaced 9 locked decisions and 6 open questions. Jordan's review pass turned every open question into a locked one. Implementation read the locked spec like a contract.
 **Doctrine:** Spec the unbuilt layer to the bar. Have the user review and lock decisions. Implementation reads the locked spec like a contract — every architectural choice traces back to a §1 lock. The spec stops being aspirational the moment it's reviewed; it becomes the authority. Speccing is the speed-up, not the slow-down.
-**Applied in:** S21 (combat persistence directive spec → review → ship), S22 #1 (inventory v1 spec-brief), S22 #2 (loot generation spec, with mid-spec architectural pivot).
+**Applied in:** S22 #1 (inventory v1 spec-brief), S22 #2 (loot generation spec, with mid-spec architectural pivot).
 
 ## §33. Build-to-a-bar
 

@@ -85,22 +85,17 @@ Each entry: when it surfaced, what was attempted, why it didn't work, dispositio
 
 ## §F-05. Stale combatant 'throx'
 
-**Surfaced:** Session 8 (initially), re-surfaced Session 18
-**Context:** S8 buffer.consume diagnostic showed actor name mismatch. S18 post-B2.1 attack embed showed stale combatant `throx` from a prior session's init tracker.
-**Failure mode:** Avrae state contamination across sessions. With no `!init begin` (godmode lets attack happen in exploration mode), targets bind to whatever stale tracker rows exist.
-**Disposition:** **Filed for committed-action spec** (`COMMITTED_ACTION_RESOLUTION_SPEC.md`). Both issues downstream of orchestration layer; both addressed by full attack-resolution chain. Filed as a candidate hygiene ship: `/init end` automation at session start (only worth doing if recurrence is high).
-**Related:** §F-06 (same family), §F-26 godmode_gap.
+**Surfaced:** S8 (initially), re-surfaced S18
+**Context:** S8 buffer.consume showed stale `throx` combatant. S18 post-B2.1 confirmed Avrae state contamination from prior sessions when no `!init begin` is issued.
+**Failure mode:** Targets bind to stale tracker rows in exploration mode (godmode path).
+**Disposition:** Filed for committed-action spec; both issues downstream of orchestration layer. `/init end` at session start is the hygiene workaround. See also §F-06, §F-26.
 
 ## §F-06. Actor name mismatch
 
-**Surfaced:** Session 8 (via 2B.1 buffer.consume diagnostic)
-**Context:**
-- Avrae says: `'throx'` (lowercased character name)
-- Virgil batches as: `'Donovan Ruby'` (bound character display name)
-- Cache keyed by: depends on Avrae sheet embed
-**Failure mode:** Three names for one entity. `Buffer.consume(actors=['Donovan Ruby'])` pulls 0 events because the buffer holds 'throx' events.
-**Disposition:** Filed as the actor-name-reconciliation problem (Phase 6). Not fixed in S8 (out of scope). Defer until 2+ characters bound and rolling.
-**Related:** Donovan/Ruby address-name fix in S15 (different layer — surface address vs reconciliation).
+**Surfaced:** S8 (via 2B.1 buffer.consume diagnostic)
+**Context:** Three names for one entity — Avrae uses `'throx'` (lowercased), Virgil batches as `'Donovan Ruby'` (display name), cache keyed by sheet embed. `Buffer.consume(actors=['Donovan Ruby'])` pulls 0 events because the buffer holds 'throx' events.
+**Failure mode:** Actor identity not unified across layers.
+**Disposition:** Filed as the actor-name-reconciliation problem (Phase 6). Deferred until 2+ characters bound. Note: Donovan/Ruby address-name fix in S15 is surface address, not reconciliation.
 
 ## §F-07. Hallucinated slash commands
 
@@ -111,10 +106,10 @@ Each entry: when it surfaced, what was attempted, why it didn't work, dispositio
 
 ## §F-08. Layer 2 narration drift
 
-**Surfaced:** Session 9
-**Context:** Across four consecutive turns with explicit player commitments ("we'll go deeper and grab the chest contents", "let's move", "I am one of the best rogues to live"), the goblin chief never agreed, never refused, never let the party pass. Every NPC stayed ambiguous. Every scene stalled. Phase 3 auto-execute can't commit state when narration doesn't enact change.
-**Failure mode:** Architectural: Phase 3 was scoped on the assumption that the friction was "I have to type slash commands." Actual friction was one layer deeper: the narration model wasn't committing to outcomes.
-**Disposition:** Resolved in S10 by **model swap** to `groq_heavy` (gpt-oss-120b). Llama-3.3-70b had hit its instruction-following ceiling; gpt-oss followed rules 1-3 alone where Llama needed nine cumulative rules and still wasn't reliable. Validated §9 (don't engineer against model limits).
+**Surfaced:** S9
+**Context:** Despite four consecutive turns of explicit player commitments, NPCs never committed, scenes stalled. Phase 3 auto-execute can't commit state when narration doesn't enact change.
+**Failure mode:** Phase 3 was scoped assuming friction was "typing slash commands." Actual friction was one layer deeper — the narration model wasn't committing to outcomes.
+**Disposition:** Resolved in S10 by model swap to `groq_heavy` (gpt-oss-120b). Llama-3.3-70b had hit its instruction-following ceiling; gpt-oss followed 3 rules where Llama needed 9 and still failed. Validates §9.
 
 ## §F-09. Routing pipeline reorder
 
@@ -146,14 +141,11 @@ Each entry: when it surfaced, what was attempted, why it didn't work, dispositio
 
 ## §F-13. Phantom location Stormbridge
 
-**Surfaced:** Session 12; recurred S25 multiplayer test as `/travel` location revert.
-**Context:** LLM typo'd "Stonebridge" as "Stormbridge" once; parser dutifully wrote it as a new canonical location. S25 surfaced a second mode of the same family: `/travel` to a destination that didn't already exist in `dnd_locations` left `dnd_scene_state.current_location_id` pointing at the prior location forever — only the embed footer was overridden one-shot. The location_extractor would later create the destination row from LLM narration, but never write the scene_state pointer (single-write-path rule). Result: footer drifts to new location, mention bumps fire on new rows, but the canonical pointer reverts on every `build_dm_context` read.
-**Failure mode:** Phantom canonical entries from typos AND silent location reverts after travel to unknown destinations. Structurally identical to legitimate emergent canon — Phase 12B's parser can't distinguish.
-**Disposition (S13):** Filed for telemetry detection (Ship 4: `phantom_location_candidates` surfaces `skeleton_origin=0 AND mention_count=1` rows that haven't aged past N other distinct locations). No auto-purge — strict literal match + telemetry + future merge tool > fuzzy match (§14).
-**Disposition (S25 — closed):** `/travel` now calls `location_upsert` for unknown destinations, then `set_current_location` unconditionally. Three sibling holes fixed in the same ship:
-- `get_scene_state` was missing `current_location_id` from its SELECT — silently broke the at-location enrichment in the consequence/commitment/init directives, dormant since the column was added (regression caught live, not by spec).
-- `get_recently_active_npcs` gained a `location_id` filter; `build_dm_context` now passes `current_location_id`. NPC list scoped to current location; live test confirms `npcs_in_context: count=N location_filtered=1`.
-- Spec for "NULL location_id = always present" reverted live — parser leaves NULL by default, so the always-present set grew with every fabricated NPC. Strict filter (location_id match only) shipped after S25 turn 1 surfaced Keeper at the wrong location through the prompt block. Followup channel — chroma — broke out as §F-44.
+**Surfaced:** S12 (LLM typo); re-surfaced S25 as `/travel` location revert.
+**Context:** S12: LLM typo'd "Stonebridge" as "Stormbridge"; parser wrote it as canonical. S25: `/travel` to unknown destination left `current_location_id` pointing at prior location — footer drifted to new location but canonical pointer reverted on every `build_dm_context` read.
+**Failure mode:** Phantom entries from typos AND silent reverts after travel to unknown destinations; structurally identical to legitimate emergent canon.
+**Disposition (S13):** Filed for telemetry detection (Ship 4 `phantom_location_candidates`: `skeleton_origin=0 AND mention_count=1`). No auto-purge — strict match + telemetry > fuzzy match (§14).
+**Disposition (S25 — closed):** Bug 3 ship: `/travel` calls `location_upsert` for unknown destinations then `set_current_location` unconditionally. `get_scene_state` SELECT regression fixed (incidentally re-activated dormant location enrichment in three sibling directives); `get_recently_active_npcs` strict `location_id` filter added (NULL = silent). F-44 (chroma bleed) filed as remaining channel.
 
 ## §F-14. Tests sandbox only
 
@@ -241,11 +233,10 @@ Each entry: when it surfaced, what was attempted, why it didn't work, dispositio
 
 ## §F-26. godmode_gap
 
-**Surfaced:** Session 16 (diagnostic shipped) / Session 18 (live data accumulating)
-**Context:** Jordan: "if I enter combat like swinging my dagger at the barkeep, I just type, 'I go outside and help a child under a wagon' and the DM allows it, so god mode is still very real." The `intent=COMBAT` classifier fires, but `mode=exploration` allows the action through without combat-mode constraints.
+**Surfaced:** S16 (diagnostic shipped) / S18 (live data accumulating)
+**Context:** `intent=COMBAT` classifier fires but `mode=exploration` allows the action through — player can narrate away from active combat freely.
 **Failure mode:** Player narration bypasses combat mechanical reality entirely.
-**Disposition:** **Diagnostic-first** (§39). Shipped `godmode_gap` log line in S16 — fires when `intent=COMBAT` is classified in a non-combat mode. No behavior change. Behavior fix filed in `COMMITTED_ACTION_RESOLUTION_SPEC.md` as a candidate next layer (not committed). S18 B2 attack-template directive partially addresses one symptom (the bare-`!attack` syntax loss), but the godmode root cause stays open.
-**Related:** §F-05 (stale combatant binding is a downstream effect), §F-31 (B2 fixes attack syntax not godmode).
+**Disposition:** Diagnostic-first (§39) — `godmode_gap` log line shipped S16. S18 B2 addressed one symptom. Root cause closed by Track 7 #1 COMBAT_ACTION binding (S25 #4). Related: §F-05, §F-31.
 
 ## §F-27. journalctl user unit
 
@@ -256,14 +247,10 @@ Each entry: when it surfaced, what was attempted, why it didn't work, dispositio
 
 ## §F-28. S23 hit-rate prediction wrong
 
-**Surfaced:** Session 18 live verification
-**Context:** S23 (npc_near_match) was designed to catch typo-driven canonical-name fragmentation. Live data showed three independent reasons fragmentation is rare in normal play:
-1. DM auto-correction swallows player typos before the parser sees them
-2. `bad_name_format` validator (§F-29) drops legitimately-titled characters before INSERT branch
-3. New canonical names usually don't sit within distance ≤2 of existing canon
-**Failure mode:** Calibration miss in design rationale: "fragmentation will be common because typos are common" missed the LLM's auto-correction loop.
-**Disposition:** Diagnostic still earns its keep when it does fire (S18 second test pass: "Garrik" near-match against "Garrick" at distance 1 fired correctly). Doctrine: separate "diagnostic correctly designed" from "diagnostic will fire often" — first is architectural, second is empirical hypothesis to update against first real session of data.
-**Related:** §F-29 surfaced as bonus finding from S23 verification.
+**Surfaced:** S18 live verification
+**Context:** S23 npc_near_match was designed for typo-driven fragmentation. Live data showed it fires rarely: DM auto-correction swallows player typos, `bad_name_format` drops titled characters before INSERT, and new canonical names rarely sit within distance ≤2 of existing canon.
+**Failure mode:** Calibration miss — "fragmentation common because typos common" missed the LLM's auto-correction loop.
+**Disposition:** Diagnostic still earns its keep on real fires (S18: "Garrik" near-match against "Garrick" at distance 1 fired correctly). Doctrine: "diagnostic correctly designed" vs "fires often" are separate questions. §F-29 surfaced as bonus finding.
 
 ## §F-29. bad_name_format validator false-negative
 
@@ -347,13 +334,10 @@ Each entry: when it surfaced, what was attempted, why it didn't work, dispositio
 
 ## §F-40. Loot v1.1 chroma contamination
 
-**Surfaced:** Session 22 #2 second live verification pass
-**Context:** v1.1's tighter directive STILL lost. Pass-2 narration kept the iron ring + parchment + copper coins from the prior failed turn. Diagnosis: `chroma_search(campaign_id, 'loot the goblin')` retrieved the 10:25:51 DM turn (containing the bad loot text from pass 1), formatted it as `Relevant past events: ...`, and `build_dm_context` placed it BEFORE the tactical-band loot directive. Attention bias favors the earlier block.
-**Failure mode:** Chroma stored failed narration → retrieved it next turn → LLM treated it as authoritative scene context. Contamination compounds across turns. The directive's "AUTHORITATIVE" framing competed with retrieval and lost on placement alone.
-**Disposition:** Two-prong fix in v1.2:
-- **Chroma purge** (destructive, with explicit Jordan approval) — both contaminated docs exported to `/mnt/virgil_storage/digest/chroma_purge_track4_loot_2026-05-05.json` then deleted. Post-delete contamination scan: 0 `iron ring`, 0 `wolf-rune` in campaign 17.
-- **Retrieval override clause** in the directive: "If retrieved past events ('RELEVANT PAST EVENTS' block above) describe different loot for this body, ignore those descriptions. The list in this block supersedes any prior narration and is the current ground truth."
-Doctrines: §52 (failure modes stack), §53 (chroma is a cross-turn behavior source), §54 (procedural confirmation ≠ re-decision — Jordan's call on the export-then-delete pattern).
+**Surfaced:** S22 #2 second live verification pass
+**Context:** v1.1's tighter directive still lost — `chroma_search` retrieved the prior failed loot narration as "RELEVANT PAST EVENTS" and `build_dm_context` placed it BEFORE the tactical-band directive. Attention bias favored the earlier block; "AUTHORITATIVE" framing competed with retrieval and lost on placement alone.
+**Failure mode:** Chroma stored failed narration → retrieved it next turn → LLM treated retrieved past as authoritative scene context. Contamination compounds across turns.
+**Disposition:** v1.2 two-prong fix: (1) chroma purge of both contaminated docs (exported then deleted, with explicit Jordan approval per §54); (2) retrieval override clause in the directive ("The list in this block supersedes any prior narration and is the current ground truth"). Doctrines §52, §53, §54 anchored.
 
 ## §F-41. Cascade fixture rot
 
