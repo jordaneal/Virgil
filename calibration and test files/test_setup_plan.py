@@ -554,6 +554,146 @@ def test_log_summary_empty_signals_safe():
     assert bot.setup_plan_log_summary(None) != ''
 
 
+# ─── Commands pin lifecycle (S31) ────────────────────────────────────
+
+def test_commands_pin_body_contains_five_locked_commands():
+    body = bot.COMMANDS_PIN_BODY
+    assert '/play' in body
+    assert '/inventory' in body
+    assert '/refresh' in body
+    assert '/newcampaign' in body
+    assert '/dmhelp' in body
+
+
+def test_commands_pin_body_has_dmhelp_pointer():
+    assert '/dmhelp' in bot.COMMANDS_PIN_BODY
+
+
+def test_commands_pin_body_has_welcome_pointer():
+    assert '#welcome' in bot.COMMANDS_PIN_BODY
+
+
+def _canonical_text():
+    return {
+        'dm-narration': '🎲 VIRGIL DM',
+        'dm-aside':     '🎲 VIRGIL DM',
+        'lore-notes':   '🎲 VIRGIL DM',
+        'welcome':      '💬 OUT OF CHARACTER',
+        'commands':     '💬 OUT OF CHARACTER',
+        'party-chat':   '💬 OUT OF CHARACTER',
+    }
+
+
+def _canonical_cats():
+    return {'🎲 VIRGIL DM', '💬 OUT OF CHARACTER', '🔊 VOICE'}
+
+
+def test_commands_pin_action_create_on_empty_guild():
+    plan = bot.compute_setup_plan(
+        text_channels={},
+        voice_channels={},
+        categories=set(),
+    )
+    assert plan['commands_pin_action'] == 'create'
+
+
+def test_commands_pin_action_create_when_channel_exists_no_pin():
+    plan = bot.compute_setup_plan(
+        text_channels=_canonical_text(),
+        voice_channels={'General': '🔊 VOICE', 'AFK': '🔊 VOICE'},
+        categories=_canonical_cats(),
+        commands_existing_pin_body=None,
+    )
+    assert plan['commands_pin_action'] == 'create'
+
+
+def test_commands_pin_action_noop_when_pin_matches():
+    plan = bot.compute_setup_plan(
+        text_channels=_canonical_text(),
+        voice_channels={'General': '🔊 VOICE', 'AFK': '🔊 VOICE'},
+        categories=_canonical_cats(),
+        commands_existing_pin_body=bot.COMMANDS_PIN_BODY.strip(),
+    )
+    assert plan['commands_pin_action'] == 'noop'
+
+
+def test_commands_pin_action_replace_when_pin_drifted():
+    plan = bot.compute_setup_plan(
+        text_channels=_canonical_text(),
+        voice_channels={'General': '🔊 VOICE', 'AFK': '🔊 VOICE'},
+        categories=_canonical_cats(),
+        commands_existing_pin_body='old pin body that is no longer current',
+    )
+    assert plan['commands_pin_action'] == 'replace'
+
+
+def test_commands_pin_action_skipped_when_key_absent_from_channel_names():
+    custom_cn = {k: v for k, v in bot.CHANNEL_NAMES.items() if k != 'commands'}
+    plan = bot.compute_setup_plan(
+        text_channels={},
+        voice_channels={},
+        categories=set(),
+        channel_names=custom_cn,
+    )
+    assert plan['commands_pin_action'] == 'skipped'
+
+
+def test_commands_pin_action_noop_strips_whitespace():
+    # Noop should fire even if the stored pin has leading/trailing whitespace.
+    padded = '  ' + bot.COMMANDS_PIN_BODY.strip() + '\n'
+    plan = bot.compute_setup_plan(
+        text_channels=_canonical_text(),
+        voice_channels={'General': '🔊 VOICE', 'AFK': '🔊 VOICE'},
+        categories=_canonical_cats(),
+        commands_existing_pin_body=padded,
+    )
+    assert plan['commands_pin_action'] == 'noop'
+
+
+def test_commands_pin_action_present_in_plan_keys():
+    plan = bot.compute_setup_plan(
+        text_channels={},
+        voice_channels={},
+        categories=set(),
+    )
+    assert 'commands_pin_action' in plan
+
+
+def test_commands_pin_determinism():
+    kwargs = dict(
+        text_channels=_canonical_text(),
+        voice_channels={'General': '🔊 VOICE', 'AFK': '🔊 VOICE'},
+        categories=_canonical_cats(),
+        commands_existing_pin_body='drifted',
+    )
+    p1 = bot.compute_setup_plan(**kwargs)
+    p2 = bot.compute_setup_plan(**kwargs)
+    assert p1['commands_pin_action'] == p2['commands_pin_action'] == 'replace'
+
+
+def test_log_summary_includes_commands_pin_field():
+    # setup_plan_log_summary must surface commands_pin= for the setup_run: log.
+    plan = bot.compute_setup_plan(
+        text_channels=_canonical_text(),
+        voice_channels={'General': '🔊 VOICE', 'AFK': '🔊 VOICE'},
+        categories=_canonical_cats(),
+        commands_existing_pin_body=bot.COMMANDS_PIN_BODY.strip(),
+    )
+    out = bot.setup_plan_log_summary(plan)
+    assert 'commands_pin=noop' in out
+
+
+def test_log_summary_commands_pin_create_on_empty_guild():
+    out = bot.setup_plan_log_summary(bot.compute_setup_plan({}, {}, set()))
+    assert 'commands_pin=create' in out
+
+
+def test_log_summary_empty_plan_has_commands_pin_skipped():
+    # Defensive empty-plan path returns a valid string with commands_pin=skipped.
+    assert 'commands_pin=skipped' in bot.setup_plan_log_summary({})
+    assert 'commands_pin=skipped' in bot.setup_plan_log_summary(None)
+
+
 # ─── Run ────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':

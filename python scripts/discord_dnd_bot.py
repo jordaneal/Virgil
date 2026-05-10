@@ -25,6 +25,7 @@ Token:   DISCORD_BOT_TOKEN in .env
 """
 
 import os
+import re
 import sys
 import asyncio
 import datetime
@@ -188,6 +189,22 @@ WELCOME_PIN_BODY = (
 # Channel topic for #welcome — short, points at the site.
 WELCOME_CHANNEL_TOPIC = "New here? Start at https://virgildm.com"
 
+# #commands pinned-message body (S31). Posted once per guild by /setup,
+# pinned, replaced only on content-drift (idempotent). Hybrid shape: 5
+# inline commands for quick reference, then pointer to /dmhelp for the
+# full list and #welcome for new-player onboarding.
+COMMANDS_PIN_BODY = (
+    "📋 **Slash Command Quick Reference**\n\n"
+    "The most common commands you'll use here:\n"
+    "• `/play` — start or resume a session\n"
+    "• `/inventory` — view your character's items\n"
+    "• `/refresh` — refresh character sheet cache\n"
+    "• `/newcampaign` — DM only, create a new campaign\n"
+    "• `/dmhelp` — full slash command reference\n\n"
+    "Run `/dmhelp` for everything else. "
+    "New here? See #welcome for setup and the player guide."
+)
+
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger('discord').setLevel(logging.WARNING)
@@ -252,6 +269,7 @@ def compute_setup_plan(
     channel_category: dict | None = None,
     voice_channel_specs: tuple | None = None,
     legacy_category_name: str | None = None,
+    commands_existing_pin_body: str | None = None,
 ) -> dict:
     """Return the actions /setup must take to converge `guild_state` to the
     canonical structure. Pure function — no I/O, no side effects.
@@ -271,6 +289,9 @@ def compute_setup_plan(
       legacy_category_name — old category to detect-and-delete if empty
                              after planned moves (defaults to module-level
                              LEGACY_CATEGORY_NAME)
+      commands_existing_pin_body — stripped body of the current bot-authored
+                             pin in #commands, or None if no such pin exists.
+                             Used to compute commands_pin_action.
 
     Returns:
       {
@@ -283,6 +304,7 @@ def compute_setup_plan(
         'voice_channels_existing':    list[str],
         'categories_existing':        list[str],
         'legacy_category_to_delete':  str | None,  # name if exists and empty post-move
+        'commands_pin_action':        'create' | 'replace' | 'noop' | 'skipped',
       }
 
     Idempotency: re-running on a fully-canonical guild produces a plan
@@ -306,6 +328,7 @@ def compute_setup_plan(
         'voice_channels_existing':   [],
         'categories_existing':       [],
         'legacy_category_to_delete': None,
+        'commands_pin_action':       'skipped',
     }
 
     # Categories — create any canonical ones missing.
@@ -366,6 +389,24 @@ def compute_setup_plan(
         if not remaining:
             plan['legacy_category_to_delete'] = legacy
 
+    # Commands pin lifecycle (S31). 'skipped' is the defensive default
+    # (already set above); only fires when 'commands' key is absent from
+    # channel_names (custom dict, shouldn't happen in production).
+    commands_chan_name = cn.get('commands')
+    if commands_chan_name:
+        if commands_chan_name not in text_channels:
+            # Channel will be created this run — pin it fresh.
+            plan['commands_pin_action'] = 'create'
+        elif commands_existing_pin_body is None:
+            # Channel exists but no bot-authored pin found.
+            plan['commands_pin_action'] = 'create'
+        elif commands_existing_pin_body.strip() == COMMANDS_PIN_BODY.strip():
+            # Pin matches — no-op.
+            plan['commands_pin_action'] = 'noop'
+        else:
+            # Pin drifted — replace.
+            plan['commands_pin_action'] = 'replace'
+
     return plan
 
 
@@ -377,7 +418,7 @@ def setup_plan_log_summary(plan: dict) -> str:
     if not plan:
         return ("channels_created=0 channels_moved=0 channels_existing=0 "
                 "categories_created=0 categories_existing=0 "
-                "legacy_deleted=0")
+                "legacy_deleted=0 commands_pin=skipped")
     chans_created = (len(plan.get('text_channels_to_create', []))
                      + len(plan.get('voice_channels_to_create', [])))
     chans_moved = (len(plan.get('text_channels_to_move', []))
@@ -387,13 +428,15 @@ def setup_plan_log_summary(plan: dict) -> str:
     cats_created = len(plan.get('categories_to_create', []))
     cats_existing = len(plan.get('categories_existing', []))
     legacy_del = 1 if plan.get('legacy_category_to_delete') else 0
+    commands_pin = plan.get('commands_pin_action', 'skipped')
     return (
         f"channels_created={chans_created} "
         f"channels_moved={chans_moved} "
         f"channels_existing={chans_existing} "
         f"categories_created={cats_created} "
         f"categories_existing={cats_existing} "
-        f"legacy_deleted={legacy_del}"
+        f"legacy_deleted={legacy_del} "
+        f"commands_pin={commands_pin}"
     )
 
 
@@ -2002,10 +2045,27 @@ async def setup(interaction: discord.Interaction):
         for c in guild.voice_channels
     }
 
+    # Pre-fetch commands pin body so compute_setup_plan can decide the action.
+    # Only needed when the channel already exists; fresh creates always get 'create'.
+    commands_pin_prefetch: str | None = None
+    commands_chan_name_key = CHANNEL_NAMES.get('commands', '')
+    if commands_chan_name_key and commands_chan_name_key in existing_text:
+        try:
+            pre_ch = discord.utils.get(guild.text_channels, name=commands_chan_name_key)
+            if pre_ch:
+                pre_pins = await pre_ch.pins()
+                for p in pre_pins:
+                    if p.author and p.author.id == me.id and (p.content or '').strip():
+                        commands_pin_prefetch = (p.content or '').strip()
+                        break
+        except Exception as e:
+            log(f"setup: failed to pre-fetch commands pin: {e}")
+
     plan = compute_setup_plan(
         text_channels=existing_text,
         voice_channels=existing_voice,
         categories=existing_categories,
+        commands_existing_pin_body=commands_pin_prefetch,
     )
 
     # ── Execute the plan ────────────────────────────────────────────
@@ -2274,6 +2334,44 @@ async def setup(interaction: discord.Interaction):
         except Exception as e:
             log(f"setup: failed to position #{commands_name}: {e}")
 
+    # ── #commands pinned orientation message (S31) ──────────────────
+    # Post/replace COMMANDS_PIN_BODY in #commands based on the plan action.
+    # Soft-fail throughout — pin errors never abort the rest of /setup.
+    commands_pin_action = plan.get('commands_pin_action', 'skipped')
+    commands_pinned = 0
+    commands_ch_for_pin = discord.utils.get(
+        guild.text_channels, name=CHANNEL_NAMES.get('commands', '')
+    )
+    if commands_pin_action in ('create', 'replace') and commands_ch_for_pin:
+        try:
+            if commands_pin_action == 'replace':
+                rep_pins = await commands_ch_for_pin.pins()
+                for p in rep_pins:
+                    if p.author and p.author.id == me.id and (p.content or '').strip():
+                        try:
+                            await p.unpin(
+                                reason="Virgil setup: replacing drifted commands pin"
+                            )
+                        except Exception:
+                            pass
+                        try:
+                            await p.delete()
+                        except Exception:
+                            pass
+                        break
+            new_msg = await commands_ch_for_pin.send(COMMANDS_PIN_BODY)
+            await new_msg.pin(reason="Virgil setup: commands orientation pin")
+            commands_pinned = 1
+            verb = 'posted + pinned' if commands_pin_action == 'create' else 'replaced'
+            log(f"setup: {verb} commands pin in "
+                f"#{CHANNEL_NAMES.get('commands')}")
+        except Exception as e:
+            log(f"setup: failed to manage commands pin: {e}")
+    elif commands_pin_action == 'noop':
+        log(f"setup: commands pin current — no-op")
+    elif commands_pin_action == 'skipped':
+        log(f"setup: commands pin skipped — #commands not found")
+
     # ── AFK voice channel + guild AFK auto-move config ──────────────
     # Idempotent: only call guild.edit when afk_channel/afk_timeout drift
     # from desired. afk_timeout accepts a fixed set of values
@@ -2308,6 +2406,7 @@ async def setup(interaction: discord.Interaction):
         f"{setup_plan_log_summary(plan)} "
         f"welcome_channel_created={welcome_channel_created} "
         f"welcome_pinned={welcome_pinned} "
+        f"commands_pin={commands_pin_action} "
         f"avrae_in_guild={1 if avrae_member else 0} "
         f"avrae_perms_applied={avrae_perms_applied} "
         f"commands_channel_created={commands_channel_created} "
@@ -2341,8 +2440,13 @@ async def setup(interaction: discord.Interaction):
         lines.append(
             f"Posted/updated welcome pin in #{welcome_name}."
         )
+    if commands_pinned:
+        lines.append(
+            f"Posted/updated orientation pin in #{CHANNEL_NAMES.get('commands')}."
+        )
     if not (plan['categories_to_create'] or created_text or created_voice
-            or moved_text or moved_voice or legacy_deleted or welcome_pinned):
+            or moved_text or moved_voice or legacy_deleted
+            or welcome_pinned or commands_pinned):
         lines.append("Nothing to do — already canonical. Permissions reconciled.")
     else:
         lines.append("Permissions reconciled (@everyone, bot, Avrae) on every canonical channel.")
@@ -4379,33 +4483,83 @@ async def hydrate(interaction: discord.Interaction, npc: str, cr: str):
 
 @bot.tree.command(name='dmhelp', description='Show the player + DM cheatsheet.')
 async def dmhelp(interaction: discord.Interaction):
-    msg = (
-        "**Virgil DM — Quick Reference**\n\n"
-        "**First-time player setup**\n"
-        "1. Create a character at <https://www.dndbeyond.com>\n"
-        "2. Sign in to <https://avrae.io> (Discord login)\n"
-        "3. In any channel: `!ddb` → click the link to connect D&D Beyond\n"
-        "4. Copy your character's share URL from D&D Beyond\n"
-        "5. `!beyond <share-url>` — Avrae imports your sheet\n"
-        "6. `/bindchar` — pick your character from the dropdown\n\n"
-        "**DM setup (per server)**\n"
-        "• `/setup` — create channel structure\n"
-        "• `/newcampaign <name>` — start a campaign\n\n"
-        "**DM commands**\n"
-        "• `/play [scene]` — open the scene with opening narration\n"
-        "• `/nudge @player` — prompt a player to act\n"
-        "• `/mode <mode>` — manually set scene mode (combat/exploration/etc.)\n"
-        "• `/clock create <name> <capacity>` — add a progress clock\n"
-        "• `/clock tick/untick/reset/delete/list` — manage clocks\n"
-        "• `/campaigns` — list campaigns\n\n"
-        "**During play**\n"
-        "• Talk in `#dm-narration` — Virgil narrates consequences\n"
-        "• Roll via Avrae anywhere: `!check stealth`, `!save dex`, "
-        "`!attack`, `!cast fireball`\n"
-        "• `!sheet` to view your character, `!sr` short rest, `!lr` long rest\n\n"
-        "Virgil reads Avrae's rolls automatically and reacts in narration."
-    )
-    await interaction.response.send_message(msg, ephemeral=True)
+    # Load COMMANDS.md fresh per §66 — no caching, edits take effect without
+    # a bot restart. Same path/pattern as advisory mode's _load_commands_reference.
+    raw = orch._load_commands_reference()
+    if not raw:
+        await interaction.response.send_message(
+            "Command reference unavailable — COMMANDS.md not found. Ask the DM.",
+            ephemeral=True,
+        )
+        return
+
+    # Extract the auto-generated Virgil section between markers, stripping
+    # the HTML comment lines themselves (they render as noise in Discord).
+    start_marker = '<!-- VIRGIL_AUTO_GENERATED:START -->'
+    end_marker   = '<!-- VIRGIL_AUTO_GENERATED:END -->'
+    start_idx = raw.find(start_marker)
+    end_idx   = raw.find(end_marker)
+    if start_idx != -1 and end_idx != -1:
+        section = raw[start_idx + len(start_marker):end_idx]
+        lines = [ln for ln in section.splitlines()
+                 if not ln.strip().startswith('<!--')
+                 and not ln.rstrip().endswith('-->')]
+        virgil_text = '\n'.join(lines).strip()
+    else:
+        virgil_text = raw.strip()
+
+    # Convert to clean plain text for DM. Format:
+    #   **Title Case Heading:**  (blank line)  commands  (blank line before next)
+    # Strip markdown list prefix — Discord renders `- item` with trailing commas.
+    def _title(text):
+        # Capitalize each word; keep all-caps tokens (e.g. "DM") unchanged.
+        return ' '.join(
+            w if (w.isupper() and len(w) > 1) else w.capitalize()
+            for w in text.split()
+        )
+
+    plain_lines = []
+    first_section = True
+    for ln in virgil_text.splitlines():
+        stripped = ln.strip()
+        if ln.startswith('### '):
+            if not first_section:
+                plain_lines.append('')   # blank line between sections
+            first_section = False
+            plain_lines.append(f'**{_title(ln[4:])}:**')
+        elif stripped.startswith('- '):
+            plain_lines.append(stripped[2:].replace('`', ''))
+        elif stripped:
+            plain_lines.append(stripped.replace('`', ''))
+        # Blank source lines skipped — spacing managed explicitly above.
+    body = '\n'.join(plain_lines)
+
+    # Chunk at bold-heading boundaries to stay under Discord's 2000-char
+    # per-message limit without orphaning section headers.
+    pieces = re.split(r'(?=\n\n\*\*)', body)
+    chunks = []
+    current = ""
+    for piece in pieces:
+        candidate = current + piece if current else piece
+        if len(candidate) <= 1900:
+            current = candidate
+        else:
+            if current:
+                chunks.append(current)
+            current = piece if len(piece) <= 1900 else piece[:1900]
+    if current:
+        chunks.append(current)
+
+    # Send as a private DM so the list persists (ephemeral disappears on dismiss).
+    # Fall back to ephemeral in-channel if the user has DMs disabled.
+    try:
+        for chunk in chunks:
+            await interaction.user.send(chunk)
+        await interaction.response.send_message(
+            "Sent you a DM with the full command list.", ephemeral=True
+        )
+    except discord.Forbidden:
+        await interaction.response.send_message(body[:1900], ephemeral=True)
 
 
 # ─────────────────────────────────────────────────────────

@@ -1339,3 +1339,60 @@ journalctl --user -u virgil-discord --since "1 session ago" --no-pager | grep "n
 ```bash
 journalctl --user -u virgil-discord --since "30 minutes ago" --no-pager | grep -E "cloud_router_finish_reason|commitment_empty_response|npc_token_prefix_match|npc_upsert: insert"
 ```
+
+---
+
+## §S31 — ROADMAP 4c: First-session orientation pin in #commands
+
+### Verify 1 — `/setup` posts the orientation pin (first run)
+
+Run `/setup` in the test server. Check journal:
+
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" --no-pager | grep "commands_pin\|setup_run"
+```
+
+**Expected:** `setup_run: ... commands_pin=create ...` and `setup: posted + pinned commands pin in #commands`. Pin appears in `#commands` with the five locked commands (`/play`, `/inventory`, `/refresh`, `/newcampaign`, `/dmhelp`) and the `#welcome` pointer.
+
+---
+
+### Verify 2 — `/setup` re-run is a no-op for the pin
+
+Re-run `/setup` immediately. Check journal:
+
+```bash
+journalctl --user -u virgil-discord --since "2 minutes ago" --no-pager | grep "commands_pin\|setup_run"
+```
+
+**Expected:** `setup_run: ... commands_pin=noop ...`. No duplicate pin in `#commands`. Ephemeral says "Nothing to do — already canonical."
+
+---
+
+### Verify 3 — `/dmhelp` reads from COMMANDS.md (not hand-maintained prose)
+
+Run `/dmhelp` from any channel. Confirm the response:
+- Shows the Virgil slash commands section from COMMANDS.md
+- Does NOT show the old "First-time player setup" / "DM commands" / "During play" prose headers from the replaced hand-maintained body
+
+```bash
+journalctl --user -u virgil-discord --since "2 minutes ago" --no-pager | grep "dmhelp\|commands_ref"
+```
+
+---
+
+### Verify 4 — `/dmhelp` reflects live COMMANDS.md edits without restart
+
+1. Edit any line in the Avrae section of `/home/jordaneal/virgil-docs/COMMANDS.md` (add a trailing comment or tweak a description)
+2. Run `/dmhelp` WITHOUT restarting the bot
+3. Confirm the edit is visible in the response
+
+**Expected:** edit reflected immediately — no stale cache.
+
+---
+
+### S31 grep patterns
+
+```bash
+# One sweep for all S31 signals
+journalctl --user -u virgil-discord --since "1 hour ago" --no-pager | grep -E "commands_pin|setup: posted|setup: replaced|setup: commands pin"
+```

@@ -76,6 +76,38 @@ def test_commands_doc_loadable_via_orchestration_loader():
     assert via_loader == direct
 
 
+# ─── /dmhelp runtime-fresh read (S31) ───────────────────────────────
+
+def test_dmhelp_reads_from_commands_md_not_hand_maintained():
+    # /dmhelp must call orch._load_commands_reference() so edits to
+    # COMMANDS.md take effect without a bot restart (§66). Read the
+    # source file directly — discord.Command wraps the callback and
+    # inspect.getsource can't unwrap it.
+    src = Path('/home/jordaneal/scripts/discord_dnd_bot.py').read_text()
+    assert '_load_commands_reference' in src, (
+        "/dmhelp must call orch._load_commands_reference() per §66"
+    )
+
+
+def test_dmhelp_has_no_hand_maintained_body():
+    # Old /dmhelp hard-coded "First-time player setup" prose. Confirm
+    # that string is gone so the hand-maintained drift path can't return.
+    src = Path('/home/jordaneal/scripts/discord_dnd_bot.py').read_text()
+    assert 'First-time player setup' not in src, (
+        "/dmhelp must not contain a hand-maintained command list"
+    )
+
+
+def test_dmhelp_reflects_live_commands_md_content():
+    # _load_commands_reference() must return content that includes the
+    # current auto-generated Virgil commands — proves the live read path
+    # that /dmhelp will surface is correct.
+    content = orch._load_commands_reference()
+    assert '/play' in content
+    assert '/inventory' in content
+    assert '/dmhelp' in content
+
+
 if __name__ == '__main__':
     failures = []
     funcs = [v for k, v in sorted(globals().items()) if k.startswith('test_')]

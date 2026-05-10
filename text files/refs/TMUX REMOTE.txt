@@ -1,7 +1,7 @@
 TMUX REMOTE
 
 # === START / RESUME (after server reboot or fresh start) ===
-ssh jordaneal@100.93.209.31
+ssh jordaneal@100.122.110.119
 tmux new -s mobile
 claude --remote-control --name "Virgil"
 # Then: phone → Claude app → Code tab → tap "Virgil"
@@ -12,7 +12,7 @@ Ctrl+b   then   d
 # Or just close Git Bash — claude keeps running on the server.
 
 # === REATTACH (come back to look at it) ===
-ssh jordaneal@100.93.209.31
+ssh jordaneal@100.122.110.119
 tmux attach -t mobile
 
 # === LIST WHICH TMUX SESSIONS EXIST ===

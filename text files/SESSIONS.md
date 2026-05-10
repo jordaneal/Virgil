@@ -1186,3 +1186,35 @@ The sqlite post-`/play` check is the structural verification of Bug 5's fix: a r
 - `tests-to-run-post-session.md` — Steps 1 + 9 visual-confirmation notes can drop the "sqlite-only until 4b ships" caveat (Code already deleted `test_play_first_session.py` since every assertion was hint-content).
 - `VIRGIL_MASTER.md` — header refreshed to S29; bones → footings verbiage applied; `init_scene_state` semantics clarified if the document referenced the old `INSERT OR REPLACE` shape.
 - F-54 closure stays confirmed; Track 4 #3 v1 is now complete end-to-end including persistence across `/play`.
+
+# Session 31 — ROADMAP 4c: First-session orientation pin in #commands (May 9, 2026)
+
+**Ships:** `COMMANDS_PIN_BODY` constant + `compute_setup_plan` extension + `/dmhelp` §66 wiring.
+
+**What changed:**
+
+`COMMANDS_PIN_BODY` — new sibling to `WELCOME_PIN_BODY`. Hybrid shape: 5 inline commands (`/play`, `/inventory`, `/refresh`, `/newcampaign`, `/dmhelp`) + pointer to `/dmhelp` for the full reference + pointer to `#welcome` for new-player onboarding.
+
+`compute_setup_plan` — new optional param `commands_existing_pin_body: str | None`. Plan dict gains `commands_pin_action: create|replace|noop|skipped`. Logic: `'commands'` key absent from channel_names → `skipped`; channel not yet in text_channels → `create`; channel exists, no bot pin → `create`; pin matches body exactly → `noop`; pin exists but drifted → `replace`. Idempotency contract preserved: fully-canonical guild with correct pin → `noop`.
+
+`/setup` execution — pre-fetches existing commands pin body before calling `compute_setup_plan`, then executes the pin action after channel/perm ops: `create` posts + pins `COMMANDS_PIN_BODY`; `replace` unpins + deletes old, posts + pins fresh; `noop` is a no-op. Telemetry: `setup_run:` log line extended with `commands_pin={action}`. User-facing ephemeral updated to mention posted/updated pin; "Nothing to do" check extended to include `commands_pinned`.
+
+`/dmhelp` rewrite — hand-maintained body (drifted from COMMANDS.md) replaced with runtime-fresh load via `orch._load_commands_reference()` per §66. Extracts the `VIRGIL_AUTO_GENERATED` section, strips HTML comment lines, renders Virgil slash commands. 1950-char Discord cap with trailing ellipsis on overflow. Edits to COMMANDS.md take effect without bot restart.
+
+**Tests:**
+- `test_setup_plan.py` — 11 new assertions: `COMMANDS_PIN_BODY` contains all 5 locked commands, `/dmhelp` pointer, `#welcome` pointer; `commands_pin_action` variants (empty guild → create; existing no-pin → create; matching pin → noop; drifted pin → replace; custom cn without 'commands' key → skipped; noop strips whitespace; key present in plan dict; determinism). Total: 53 tests.
+- `test_commands_doc.py` — 3 new assertions: `/dmhelp` source calls `_load_commands_reference`; no hand-maintained body in source; live `_load_commands_reference()` returns content with expected commands. Total: 11 tests.
+
+**Discord verify steps:**
+1. Run `/setup` on test server — first run: `commands_pin=create` in journal, pin appears in `#commands` with the 5 commands + pointers.
+2. Re-run `/setup` — `commands_pin=noop`; no duplicate pin; ephemeral says "Nothing to do — already canonical."
+3. Run `/dmhelp` from any channel — shows Virgil section from COMMANDS.md (not old hand-maintained prose).
+4. Edit a line in COMMANDS.md hand section, save, run `/dmhelp` WITHOUT bot restart — edit reflected immediately.
+
+**Verify-walk corrections (live debug):**
+- HTML comment filter missed multi-line comment continuation lines (ending with `-->`); fixed with `and not ln.rstrip().endswith('-->')`.
+- `/dmhelp` switched from ephemeral multi-message to private DM (`interaction.user.send()`) — persists after dismiss, cleaner UX. Ephemeral fallback on `discord.Forbidden`.
+- Formatter rewritten: strip `- ` list prefix (Discord adds trailing commas to `-` lists in DMs), bold section headers, title-case headings, colon after heading, blank line between sections, no blank line after heading, no "Virgil Slash Commands" preamble. Starts directly with `**Player Commands:**`.
+- Wrong SSH username (`jordaneal` vs `Jordan`) diagnosed and fixed in `TMUX REMOTE.txt`; memory updated with failure symptom map.
+
+**PC rsync:** Complete. All files in correct folders.

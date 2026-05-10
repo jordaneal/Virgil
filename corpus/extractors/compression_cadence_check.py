@@ -63,7 +63,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-EXTRACTOR_VERSION = "compression_cadence_v1p4"
+EXTRACTOR_VERSION = "compression_cadence_v1p1"
 
 CORPUS_BUILDER = Path(__file__).resolve().parent.parent
 SOURCE_BASE = Path("/mnt/virgil_storage/dnd_datasets/crd3/data/aligned data/c=2")
@@ -247,8 +247,6 @@ CATEGORY_PRIORITY = {
 # D4: Recap-state episode opening -- handled at turn level (whole-turn skip).
 
 # D1: Production OOC + scheduling. Comprehensive per spec S7 FP1.
-# Extension (Patch 3): episode-end framing patterns that fire SCENE_CUT
-# but are OOC announcements closing the broadcast, not in-fiction cuts.
 DISCOURSE_OOC = re.compile(
     r"\bwelcome\s+(?:to|back)\b"
     r"|\btonight'?s\s+episode\b"
@@ -270,16 +268,7 @@ DISCOURSE_OOC = re.compile(
     r"|\bpre[-\s]?order\b"
     r"|\b\[break\]\b|\b\[BREAK\]\b"
     r"|\bdiscuss\s+(?:this\s+)?over\s+the\s+next\s+(?:week|few)\b"
-    r"|\bcomic\s+(?:available|out\s+now)\b"
-    # Patch 3: episode-end OOC framing (spec §9 shape).
-    r"|\btonight'?s\s+game\b"
-    r"|\bthat'?s\s+where\s+we'?ll\s+(?:end|leave|stop|pick\s+up)\b"
-    r"|\b(?:end|leave|stop|pause)\s+tonight\b"
-    # Patch 4: audience-address / stream-meta / production vocabulary (D1 ext).
-    r"|\bQ\s+and\s+A\b"
-    r"|\bGeek\s+and\s+Sundry\b"
-    r"|\blive[-\s]tweeting\b"
-    r"|\bWendy\s+Sullivan\b",
+    r"|\bcomic\s+(?:available|out\s+now)\b",
     re.I,
 )
 
@@ -300,29 +289,6 @@ MICRO_MOTION_RE = re.compile(
     r"|\bhead\s+to\s+the\s+(?:cargo\s+hold|lower\s+deck|next\s+room|back\s+room)\b",
     re.I,
 )
-
-# D7: Spell / rules-mechanic reject (Patch 4).
-# Temporal trigger phrases embedded in spell-duration or spell-prep mechanics
-# do not represent in-fiction time compression.
-SPELL_MECHANIC_RE = re.compile(
-    r"\bimbue\b"                      # imbue [spell] for the next N hours
-    r"|\bability\s+lasts?\s+for\b"    # ability lasts for N hours/days
-    r"|\bconcentration\s+for\b"       # concentration for N hours/minutes
-    r"|\bthe\s+spell\s+lasts?\b"      # the spell lasts ...
-    r"|\bchoose\s+your\s+spells?\b"   # spell-prep table directive
-    r"|\bprepare\s+your\s+spells?\b", # spell-prep table directive
-    re.I,
-)
-
-
-def is_spell_mechanic(sentence):
-    """True if the trigger sentence contains spell/rules-mechanic vocabulary.
-
-    Covers spell-duration announcements (imbue, ability lasts, concentration)
-    and spell-prep table directives (choose/prepare your spells).
-    """
-    return bool(SPELL_MECHANIC_RE.search(sentence))
-
 
 # NPC voice detection -- identical to loot_reward.py.
 _SENT_BOUNDARY_RE = re.compile(r"[.!?](?:\s+|$)")
@@ -458,12 +424,6 @@ def stage_0_phrase(turn_text, phrase_start, phrase_end, family, preceding_text="
     if family == "OVERNIGHT_REST":
         if is_condition_recovery(turn_text, preceding_text):
             return "DISCOURSE", "D5_condition_recovery"
-
-    # D7: Spell / rules-mechanic (any category).
-    # Trigger phrases inside spell-duration or spell-prep sentences are
-    # rules-procedure talk, not in-fiction time compression.
-    if is_spell_mechanic(sentence):
-        return "DISCOURSE", "D7_spell_mechanic"
 
     return "EVENT", None
 
@@ -981,34 +941,12 @@ def process_episode(episode_id, extracted_at):
         same_turn_idx = 0
         turn_records = []
 
-        # Within-turn dedup state: track (family, phrase_start) for emitted
-        # candidates so far this turn (Patch 2 / D6).
-        turn_emitted_spans = []  # list of (family, s)
-
         for family, s, e, phrase in candidates:
             # Phrase-span Stage 0.
             stage_0, reason = stage_0_phrase(t["text"], s, e, family, preceding_text_d5)
             if stage_0 == "DISCOURSE":
                 log_filtered_discourse(t["text"], reason, episode_id, t["number"])
                 continue
-
-            # D6: Within-turn dedup. When two trigger phrases of the same
-            # category are within 200 chars (start-to-start) in the same turn,
-            # emit only the first — they describe the same compression event.
-            is_within_turn_dup = any(
-                kf == family and abs(s - ks) <= 200
-                for kf, ks in turn_emitted_spans
-            )
-            if is_within_turn_dup:
-                log_filtered_discourse(
-                    t["text"],
-                    f"D6_within_turn_dedup ({family} start={s})",
-                    episode_id,
-                    t["number"],
-                )
-                continue
-
-            turn_emitted_spans.append((family, s))
 
             category = family
             compression_scope = derive_compression_scope(category, phrase)

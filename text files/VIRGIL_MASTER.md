@@ -1,7 +1,7 @@
 # VIRGIL MASTER
 
 **Current System State and Architecture**
-Last updated: May 9, 2026 (S29 — ROADMAP 4b ships: state-aware footer wired into `/play`, `PLAY_FIRST_SESSION_HINT` removed, orientation-flow rework filed as 4c. Combined-session Bug 5 fix: `init_scene_state` switched from `INSERT OR REPLACE` to `ON CONFLICT(campaign_id) DO UPDATE SET` — closes the structural pattern that was silently clobbering ALTER TABLE-added columns on every `/play` (Track 4 #3 day/phase, location pointer, turn counter, last DM response, tension/clocks). New Doctrine §75 anchored. Track 4 #3 now persists end-to-end across `/play`. Footings queue EMPTY.)
+Last updated: May 9, 2026 (S31 — ROADMAP 4c ships: `COMMANDS_PIN_BODY` pinned in `#commands` via `/setup`; `/dmhelp` rewired to runtime-fresh COMMANDS.md read per §66 — no more hand-maintained drift. Bug 1 architecture locked through spec discussion: footer-as-orchestration-state shift identified, phase-1/phase-2 telemetry-first split agreed, three new `footer_actor_changed` / `directive_bound_to_footer_actor` / `directive_creation_skipped_no_footer` log lines candidate. S30 — small-items batch shipped (Bug 2 max_tokens, F-29 titled-NPC, S26 commitment+empty diagnostic, npc_token_prefix_match) and Doc-catalog trim (ROADMAP −40KB, FAILURES −7KB, DOCTRINE −1KB). Footings queue EMPTY.)
 
 This is the "what is the system today" reference. It does NOT contain:
 - Working preferences → `WORKING_WITH_CLAUDE.md`
