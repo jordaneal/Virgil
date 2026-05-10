@@ -36,6 +36,7 @@ For "how do I work with Claude" → `WORKING_WITH_CLAUDE.md`
 - **[Session 25 #6 — Bug 3: `/travel` location persistence + NPC list location-scoping](#session-25-6--bug-3-travel-location-persistence--npc-list-location-scoping)** — `/travel` upserts unknown destinations; `get_scene_state` regression caught live; strict NPC location filter; chroma bleed broken out as F-44.
 - **[Session 26 — Track 6 #5.1 Combat Entry Assist (Inaugural §1b validated-suggester)](#session-26--track-6-51-combat-entry-assist-inaugural-1b-validated-suggester)** — `srd_resolver.py` pure-function module; 334-monster SRD index; exact + fuzzy + LLM-gated resolution; hook wired to `npc_upsert was_new=True`; no mode gate (§11.H); 32 tests across 3 files.
 - **[Session 27 — Track 4 #3 Time Progression v1 (First Motion-Systems Ship)](#session-27--track-4-3-time-progression-v1-first-motion-systems-ship)** — `advance_time` single-write-path engine helper; `parse_elapsed` deterministic free-text → delta; `compute_time_directive` seventh §59 sibling; `render_state_footer` extension; four call sites (`/travel` / `!lr` / `!sr` / new `/advance`); skeleton `## Starting time` narrow §17 seed exception; 168 tests across six files; spec v1.2 LOCKED.
+- **[Session 33 — Multiplayer Fixes Plan: S32 Findings → Five-Ship Plan → Three-Reviewer Cycle → ROADMAP F-55 Refresh](#session-33--multiplayer-fixes-plan-s32-findings--five-ship-plan--three-reviewer-cycle--roadmap-f-55-refresh-may-10-2026)** — No code. `MULTIPLAYER_FIXES.md` v2 drafted (584 lines, 14 review-cycle revisions); 5 ROADMAP patches propagating cluster commitments; Ship 3 files as F-55 #5.5; three planner-discipline lessons named.
 
 ---
 
@@ -1218,3 +1219,178 @@ The sqlite post-`/play` check is the structural verification of Bug 5's fix: a r
 - Wrong SSH username (`jordaneal` vs `Jordan`) diagnosed and fixed in `TMUX REMOTE.txt`; memory updated with failure symptom map.
 
 **PC rsync:** Complete. All files in correct folders.
+
+# Session 32 — Bug 1 Phase 1: Pending Roll Directive Tracking, Telemetry-Only (May 9, 2026)
+
+**Ships:** DM `!check`/`!save`/`!cast` directive parser + footer-binding matcher + `dnd_pending_roll_directives` table + `last_active_actor` column on `dnd_scene_state` + four-trigger `footer_actor_changed:` observability. Telemetry-only — `dm_respond` is NEVER auto-fired in Phase 1.
+
+**Recon HALT and resolution.** Recon on the locked S31 architecture surfaced one HALT-worthy finding on Q3 (footer-actor read API). Combat-mode footer-actor lives at `dnd_combat_state.character_name` via `get_active_turn` — clean engine source. Exploration-mode footer-actor was the gap: `_dm_respond_and_post`'s `actor_label = ', '.join(actor_names)` is rendered into the embed footer at narration-emit time but never persisted to engine state. The locked architecture's option (b) "query engine state directly" assumed such a query existed; it didn't. Surfaced the finding to the planner with a labeled-not-adopted resolution; planner accepted with a delta locking the four-trigger taxonomy and within-ship sub-phase ordering. Q1 (DM identity) and Q2 (directive regex) both clean — no HALT needed.
+
+**Within-ship sub-phase ordering.** Sub-phase 1a (schema column + four writers + `footer_actor_changed:` logs) verifies BEFORE sub-phase 1b's matcher reads the column — preserves §39 spirit at sub-ship level. Both sub-phases ship in the same Phase 1 deploy and same restart per §73.
+
+**What changed:**
+
+*Schema (sub-phase 1a):*
+- `dnd_scene_state.last_active_actor TEXT DEFAULT ''` — new column. Mode-disjoint single-writer discipline (exploration writer in `_dm_respond_and_post`, combat writers in `set_active_turn` / `clear_active_turn`, session-open clear in `/play`). `update_last_active_actor(campaign_id, new_actor, trigger)` is the sole writer; reads prior, no-ops on no-change, emits `footer_actor_changed: campaign={N} from={old|none} to={new|none} trigger={dm_respond|play|combat_turn_set|combat_turn_clear}` on transitions.
+
+*Schema (sub-phase 1b):*
+- `dnd_pending_roll_directives` table — `(campaign_id PRIMARY KEY, actor_name, check_type, source_message_id, created_at, expires_at)` + idx on `source_message_id`. Added between `dnd_time_advancements` and `dnd_scene_state` in `_CAMPAIGN_SCOPED_TABLES` cascade tuple.
+
+*Engine helpers (`dnd_engine.py`):*
+- `pending_directive_upsert` (insert-or-replace, returns prior info for replacement logging)
+- `pending_directive_get_active` (lazy TTL sweep — emits `pending_directive_expired:` and deletes when past `expires_at`)
+- `pending_directive_consume` (DELETE on match)
+- `pending_directive_delete_by_message` (cancel-on-edit, msg-id-bound)
+- `pending_directive_age_seconds` (pure helper for `directive_age_s` / `old_age_s` log fields)
+
+*Constants (`avrae_listener.py`):*
+- `PENDING_DIRECTIVE_TTL_SECONDS = 300` co-located with `EVENT_TTL_SECONDS` for sibling-scan visibility. Phase 2 retunes from observed age-at-resolution + age-at-expiry distribution.
+
+*Parser + matcher (`discord_dnd_bot.py`):*
+- `_DM_DIRECTIVE_RX` regex (case-insensitive `!check`/`!save`/`!cast` + optional leading `<@DM_id>` mention strip + `.+?` skill capture)
+- `_DIRECTIVE_TRIGGER_PREFIXES = ('!check ', '!save ', '!cast ')` for trigger detection
+- `_is_dm_message(message, campaign)` — sister of `is_dm_or_creator` for raw `discord.Message` events (recon Q1: wrap, not reuse)
+- `_parse_dm_directive` / `_directive_skill_is_clean` / `_normalize_skill_for_match` / `_classify_unparsed_reason`
+- `_handle_dm_roll_directive` (emit branch — skip cascade: trailing-args / group-directive / combat-mode / no-footer / OK)
+- `_handle_dm_roll_arrival` (match branch — actor+skill match → `directive_would_fire_dm_respond:` + consume; skill match + actor mismatch → `directive_actor_mismatch:` + wrong-actor aside; skill mismatch silent)
+- `_post_dm_aside` for #dm-aside posting (no-footer + wrong-actor wording locked verbatim in spec §J)
+
+*on_message wiring:*
+- Avrae branch: after `parse_avrae_embed` produces a check/save/cast event AND actor canonicalization completes, call `_handle_dm_roll_arrival`; if it returns an aside string, post to #dm-aside
+- Player branch: BEFORE the no-bound-char gate, if `_is_dm_message` AND text starts with directive-trigger prefix, route to `_handle_dm_roll_directive` and return (DM directive emission shouldn't trip the "no character bound" reply)
+
+*on_message_edit cancel path:*
+- DM-authored edit in #dm-narration with a pending directive whose `source_message_id` matches `after.id` → re-parse new content; if same skill, no-op (typo fix); else `pending_directive_delete_by_message` + `pending_directive_cancelled: reason=edit`
+
+*Tests:*
+- `test_pending_roll_directives.py` — 19 new assertions covering schema, cascade, `update_last_active_actor` transitions, all CRUD on `pending_directive_*`, lazy TTL sweep, and cascade-delete integration. All green.
+
+*Spec doc:*
+- `BUG_1_SPEC.md` (server-only, NOT mirrored to PC) — full §A–§R layout per planner-locked structure plus the S32 delta additions (schema delta to `dnd_scene_state`, within-ship verification ordering, four-trigger taxonomy, Q2 variant edge cases, `directive_text_unparsed:` log spec). Phase 2 trigger criteria locked verbatim in §L. Two doctrine candidates filed in §P (filed not anchored per §59).
+
+**Discord verify steps:** see `BUG_1_SPEC.md` §M — 12-step matrix covering all sub-phase 1a writer/log triggers + sub-phase 1b directive emit/match/skip/expire/cancel/unparsed paths. Verify-after-restart per §73; Code grep against journal in this session, behavioral verification in next-Discord-session per §73.
+
+**Doctrinal notes:**
+- Two candidates filed in `BUG_1_SPEC.md` §P, neither anchored per §59 (defer until second instance):
+  1. **"Instrument before binding to existing surface"** — sibling to §39, extends the doctrine to "make existing surfaces observable before *other systems* bind to them, not just before *behavior* binds."
+  2. **"Presentation-derived state is not structural state until persisted to engine"** — surfaced from Q3 recon. Spec sessions that lock architecture conversationally should treat any "the X tells us Y" claim as needing a recon check on whether X actually persists Y or just renders it.
+
+**Cross-references:**
+- `ROADMAP.md` — item 3 Phase 1 ✅ SHIPPED LIVE; Phase 2 entry filed with trigger-criteria gate
+- `FAILURES.md` — F-58 candidate stub filed (stale-footer name parsing as v1.1 candidate; Phase 1 strict-binds to footer actor and flags via `directive_actor_mismatch:` aside)
+- `BUG_1_SPEC.md` — full spec including §P doctrine candidates
+- `DOCTRINE.md` — no anchor in this ship; two candidates filed in BUG_1_SPEC.md §P pattern-watch for second instance
+
+**PC rsync:** see PUSH-DOCS callout at end of ship — `BUG_1_SPEC.md` is server-only, NOT in the rsync set.
+
+---
+
+# Session 33 — Multiplayer Fixes Plan: S32 Findings → Five-Ship Plan → Three-Reviewer Cycle → ROADMAP F-55 Refresh (May 10, 2026)
+
+**Ships (this session):** No code. Planning and doc-update session. Drafted `MULTIPLAYER_FIXES.md` (v2, 584 lines). Five ROADMAP patches applied propagating plan commitments into the F-55 cluster entries. Three-reviewer cycle (planner → GPT round 1 → GPT round 2 forced re-read → Gemini) produced 14 plan revisions. **The system was unplayable after S32 multiplayer playtest; this session was the architectural diagnosis and remediation plan ahead of any code work.**
+
+## What surfaced
+
+S32 multiplayer playtest (Bug 1 Phase 1 ship verify + open multiplayer playtest with Captin0bvious, Boar's Head Tavern → Brighthollow Tavern → Guild Hall → Crystal Cave fiction, ~110 minutes) cataloged 14 findings in `S32_MULTIPLAYER_PLAYTEST_FINDINGS.md`. Three rose to architectural-blocker severity:
+
+- **Finding L** — Roll resolution unbound from rolled value. F-45 regression: Track 7 #1's CHECK_ACTION binding doesn't cover the DM-typed-directive flow. Player rolls 6 vs DC 10, says "I passed," bot narrates success. Player self-report becomes the de facto adjudicator.
+- **Finding A** — Recursive hallucination memory loop in `scene_state.location` writes. `extract_scene_updates` runs LLM-authored writes with no canon-check. Cave imagery bled into Guild Hall narration; LLM wrote "narrow village lane" while footer correctly showed guild hall. LLM output → persistent state → retrieval → next prompt → drift amplification.
+- **Finding H** — Hydrate→Avrae sync gap. NPC stats written engine-side; Avrae has no sheet; combat resolves against `<None>` HP. Combat unplayable when DM creates NPCs via `/hydrate`.
+
+Findings B (canonical-name reuse: "Merrick the bartender" → "Merrick the clerk" via global string-match), J (DC leak in player-facing directive), I (combat onboarding malformed template), G (debug string leak), §5.7 (narration continuity cluster), §5.8 (economic ordering) are downstream symptoms or polish.
+
+## What shipped (planning artifacts)
+
+*`MULTIPLAYER_FIXES.md` v2 (584 lines, output to `/mnt/user-data/outputs/`).* Five-ship plan, calendar S33–S41, 9–13 days:
+
+- **Ship 1 (S33–S34): Resolution Binding.** Closes Finding L + F-45 regression. Ships Bug 1 Phase 2 as a side effect. New `resolve_directive() → ResolutionResult` pure function. Engine computes pass/fail from `roll_total >= dc`; AUTHORITATIVE-CANON prompt block constrains LLM to render outcome it didn't decide. New `narration_verifier` `ROLL_OUTCOME_DRIFT` violation class. Adds `dnd_pending_roll_directives.dc INTEGER` column. 7 §11 decisions to lock. ~40 test assertions. Opus high.
+- **Ship 2 (S35–S37): Scene State Canon Discipline.** Closes Finding A. Three subships: 2a delete `scene_state.location` LLM-write authority (single writer becomes `set_current_location` only); 2b DELETE `established_details` field by default (recon decides only if hard dependency forces gated-write — latent canon poisoning is intrinsic to such fields, validators cannot fix it); 2c audit pass via four-property latent-canon test (LLM-writable + persisted + retrieved + narratively inferential). Anchors candidate Doctrine §76.
+- **Ship 3 (S38–S39): NPC State-Sync Boundary.** Closes Finding H. Files as F-55 cluster sibling **#5.5 — Combat State Coherence**. First concrete step in cluster's Virgil-authoritative-with-Avrae-as-projection trajectory. Three candidate fixes: (a) auto-create Avrae sheet on hydrate (recommended; cleanest, fits trajectory), (b) parallel resolution path, (c) disallow non-Avrae combat. Doctrine §65 amendment expected (bot-as-DM-proxy narrow exception).
+- **Ship 4 (S40): Scene-Scope-First Identity Resolution.** Closes Finding B. Reframed mid-revision-cycle from "canonical-name reuse detection" to "primary fix is resolution-layer change." Builds `get_scene_composition(campaign_id) → SceneComposition` private aggregator (campaign_id, location_id, location_name, npcs_in_scope, combatants, bound_pcs, mode); promotion-eligible when second consumer arrives (#5.4 most likely). Adds `IDENTITY_DRIFT` verifier class. Out-of-scope name matches do not resolve to existing canonical rows; they create fresh entities.
+- **Ship 4.5 (filed candidate, not committed):** Multi-Actor Temporal State. S32 batched-actor evidence (`last_active_actor` stored only first chronological actor at 22:20:51 footer). Decision deferred to Ship 1 verify checkpoint. Slot if ambiguity rate >1 per session in real play; v1.x candidate otherwise.
+- **Ship 5 (S41): Polish cluster.** Findings J/G/I-template/§5.7. **5e (economic_outcome_gate) DROPPED**, filed as v1.x Action Pipelines candidate per validator-proliferation discipline.
+
+*ROADMAP refresh (5 patches via `local-files:edit_file`).* Propagates plan commitments into `text files/ROADMAP.md` so future spec sessions for #5.4/#5.2/#5.3 inherit the architectural commitments this plan settles. Patches:
+
+1. New Status snapshot top row — "Multiplayer Fixes plan (S33+, May 10 2026)" with ⏳ PLAN DRAFTED status
+2. Post-checkpoint strategic frame paragraphs — names plan supersession, marks both pre-existing threads (Combat Playability cluster, Motion systems) as paused, calls out #5.5 as new cluster prerequisite ahead of #5.4
+3. FOOTINGS QUEUE flipped from "EMPTY" to "MULTIPLAYER FIXES PLAN ACTIVE" with post-plan re-open candidates listing architectural-inheritance language
+4. Combat Playability Cluster intro — four cluster-wide architectural commitments inline (Virgil-authoritative trajectory, ResolutionResult template, SceneComposition aggregator, Doctrine §76 four-property test) + updated dependency chain naming #5.5 prerequisite
+5. Cluster sub-bullets — #5.5 added as new sibling between #5.1 and #5.2; #5.1, #5.2, #5.3, #5.4 each carry inline architectural-inheritance language pointing back to cluster commitments and `MULTIPLAYER_FIXES.md` §6
+
+## Diagnosis architecture
+
+The plan's spine: **incomplete separation between six layers** that need to stay distinct — authoritative simulation state, interpretive narrative state, presentation formatting, inferred world memory, player intent, mechanical resolution. Most separations hold; two are leaking. Inferred world memory bleeds into authoritative simulation state via `extract_scene_updates` (Finding A); interpretive narrative state bleeds into mechanical resolution via DM-typed-directive flow (Finding L); mechanical resolution is split-brain across two truth systems for hydrated NPCs (Finding H).
+
+North-star principles (§2 of plan):
+
+1. **The LLM is a renderer of truth, not a ruler of truth.** Sharper restatement of §1a. Question to ask of every fix shape: does this make the engine more authoritative, or does it ask the LLM to behave better? If the latter, spec is wrong.
+2. **Scene-scope-first resolution.** Identity resolution checks active scope first; out-of-scope name matches don't resolve to existing canonical rows. Generalizes beyond Finding B.
+3. **Structural removal of write authority beats validation.** Four supporting axes: single source of truth (sibling to §17); validators accumulate (slippery slope); validators subject to §17's narrow-exception discipline; **local hardware compute cost** — Virgil runs self-hosted; LLM-based validators burn VRAM and slow DM→player response time, while Python/SQL logic is computationally cheap.
+
+## The three-reviewer cycle
+
+Planner drafted v1 in 7 sections. **GPT round 1** flagged five real improvements (latent-canon framing for `established_details`, Ship 5e validator-proliferation warning, Virgil-authoritative trajectory naming, scene-graph principle, derived-state-stronger-than-validation as doctrine candidate). Planner integrated five updates.
+
+**Jordan pushed back twice** — first on the Finding B resolution path, then on the Scene Entity Graph proposal. Each pushback exposed a pattern: planner reaching for "scope creep" too fast when GPT proposed architectural infrastructure. The principle was usually right; the prescription was usually overshoot. Right reflex: **"what's the minimum version that captures the principle?"** not "reject the prescription."
+
+Three concessions earned this way:
+- Ship 4 reframed from role-mismatch detection to scene-scope-first resolution as primary fix
+- `SceneComposition` aggregator added as private helper with promotion path (rejected GPT's stored Scene table; accepted the computed-aggregator middle ground)
+- Avrae-as-projection trajectory committed explicitly in Ship 3 spec language (was hedging as "don't pivot architecture; do name it clearly" — which was agreement dressed as disagreement)
+
+**Jordan called out skipped reasoning a third time:** forced re-read of GPT's full doc. Re-read produced **11 additional updates** beyond the initial 5, including:
+- Episodic-recoverable vs cumulative-compounding as the real Ship-1-vs-Ship-2 ordering axis (planner had collapsed to "player-visible vs architecturally damaging" without naming the underlying axis)
+- Multi-actor temporal state as Ship 4.5 filed candidate (S32 batched-actor evidence had been dismissed as "anticipated friction" — it was happening in real play, evidence was in the playtest report)
+- Validators-accumulate as fourth doctrine candidate with sharpened operational-cost framing
+- §13 reframe of plan as "completing the convergence to AI-assisted deterministic simulation"
+
+**Gemini round** added three updates: local-hardware compute cost as fourth axis for structural-removal-beats-validation; "scene-scope-first resolution" lifted as named pattern at §2 level (three independent reviewers converged on it); §12 decision 1 reframed with three-reviewer lens and Jordan's trigger statement ("unplayable now") as the axis-settling input, not planner's recommendation.
+
+Final v2 carries 14 updates beyond v1. Spine unchanged: same ship list, same ordering, same fix shapes, same calendar.
+
+## Doctrinal notes
+
+Four doctrine candidates surface across Ships 1–5. If the plan ships clean, three to four anchor.
+
+- **§76 (recursive hallucination memory loop)** — anchored in Ship 2 spec when shipped. Three project instances clears the bar (S22 #2 chroma contamination, S32 location drift, F-44 chroma bleed pattern). Wording locked in plan §9.1.
+- **§65 amendment (bot-as-DM-proxy narrow exception)** — proposed in Ship 3 spec. Doctrine review during Ship 3 spec-drafting. Companion to §17's existing narrow-exception precedent (`apply_starting_time_seed`).
+- **Doctrine candidate #3 (LLM-writable scalars on engine-state tables)** — filed S32 from Finding A. Single instance after S32; Ship 2c audit may surface 1+ additional instances via four-property latent-canon test.
+- **New candidate (validators accumulate; structural removal beats validation)** — proposed in plan §2.3. Sibling to §17. Single instance after this plan (Ship 5e drop). Anchors when second instance surfaces (likely F-44 chroma scoping or Action Pipelines v1.x).
+
+**§1a wording revision deferred.** GPT's "renderer not ruler" framing is sharper than current §1a wording. Plan defers the revision until after Ship 5 lands — too easy to over-edit doctrine mid-flight.
+
+## Planner-discipline lessons (filed for future planner sessions)
+
+Three patterns surfaced in the review cycle that are worth naming explicitly:
+
+1. **"What's the minimum version that captures the principle" beats "reject the prescription."** When a reviewer proposes architectural infrastructure, the principle is usually right and the implementation is usually overshoot. The reflex should distinguish them. Got this wrong three times in one conversation (scene-scope-first, SceneComposition, Avrae-authority trajectory).
+
+2. **When two thoughtful reviewers reach opposite conclusions, surface the axis disagreement.** Don't collapse to a unilateral planner recommendation. GPT (Ship 2 first) and Gemini (Ship 1 first) disagreed on a real axis (cumulative-compounding vs episodic-recoverable). Right move was to surface both axes to Jordan and let his trigger statement settle which axis to optimize for, not to assert a recommendation as "the obvious call."
+
+3. **Anticipated-friction dismissal must check playtest evidence first.** The temporal-state question got waved off as anticipated MMO-scale friction; S32 evidence had a concrete instance in the playtest report. The dismissal was wrong because the evidence was already in hand. Rule: when about to dismiss something as "anticipated," grep the playtest log for the pattern first.
+
+## Decision points outstanding (§12 of plan)
+
+Seven "before we start" calls listed in plan §12. Most consequential:
+
+1. **Ship 1 vs Ship 2 ordering.** Planner recommends Ship 1 first; trigger statement ("system is unplayable now") settles the axis as playability-now over architectural-purity-long-arc. Surfaced both reviewer arguments to Jordan rather than collapsing to recommendation.
+2. **Spec-then-review cadence per ship.** Default 3-session cycle for Ships 1–4; Ship 5 single-session.
+3. **Doctrine review timing.** Lock alongside ship that proves them; pre-locking rare.
+4. **Combat Playability Cluster #5.1 live verify.** Recommend during plan calendar, can fit between any two sessions.
+5. **Pre-multiplayer-fixes playtest?** Recommend trust S32 evidence — no architectural changes shipped between S32 and now would have closed any of A/H/L.
+6. **Code model selection.** Opus medium for spec/review; Opus high for Ship 1 + Ship 3 implementations (load-bearing primitives); Sonnet medium for Ship 2 implementation (templated against §59), Ship 4 implementation, Ship 5 polish.
+7. **Ship 4.5 decision criterion.** Confirm ">1 directive-binding ambiguity per session = ship; ≤1 = file v1.x" is the right one.
+
+## Cross-references
+
+- `MULTIPLAYER_FIXES.md` v2 — the plan itself. Spine: §1 diagnosis, §2 north-star principles, §3 plan structure, §4–§8 ship details, §9 doctrine work, §10 calendar, §11 non-coverage, §12 decision points, §13 "after this plan" + framing as convergence completion.
+- `ROADMAP.md` — 5 patches applied: Status snapshot row, post-checkpoint frame paragraphs, FOOTINGS queue paragraph, Combat Playability Cluster intro, cluster sub-bullets including new #5.5.
+- `S32_MULTIPLAYER_PLAYTEST_FINDINGS.md` — trigger document; 14 findings + medium/polish issues. Findings A/H/L are this plan's primary closures.
+- `DOCTRINE.md` — not modified this session; four candidates filed, anchor when their proving ships land.
+- `FAILURES.md` — not modified this session; F-NN entries for Findings A/B/H/L will be filed when the plan starts shipping.
+- `VIRGIL_MASTER.md`, `WHY.md` — not modified per discipline (architectural reasoning entries earn place after empirical validation).
+- `BUG_1_SPEC.md` (server-only) — Phase 2 trigger criteria locked in §L will be satisfied as a side effect of Ship 1; Bug 1 Phase 2 effectively ships in Ship 1.
+- Future server-side specs: `RESOLUTION_BINDING_SPEC.md` (S33), `SCENE_STATE_CANON_SPEC.md` (S35), `NPC_STATE_SYNC_SPEC.md` (S38), `SCENE_SCOPE_RESOLUTION_SPEC.md` (S40).
+
+**PC rsync:** `MULTIPLAYER_FIXES.md` v2 lives in `/mnt/user-data/outputs/` (planner-side); needs operator copy into `text files/` on PC + server-side copy into `/home/jordaneal/virgil-docs/` for Code's reading surface at S33 spec-drafting. ROADMAP edits applied directly to PC via `local-files:edit_file`; needs `push-docs` to mirror to server.

@@ -46,6 +46,10 @@ from dnd_engine import (
     init_scene_state, get_scene_state, set_scene_mode,
     clock_create, clock_tick, clock_untick, clock_reset, clock_delete, get_clocks,
     set_active_turn, clear_active_turn, get_active_turn,
+    update_last_active_actor,
+    pending_directive_upsert, pending_directive_get_active,
+    pending_directive_consume, pending_directive_delete_by_message,
+    pending_directive_age_seconds,
     update_combatants_from_init_list, clear_combatants, get_combatants,
     quest_add, quest_set_status, quest_delete, get_active_quests, get_all_quests,
     companion_add, companion_remove, companion_edit, get_companions, COMPANION_CAP,
@@ -163,6 +167,303 @@ VOICE_CHANNELS = (
     ('General', 'voice'),  # (channel_name, category_key)
     ('AFK',     'voice'),  # auto-move target after AFK_TIMEOUT_SECONDS idle
 )
+
+
+# ─────────────────────────────────────────────────────────
+# Bug 1 Phase 1 (Session 32) — DM roll-directive parser
+# ─────────────────────────────────────────────────────────
+# When the DM types `!check stealth` / `!save dex` / `!cast guidance`
+# in #dm-narration, parse the directive and (telemetry-only in Phase 1)
+# snapshot a pending row bound to the current footer-actor. Phase 2 binds
+# auto-narration to a verified pending row; Phase 1 ships the matching
+# layer + telemetry only — `dm_respond` is NEVER auto-fired here.
+#
+# Trigger surface: literal `!check ` / `!save ` / `!cast ` (trailing
+# space). Avrae shorthand (`!c`) and modifier flags (`-dc 15`, `adv`)
+# are NOT recognized as bare-skill in v1; they fall to the
+# `directive_text_unparsed:` log line for Phase 2 calibration.
+
+# Bare-skill regex. Strips a leading `<@DM_id>` mention if present;
+# captures the rest of the line as the candidate skill string.
+_DM_DIRECTIVE_RX = re.compile(
+    r"^\s*(?:<@!?\d+>\s*)?"            # optional leading @-mention
+    r"!(?P<kind>check|save|cast)\s+"   # !check / !save / !cast
+    r"(?P<skill>.+?)\s*$",
+    re.IGNORECASE,
+)
+_DIRECTIVE_TRIGGER_PREFIXES = ('!check ', '!save ', '!cast ')
+
+# Tokens that mean the captured skill string carries trailing arguments
+# (advantage/disadvantage flags, DC overrides, comments). When any of
+# these appear in the skill string, the directive is logged as unparsed
+# rather than emitted as a pending row.
+_DIRECTIVE_TRAILING_MODIFIER_TOKENS = {
+    'adv', 'advantage', 'dis', 'disadvantage',
+}
+# Group-roll surface phrases (the DM addressing the whole party). Logged
+# as `reason=group_directive` skip — kept defensive for when a group
+# pattern slips into the captured skill string.
+_DIRECTIVE_GROUP_KEYWORDS = (
+    'everyone', 'all of you', 'the party', 'party rolls',
+)
+
+
+def _is_dm_message(message, campaign) -> bool:
+    """Sister of is_dm_or_creator() but for raw discord.Message events
+    (on_message has no Interaction). Mirrors the same two-path check:
+    manage_guild perm OR campaign.created_by_user_id match.
+
+    `campaign` is the active campaign dict for this guild.
+    """
+    try:
+        author = getattr(message, 'author', None)
+        if author is None:
+            return False
+        guild_perms = getattr(author, 'guild_permissions', None)
+        if guild_perms is not None and getattr(guild_perms, 'manage_guild', False):
+            return True
+        if not campaign:
+            return False
+        creator_id = (campaign.get('created_by_user_id') or '')
+        return bool(creator_id and str(author.id) == creator_id)
+    except Exception:
+        return False
+
+
+def _classify_unparsed_reason(action: str) -> str:
+    """Best-effort reason classification for `directive_text_unparsed:`.
+
+    Returns one of: trailing_args | shorthand | comment | other.
+    Don't over-engineer — `other` is a fine fallback.
+    """
+    a = (action or '').lower()
+    if '#' in a:
+        return 'comment'
+    if ' -' in a or a.endswith(' -'):
+        return 'trailing_args'  # flag-shaped (e.g. -dc 15)
+    # Trailing modifier word like "adv" / "dis"
+    last_token = a.rsplit(' ', 1)[-1] if ' ' in a else ''
+    if last_token in _DIRECTIVE_TRAILING_MODIFIER_TOKENS:
+        return 'trailing_args'
+    # `!c` shorthand isn't covered by the trigger prefixes (so we don't
+    # see it here in practice), but if a future trigger ever extends to
+    # `!c ` we want this branch to label it correctly.
+    if a.startswith('!c ') and not a.startswith('!check '):
+        return 'shorthand'
+    return 'other'
+
+
+def _parse_dm_directive(action: str) -> dict | None:
+    """Parse a DM-authored !check/!save/!cast directive into structured
+    form, or return None if the regex doesn't match.
+
+    Returns: {'kind': 'check'|'save'|'cast', 'skill': str} on success.
+    Caller is responsible for trailing-modifier rejection (handled in
+    _handle_dm_roll_directive so the rejection paths can log distinctly).
+    """
+    m = _DM_DIRECTIVE_RX.match(action or '')
+    if not m:
+        return None
+    kind = (m.group('kind') or '').lower().strip()
+    skill = (m.group('skill') or '').strip()
+    if not kind or not skill:
+        return None
+    return {'kind': kind, 'skill': skill}
+
+
+def _directive_skill_is_clean(skill: str) -> tuple[bool, str | None]:
+    """Validate a captured skill string is a bare skill name (no trailing
+    flags, comments, or group keywords).
+
+    Returns (clean, reason). reason is one of trailing_args | comment |
+    group_directive | None (when clean=True).
+    """
+    s = (skill or '').strip()
+    s_low = s.lower()
+    if '#' in s:
+        return False, 'comment'
+    if s.startswith('-') or ' -' in s:
+        return False, 'trailing_args'
+    tokens = s_low.split()
+    if any(t in _DIRECTIVE_TRAILING_MODIFIER_TOKENS for t in tokens):
+        return False, 'trailing_args'
+    for kw in _DIRECTIVE_GROUP_KEYWORDS:
+        if kw in s_low:
+            return False, 'group_directive'
+    return True, None
+
+
+def _normalize_skill_for_match(skill: str) -> str:
+    """Lowercase + collapse whitespace. The matcher uses this on both
+    the directive's stored skill and Avrae's _extract_detail() output
+    so casing/spacing differences don't drop matches.
+
+    Phase 1 does NOT include alias normalization (sneak↔stealth) — those
+    misses are intentionally observable as TTL expirations in v1, and
+    Phase 2 designs alias handling from the observed miss rate.
+    """
+    return ' '.join((skill or '').lower().split())
+
+
+async def _post_dm_aside(guild, text: str) -> None:
+    """Post a one-shot operational aside to #dm-aside. Soft-fail —
+    aside posting must NEVER block the matcher path.
+    """
+    try:
+        if guild is None:
+            return
+        ch = get_channel(guild, 'aside')
+        if ch is None:
+            log("dm_aside_post: #dm-aside channel not found")
+            return
+        await ch.send(text)
+    except Exception as e:
+        log(f"dm_aside_post: error={e!r}")
+
+
+# Aside wording (locked in BUG_1_SPEC.md §K — operational tone, not error).
+_NO_FOOTER_ASIDE = (
+    "Roll directive not tracked: no active actor in footer yet. "
+    "Address a player before issuing a directed check."
+)
+
+
+def _wrong_actor_aside(expected_actor: str, actual_actor: str) -> str:
+    return (
+        f"Roll directive bound to {expected_actor} — that roll is not "
+        f"consumed. Wait for {expected_actor} to roll, or address "
+        f"{actual_actor} first."
+    )
+
+
+async def _handle_dm_roll_directive(message, campaign, parsed: dict) -> None:
+    """Phase 1 matcher — directive-emit branch. Telemetry-only.
+
+    Reads last_active_actor + scene mode, applies the skip cascade
+    (combat → group → no-footer), emits a pending directive row when
+    none of the skip conditions hold, and logs the appropriate telemetry
+    line per BUG_1_SPEC.md §F.
+
+    Soft-fail throughout: matcher errors must NEVER raise into on_message.
+    """
+    try:
+        kind = parsed['kind']
+        skill = parsed['skill']
+        campaign_id = campaign['id']
+
+        # Skip-cascade gate 1: trailing-args / group-directive / comment.
+        # Logs `directive_creation_skipped` with the classified reason
+        # (or `directive_text_unparsed` for comment-shaped surface).
+        clean, reason = _directive_skill_is_clean(skill)
+        if not clean:
+            if reason == 'group_directive':
+                log(f"directive_creation_skipped: campaign={campaign_id} "
+                    f"reason=group_directive")
+                return
+            # trailing_args / comment / other: log as unparsed text
+            log(f"directive_text_unparsed: campaign={campaign_id} "
+                f"raw={(message.content or '')!r} reason={reason}")
+            return
+
+        scene = get_scene_state(campaign_id)
+        mode = (scene.get('mode') if scene else 'exploration') or 'exploration'
+
+        # Skip-cascade gate 2: combat mode (Phase 1 explicitly excludes
+        # combat-mode directive tracking — Phase 2 retunes if observed
+        # play data shows it's needed).
+        if mode == 'combat':
+            log(f"directive_creation_skipped: campaign={campaign_id} "
+                f"reason=combat_mode")
+            return
+
+        # Skip-cascade gate 3: no footer-actor yet (e.g. opening turn after
+        # /play, before any player has spoken). Log + post operational
+        # aside; do NOT create a row.
+        footer_actor = (scene.get('last_active_actor') if scene else '') or ''
+        footer_actor = footer_actor.strip()
+        if not footer_actor:
+            log(f"directive_creation_skipped_no_footer: campaign={campaign_id} "
+                f"skill={skill} reason=no_active_actor")
+            await _post_dm_aside(message.guild, _NO_FOOTER_ASIDE)
+            return
+
+        # Emit / replace. Single-writer is pending_directive_upsert via
+        # this matcher; the helper returns prior-row info so we can log
+        # `pending_directive_replaced` before the swap.
+        result = pending_directive_upsert(
+            campaign_id=campaign_id,
+            actor_name=footer_actor,
+            check_type=skill,
+            source_message_id=str(message.id),
+            ttl_seconds=al.PENDING_DIRECTIVE_TTL_SECONDS,
+        )
+        if result.get('replaced') and result.get('prior'):
+            prior = result['prior']
+            old_age = pending_directive_age_seconds(prior.get('created_at') or '')
+            log(f"pending_directive_replaced: campaign={campaign_id} "
+                f"old_actor={prior.get('actor_name', '')} "
+                f"old_skill={prior.get('check_type', '')} "
+                f"new_actor={footer_actor} new_skill={skill} "
+                f"old_age_s={old_age}")
+
+        # Bind log fires with directive_age_s=0 by definition (just emitted).
+        log(f"directive_bound_to_footer_actor: campaign={campaign_id} "
+            f"actor={footer_actor} skill={skill} directive_age_s=0")
+    except Exception as e:
+        log(f"_handle_dm_roll_directive error: {e!r}")
+
+
+def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> None:
+    """Phase 1 matcher — Avrae roll-arrival branch. Telemetry-only.
+
+    Sync helper (called from inside the existing on_message Avrae branch).
+    Returns nothing; aside posting is fired from a wrapper coroutine.
+
+    Returns a dict: {'aside': None | str} so the async caller can post
+    the wrong-actor aside without making this helper coroutine-bound.
+    """
+    # Defensive: only check/save/cast events are matched against pending
+    # directives. Attack/damage/rest/roll silent-ignore in Phase 1.
+    kind = (event.get('kind') or '').lower()
+    if kind not in ('check', 'save', 'cast'):
+        return {'aside': None}
+
+    pending = pending_directive_get_active(campaign_id)
+    if not pending:
+        return {'aside': None}
+
+    avrae_skill = _normalize_skill_for_match(event.get('detail') or '')
+    pending_skill = _normalize_skill_for_match(pending.get('check_type') or '')
+    if not avrae_skill or not pending_skill or avrae_skill != pending_skill:
+        # Skill mismatch (any actor) → silent ignore per spec.
+        return {'aside': None}
+
+    avrae_actor = canonicalize_actor_name(event.get('actor') or '')
+    pending_actor = canonicalize_actor_name(pending.get('actor_name') or '')
+
+    age_s = pending_directive_age_seconds(pending.get('created_at') or '')
+
+    if avrae_actor == pending_actor and avrae_actor:
+        # Match: would-fire log + consume row. Phase 1 does NOT auto-fire
+        # dm_respond — that's Phase 2's wiring on top of this verified layer.
+        log(f"directive_would_fire_dm_respond: campaign={campaign_id} "
+            f"actor={pending.get('actor_name', '')} "
+            f"skill={pending.get('check_type', '')} "
+            f"directive_age_s={age_s}")
+        pending_directive_consume(campaign_id)
+        return {'aside': None}
+
+    # Skill match + actor mismatch → log + aside, do NOT consume.
+    log(f"directive_actor_mismatch: campaign={campaign_id} "
+        f"expected_actor={pending.get('actor_name', '')} "
+        f"actual_actor={event.get('actor', '')} "
+        f"skill={pending.get('check_type', '')}")
+    return {
+        'aside': _wrong_actor_aside(
+            expected_actor=pending.get('actor_name', ''),
+            actual_actor=event.get('actor', ''),
+        ),
+    }
 
 # Guild-wide AFK auto-move config. afk_timeout accepts a fixed set of values
 # (60, 300, 900, 1800, 3600). 1800 = 30 min.
@@ -915,31 +1216,79 @@ async def _handle_rest_event(message, rest_evt):
 
 @bot.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
-    """Catches Avrae message edits as state-transition signals.
-    Specifically: Avrae edits the 'Are you sure you want to end combat?'
+    """Catches Avrae message edits as state-transition signals AND DM
+    directive edits as cancellation signals (Bug 1 Phase 1, S32).
+
+    Avrae path: Avrae edits the 'Are you sure you want to end combat?'
     message in place to 'End of combat report: ...' when the DM confirms
     !init end. No new message is sent, so on_message never fires.
     We treat the edit as a state transition and re-run the init parser.
+
+    DM directive path: when the DM edits a message that holds a pending
+    roll directive, re-parse the new content. If the new content no
+    longer matches the same kind+skill, cancel the directive.
     """
-    if not al.is_avrae(after):
+    if al.is_avrae(after):
+        # Only care about content changes that look like end-of-combat.
+        # Retrieve fresh content — edit events can arrive with partial state.
+        new_content = (getattr(after, 'content', '') or '').strip()
+        if not new_content:
+            return
+        try:
+            init_evt = al.parse_init_event(after)
+            if init_evt and init_evt.get('init_event') == 'end':
+                await _handle_init_event(after, init_evt)
+            # Avrae also edits a posted `!init list` message in place when the
+            # list is refreshed (button-driven refresh, end-of-combat replacement).
+            # Pick up snapshot updates from edits as well.
+            list_parsed = al.parse_init_list_embed(new_content)
+            if list_parsed:
+                await _handle_init_list_event(after, list_parsed)
+        except Exception as e:
+            log(f"on_message_edit init handler error: {e}")
         return
-    # Only care about content changes that look like end-of-combat.
-    # Retrieve fresh content — edit events can arrive with partial state.
-    new_content = (getattr(after, 'content', '') or '').strip()
-    if not new_content:
-        return
+
+    # Bug 1 Phase 1 — DM directive edit-cancel path. Only checks
+    # messages in #dm-narration; other channels never carry directives.
+    # Soft-fail throughout — edit handling must never raise.
     try:
-        init_evt = al.parse_init_event(after)
-        if init_evt and init_evt.get('init_event') == 'end':
-            await _handle_init_event(after, init_evt)
-        # Avrae also edits a posted `!init list` message in place when the
-        # list is refreshed (button-driven refresh, end-of-combat replacement).
-        # Pick up snapshot updates from edits as well.
-        list_parsed = al.parse_init_list_embed(new_content)
-        if list_parsed:
-            await _handle_init_list_event(after, list_parsed)
+        guild = getattr(after, 'guild', None)
+        channel = getattr(after, 'channel', None)
+        if guild is None or channel is None:
+            return
+        if getattr(channel, 'name', '') != CHANNEL_NAMES['narration']:
+            return
+        campaign = get_active_campaign(str(guild.id))
+        if not campaign:
+            return
+        if not _is_dm_message(after, campaign):
+            return
+        # Look up the pending directive for this campaign and check whether
+        # this edit's source message is the one that issued it.
+        pending = pending_directive_get_active(campaign['id'])
+        if not pending or str(pending.get('source_message_id', '')) != str(after.id):
+            return
+        new_text = (getattr(after, 'content', '') or '').strip()
+        new_low = new_text.lower()
+        new_parsed = None
+        if new_low.startswith(_DIRECTIVE_TRIGGER_PREFIXES):
+            new_parsed = _parse_dm_directive(new_text)
+        # Same kind+skill after edit → no-op (typo fix or cosmetic
+        # whitespace change). Otherwise cancel + log.
+        same_skill = False
+        if new_parsed:
+            new_skill_norm = _normalize_skill_for_match(new_parsed.get('skill', ''))
+            old_skill_norm = _normalize_skill_for_match(pending.get('check_type', ''))
+            same_skill = bool(new_skill_norm) and (new_skill_norm == old_skill_norm)
+        if not same_skill:
+            removed = pending_directive_delete_by_message(
+                campaign['id'], str(after.id)
+            )
+            if removed is not None:
+                log(f"pending_directive_cancelled: campaign={campaign['id']} "
+                    f"reason=edit")
     except Exception as e:
-        log(f"on_message_edit init handler error: {e}")
+        log(f"on_message_edit dm-directive handler error: {e!r}")
 
 
 @bot.event
@@ -1018,6 +1367,22 @@ async def on_message(message: discord.Message):
                     except Exception as e:
                         log(f"resolve_actor error: {e!r}")
                 buffer.add(event)
+                # Bug 1 Phase 1 (S32) — match this roll against any
+                # pending DM directive for the campaign. Telemetry-only:
+                # logs `directive_would_fire_dm_respond` on match (and
+                # consumes the row), `directive_actor_mismatch` + posts
+                # the wrong-actor aside on skill-match-actor-mismatch.
+                # Skill mismatch silent-ignores per spec. Soft-fail:
+                # matcher errors must NEVER raise into on_message.
+                try:
+                    if event.get('kind') in ('check', 'save', 'cast') and message.guild:
+                        arrival_camp = get_active_campaign(str(message.guild.id))
+                        if arrival_camp:
+                            arrival = _handle_dm_roll_arrival(arrival_camp['id'], event)
+                            if arrival and arrival.get('aside'):
+                                await _post_dm_aside(message.guild, arrival['aside'])
+                except Exception as e:
+                    log(f"_handle_dm_roll_arrival outer error: {e!r}")
                 # Rest events flush combat mode (Avrae doesn't fire !init end
                 # on !lr / !sr — pure mechanical mapping, no LLM).
                 if event.get('kind') == 'rest':
@@ -1064,6 +1429,27 @@ async def on_message(message: discord.Message):
     campaign = get_active_campaign(str(guild_id))
     if not campaign:
         return  # No active campaign → silently ignore
+
+    # Bug 1 Phase 1 (S32) — DM roll directive parsing in #dm-narration.
+    # Branches BEFORE the no-bound-char gate so the DM (who typically
+    # isn't a bound player) doesn't get the bound-char error reply on
+    # directive emission. Only fires when the author is the DM/creator
+    # AND the text starts with `!check ` / `!save ` / `!cast `. Anything
+    # else falls through to the existing flow unchanged.
+    _action_text = (message.content or '').strip()
+    _action_low = _action_text.lower()
+    if _is_dm_message(message, campaign) and _action_low.startswith(_DIRECTIVE_TRIGGER_PREFIXES):
+        parsed = _parse_dm_directive(_action_text)
+        if parsed:
+            await _handle_dm_roll_directive(message, campaign, parsed)
+        else:
+            # Directive prefix matched but bare-skill regex failed
+            # (trailing args, comment, malformed). Log so Phase 2 can
+            # calibrate alias / variant handling from the miss surface.
+            log(f"directive_text_unparsed: campaign={campaign['id']} "
+                f"raw={_action_text!r} "
+                f"reason={_classify_unparsed_reason(_action_text)}")
+        return  # Don't fall through — Avrae owns the !-prefix response.
 
     char = get_character_by_controller(campaign['id'], str(message.author.id))
     if not char:
@@ -1731,6 +2117,18 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
         roll_kinds = [e.get('kind') for e in avrae_events if e.get('kind')]
         log(f"buffer.consume: {len(avrae_events)} events for "
             f"actors={actor_names_canonical} roll_kinds={roll_kinds}")
+
+        # Bug 1 Phase 1 (S32) — exploration-mode footer-actor write.
+        # First actor in the batch is the canonical "footer actor" for
+        # this turn (mirrors the persistence directive's first-actor pick).
+        # Stored as display form so the journal stays human-readable; the
+        # matcher canonicalizes both sides at compare time.
+        # Soft-fail: footer-actor bookkeeping must never block narration.
+        try:
+            primary_actor = actor_names_display[0] if actor_names_display else ''
+            update_last_active_actor(campaign['id'], primary_actor, 'dm_respond')
+        except Exception as e:
+            log(f"update_last_active_actor failed (_dm_respond_and_post): {e!r}")
 
         try:
             async with channel.typing():
@@ -3020,6 +3418,15 @@ async def play(interaction: discord.Interaction, scene: str = None):
 
     seed = scene or f"The party gathers, ready to begin {campaign['name']}."
     init_scene_state(campaign['id'], seed)
+
+    # Bug 1 Phase 1 (S32) — clear footer-actor on /play. Opening narration
+    # doesn't address a specific player, so any prior turn's actor must
+    # not bleed into the next directive's footer-binding window. Soft-fail
+    # so footer-actor bookkeeping never blocks the opening.
+    try:
+        update_last_active_actor(campaign['id'], '', 'play')
+    except Exception as e:
+        log(f"update_last_active_actor failed (/play): {e!r}")
 
     # Track 4 #3 (Session 27) — seed campaign clock from skeleton.md's
     # optional `## Starting time` section. Narrow §17 exception per

@@ -1,0 +1,816 @@
+{
+  "construction": {
+    "extractor_version": "compression_cadence_v1p4",
+    "phase": "Phase 5 validation construction",
+    "sample_seed": 9999,
+    "sample_episodes": "full 123-episode pool (not recon or handsample)",
+    "excluded_handsample_episodes": [
+      "C1E004",
+      "C1E013",
+      "C1E025",
+      "C1E036",
+      "C1E050",
+      "C1E056",
+      "C1E088",
+      "C1E090",
+      "C1E093",
+      "C1E097"
+    ],
+    "excluded_recon_episodes": [
+      "C1E011",
+      "C1E053",
+      "C1E095",
+      "C1E114",
+      "C2E011",
+      "C2E027",
+      "C2E037"
+    ],
+    "excluded_recon_episode_C1E114_zero_records": true,
+    "pool_episode_count": 123,
+    "mechanical_exclusion_satisfied": true,
+    "sampling_method": "Stratified proportional random sample by campaign x phase-third (spec §3 boundaries). Allocation by per-stratum *record count* (not episode count) in parse output. Floor + largest-fraction remainder to sum to 15. random.seed(9999); random.sample per stratum.",
+    "strata_boundaries": {
+      "C1_early": "E001-E034",
+      "C1_mid": "E035-E075",
+      "C1_late": "E076-E115",
+      "C2_early": "E001-E015",
+      "C2_mid": "E016-E030",
+      "C2_late": "E031-E046"
+    },
+    "per_stratum_records_in_pool": {
+      "C1_early": 82,
+      "C1_late": 63,
+      "C1_mid": 64,
+      "C2_early": 38,
+      "C2_late": 45,
+      "C2_mid": 73
+    },
+    "per_stratum_targets": {
+      "C1_early": 3,
+      "C1_mid": 3,
+      "C1_late": 3,
+      "C2_early": 1,
+      "C2_mid": 3,
+      "C2_late": 2
+    },
+    "per_stratum_actual": {
+      "C1_early": 3,
+      "C1_mid": 3,
+      "C1_late": 3,
+      "C2_early": 1,
+      "C2_mid": 3,
+      "C2_late": 2
+    },
+    "sample_size": 15,
+    "construction_date": "2026-05-09",
+    "verdict_methodology": "Blind judge pass by Claude (Phase 6). Each record judged on: (a) extracted_category vs spec §4 taxonomy definitions, (b) Stage 0 reject patterns (D1 OOC, D2 NPC-voice, D3 micro-motion, D4 recap-state), (c) condition-recovery polysemy vs overnight-rest, (d) surface_form and compression_scope correctness, (e) buildup_signal classification. expected_* filled in by judge; verdict_at_v1 = correct/wrong/defensible.",
+    "raw_text_policy": "raw_text retained at full (NOT stripped). preceding_turns_last5 carries the last 5 turns of preceding context so blind judging works without re-hydrating from source.",
+    "per_category_in_validation": {
+      "OVERNIGHT_REST": 9,
+      "LOCATION_DEPARTURE": 3,
+      "TEMPORAL_MONTAGE": 3
+    }
+  },
+  "validation": [
+    {
+      "trigger_id": "C1E005_t3244",
+      "same_turn_record_index": 0,
+      "episode": "C1E005",
+      "trigger_phrase": "you come to consciousness",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.9143,
+      "raw_text": "As Grog, you come to consciousness again--",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LIAM",
+          "text": "Trinket's on the sidelines, man.",
+          "turn_number": 3239
+        },
+        {
+          "speaker": "LAURA",
+          "text": "That makes me so sad!",
+          "turn_number": 3240
+        },
+        {
+          "speaker": "LIAM",
+          "text": "We're not going back.",
+          "turn_number": 3241
+        },
+        {
+          "speaker": "LAURA",
+          "text": "And it's all you guys' fault!",
+          "turn_number": 3242
+        },
+        {
+          "speaker": "LIAM",
+          "text": "But it was like three years, Trinket was by your side. This is the first time ever.",
+          "turn_number": 3243
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E009_t991",
+      "same_turn_record_index": 0,
+      "episode": "C1E009",
+      "trigger_phrase": "you come to consciousness",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.5191,
+      "raw_text": "All right, so the 826 donation's working again. Yay! Let us begin. So after an evening's rest, taking your respective turns keeping watch, all of you come to consciousness once more. Clarota anxiously sits at the edge of the camping facility, looking deeper into the tunnel ahead, keeping his eyes peeled in the darkness.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LIAM",
+          "text": "We will be here every week, so subscribe.",
+          "turn_number": 988
+        },
+        {
+          "speaker": "MATT",
+          "text": "Also, t-shirts on sale, as of today. They are a limited run for two weeks. We are trying to get to our goal of 1,000 before that's done, hopefully. So you can just scroll down to the bottom of the Twitch page; you'll find a button there that will get you to that shop. So go for it!",
+          "turn_number": 989
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "Wait! Also, the PayPal is working again, for donations.",
+          "turn_number": 990
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E014_t959",
+      "same_turn_record_index": 0,
+      "episode": "C1E014",
+      "trigger_phrase": "you make your way to the wide",
+      "extracted_category": "LOCATION_DEPARTURE",
+      "extracted_surface_form": "location_exit",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": false,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.4669,
+      "raw_text": "Perfect. We’ve lined it up. As you walk across the main thoroughfare, you make your way to the wide but single-story building that is Gilmore’s Glorious Goods. Of all the various shades of brown and red and brick that makes up all these buildings, Gilmore’s Glorious Goods is presented in fine, deep blue and purple fabric and a paint scheme that would look like the worst funhouse to enter. Worst or best, depending on your opinion. The entranceway is not a door but a series of hanging beads and large cloth drapes that are gently falling to be brushed aside as you enter. It’s not as big as you remember, or recall, seemingly. But as you step through the front door you remember why. Much like the TARDIS, the interior of Gilmore’s Goods is bigger on the inside. There is a magical enchantment based within this building where the interior is actually a two-story and much larger place of business. Immediately the smells of incense and fine perfumes assault your nose --",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LAURA",
+          "text": "I do.",
+          "turn_number": 954
+        },
+        {
+          "speaker": "MATT",
+          "text": "All right.",
+          "turn_number": 955
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Other way.",
+          "turn_number": 956
+        },
+        {
+          "speaker": "MATT",
+          "text": "Perfect, there you go.",
+          "turn_number": 957
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Just a little more.",
+          "turn_number": 958
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E044_t876",
+      "same_turn_record_index": 0,
+      "episode": "C1E044",
+      "trigger_phrase": "you wake up",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.2772,
+      "raw_text": "At this point, you hear a distant screech that echoes across the night sky. All of you wake up. While not extremely loud, it is very noticeable and cuts through the silence, as there is a very still wind tonight.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TALIESIN",
+          "text": "We've been given mighty deeds to accomplish. We will rise. Or if we fail, no one will ever know. (chuckles)",
+          "turn_number": 871
+        },
+        {
+          "speaker": "LIAM",
+          "text": "(laughs) There's comfort in that. All right. I've said my piece.",
+          "turn_number": 872
+        },
+        {
+          "speaker": "MATT",
+          "text": "At which point, you hear a voice say, \"Good. I'm trying to sleep.\" (laughter)",
+          "turn_number": 873
+        },
+        {
+          "speaker": "MATT",
+          "text": "The clinking of armor as Kima rolls over on one of the branches and is face-palming at the conversation.",
+          "turn_number": 874
+        },
+        {
+          "speaker": "LIAM",
+          "text": "You are really fucking cool. You know that, don't you?",
+          "turn_number": 875
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E049_t3292",
+      "same_turn_record_index": 0,
+      "episode": "C1E049",
+      "trigger_phrase": "you make your way to the outside",
+      "extracted_category": "LOCATION_DEPARTURE",
+      "extracted_surface_form": "location_exit",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": false,
+      "extracted_stale_signal_count_preceding": 1,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.9537,
+      "raw_text": "You Dimension Door and you appear right at the doorway. You cannot Dimension Door through dimensions. But you make your way to the outside of the door. You are still drifting with the momentum you had going backwards, so you appear back at the door and start going backwards again.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "MATT",
+          "text": "All right, so you take 12 points of psychic damage as two of the spiders dissipate, leaving nothing but a psychic mist behind. All right. Top of the turn, Vex, I need you to make a death saving throw.",
+          "turn_number": 3287
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Six.",
+          "turn_number": 3288
+        },
+        {
+          "speaker": "MATT",
+          "text": "Six. Mark off one of your failed death saving throws. Scanlan, your turn, you're floating out in space and you see all of a sudden through the portal, Vax come rocketing towards you, hand forward, clutching a rope in one hand, arm outstretched towards you. What do you want to do?",
+          "turn_number": 3289
+        },
+        {
+          "speaker": "SAM",
+          "text": "Well, as much as I appreciate the gesture, I'm going to try to Dimension Door out of here.",
+          "turn_number": 3290
+        },
+        {
+          "speaker": "LIAM",
+          "text": "I deftly roll my eyes so fucking hard.",
+          "turn_number": 3291
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E058_t2889",
+      "same_turn_record_index": 0,
+      "episode": "C1E058",
+      "trigger_phrase": "throughout the day",
+      "extracted_category": "TEMPORAL_MONTAGE",
+      "extracted_surface_form": "montage",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.8545,
+      "raw_text": "Yeah, yeah. As you guys spend the rest of the afternoon - which, you woke up late, for the most part, so the afternoon's pretty short. But as the sun sets here in Whitestone, the cloud cover takes in once more, and a very light drizzle begins to hit the rooftops, and you hear in the distance people finishing rebuilding the roofs that were destroyed in the battle. Some buildings that are starting to be put back up again. The city is definitely, over time, coming back to life. You also know that throughout the day, you can see Allura and Gilmore and the Farseer Eskil are beginning to mark areas in the town. You're not sure what for, but you gather it's probably preparation for their wards they're going to start putting up throughout Whitestone. During this time, you make your first tinker check.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LAURA",
+          "text": "Don't lose sleep over it. Unless you really want to. But I don't want to force you into anything.",
+          "turn_number": 2884
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "This pains me. This pains me, and it must be put down. This must be put down and finished!",
+          "turn_number": 2885
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Thank you, dear.",
+          "turn_number": 2886
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "Good night.",
+          "turn_number": 2887
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "I'm going to roll a tinker check, at some point.",
+          "turn_number": 2888
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E091_t2095",
+      "same_turn_record_index": 0,
+      "episode": "C1E091",
+      "trigger_phrase": "for the next 24 hours",
+      "extracted_category": "TEMPORAL_MONTAGE",
+      "extracted_surface_form": "montage",
+      "extracted_compression_scope": "in_scene",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.7317,
+      "raw_text": "Okay, so everyone gets a bonus of ten-- that's an average, I guess. Close to average. So, ten maximum hit point increase to everybody for the next 24 hours.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "MATT",
+          "text": "So Keyleth, roll 2d10.",
+          "turn_number": 2090
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "All right.",
+          "turn_number": 2091
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "I'm so excited.",
+          "turn_number": 2092
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "Come on, now.",
+          "turn_number": 2093
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "Big money, no whammies! That's an eight for one, and the other, not as good. Ten total.",
+          "turn_number": 2094
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E105_t492",
+      "same_turn_record_index": 0,
+      "episode": "C1E105",
+      "trigger_phrase": "the morning sun",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": false,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.2361,
+      "raw_text": "So with Pike following suit, you guys all swoop down through the boughs of the trees and into the center of the forest itself. Within there, it's not a super thick canopy; it's not as heavy as the Feywild or some of the recent forests that cluster around Vasselheim. There are breaks in the canopy where you can see the sunbeams come through from the morning sun that's rising up higher and higher in the sky as you've traveled. The mist has burned away in this area, so it's a nice, warm forest. Glancing about, there is a lot of life in here. You can see signs of squirrels. You rush by what was a family of wolverine-like creatures that are rustling by. As soon as the wind scoots in and your mist forms come rocketing past, they all scatter and run off into the shadows. There's a lot of forest ground here to cover. For you to really super track with advantage, you'd have to go into human form. I'd give you a regular roll if you want to try and track in your mist form.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "MATT",
+          "text": "Okay. Glancing over, you don't see any major glades or clearings. There doesn't appear to be any sign of bastions of civilization or any sort of logging going on. There's no areas where trees have been cut or cleared. It's a featureless forest top, from what you can see.",
+          "turn_number": 487
+        },
+        {
+          "speaker": "LAURA",
+          "text": "Can we fly down lower to where we're in between the trees?",
+          "turn_number": 488
+        },
+        {
+          "speaker": "MATT",
+          "text": "You can go down into the forest, if you'd like. All right, who's going into the forest, then?",
+          "turn_number": 489
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "I'll go.",
+          "turn_number": 490
+        },
+        {
+          "speaker": "LAURA",
+          "text": "I'll go. All of us?",
+          "turn_number": 491
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C1E113_t594",
+      "same_turn_record_index": 0,
+      "episode": "C1E113",
+      "trigger_phrase": "you come to consciousness",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.1674,
+      "raw_text": "And knowing that you've taken your faith from a place of being forgotten to a newly built symbol of hope. These thoughts all mingle, as the dark of rest takes you. And as you all awake, in the center of this strange, mystical meadow, peeking through the hints of purple and orange that signify the sky that breaks through the canopy of this forest, the pools of Nala that once brought you here long ago. You all awake, the beds gone, the tents gone. You're all lying amongst this field in a circle, around each other. As you come to consciousness, you all sit up, take a breath, feel the warmth and the knowledge of what has to be done wash over you, the shadow between two distant trees reveals the orange mane of Artagan once more, as he steps forth, his high green collar disappearing into his long sleeves, and a cloak that billows past his shoulders and loops into his back, as he almost glides effortlessly through the grass. \"I take it you all slept well?\"",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LIAM",
+          "text": "Goodnight, brother.",
+          "turn_number": 589
+        },
+        {
+          "speaker": "TALIESIN",
+          "text": "Goodnight, brother.",
+          "turn_number": 590
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "And we sleep.",
+          "turn_number": 591
+        },
+        {
+          "speaker": "MATT",
+          "text": "All right. You all find yourselves resting, uncomfortable at first, but the knowledge and the exhaustion hitting you, eventually it takes you. The dreams lead seamlessly, one to the next. Memories of your meeting, of your story, of your experiences, bleeding between your fears, your victories, and the people whose lives you've touched and who've touched your lives. Of Wilhand. The fall of Kevdak. To the respect of your father, and the vengeance of your mother. To climbing the destiny of the Aramente. To rebuilding the memory of one's family. And to spooning a second version of yourself. (laughing)",
+          "turn_number": 592
+        },
+        {
+          "speaker": "LIAM",
+          "text": "(singing) Oh, my darling, I hunger for your touch--",
+          "turn_number": 593
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C2E014_t1413",
+      "same_turn_record_index": 0,
+      "episode": "C2E014",
+      "trigger_phrase": "As the morning comes",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.7445,
+      "raw_text": "Not yet? Okay. Anybody else? Anything? All right then. As the morning comes to, you all wake up relatively early because you went to bed relatively early. It's shortly after sunrise. You find yourself conscious. Some of the first to really hit the downstairs tavern for breakfast. Food is served, drinks are had and the morning and day is yours. What do you wish to do?",
+      "preceding_turns_last5": [
+        {
+          "speaker": "SAM",
+          "text": "The one-- you mean the--",
+          "turn_number": 1408
+        },
+        {
+          "speaker": "MATT",
+          "text": "The one that you took from Yasha.",
+          "turn_number": 1409
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "Oh.",
+          "turn_number": 1410
+        },
+        {
+          "speaker": "MATT",
+          "text": "Are you--",
+          "turn_number": 1411
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "Not yet.",
+          "turn_number": 1412
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C2E020_t577",
+      "same_turn_record_index": 0,
+      "episode": "C2E020",
+      "trigger_phrase": "you come to consciousness",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.2188,
+      "raw_text": "As you come to consciousness through this evening's rest for your final watch, as you gather after that sleep is probably not going to find its way to you again for the rest of the evening. Who is taking the final watch with you?",
+      "preceding_turns_last5": [
+        {
+          "speaker": "MATT",
+          "text": "You forgot to say goodbye. She's just gone.",
+          "turn_number": 572
+        },
+        {
+          "speaker": "LIAM",
+          "text": "(singing) Never say goodbye!",
+          "turn_number": 573
+        },
+        {
+          "speaker": "SAM",
+          "text": "So was she a Xhorhasian spy and are we all dead in our sleep?",
+          "turn_number": 574
+        },
+        {
+          "speaker": "MATT",
+          "text": "Roll a perception check-- no.",
+          "turn_number": 575
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "Is it water or blood that we're covered in?",
+          "turn_number": 576
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C2E022_t209",
+      "same_turn_record_index": 0,
+      "episode": "C2E022",
+      "trigger_phrase": "you come to consciousness",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": false,
+      "extracted_stale_signal_count_preceding": 1,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.0834,
+      "raw_text": "Yes, you come to consciousness.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "SAM",
+          "text": "High roll!",
+          "turn_number": 204
+        },
+        {
+          "speaker": "MATT",
+          "text": "While you guys are taking some time, concentrating on listening out for anything and feeling pretty solid in your ability to maintain vigil across this dark, eerie night in the center of this hollow tree, you don't hear or see a goddamned thing. But a little twinkle hits your ears, Caleb.",
+          "turn_number": 205
+        },
+        {
+          "speaker": "SAM",
+          "text": "Oh shit!",
+          "turn_number": 206
+        },
+        {
+          "speaker": "MATT",
+          "text": "As suddenly something down below, by the pool on the opposite end of that kidney-shaped interior cavern, seems to go off.",
+          "turn_number": 207
+        },
+        {
+          "speaker": "LIAM",
+          "text": "I'm awake?",
+          "turn_number": 208
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C2E030_t1179",
+      "same_turn_record_index": 0,
+      "episode": "C2E030",
+      "trigger_phrase": "for the next hour",
+      "extracted_category": "TEMPORAL_MONTAGE",
+      "extracted_surface_form": "montage",
+      "extracted_compression_scope": "in_scene",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.5696,
+      "raw_text": "You all begin to make your way through this section of the Savalierwood, following the best pathways you can for the next hour, hour and a half before you begin to break into the North Clover area of the city. Trying to maneuver around carefully so as to not be conspicuous. Thankfully, the enchantment on the cart enables you to do so without much issue. However, it is also a very populated area with friends and enemies of the house you are traveling to. Who wants to be responsible for trying to remain inconspicuous?",
+      "preceding_turns_last5": [
+        {
+          "speaker": "LIAM",
+          "text": "The reason we're not overflowing with \"Happy Birthday\" joy and radiance is because we also have a cold, dead, fury that she's not at the table.",
+          "turn_number": 1174
+        },
+        {
+          "speaker": "MATT",
+          "text": "Yeah, we wanted her here badly, but her shoot schedule did not allow it. We wish her happy birthday on social media and such. She is amazing and we love her, and we want her back ASAP.",
+          "turn_number": 1175
+        },
+        {
+          "speaker": "LIAM",
+          "text": "Come back.",
+          "turn_number": 1176
+        },
+        {
+          "speaker": "MATT",
+          "text": "Yes.",
+          "turn_number": 1177
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "(singing) Ashley, come back!",
+          "turn_number": 1178
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C2E031_t1063",
+      "same_turn_record_index": 0,
+      "episode": "C2E031",
+      "trigger_phrase": "You make your way to the subterranean",
+      "extracted_category": "LOCATION_DEPARTURE",
+      "extracted_surface_form": "location_exit",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.5525,
+      "raw_text": "You make your way to the subterranean basement of The Evening Nip. The Gentleman is not currently present, but upon asking around, and you wait for about 20 minutes or so, he does return from the storage room to the side where you had previously been led down and through the Underworks. As he comes in, he sees you and sits on the other side of the table, throwing his leg over one side and sitting at a very comfortable and casual way across from you. \"Fjord, I'm being told that you're looking for me.\"",
+      "preceding_turns_last5": [
+        {
+          "speaker": "TALIESIN",
+          "text": "Travis is shouting.",
+          "turn_number": 1058
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "You guys are going to shop, ah!",
+          "turn_number": 1059
+        },
+        {
+          "speaker": "MATT",
+          "text": "(poof sound)",
+          "turn_number": 1060
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "What was it?",
+          "turn_number": 1061
+        },
+        {
+          "speaker": "MARISHA",
+          "text": "Spooky exit.",
+          "turn_number": 1062
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    },
+    {
+      "trigger_id": "C2E043_t924",
+      "same_turn_record_index": 0,
+      "episode": "C2E043",
+      "trigger_phrase": "you come to consciousness",
+      "extracted_category": "OVERNIGHT_REST",
+      "extracted_surface_form": "diurnal_transition",
+      "extracted_compression_scope": "scene_exit",
+      "extracted_buildup_signal": "matt_initiated",
+      "extracted_buildup_window_turns": null,
+      "extracted_time_mention_overlap": true,
+      "extracted_stale_signal_count_preceding": 0,
+      "is_combat_state": false,
+      "is_recap_state": false,
+      "episode_position_pct": 0.4231,
+      "raw_text": "All right. So you come to consciousness on the ground.",
+      "preceding_turns_last5": [
+        {
+          "speaker": "MATT",
+          "text": "That succeeds. They literally rolled a natural 14 plus two. 16 was the highest roll. The other rolled a two. You manage to shrug past. You push out of his grasp. He's like, \"Hey, wait!\"",
+          "turn_number": 919
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "Great. One more.",
+          "turn_number": 920
+        },
+        {
+          "speaker": "MATT",
+          "text": "Well, no, you--",
+          "turn_number": 921
+        },
+        {
+          "speaker": "TRAVIS",
+          "text": "That was it? Yeah, oh, okay. I'll run down and kneel next to Caleb and go: (English accent) Help me help this man! I will pour a healing potion into his mouth.",
+          "turn_number": 922
+        },
+        {
+          "speaker": "SAM",
+          "text": "Ooh! He does have a potion.",
+          "turn_number": 923
+        }
+      ],
+      "expected_category": null,
+      "expected_surface_form": null,
+      "expected_compression_scope": null,
+      "expected_buildup_signal": null,
+      "verdict_at_v1": null,
+      "failure_mode": null
+    }
+  ]
+}

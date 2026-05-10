@@ -581,6 +581,17 @@ def db_init():
         # = "no prior turn".
         conn2.execute("ALTER TABLE dnd_scene_state ADD COLUMN last_dm_response TEXT DEFAULT ''")
         conn2.commit()
+    if 'last_active_actor' not in existing:
+        # Session 32 (Bug 1 Phase 1) — footer-actor source of truth. The
+        # name of the PC the DM most recently addressed (exploration mode)
+        # or whose turn is active (combat mode). Read by the roll-directive
+        # matcher to snapshot the active actor at directive-emit time.
+        # Mode-disjoint single-writer discipline: update_last_active_actor()
+        # is the sole writer; called from _dm_respond_and_post (exploration),
+        # set_active_turn / clear_active_turn (combat), and /play (clear).
+        # Default '' = no active actor in footer yet.
+        conn2.execute("ALTER TABLE dnd_scene_state ADD COLUMN last_active_actor TEXT DEFAULT ''")
+        conn2.commit()
     # Track 4 #3 (Session 27) — Time Progression v1. Two new scene_state
     # columns and one new audit-log table. Single write path is
     # advance_time(); skeleton loader seed-write is the narrow §17
@@ -613,6 +624,29 @@ def db_init():
     conn2.execute(
         "CREATE INDEX IF NOT EXISTS idx_time_adv_created "
         "ON dnd_time_advancements(campaign_id, created_at)"
+    )
+    conn2.commit()
+    # Bug 1 Phase 1 (Session 32) — pending DM roll directives.
+    # When the DM emits `!check stealth` / `!save dex` / `!cast guidance`
+    # in #dm-narration, a row is created snapshotting the current
+    # last_active_actor + skill at directive-emit time. The Avrae roll
+    # arrival path consumes the row when actor + skill match. TTL-expired
+    # rows are swept on access. Single writer is the matcher logic in
+    # discord_dnd_bot.py via the engine helpers below.
+    # One pending row per campaign max (UNIQUE constraint on campaign_id);
+    # later directives REPLACE prior unresolved ones (telemetry logs the
+    # replacement before the swap).
+    conn2.execute('''CREATE TABLE IF NOT EXISTS dnd_pending_roll_directives (
+        campaign_id        INTEGER PRIMARY KEY,
+        actor_name         TEXT    NOT NULL,
+        check_type         TEXT    NOT NULL,
+        source_message_id  TEXT    NOT NULL,
+        created_at         TEXT    NOT NULL,
+        expires_at         TEXT    NOT NULL
+    )''')
+    conn2.execute(
+        "CREATE INDEX IF NOT EXISTS idx_pending_directive_msg "
+        "ON dnd_pending_roll_directives(source_message_id)"
     )
     conn2.commit()
     conn2.close()
@@ -883,6 +917,7 @@ _CAMPAIGN_SCOPED_TABLES = (
     'dnd_inventory',        # Track 4 #1 — narrative inventory per character
     'dnd_loot_pending',     # Track 4 #2 — pending loot queue (Session 22)
     'dnd_time_advancements', # Track 4 #3 — time progression audit log (Session 27)
+    'dnd_pending_roll_directives',  # Bug 1 Phase 1 — pending DM roll directives (Session 32)
     'dnd_scene_state',
     'dnd_characters',
 )
@@ -1084,7 +1119,8 @@ def get_scene_state(campaign_id: int):
         "SELECT location, mode, focus, established_details, active_npcs, "
         "active_threats, open_questions, tension, last_player_action, "
         "last_scene_change, updated_at, tension_int, progress_clocks, "
-        "last_dm_response, current_location_id, campaign_day, day_phase "
+        "last_dm_response, current_location_id, campaign_day, day_phase, "
+        "last_active_actor "
         "FROM dnd_scene_state "
         "WHERE campaign_id=?",
         (campaign_id,)
@@ -1111,6 +1147,8 @@ def get_scene_state(campaign_id: int):
         # Track 4 #3 — time progression v1.
         'campaign_day': int(row[15]) if len(row) > 15 and row[15] is not None else 1,
         'day_phase': (row[16] if len(row) > 16 and row[16] else 'Morning'),
+        # Bug 1 Phase 1 (S32) — footer-actor source of truth.
+        'last_active_actor': row[17] if len(row) > 17 and row[17] is not None else '',
         'updated_at': row[10] or '',
     }
 
@@ -1303,6 +1341,50 @@ def update_last_dm_response(campaign_id: int, text: str):
     )
     conn.commit()
     conn.close()
+
+
+def update_last_active_actor(campaign_id: int, new_actor: str, trigger: str) -> None:
+    """Persist the footer-actor and emit footer_actor_changed on transitions.
+
+    Sole writer of dnd_scene_state.last_active_actor. Mode-disjoint:
+      - exploration: called by _dm_respond_and_post after actor canonicalization
+      - combat:      called by set_active_turn / clear_active_turn
+      - session:     called by /play (clear path)
+
+    No-op when the new actor matches the prior one (no log, no UPDATE).
+    Otherwise emits `footer_actor_changed: campaign={N} from={old|none}
+    to={new|none} trigger={trigger}` and writes the new value.
+
+    Phase 2 reads this column to decide whether to auto-fire dm_respond on
+    matched roll arrivals; Phase 1 ships read-only telemetry against it.
+
+    `trigger` must be one of: dm_respond, play, combat_turn_set,
+    combat_turn_clear. Other values are accepted (logged verbatim) so future
+    write sites don't have to wait for a code change here, but the four-value
+    enum is the locked spec set.
+    """
+    new_val = (new_actor or '').strip()
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute(
+            "SELECT last_active_actor FROM dnd_scene_state WHERE campaign_id=?",
+            (campaign_id,)
+        ).fetchone()
+        prior = (row[0] if row and row[0] is not None else '').strip()
+        if prior == new_val:
+            return
+        conn.execute(
+            "UPDATE dnd_scene_state SET last_active_actor=?, updated_at=? "
+            "WHERE campaign_id=?",
+            (new_val, _now(), campaign_id)
+        )
+        conn.commit()
+        from_label = prior if prior else 'none'
+        to_label = new_val if new_val else 'none'
+        log(f"footer_actor_changed: campaign={campaign_id} "
+            f"from={from_label} to={to_label} trigger={trigger}")
+    finally:
+        conn.close()
 
 
 def set_scene_mode(campaign_id: int, mode: str):
@@ -1676,6 +1758,13 @@ def set_active_turn(campaign_id: int, controller_id: str, character_name: str, r
     conn.commit()
     conn.close()
     log(f"set_active_turn: campaign={campaign_id} name='{character_name}' controller={controller_id} round={round_num}")
+    # Bug 1 Phase 1 (S32) — combat-mode footer-actor write. Mirrors the
+    # exploration writer in _dm_respond_and_post; emits footer_actor_changed
+    # via update_last_active_actor only when the actor actually transitions.
+    try:
+        update_last_active_actor(campaign_id, character_name or '', 'combat_turn_set')
+    except Exception as e:
+        log(f"update_last_active_actor failed (set_active_turn): {e!r}")
 
 
 def get_active_turn(campaign_id: int) -> dict | None:
@@ -1707,6 +1796,12 @@ def clear_active_turn(campaign_id: int) -> None:
     conn.commit()
     conn.close()
     log(f"clear_active_turn: campaign={campaign_id} — combat state cleared")
+    # Bug 1 Phase 1 (S32) — combat-mode footer-actor clear. Mirrors the
+    # set path; emits footer_actor_changed only on transition.
+    try:
+        update_last_active_actor(campaign_id, '', 'combat_turn_clear')
+    except Exception as e:
+        log(f"update_last_active_actor failed (clear_active_turn): {e!r}")
 
 
 # ─── Per-Combatant Snapshot State (Session 21 — combat persistence directive) ─
@@ -1878,6 +1973,166 @@ def get_combatants(campaign_id: int) -> dict:
         except Exception:
             snapshot_age_s = None
     return {'combatants': combatants, 'snapshot_age_s': snapshot_age_s}
+
+
+# ─── Pending DM Roll Directives (Bug 1 Phase 1, Session 32) ──────────────────
+# Per-campaign pending row representing the most recent DM `!check` / `!save`
+# / `!cast` directive that hasn't yet matched an Avrae roll. Single-writer
+# invariant: only the matcher (in discord_dnd_bot.py) writes via these
+# helpers. UNIQUE(campaign_id) means at most one pending directive per
+# campaign — later directives REPLACE prior unresolved ones (the matcher
+# logs `pending_directive_replaced` before swapping).
+#
+# TTL-expiry is lazy: pending_directive_get_active() sweeps and logs
+# `pending_directive_expired` whenever it finds a row past expires_at.
+
+def pending_directive_upsert(campaign_id: int, actor_name: str,
+                             check_type: str, source_message_id: str,
+                             ttl_seconds: int) -> dict:
+    """Insert or replace the pending roll directive for this campaign.
+
+    Returns a dict {'replaced': bool, 'prior': {actor_name, check_type,
+    created_at} | None}. Caller logs `pending_directive_replaced` if
+    `replaced` is True.
+    """
+    import datetime as _dt
+    now_dt = _dt.datetime.utcnow()
+    expires_dt = now_dt + _dt.timedelta(seconds=int(ttl_seconds))
+    now_iso = now_dt.isoformat()
+    expires_iso = expires_dt.isoformat()
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        prior_row = conn.execute(
+            "SELECT actor_name, check_type, created_at "
+            "FROM dnd_pending_roll_directives WHERE campaign_id=?",
+            (campaign_id,)
+        ).fetchone()
+        prior = None
+        replaced = False
+        if prior_row:
+            prior = {
+                'actor_name':  prior_row[0] or '',
+                'check_type':  prior_row[1] or '',
+                'created_at':  prior_row[2] or '',
+            }
+            replaced = True
+        conn.execute(
+            "INSERT OR REPLACE INTO dnd_pending_roll_directives "
+            "(campaign_id, actor_name, check_type, source_message_id, "
+            " created_at, expires_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (campaign_id, actor_name, check_type,
+             str(source_message_id), now_iso, expires_iso)
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    return {'replaced': replaced, 'prior': prior}
+
+
+def pending_directive_get_active(campaign_id: int) -> dict | None:
+    """Return the active (non-expired) pending directive for this campaign,
+    sweeping any expired row and logging `pending_directive_expired`.
+
+    Returns None when no row exists OR when the row was just-expired.
+    """
+    import datetime as _dt
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute(
+            "SELECT actor_name, check_type, source_message_id, "
+            "       created_at, expires_at "
+            "FROM dnd_pending_roll_directives WHERE campaign_id=?",
+            (campaign_id,)
+        ).fetchone()
+        if not row:
+            return None
+        actor_name, check_type, source_message_id, created_at, expires_at = row
+        now_dt = _dt.datetime.utcnow()
+        try:
+            exp_dt = _dt.datetime.fromisoformat(expires_at)
+        except Exception:
+            # Malformed expires_at — treat as expired and sweep.
+            exp_dt = now_dt - _dt.timedelta(seconds=1)
+        if now_dt >= exp_dt:
+            try:
+                created_dt = _dt.datetime.fromisoformat(created_at)
+                age_s = int((now_dt - created_dt).total_seconds())
+            except Exception:
+                age_s = -1
+            conn.execute(
+                "DELETE FROM dnd_pending_roll_directives WHERE campaign_id=?",
+                (campaign_id,)
+            )
+            conn.commit()
+            log(f"pending_directive_expired: campaign={campaign_id} "
+                f"actor={actor_name} skill={check_type} age_s={age_s}")
+            return None
+        return {
+            'actor_name':         actor_name or '',
+            'check_type':         check_type or '',
+            'source_message_id':  source_message_id or '',
+            'created_at':         created_at or '',
+            'expires_at':         expires_at or '',
+        }
+    finally:
+        conn.close()
+
+
+def pending_directive_age_seconds(created_at: str) -> int:
+    """Helper: seconds since a directive was created. Returns -1 on parse failure."""
+    import datetime as _dt
+    try:
+        created_dt = _dt.datetime.fromisoformat(created_at)
+        return int((_dt.datetime.utcnow() - created_dt).total_seconds())
+    except Exception:
+        return -1
+
+
+def pending_directive_consume(campaign_id: int) -> bool:
+    """Delete the pending directive for this campaign. Returns True if a
+    row was deleted, False otherwise. Used after a successful match."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        cur = conn.execute(
+            "DELETE FROM dnd_pending_roll_directives WHERE campaign_id=?",
+            (campaign_id,)
+        )
+        conn.commit()
+        return cur.rowcount > 0
+    finally:
+        conn.close()
+
+
+def pending_directive_delete_by_message(campaign_id: int,
+                                        source_message_id: str) -> dict | None:
+    """Delete the pending directive iff it was created by this source
+    message. Returns the deleted row dict (for cancel-edit logging) or None
+    if nothing matched.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute(
+            "SELECT actor_name, check_type, created_at "
+            "FROM dnd_pending_roll_directives "
+            "WHERE campaign_id=? AND source_message_id=?",
+            (campaign_id, str(source_message_id))
+        ).fetchone()
+        if not row:
+            return None
+        conn.execute(
+            "DELETE FROM dnd_pending_roll_directives "
+            "WHERE campaign_id=? AND source_message_id=?",
+            (campaign_id, str(source_message_id))
+        )
+        conn.commit()
+        return {
+            'actor_name':  row[0] or '',
+            'check_type':  row[1] or '',
+            'created_at':  row[2] or '',
+        }
+    finally:
+        conn.close()
 
 
 # ─── Narrative Inventory (Track 4 #1) ────────────────────────────────────────

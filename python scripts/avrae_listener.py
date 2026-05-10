@@ -20,6 +20,13 @@ from typing import Optional, List, Dict, Any
 # than this is swept on the next access.
 EVENT_TTL_SECONDS = 75
 
+# Bug 1 Phase 1 (Session 32) — How long a DM roll directive stays
+# pending before lazy-sweep marks it expired. Co-located with
+# EVENT_TTL_SECONDS so siblings stay in scan range. 300s = 5 min;
+# Phase 2 retunes from observed age-at-resolution + age-at-expiry
+# distribution.
+PENDING_DIRECTIVE_TTL_SECONDS = 300
+
 # The user ID of Avrae production bot. Discoverable, but cached here so we
 # don't have to look it up at startup. If it changes, override AVRAE_USER_ID
 # in .env or call set_avrae_user_id().
