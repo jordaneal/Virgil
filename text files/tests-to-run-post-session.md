@@ -950,7 +950,7 @@ Expected: 32 passed (21 + 6 + 5 + 1002 subtests), 0 failed.
 
 ## Track 4 #3 — Time Progression v1 (Session 27, ⏳ live verify pending)
 
-**Spec:** `/home/jordaneal/virgil-docs/TRACK_4_3_SPEC.md` v1.2 LOCKED. New deterministic time-advancement primitive (`advance_time` in `dnd_engine.py`), pure-function directive sibling (`compute_time_directive` in `dnd_orchestration.py`), `render_state_footer` extension, four call sites (`/travel`, Avrae `!lr` hook, Avrae `!sr` hook, new `/advance` slash command), skeleton-loader `## Starting time` seed.
+**Spec:** `/home/jordaneal/virgil-docs/specs/TRACK_4_3_SPEC.md` v1.2 LOCKED. New deterministic time-advancement primitive (`advance_time` in `dnd_engine.py`), pure-function directive sibling (`compute_time_directive` in `dnd_orchestration.py`), `render_state_footer` extension, four call sites (`/travel`, Avrae `!lr` hook, Avrae `!sr` hook, new `/advance` slash command), skeleton-loader `## Starting time` seed.
 
 **S27 verify-attempt-1 outcome:** BLOCKED by unrelated bug. `/play` hung with no response because `async with narration_ch.typing():` raised `HTTPException: 429 (40062)` from Cloudflare's residual cooldown earlier in the session, and the exception propagated up through `app_commands._do_call` → user saw a spinning command. Track 4 #3 code did NOT error — `scene state initialized for campaign 20` fired at 14:47:58, the 429 came at 14:48:13 on the typing endpoint after the time-progression code path had already completed. **Precondition for verify-attempt-2:** ship Bug 4 (typing soft-fail, ROADMAP queue item 4a) FIRST so a residual rate limit on the typing endpoint can no longer block command execution. With Bug 4 in place, the 8-step scenario below can run cleanly. Confirm Cloudflare cooldown has decayed (login latency back to seconds in the journal — see Doctrine §73 canary signal) before retrying.
 
@@ -1396,3 +1396,169 @@ journalctl --user -u virgil-discord --since "2 minutes ago" --no-pager | grep "d
 # One sweep for all S31 signals
 journalctl --user -u virgil-discord --since "1 hour ago" --no-pager | grep -E "commands_pin|setup: posted|setup: replaced|setup: commands pin"
 ```
+
+---
+
+## Ship 1 — Resolution Binding (S34, May 11, 2026) — promotion verify
+
+Spec source: `RESOLUTION_BINDING_SPEC.md` §13. Engine-bound DC-vs-roll resolution on the DM-typed-directive surface. Six scenarios A–F; A/B/D walked solo S34 and logged clean; C/E/F deferred per session notes (C is structurally identical to A/B via unit test, E requires a bound caster, F requires multiplayer — captured in `MULTIPLAYER_VERIFY_DEFERRED.md`).
+
+**Solo-operator caveat:** Ship 1's load-bearing surface is the `!`-prefixed DM directive path. The directive intercept in `discord_dnd_bot.py:on_message` catches `!check`/`!save`/`!cast` from any DM-or-creator account BEFORE the player-bound-character check. Pure narration ("Donovan, you see...") from a Donovan-bound DM account does NOT route through the DM-directive path — it batches as the bound PC's player input. Only the `!`-prefixed flows exercise Ship 1's wiring.
+
+### Verify A — Successful check resolution (PASSED branch)
+
+In `#dm-narration`, DM types:
+
+```
+!check perception 10
+```
+
+Player (can be the same account if account is Avrae-bound to the rolling PC) types:
+
+```
+!check perception
+```
+
+**Expected:** bot auto-narrates within ~10s with success framing. Should NOT use "fails" / "can't" / "doesn't notice" / "stumble" language.
+
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_bound_to_footer_actor:" | tail -1
+# Expect: ... skill=perception dc=10 directive_age_s=0
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_resolved:" | tail -1
+# Expect: ... check_kind=check dc=10 roll_total=>=10 outcome=PASSED nat=<N> crit=0
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_would_fire_dm_respond:" | tail -1
+# Expect: ... roll_total=<N> dc=10 outcome=PASSED
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "verification:" | tail -1
+# Expect: passed=1 violation_class=none (or passed=0 + retry_passed=1 if a retry was triggered)
+```
+
+### Verify B — Failed check resolution (FAILED branch + F-45 surface)
+
+DM types:
+
+```
+!check perception 20
+```
+
+Player rolls:
+
+```
+!check perception
+```
+
+Wait for bot's failure narration. Then player optionally types:
+
+```
+I passed the check
+```
+
+**Expected:** bot's auto-narration narrates failure based on the AUTHORITATIVE-CANON block. The "I passed" follow-up message lands AFTER the auto-fired narration and goes through the normal player-input flow — the auto-fired narration is structurally committed and does NOT get rolled back. F-45 closed on the DM-typed-directive surface.
+
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_resolved:" | tail -1
+# Expect: dc=20 roll_total=<low value> outcome=FAILED
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "verification:" | tail -2
+# Expect: violation_class=none (no ROLL_OUTCOME_DRIFT) for the auto-fired narration
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "violation_class=roll_outcome_drift" | tail -3
+# Expect: empty — zero drift violations for Ship 1's verify session
+```
+
+### Verify C — Save resolution (deferred unless live walk is desired)
+
+DM:
+
+```
+!save dex 15
+```
+
+Player:
+
+```
+!save dex
+```
+
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_resolved:" | grep "check_kind=save" | tail -1
+# Expect: ... check_kind=save dc=15 outcome=PASSED|FAILED
+```
+
+Structurally identical to A/B with `check_kind='save'` instead of `'check'`. Covered at unit level by `test_resolve_save_kind_produces_same_shape`.
+
+### Verify D — No-DC directive (graceful degrade per §11.2)
+
+DM:
+
+```
+!check stealth
+```
+
+Player:
+
+```
+!check stealth
+```
+
+**Expected:** NO bot auto-narration on the stealth check. Existing free-narration flow proceeds when player types a follow-up action. The §11.2 lock behavior: no-DC directive skips resolution binding but still binds in Phase 1's sense (row created, age tracked, consumed on Avrae roll arrival).
+
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_resolution_skipped:" | grep "reason=no_dc" | tail -1
+# Expect: campaign=<N> reason=no_dc
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_would_fire_dm_respond:" | tail -1
+# Expect: ... dc=none outcome=skipped
+```
+
+### Verify E — Cast skip (deferred unless a bound caster is available)
+
+Requires the rolling player's Avrae sheet to have an actually-castable cantrip or spell. Campaign 22's bound PCs (Dwarf Rogue + Half-Orc Barbarian) don't have cantrips at L1 — skip. When/if a caster gets bound, walk:
+
+DM:
+
+```
+!cast guidance
+```
+
+Player:
+
+```
+!cast guidance
+```
+
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_resolution_skipped:" | grep "reason=cast_kind" | tail -1
+# Expect: campaign=<N> reason=cast_kind
+```
+
+Until then, unit test `test_resolve_returns_none_for_cast_kind` carries the structural coverage.
+
+### Verify F — Multi-actor mismatch (deferred — needs multiplayer)
+
+Requires two distinct Discord controller IDs typing inside the ActionBatcher window to produce a 2-actor footer. Solo-operator cannot exercise this surface from one account because pure narration from a PC-bound DM account routes to that PC's player flow (single-actor batch). Full walk specification + greps + failure modes captured in `MULTIPLAYER_VERIFY_DEFERRED.md`. When multiplayer is available, run that doc's §3 walkthrough and the aggregate greps in §7.
+
+### Aggregate end-of-session sanity (post any Ship 1 verify pass)
+
+```bash
+SINCE="5 minutes ago"
+
+echo "Resolved events:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep -c "directive_resolved:"
+
+echo "Skip-reason breakdown:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep "directive_resolution_skipped:" | sed 's/.*reason=\([a-z_]*\).*/\1/' | sort | uniq -c
+
+echo "Unretried drift violations (criterion 5 — must be 0):"
+journalctl --user -u virgil-discord --since "$SINCE" | grep "violation_class=roll_outcome_drift" | grep "retry_passed=0\|retry_passed=-" | wc -l
+
+echo "Unexpected co-occurrence (§2.3 canary — must be 0):"
+journalctl --user -u virgil-discord --since "$SINCE" | grep -c "unexpected_binding_co_occurrence:"
+
+echo "Auto-fire failures (must be 0):"
+journalctl --user -u virgil-discord --since "$SINCE" | grep -c "_dm_respond_and_post_failure:"
+```
+
+If any of the last three counts move above 0, the promotion gate is breached — surface as HALT, investigate via the relevant module (`narration_verifier.py` for drift, `dnd_engine.py:build_dm_context` for co-occurrence, `discord_dnd_bot.py:_fire_resolution_narration` for auto-fire failures).

@@ -54,6 +54,7 @@ VERIFICATION_ENABLED = True
 VIOLATION_FABRICATED_COMBATANT  = 'fabricated_combatant'
 VIOLATION_VERDICT_CONTRADICTION = 'verdict_contradiction'
 VIOLATION_STATE_MUTATION_CLAIM  = 'state_mutation_claim'
+VIOLATION_ROLL_OUTCOME_DRIFT    = 'roll_outcome_drift'  # Ship 1 (S34)
 VIOLATION_ACTOR_OMISSION        = 'actor_omission'
 
 
@@ -325,6 +326,31 @@ def _retry_constraint_state_mutation(detected_phrase: str) -> str:
     )
 
 
+def _retry_constraint_roll_outcome_drift(detected_phrase: str, result) -> str:
+    """Ship 1 (S34) retry constraint for ROLL_OUTCOME_DRIFT.
+
+    `result` is an orchestration.ResolutionResult. The final sentence —
+    'player's self-report is irrelevant' — targets the F-45 failure shape
+    directly: the LLM was drifting because it was responding to the player's
+    'I passed' text. Make the structural reason explicit on retry.
+    """
+    outcome = 'PASSED' if result.passed else 'FAILED'
+    outcome_word = 'success' if result.passed else 'failure'
+    opposite_word = 'failure' if result.passed else 'success'
+    return (
+        f"Class: {VIOLATION_ROLL_OUTCOME_DRIFT}\n"
+        f"Detected: {detected_phrase!r}\n\n"
+        "You MUST regenerate. The retry MUST:\n"
+        f"  - Honor the binding resolution: {result.actor} "
+        f"{result.skill_or_save} {result.check_kind} DC {result.dc}, "
+        f"rolled {result.roll_total}, outcome {outcome}.\n"
+        f"  - Narrate ONLY the {outcome_word} outcome. Do NOT narrate "
+        f"{opposite_word}, partial reversal, or alternative interpretation.\n"
+        "  - The roll resolution is engine-computed and binding. The "
+        "player's self-report is irrelevant. The DC was set at directive emit."
+    )
+
+
 def _retry_constraint_actor_omission(missing_actor: str, category: str) -> str:
     return (
         f"Class: {VIOLATION_ACTOR_OMISSION}\n"
@@ -346,7 +372,8 @@ def verify_narration(narration_text: str,
                      arbitration_result,
                      scene_state: Optional[dict] = None,
                      combatants: Optional[list] = None,
-                     npcs_canonical: Optional[list] = None) -> VerificationResult:
+                     npcs_canonical: Optional[list] = None,
+                     resolution_result=None) -> VerificationResult:
     """Verify LLM-produced narration against the bound arbitration result
     and canonical-state sources.
 
@@ -354,11 +381,19 @@ def verify_narration(narration_text: str,
     on any exception, treat as passed=True and post the original narration
     (fail-open). Never blocks narration entirely.
 
-    Detection order (first violation wins):
+    Detection order (first violation wins) — Ship 1 (S34) extends with
+    ROLL_OUTCOME_DRIFT in slot 4 (per RESOLUTION_BINDING_SPEC.md §8.4 —
+    structural-impossibility classes before behavioral-drift classes;
+    ACTOR_OMISSION stays last as the broadest catch):
       1. FABRICATED_COMBATANT
       2. VERDICT_CONTRADICTION
       3. STATE_MUTATION_CLAIM
-      4. ACTOR_OMISSION
+      4. ROLL_OUTCOME_DRIFT
+      5. ACTOR_OMISSION
+
+    `resolution_result` is an orchestration.ResolutionResult (Ship 1) — when
+    populated, drives the ROLL_OUTCOME_DRIFT pass. None on player-input-path
+    turns where the matcher did not auto-fire (arbitration owns the binding).
     """
     signals: dict = {
         'passed': 1,
@@ -534,7 +569,48 @@ def verify_narration(narration_text: str,
                 signals=signals,
             )
 
-    # ── 4. ACTOR_OMISSION ────────────────────────────────────────────
+    # ── 4. ROLL_OUTCOME_DRIFT ────────────────────────────────────────
+    # Ship 1 (S34) — engine-bound resolution surface. Mirrors
+    # VERDICT_CONTRADICTION's check-success-on-failure / check-failure-on-
+    # success detection but compares against the ResolutionResult populated
+    # by the matcher's auto-fire path (RESOLUTION_BINDING_SPEC.md §8).
+    # Vocabulary reuse with VERDICT_CONTRADICTION per §11.12 lock.
+    if resolution_result is not None:
+        try:
+            passed_flag = getattr(resolution_result, 'passed', None)
+            if passed_flag is False:
+                phrase_patterns = _CHECK_FAILURE_SUCCESS_PHRASES
+            elif passed_flag is True:
+                phrase_patterns = _CHECK_SUCCESS_FAILURE_PHRASES
+            else:
+                phrase_patterns = []
+            for pat in phrase_patterns:
+                m = pat.search(text)
+                if m:
+                    detected_phrase = text[
+                        max(0, m.start()-20):m.end()+20
+                    ][:140]
+                    retry = _retry_constraint_roll_outcome_drift(
+                        detected_phrase, resolution_result
+                    )
+                    signals.update({
+                        'passed': 0,
+                        'violation_class': VIOLATION_ROLL_OUTCOME_DRIFT,
+                        'detected_phrase': detected_phrase,
+                        'retry_constraint_chars': len(retry),
+                    })
+                    return VerificationResult(
+                        passed=False,
+                        violation_class=VIOLATION_ROLL_OUTCOME_DRIFT,
+                        detected_phrase=detected_phrase,
+                        retry_constraint=retry,
+                        signals=signals,
+                    )
+        except Exception:
+            # Soft-fail: ROLL_OUTCOME_DRIFT detection error never blocks narration.
+            pass
+
+    # ── 5. ACTOR_OMISSION ────────────────────────────────────────────
     # Per §11.M, §11.Q: actor_order contains CHARACTER NAMES (not Discord
     # usernames). Substring scan case-insensitive. Skip FREE actors and
     # cache-miss actors (no_character_context).
@@ -607,10 +683,31 @@ def build_verification_retry_prefix(result: VerificationResult) -> str:
 # ─────────────────────────────────────────────────────────
 
 def build_escalation_placeholder(arbitration_result,
-                                  failed_violation_class: str = '') -> str:
+                                  failed_violation_class: str = '',
+                                  resolution_result=None) -> str:
     """Build the deterministic per-category escalation narration when both
     LLM passes fail verification. One block per non-FREE actor in priority
-    order. Terse, mechanical, honest — never blocks posting."""
+    order. Terse, mechanical, honest — never blocks posting.
+
+    Ship 1 (S34) extension: when the failed class is ROLL_OUTCOME_DRIFT
+    and a resolution_result was supplied, emit a deterministic resolution
+    placeholder mirroring the existing CHECK-class block shape
+    (RESOLUTION_BINDING_SPEC.md §8.7)."""
+    if failed_violation_class == VIOLATION_ROLL_OUTCOME_DRIFT and resolution_result:
+        try:
+            outcome = 'Success' if resolution_result.passed else 'Failure'
+            tail = ('The attempt succeeds.' if resolution_result.passed
+                    else 'The attempt fails.')
+            return (
+                f"{resolution_result.actor} — "
+                f"{resolution_result.skill_or_save.replace('_', ' ').title()} "
+                f"{resolution_result.check_kind} at DC {resolution_result.dc} "
+                f"(rolled {resolution_result.roll_total}). "
+                f"Result: {outcome}. {tail}"
+            )
+        except Exception as e:
+            return f"[Resolution escalation placeholder error: {e}]"
+
     if arbitration_result is None:
         return "[Narration unavailable — arbitration error.]"
 

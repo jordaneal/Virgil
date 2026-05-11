@@ -627,5 +627,61 @@ class TestActorOmissionKnownFalsePositive(unittest.TestCase):
         self.assertEqual(result.violation_class, VIOLATION_ACTOR_OMISSION)
 
 
+# ─────────────────────────────────────────────────────────
+# Ship 1 (S34) — regression coverage for the existing four classes
+# after ROLL_OUTCOME_DRIFT slot insertion. Per RESOLUTION_BINDING_SPEC.md
+# §12.4 — ensure the inserted class doesn't break detection-order
+# semantics for the prior classes.
+# ─────────────────────────────────────────────────────────
+
+class TestExistingClassesAfterShip1Insertion(unittest.TestCase):
+
+    def setUp(self):
+        nv.VERIFICATION_ENABLED = True
+
+    def test_fabricated_combatant_still_fires(self):
+        # Introduce a non-canonical NPC name + combat verb in narration.
+        result = _verify(
+            "Murderous Phantom strikes Donovan with a curved blade.",
+            [_check_success_verdict()],
+            ['Donovan'],
+            canonical_set={'Donovan'},
+        )
+        self.assertFalse(result.passed)
+        self.assertEqual(result.violation_class, VIOLATION_FABRICATED_COMBATANT)
+
+    def test_verdict_contradiction_still_fires(self):
+        # CHECK failed verdict + narration narrates success — slot 2.
+        # "You slip past" + "unnoticed" both hit _CHECK_FAILURE_SUCCESS_PHRASES.
+        result = _verify(
+            "You slip past the guard unnoticed.",
+            [_check_fail_verdict(skill='stealth', dc=15, roll=8)],
+            ['Donovan'],
+        )
+        self.assertFalse(result.passed)
+        self.assertEqual(result.violation_class, VIOLATION_VERDICT_CONTRADICTION)
+
+    def test_state_mutation_claim_still_fires(self):
+        # Narration asserts mechanical damage number — slot 3.
+        result = _verify(
+            "Donovan slashes — the goblin takes 12 damage and falls.",
+            [_free_verdict()],
+            ['Donovan'],
+        )
+        self.assertFalse(result.passed)
+        self.assertEqual(result.violation_class, VIOLATION_STATE_MUTATION_CLAIM)
+
+    def test_actor_omission_still_fires(self):
+        # Non-FREE verdict for an actor not named in narration — slot 5 now.
+        result = _verify(
+            "The shadow deepens around the alley.",  # no actor named
+            [_check_success_verdict(skill='stealth', dc=15, roll=18)],
+            ['Donovan'],
+            canonical_set={'Donovan'},
+        )
+        self.assertFalse(result.passed)
+        self.assertEqual(result.violation_class, VIOLATION_ACTOR_OMISSION)
+
+
 if __name__ == '__main__':
     unittest.main()

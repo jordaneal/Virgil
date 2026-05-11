@@ -2962,3 +2962,166 @@ def advisory_log_summary(
         f"state_combat={in_combat} state_inventory_count={inv_n} "
         f"state_combatants={comb_n} bound_char={has_char}"
     )
+
+
+# ─────────────────────────────────────────────────────────
+# Ship 1 (S34) — Resolution Binding (RESOLUTION_BINDING_SPEC.md)
+# ─────────────────────────────────────────────────────────
+# Closes Finding L + F-45 regression + Bug 1 Phase 2.
+#
+# Eighth Doctrine §59 instance: pure function sibling to
+# compute_persistence_directive et al. Computes roll_total vs DC from a
+# consumed pending directive row + the Avrae roll embed that matched it,
+# returns an immutable ResolutionResult that downstream renders as the
+# AUTHORITATIVE-CANON top-of-prompt block + bottom-of-prompt hardstop echo.
+# Engine-bound binding > validator-on-LLM-output (filed doctrine candidate).
+
+@dataclass(frozen=True)
+class ResolutionResult:
+    actor: str
+    check_kind: str           # 'check' | 'save' (cast deferred §11.5)
+    skill_or_save: str        # 'perception' | 'wisdom' | 'sleight of hand' | ...
+    dc: int
+    roll_total: int
+    passed: bool              # engine-computed: roll_total >= dc
+    rolled_at: float
+    directive_id: int         # campaign_id in v1 (§5.2 — no per-row id yet)
+    nat: Optional[int] = None  # natural die roll, when surfaced by Avrae
+    crit: bool = False         # explicit crit flag from Avrae embed
+
+
+_DC_PARSE_RX = re.compile(
+    r"^(?P<skill>[a-zA-Z_][a-zA-Z_\s\-]*?)\s+(?P<dc>\d+)\s*$",
+)
+
+
+def parse_skill_and_dc(skill_raw: str) -> tuple[str, Optional[int]]:
+    """Split a directive's captured skill text into (skill, dc).
+
+    Locked edge cases (RESOLUTION_BINDING_SPEC.md §6.3):
+      'perception 10'      → ('perception', 10)
+      'perception'         → ('perception', None)
+      'sleight of hand 12' → ('sleight of hand', 12)   (multi-word skill)
+      'perception 100'     → ('perception', 100)       (high-DC allowed)
+      'perception 0'       → ('perception', 0)         (theater check)
+      'stealth adv'        → ('stealth adv', None)     (non-numeric trailing)
+      'perception 10 adv'  → ('perception 10 adv', None)  (trailing word after DC)
+      'perception -5'      → ('perception -5', None)   (\\d+ rejects negatives)
+
+    Caller passes through `_directive_skill_is_clean` upstream to reject
+    flags/comments before us; we only split out the trailing integer DC.
+    """
+    s = (skill_raw or '').strip()
+    m = _DC_PARSE_RX.match(s)
+    if m:
+        return m.group('skill').strip(), int(m.group('dc'))
+    return s, None
+
+
+def resolve_directive(directive_row: Optional[dict],
+                      avrae_event: Optional[dict]) -> Optional[ResolutionResult]:
+    """Compute the resolution of a consumed pending roll directive.
+
+    Pure function — reads no DB, no buffers. Caller (matcher in
+    discord_dnd_bot.py) supplies both inputs. No side effects.
+
+    Returns None when inputs are structurally incomplete (no DC, no
+    roll_total, kind mismatch); caller falls through to telemetry-only
+    behavior. Returns a populated ResolutionResult otherwise.
+
+    Cast directives return None (§11.5 — cast resolution requires
+    target-side save adjudication, filed v1.x). RAW D&D 5e per §11.3:
+    nat-20 / nat-1 do NOT auto-succeed/fail on skill checks. `passed` is
+    strictly `roll_total >= dc`.
+    """
+    if not isinstance(directive_row, dict) or not isinstance(avrae_event, dict):
+        return None
+
+    kind = (avrae_event.get('kind') or '').lower()
+    if kind not in ('check', 'save'):
+        return None  # cast / attack / damage / rest skip
+
+    roll_total = avrae_event.get('result')
+    if roll_total is None or not isinstance(roll_total, int):
+        return None  # malformed embed; matcher falls through to telemetry-only
+
+    dc = directive_row.get('dc')
+    if dc is None or not isinstance(dc, int):
+        return None  # no-DC directive — see §11.2
+
+    actor = (directive_row.get('actor_name') or '').strip()
+    skill_or_save = (directive_row.get('check_type') or '').strip()
+    if not actor or not skill_or_save:
+        return None  # defensive — Phase 1 invariants guarantee both non-empty
+
+    nat_raw = avrae_event.get('nat')
+    nat_val = int(nat_raw) if isinstance(nat_raw, int) else None
+
+    return ResolutionResult(
+        actor=actor,
+        check_kind=kind,
+        skill_or_save=skill_or_save,
+        dc=dc,
+        roll_total=roll_total,
+        passed=roll_total >= dc,
+        rolled_at=float(avrae_event.get('ts') or time.time()),
+        directive_id=int(directive_row.get('campaign_id') or 0),
+        nat=nat_val,
+        crit=bool(avrae_event.get('crit') or False),
+    )
+
+
+def resolution_log_summary(result: Optional[ResolutionResult],
+                            campaign_id: int,
+                            reason: str = 'unresolvable') -> str:
+    """Compact log line per Doctrine §59 / spec §4.5. Always-fire — fires
+    for both successful resolutions (result non-None) and skipped cases
+    (result None, with caller-supplied skip reason)."""
+    if result is None:
+        return (f"directive_resolution_skipped: campaign={campaign_id} "
+                f"reason={reason}")
+    outcome = 'PASSED' if result.passed else 'FAILED'
+    return (
+        f"directive_resolved: campaign={campaign_id} "
+        f"actor={result.actor} "
+        f"skill={result.skill_or_save} "
+        f"check_kind={result.check_kind} "
+        f"dc={result.dc} "
+        f"roll_total={result.roll_total} "
+        f"outcome={outcome} "
+        f"nat={result.nat if result.nat is not None else 'none'} "
+        f"crit={1 if result.crit else 0}"
+    )
+
+
+def render_resolution_block(result: Optional[ResolutionResult]) -> str:
+    """Render ResolutionResult as the inner text of the top-of-prompt
+    AUTHORITATIVE ROLL RESOLUTION block (spec §7.3). Returns empty when
+    result is None — caller's section-assembly truthiness check handles
+    suppression."""
+    if result is None:
+        return ''
+    skill_pretty = (result.skill_or_save or '').replace('_', ' ').title()
+    outcome = 'PASSED' if result.passed else 'FAILED'
+    outcome_word = 'success' if result.passed else 'failure'
+    opposite_word = 'failure' if result.passed else 'success'
+    negation = '' if result.passed else 'NOT '
+    return (
+        f"{result.actor} attempted a {skill_pretty} {result.check_kind} "
+        f"(DC {result.dc}).\n"
+        f"Roll total: {result.roll_total}.\n"
+        f"Outcome: {outcome}.\n\n"
+        f"You MUST narrate this as a {outcome_word}. "
+        f"{result.actor} does {negation}achieve the intended outcome.\n"
+        f"Do NOT narrate {opposite_word}. "
+        f"Do NOT invent an alternative interpretation."
+    )
+
+
+def render_resolution_hardstop_echo(result: Optional[ResolutionResult]) -> str:
+    """Render the single-line bottom-of-prompt repeat (spec §7.2). The
+    §48 concrete-in-prompt pattern — repeat the bare verdict at moment of
+    generation. Empty when result is None."""
+    if result is None:
+        return ''
+    return f"Outcome: {'PASSED' if result.passed else 'FAILED'}."

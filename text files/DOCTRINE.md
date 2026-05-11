@@ -661,4 +661,29 @@ except (discord.HTTPException, asyncio.TimeoutError) as e:
 
 ---
 
-*Order: §1-§75 are append-only. New doctrines get appended; existing numbers are stable for cross-reference from SESSIONS.md.*
+## Candidates (filed, not anchored)
+
+Doctrine candidates surface during ship work but anchor only after a second project instance shows the pattern (per §34 "no pre-sequencing" + §38 "filed-not-sequenced"). The candidates listed here have **one project instance**; they earn an anchored §-number when a second ship demonstrates the same shape.
+
+### C1. Engine-computed binding > validator-on-LLM-output
+
+**Filed:** Session 34 (Ship 1 Resolution Binding) per `RESOLUTION_BINDING_REVIEW.md` §3.1.
+**Phrasing:** When an LLM-output failure mode can be closed by engine-computing the bound outcome and rendering it as a top-of-prompt constraint (rather than validating the LLM's output after the fact), the engine-computed path is structurally stronger. Validators close drift via retry pressure; engine binding closes drift via making the drift surface inaccessible. Both have a role — binding is the first reach; validation is the safety net.
+**Project instances so far:**
+1. **Track 7 #1 CHECK_ACTION binding (S25 #4)** — adjudicator computes pass/fail from buffered roll vs DC; renders `narration_constraint` at top-of-prompt; LLM cannot drift on the outcome on the adjudicator surface.
+2. **Ship 1 Resolution Binding (S34)** — same architectural shape applied to the DM-typed-directive surface that bypasses adjudicator. Engine computes `passed = (roll_total >= dc)` from `dnd_pending_roll_directives.dc` + Avrae embed `result`; AUTHORITATIVE-CANON block renders top-of-prompt; `ROLL_OUTCOME_DRIFT` verifier is the safety net for any residual drift.
+**Anchor when:** a third instance surfaces. Likely candidate is cast resolution binding when v1.x ships (same shape applied to caster-spell-save-DC adjudication) or Ship 4's `IDENTITY_DRIFT` verifier class operating against `SceneComposition` (engine-bound scene scope vs LLM-narrated entity references).
+**Sibling principles:** `MULTIPLAYER_FIXES.md` §2.3 (structural removal of write authority beats validation); §1a (LLM never decides mechanical outcomes — the controlling invariant); §17 (single write paths per field).
+
+### C2. Reused vocabulary across sibling verifier classes
+
+**Filed:** Session 34 (Ship 1 Resolution Binding) per `RESOLUTION_BINDING_REVIEW.md` §3.2.
+**Phrasing:** When two violation classes in `narration_verifier` detect the same linguistic surface (LLM uses success/failure phrasing, contradiction phrasing, etc.) but against different binding objects (adjudicator vs. resolver vs. future binding surfaces), reuse the vocabulary tables rather than fork them. The class differentiation is which binding object is populated at call time; the detection phrases are identical regardless of which surface produced the binding. Single-tuning surface keeps false-positive rate calibrated in one place.
+**Project instances so far:**
+1. **Ship 1 ROLL_OUTCOME_DRIFT (S34)** — reuses `VERDICT_CONTRADICTION`'s `_CHECK_FAILURE_SUCCESS_PHRASES` / `_CHECK_SUCCESS_FAILURE_PHRASES` tables. The two classes differ only in which result object they compare against (`arbitration_result.verdicts` for CHECK vs `resolution_result.passed` for ROLL_OUTCOME_DRIFT); the phrases that signal success-on-failure and failure-on-success are the same.
+**Anchor when:** a second sibling class reuses the same vocabulary tables. Likely candidate is cast-resolution-drift (v1.x cast resolution binding) or multi-actor-resolution-drift (Ship 4.5 if it slots).
+**Sibling principles:** §63 (fork at the highest layer where invariants diverge — this candidate operates one layer below: "when do siblings share implementation surface?"); §17 (single write paths per field — the same logic at the vocabulary-tuning surface).
+
+---
+
+*Order: §1-§75 are append-only. New doctrines get appended; existing numbers are stable for cross-reference from SESSIONS.md. Candidates promote to numbered §-entries when their second project instance ships.*

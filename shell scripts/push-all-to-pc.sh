@@ -125,24 +125,65 @@ run_rsync $RSYNC \
   --exclude='*_REVIEW.md' \
   --exclude='refs/' \
   --exclude='inbox/' \
+  --exclude='specs/' \
+  --exclude='research/' \
+  --exclude='_trash/' \
   --include='*.md' \
   --exclude='*' \
   /home/jordaneal/virgil-docs/ \
   "${SSH_TARGET}:${PC_BASE}/text files/"
 
-# 3b) virgil-docs/*_SPEC.md + *_REVIEW.md -> Virgil Project/specs/
-#     Spec docs (CONSEQUENCE_SURFACING_SPEC, COMMITTED_ACTION_RESOLUTION_SPEC,
-#     PHASE_6_IDENTITY_SPEC, etc.) live in their own folder on PC. Review docs
-#     (paired with their _SPEC.md) route alongside. Pattern is suffix-based:
-#     any file ending in _SPEC.md or _REVIEW.md routes here.
-echo "==> virgil-docs/*_SPEC.md + *_REVIEW.md -> Virgil Project/specs/"
+# 3b) virgil-docs/*_SPEC.md + *_REVIEW.md (ROOT-LEVEL) -> Virgil Project/specs/
+#     Suffix-based routing. After the May 11, 2026 reorg, most shipped specs and
+#     their REVIEW companions live in virgil-docs/specs/ (handled by step 3c).
+#     This step still picks up any root-level SPEC/REVIEW files — currently
+#     BUG_1_SPEC.md (server-only) and RESOLUTION_BINDING_SPEC.md (active ship).
+echo "==> virgil-docs/*_SPEC.md + *_REVIEW.md (root) -> Virgil Project/specs/"
 run_rsync $RSYNC \
   "${COMMON_EXCLUDES[@]}" \
+  --exclude='specs/' \
+  --exclude='research/' \
+  --exclude='_trash/' \
   --include='*_SPEC.md' \
   --include='*_REVIEW.md' \
   --exclude='*' \
   /home/jordaneal/virgil-docs/ \
   "${SSH_TARGET}:${PC_BASE}/specs/"
+
+# 3c) virgil-docs/specs/ -> Virgil Project/specs/   (post-reorg subfolder)
+#     Shipped spec + review companions moved into this subfolder during the
+#     May 11, 2026 reorg. Flattens into PC specs/ alongside step 3b's root-level
+#     pickups; PC has no specs/specs/ — both source paths target the same dest.
+if [ -d /home/jordaneal/virgil-docs/specs ]; then
+  echo "==> virgil-docs/specs/ -> Virgil Project/specs/"
+  run_rsync $RSYNC \
+    "${COMMON_EXCLUDES[@]}" \
+    /home/jordaneal/virgil-docs/specs/ \
+    "${SSH_TARGET}:${PC_BASE}/specs/"
+fi
+
+# 3d) virgil-docs/research/ -> Virgil Project/research/   (post-reorg subfolder)
+#     One-off research outputs (CORPUS_BUILDER, track5_findings_*, website doc).
+#     PC research/ is a superset — keeps PC-authored deep-research-report.md
+#     because rsync here is additive (no --delete).
+if [ -d /home/jordaneal/virgil-docs/research ]; then
+  echo "==> virgil-docs/research/ -> Virgil Project/research/"
+  run_rsync $RSYNC \
+    "${COMMON_EXCLUDES[@]}" \
+    /home/jordaneal/virgil-docs/research/ \
+    "${SSH_TARGET}:${PC_BASE}/research/"
+fi
+
+# 3e) virgil-docs/_trash/ -> Virgil Project/_trash/   (post-reorg subfolder)
+#     Soft-deleted docs (recoverable). Additive sync; PC _trash/ keeps any
+#     PC-side trashed items unaffected.
+if [ -d /home/jordaneal/virgil-docs/_trash ]; then
+  echo "==> virgil-docs/_trash/ -> Virgil Project/_trash/"
+  run_rsync $RSYNC \
+    "${COMMON_EXCLUDES[@]}" \
+    /home/jordaneal/virgil-docs/_trash/ \
+    "${SSH_TARGET}:${PC_BASE}/_trash/"
+fi
 
 # 4) virgil-docs/refs/ -> Virgil Project/text files/refs/
 #    Reference material (Avrae Command List, etc.).

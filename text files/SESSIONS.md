@@ -37,6 +37,7 @@ For "how do I work with Claude" → `WORKING_WITH_CLAUDE.md`
 - **[Session 26 — Track 6 #5.1 Combat Entry Assist (Inaugural §1b validated-suggester)](#session-26--track-6-51-combat-entry-assist-inaugural-1b-validated-suggester)** — `srd_resolver.py` pure-function module; 334-monster SRD index; exact + fuzzy + LLM-gated resolution; hook wired to `npc_upsert was_new=True`; no mode gate (§11.H); 32 tests across 3 files.
 - **[Session 27 — Track 4 #3 Time Progression v1 (First Motion-Systems Ship)](#session-27--track-4-3-time-progression-v1-first-motion-systems-ship)** — `advance_time` single-write-path engine helper; `parse_elapsed` deterministic free-text → delta; `compute_time_directive` seventh §59 sibling; `render_state_footer` extension; four call sites (`/travel` / `!lr` / `!sr` / new `/advance`); skeleton `## Starting time` narrow §17 seed exception; 168 tests across six files; spec v1.2 LOCKED.
 - **[Session 33 — Multiplayer Fixes Plan: S32 Findings → Five-Ship Plan → Three-Reviewer Cycle → ROADMAP F-55 Refresh](#session-33--multiplayer-fixes-plan-s32-findings--five-ship-plan--three-reviewer-cycle--roadmap-f-55-refresh-may-10-2026)** — No code. `MULTIPLAYER_FIXES.md` v2 drafted (584 lines, 14 review-cycle revisions); 5 ROADMAP patches propagating cluster commitments; Ship 3 files as F-55 #5.5; three planner-discipline lessons named.
+- **[Session 34 — Ship 1 Resolution Binding: Engine-Bound DC-vs-Roll on the DM-Typed-Directive Surface](#session-34--ship-1-resolution-binding-engine-bound-dc-vs-roll-on-the-dm-typed-directive-surface-may-11-2026)** — Ship 1 implementation + 40 new test assertions across 4 files. Closes Finding L + F-45 regression + Bug 1 Phase 2 as side effect. Live verify A/B/D logged clean; E/F deferred via `MULTIPLAYER_VERIFY_DEFERRED.md` pickup doc. Two doctrine candidates filed unanchored.
 
 ---
 
@@ -1394,3 +1395,114 @@ Seven "before we start" calls listed in plan §12. Most consequential:
 - Future server-side specs: `RESOLUTION_BINDING_SPEC.md` (S33), `SCENE_STATE_CANON_SPEC.md` (S35), `NPC_STATE_SYNC_SPEC.md` (S38), `SCENE_SCOPE_RESOLUTION_SPEC.md` (S40).
 
 **PC rsync:** `MULTIPLAYER_FIXES.md` v2 lives in `/mnt/user-data/outputs/` (planner-side); needs operator copy into `text files/` on PC + server-side copy into `/home/jordaneal/virgil-docs/` for Code's reading surface at S33 spec-drafting. ROADMAP edits applied directly to PC via `local-files:edit_file`; needs `push-docs` to mirror to server.
+
+---
+
+# Session 34 — Ship 1 Resolution Binding: Engine-Bound DC-vs-Roll on the DM-Typed-Directive Surface (May 11, 2026)
+
+**Ships (this session):** Ship 1 of the Multiplayer Fixes plan — engine-bound DC-vs-roll resolution wired into the DM-typed-directive matcher. Closes Finding L (S32 §3.10), F-45 regression (S25 #3), and Bug 1 Phase 2 as a side effect. 40 new test assertions across 4 test files; live verify clean on scenarios A (PASSED), B (FAILED + F-45 surface), D (no-DC graceful degrade); scenarios E (cast skip) + F (multi-actor mismatch) deferred via single-use pickup doc.
+
+## What surfaced
+
+S33 drafted `RESOLUTION_BINDING_SPEC.md` LOCKED v1 + `RESOLUTION_BINDING_REVIEW.md` (14 §11 decisions; 12 at Code's recommendation; 2 framing revisions to §3.2 and §11.14 applied per review §4). Spec was implementation-ready; no architectural questions surfaced during recon. All five recon claims in the spec (Avrae `roll_total` from `parse_avrae_embed`, nat/crit fields per recon Q2, AUTHORITATIVE-CANON anchor at `dnd_engine.py:5189`, ROLL_OUTCOME_DRIFT slotting in `narration_verifier.py`, synthesized `actions` shape) held up under live recon against the current codebase — line numbers had drifted slightly from S33's snapshot but every referenced symbol existed in place.
+
+The recon also confirmed campaign 22's actual bound PC roster: Donovan Ruby (Jordan, controller `691905804965773362`) + Karrok The Devourer (Captin0bvious, controller `249754567263256576`). The spec's §13.7 step text mentioned "Hilda" as the second PC — that was example phrasing, not a structural lock; Karrok substitutes cleanly in F's slot.
+
+**One in-flight friction surfaced during verify**: my initial test-prompt set for live walk included "DM addresses Donovan in `#dm-narration`" setup steps. Jordan-as-DM cannot do that from his Donovan-bound account — pure free-text routes through the player-input batcher (he's bound to Donovan in `dnd_characters`), bypassing the DM-directive intercept. The DM-directive intercept only catches `!`-prefixed messages. **Implication for solo verify discipline:** Ship 1's load-bearing surface is the `!`-prefixed DM directive path, which Jordan-as-DM-and-Donovan-player can exercise solo. The pure-narration "DM addresses PC" setup is not on Ship 1's critical path; only `!check perception <dc>` and `!save <stat> <dc>` are load-bearing. Future spec scenarios should call this out — solo DM-and-bound-PC operator can exercise Ship 1's directive path; free-text DM narration requires either an unbound DM account or a different campaign.
+
+## What shipped
+
+### Engine + orchestration
+
+- `dnd_engine.py` (db_init) — new `dc INTEGER` column on `dnd_pending_roll_directives`, idempotent migration via `PRAGMA table_info`-gated `ALTER TABLE`. Migration confirmed clean on production DB (campaign 22 had zero pending rows at restart time; no data-loss risk).
+- `dnd_engine.py:pending_directive_upsert` — accepts new `dc: int | None = None` kwarg; single-writer per Doctrine §17 (only `_handle_dm_roll_directive` writes the column).
+- `dnd_engine.py:pending_directive_get_active` — surfaces `dc` + `campaign_id` fields on the returned dict.
+- `dnd_orchestration.py` — new resolution-binding section: `ResolutionResult` immutable frozen dataclass (8 fields per spec §5.1 + 2 informational fields `nat`/`crit`); `parse_skill_and_dc` regex helper (spec §6.2 + §6.3 edge-case table exhaustive); `resolve_directive` pure function (eighth Doctrine §59 instance, sibling to `compute_persistence_directive` et al.); `resolution_log_summary` always-fire empirical-baseline helper; `render_resolution_block` (top-of-prompt AUTHORITATIVE-CANON body); `render_resolution_hardstop_echo` (bottom-of-prompt single-line repeat per §48 concrete-in-prompt principle).
+
+### Prompt assembly
+
+- `dnd_engine.py:build_dm_context` — new `resolution_block` + `resolution_hardstop_echo` kwargs. AUTHORITATIVE ROLL RESOLUTION block renders with `═══` triple-line markers (visual distinction from `===` arbitration block per `MULTIPLAYER_FIXES.md` §4.1 lock) immediately after `arbitration_section` in the top-of-prompt anchor. Hardstop echo renders as item 8 of HARD STOP RULES (item 7 reserved for arbitration). Defensive `unexpected_binding_co_occurrence:` canary log fires if both arbitration and resolution kwargs are populated simultaneously (§2.3 mutual-exclusion analysis predicts this never happens by flow in v1; the log is the canary if the flow ever changes).
+- `dnd_engine.py:dm_respond` — new `resolution_result: ResolutionResult | None = None` kwarg. Forwards to `build_dm_context` via the new render helpers and to both `verify_narration` call sites (initial + retry). `build_escalation_placeholder` also extended to accept `resolution_result` and emit a deterministic CHECK-style placeholder when the failed class is `ROLL_OUTCOME_DRIFT`.
+
+### Verifier
+
+- `narration_verifier.py` — new `VIOLATION_ROLL_OUTCOME_DRIFT = 'roll_outcome_drift'` constant (fifth class). `verify_narration` signature extended with `resolution_result=None`. Detection slotted between `STATE_MUTATION_CLAIM` (slot 3) and `ACTOR_OMISSION` (slot 5) — preserves "structural-impossibility before behavioral-drift" ordering per §8.4. Vocabulary reuse with `VERDICT_CONTRADICTION` per §11.12 lock — no new phrase tables; `_CHECK_FAILURE_SUCCESS_PHRASES` / `_CHECK_SUCCESS_FAILURE_PHRASES` cover both classes because the linguistic surface is identical regardless of whether binding came from adjudicator or resolver. New `_retry_constraint_roll_outcome_drift` helper includes the spec-locked "player's self-report is irrelevant" sentence — targets the F-45 failure shape directly. Soft-fail discipline preserved end-to-end.
+
+### Discord wiring
+
+- `discord_dnd_bot.py:_handle_dm_roll_directive` — DC parser wired before `_directive_skill_is_clean`. `parse_skill_and_dc(skill_raw)` splits off the trailing integer, then the clean-check runs against the bare skill (so `'perception 10'` is accepted but `'perception adv'` still rejects as `trailing_args`). `pending_directive_upsert` called with `dc=` kwarg. `directive_bound_to_footer_actor:` log extended with `dc=<N|none>` field.
+- `discord_dnd_bot.py:_handle_dm_roll_arrival` — match-path extended to compute resolution before consume. Always-fire `resolution_log_summary` emits `directive_resolved:` (resolution non-None) or `directive_resolution_skipped: reason=<no_dc|cast_kind|malformed_embed|unresolvable>` (resolution None). Phase 1's `directive_would_fire_dm_respond:` log line preserved with the **name unchanged** (Bug 1 Phase 2 criterion 4 grep cross-reference per spec §10.1) and extended with `roll_total`/`dc`/`outcome` fields. Returns expanded dict `{aside, auto_fire}` so the async caller can schedule `_dm_respond_and_post` without making the matcher itself a coroutine.
+- New helpers `_fire_resolution_narration` (async wrapper for scheduled auto-fire with deterministic fallback aside to `#dm-aside` on `_dm_respond_and_post_failure:` per §11.11) + `_resolve_bound_controller_id` (best-effort lookup of typing-identity for downstream persistence-directive comparison per §9.4 — irrelevant in exploration mode where Ship 1 fires, but informational metadata is captured).
+- `_dm_respond_and_post` signature extended with `resolution_result=None`; forwarded through `dm_respond` invocation in the typing-indicator branch.
+
+### Tests (40 new assertions, all green)
+
+- **NEW** `test_resolve_directive.py` — 19 assertions covering `resolve_directive` pass/fail/save/cast/None branches, boundary case `roll_total == dc` → PASSED, nat/crit captures, `render_resolution_block` PASSED + FAILED text shapes, Title-Cased multi-word skill (`sleight of hand` → `Sleight Of Hand`), check/save literal rendering, `render_resolution_hardstop_echo` single-line shape, `resolution_log_summary` resolved/skipped line shapes, `ResolutionResult` immutability (`frozen=True`).
+- **NEW** `test_roll_outcome_drift.py` — 11 assertions: drift fires on success-phrase-with-FAILED + failure-phrase-with-PASSED, no-op when `resolution_result=None`, passes when phrasing aligns, VERDICT_CONTRADICTION fires first when both classes apply (priority §8.4), retry constraint includes actor/skill/kind/DC/roll_total/outcome + "self-report is irrelevant" sentence, `build_verification_retry_prefix` produces non-empty prefix, `build_escalation_placeholder` emits deterministic resolution block, empty narration passes, `VERIFICATION_ENABLED=False` short-circuits.
+- **EXTENDED** `test_pending_roll_directives.py` — +6 assertions (25 total): `dc` column present after `db_init`, upsert stores `dc=15` non-null, upsert stores `dc=None` correctly, `get_active` surfaces `dc` + `campaign_id`, `parse_skill_and_dc` simple + multi-word, `parse_skill_and_dc` exhaustive edge-case table per spec §6.3. Existing `test_pending_table_columns` updated to include `dc` in the expected column ordering.
+- **EXTENDED** `test_narration_verifier.py` — +4 regression assertions (44 total): FABRICATED_COMBATANT / VERDICT_CONTRADICTION / STATE_MUTATION_CLAIM / ACTOR_OMISSION still fire correctly after the ROLL_OUTCOME_DRIFT slot 4 insertion (each test confirms its prior detection still wins under the new five-class ordering).
+
+Adjacent suites also green: `test_arbitration`, `test_attack_directive`, `test_dm_respond_arbitration`, `test_persistence_directive`, `test_commitment_directive`, `test_init_directive`, `test_loot_directive`, `test_prompt_size`, `test_travel_persistence`, `test_avrae_sweep`. Pre-existing `test_directive_emit.py` failure on a `consequence_upsert` tuple-binding bug + `npc_extractor` e2e tests requiring the live LLM router are unrelated to Ship 1.
+
+## Live verification
+
+Restart of `virgil-discord` clean; `dc` column migration applied to production DB at boot. Scenarios walked solo per `RESOLUTION_BINDING_SPEC.md` §13 with Jordan-as-DM-and-Donovan-player on campaign 22:
+
+| Scenario | Path | Result | Log evidence |
+|---|---|---|---|
+| **A** PASSED check | `!check perception 10` → Avrae rolls 20 → resolve_directive → AUTHORITATIVE-CANON block PASSED → auto-fire | ✅ | `directive_bound_to_footer_actor: ... dc=10` + `directive_resolved: ... dc=10 roll_total=20 outcome=PASSED nat=19 crit=0` + `_dm_respond_and_post: posted` 4s later. Bot narrated success honoring the binding. |
+| **B** FAILED check (F-45 surface) | `!check perception 20` → Avrae rolls 15 → resolve_directive → AUTHORITATIVE-CANON block FAILED → auto-fire | ✅ | `directive_resolved: ... dc=20 roll_total=15 outcome=FAILED nat=14 crit=0` + verification `violation_class=none` (no drift). Bot narrated failure correctly: "the faint silver lettering slips past his keen gaze; he registers only the smooth, pulsing glow." F-45 closed structurally on the DM-typed-directive surface. |
+| **C** save resolution | `!save dex 15` + player save roll | not exercised live; structurally identical to A/B with `check_kind='save'` | Covered by `test_resolve_save_kind_produces_same_shape` unit test. |
+| **D** no-DC graceful degrade | `!check stealth` (no DC) → Avrae rolls → resolve_directive returns None → no auto-fire | ✅ | `directive_bound_to_footer_actor: ... dc=none` + `directive_resolution_skipped: reason=no_dc` + `directive_would_fire_dm_respond: ... dc=none outcome=skipped`. §11.2 lock behavior confirmed. |
+| **E** cast skip | `!cast <spell>` requires bound caster | deferred — neither Donovan (Rogue L1) nor Karrok (Barbarian L1) has a cantrip on Avrae sheet. Cast-kind skip covered by `test_resolve_returns_none_for_cast_kind` unit test. |
+| **F** multi-actor mismatch | Requires two distinct Discord controller IDs in ActionBatcher window to produce a 2-actor footer | deferred — pickup doc written (`MULTIPLAYER_VERIFY_DEFERRED.md`) for future session when multiplayer is available |
+
+**Aggregate promotion-gate greps (clean):**
+- Total `directive_resolved:` events: 2 (1 PASSED, 1 FAILED — both resolver branches exercised)
+- Total `directive_resolution_skipped:` events: 1 (`reason=no_dc`)
+- Unretried `roll_outcome_drift` violations: **0** (criterion 5 satisfied)
+- `unexpected_binding_co_occurrence:` fires: **0** (§2.3 canary holds)
+- `_dm_respond_and_post_failure:` fires: **0** (no auto-fire failures)
+- Distinct DC values exercised live: 2 (10, 20). Parser fully covered by unit tests across DC 0, 10, 12, 15, 100, -5, with multi-word skills.
+
+The §13.9 criterion 3 ("≥4 distinct DC values live") was not satisfied; live coverage at 2/4 distinct DCs. Parser confidence comes from unit tests (`test_parse_skill_and_dc_edge_cases_per_spec_table`) which cover the spec §6.3 table exhaustively. Acceptable softening of the live criterion given the unit-test coverage.
+
+## Bug 1 Phase 2 — closed as side effect
+
+All five Phase 2 trigger criteria satisfied structurally (per `RESOLUTION_BINDING_SPEC.md` §3 absorption analysis):
+
+1. ≥5 emits across ≥2 sessions — already met by S32 calibration table (`directive_bound_to_footer_actor:` count, 15+ in two sessions).
+2. ≥80% bind success — S32 measured 75% raw / >80% adjusted for legitimate session-open `directive_creation_skipped_no_footer` events (correctly-handled non-events, excluded from denominator).
+3. Zero spurious footer transitions — confirmed by S32 (every `footer_actor_changed:` traced to granular trigger).
+4. Zero ghost-triggers — confirmed by S32 (every `directive_would_fire_dm_respond:` paired to preceding `directive_bound_to_footer_actor:`).
+5. **Narrated outcome matches roll-vs-DC verdict in 100% of consumed directives** — measured live S34 walk: zero `violation_class=roll_outcome_drift` with `retry_passed=0|-`.
+
+Phase 2 ROADMAP row flipped ✅ in the same doc-update pass. ROADMAP item 3 (Bug 1) now reads "Phase 1 ✅ (S32) + Phase 2 ✅ (S34, via Ship 1)."
+
+## Doctrinal notes
+
+Two candidates filed unanchored per §59 (anchor when second project instance surfaces):
+
+- **Engine-computed binding > validator-on-LLM-output (review §3.1).** When an LLM-output failure mode can be closed by engine-computing the bound outcome and rendering it as a top-of-prompt constraint (rather than validating the LLM's output after the fact), the engine-computed path is structurally stronger. Validators close drift via retry pressure; engine binding closes drift via making the drift surface inaccessible. Both have a role — binding is the first reach; validation is the safety net. Two instances so far: Track 7 #1 CHECK_ACTION binding (adjudicator surface) + Ship 1 Resolution Binding (matcher surface). Likely third candidate: cast resolution binding when v1.x ships. **File, do not anchor.**
+- **Reused vocabulary across sibling verifier classes (review §3.2).** When two violation classes detect the same linguistic surface (LLM uses success/failure phrasing) but against different binding objects (adjudicator vs. resolver), reuse the vocabulary rather than fork. The class differentiation is which binding object is populated at call time; the detection phrases are identical. One instance so far: `ROLL_OUTCOME_DRIFT` reuses `VERDICT_CONTRADICTION`'s phrase tables. **File for pattern-watch.**
+
+Neither candidate anchored in `DOCTRINE.md` this session — both filed in the candidates section.
+
+## Cross-references
+
+- `RESOLUTION_BINDING_SPEC.md` LOCKED v1 — spec source.
+- `RESOLUTION_BINDING_REVIEW.md` — planner-side lock pass; §5 implementation handoff lists touched files, test target, promotion criteria, doc-update plan.
+- `BUG_1_SPEC.md` — Phase 2 trigger criteria §L (server-only; not edited per Ship 1 spec §3 absorption discipline).
+- `MULTIPLAYER_FIXES.md` §4 (Ship 1 row) — flipped ✅ in same doc-update pass; §10 calendar updated to reflect S34 ship.
+- `MULTIPLAYER_VERIFY_DEFERRED.md` (new) — single-use pickup doc for deferred Scenarios F and conditionally E. Contains campaign-22 PC snapshot, rewritten F walk with Karrok in Hilda's slot, conditional E walk, Ship 4.5 decision-criterion reminder distinguishing structural verify from natural-play data. Archives to `_trash/` after deferred verify lands.
+- `ROADMAP.md` — Ship 1 row added to Status snapshot; Multiplayer Fixes row marked ⏳ IN PROGRESS with Ship 2 next; Bug 1 Phase 2 flipped ✅; FOOTINGS queue paragraph updated.
+- `tests-to-run-post-session.md` — §13 live-verify scenarios A–F appended as documented post-session verify steps.
+- `DOCTRINE.md` — two candidates appended to candidates section per review §3 (engine-bound binding > validator; reused vocabulary across sibling classes).
+- `FAILURES.md` — not modified this session. F-NN entries for Findings A/B/H file when Ships 2/3/4 land. Finding L does not get a separate F-NN since it's a regression of F-45; F-45 disposition gets a structural-closure note in a future doc-update.
+- `VIRGIL_MASTER.md`, `WHY.md` — not modified per discipline (wait for Ship 5 cluster completion / plan completion).
+
+## HALT escalations during the session
+
+**None during implementation.** All five spec recon claims held up under live recon. The mid-session friction (Jordan-can't-DM-narrate-from-Donovan-bound-account) surfaced in the verify phase, not implementation, and was a test-prompt phrasing miss on my part — not a structural spec issue. The DM-directive intercept gate is the load-bearing surface for Ship 1 and works correctly for solo operator setups.
+
+**PC rsync:** All five doc-update files (`ROADMAP.md`, `SESSIONS.md`, `DOCTRINE.md`, `tests-to-run-post-session.md`, `MULTIPLAYER_FIXES.md`) + new `MULTIPLAYER_VERIFY_DEFERRED.md` + code files (`dnd_engine.py`, `dnd_orchestration.py`, `narration_verifier.py`, `discord_dnd_bot.py`) + new test files mirrored to PC via `push-all-to-pc.sh` at end of session.

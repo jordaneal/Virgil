@@ -337,23 +337,35 @@ def _wrong_actor_aside(expected_actor: str, actual_actor: str) -> str:
 
 
 async def _handle_dm_roll_directive(message, campaign, parsed: dict) -> None:
-    """Phase 1 matcher — directive-emit branch. Telemetry-only.
+    """Phase 1 matcher — directive-emit branch. Telemetry + Ship 1 DC binding.
 
     Reads last_active_actor + scene mode, applies the skip cascade
     (combat → group → no-footer), emits a pending directive row when
     none of the skip conditions hold, and logs the appropriate telemetry
     line per BUG_1_SPEC.md §F.
 
+    Ship 1 (S34) — parses an inline trailing DC ("!check perception 10" →
+    dc=10) and stores it on the directive row. The DC is the binding
+    surface for resolution at Avrae roll arrival
+    (RESOLUTION_BINDING_SPEC.md §6).
+
     Soft-fail throughout: matcher errors must NEVER raise into on_message.
     """
     try:
         kind = parsed['kind']
-        skill = parsed['skill']
+        skill_raw = parsed['skill']
         campaign_id = campaign['id']
+
+        # Ship 1 — split trailing DC integer off the captured skill text.
+        # parse_skill_and_dc returns (bare_skill, dc | None); a missing DC
+        # falls through to free-narration on roll arrival (§11.2 lock).
+        skill, dc = orch.parse_skill_and_dc(skill_raw)
 
         # Skip-cascade gate 1: trailing-args / group-directive / comment.
         # Logs `directive_creation_skipped` with the classified reason
         # (or `directive_text_unparsed` for comment-shaped surface).
+        # Run clean check against the BARE skill so 'perception 10' is
+        # accepted (DC was already separated off above).
         clean, reason = _directive_skill_is_clean(skill)
         if not clean:
             if reason == 'group_directive':
@@ -396,6 +408,7 @@ async def _handle_dm_roll_directive(message, campaign, parsed: dict) -> None:
             check_type=skill,
             source_message_id=str(message.id),
             ttl_seconds=al.PENDING_DIRECTIVE_TTL_SECONDS,
+            dc=dc,
         )
         if result.get('replaced') and result.get('prior'):
             prior = result['prior']
@@ -407,36 +420,48 @@ async def _handle_dm_roll_directive(message, campaign, parsed: dict) -> None:
                 f"old_age_s={old_age}")
 
         # Bind log fires with directive_age_s=0 by definition (just emitted).
+        # Ship 1 extends the line with dc=<N|none> so the directive-emit
+        # surface carries the binding-or-not signal forward.
+        dc_str = str(dc) if dc is not None else 'none'
         log(f"directive_bound_to_footer_actor: campaign={campaign_id} "
-            f"actor={footer_actor} skill={skill} directive_age_s=0")
+            f"actor={footer_actor} skill={skill} dc={dc_str} "
+            f"directive_age_s=0")
     except Exception as e:
         log(f"_handle_dm_roll_directive error: {e!r}")
 
 
-def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> None:
-    """Phase 1 matcher — Avrae roll-arrival branch. Telemetry-only.
+def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> dict:
+    """Phase 1 matcher — Avrae roll-arrival branch.
 
     Sync helper (called from inside the existing on_message Avrae branch).
-    Returns nothing; aside posting is fired from a wrapper coroutine.
+    Returns a dict {'aside': None | str, 'auto_fire': None | dict}. The
+    async caller posts any aside text and schedules any auto-fire payload
+    (Ship 1 §9 wiring).
 
-    Returns a dict: {'aside': None | str} so the async caller can post
-    the wrong-actor aside without making this helper coroutine-bound.
+    Ship 1 (S34) — when the match path runs, calls `resolve_directive`
+    against the pending row + Avrae event to produce a ResolutionResult.
+    Non-None resolutions are returned in the `auto_fire` payload so the
+    caller can schedule `_dm_respond_and_post` with the resolution_result
+    kwarg. None resolutions (no-DC, cast kind, malformed embed) preserve
+    Phase 1 telemetry-only behavior.
     """
+    out: dict = {'aside': None, 'auto_fire': None}
+
     # Defensive: only check/save/cast events are matched against pending
     # directives. Attack/damage/rest/roll silent-ignore in Phase 1.
     kind = (event.get('kind') or '').lower()
     if kind not in ('check', 'save', 'cast'):
-        return {'aside': None}
+        return out
 
     pending = pending_directive_get_active(campaign_id)
     if not pending:
-        return {'aside': None}
+        return out
 
     avrae_skill = _normalize_skill_for_match(event.get('detail') or '')
     pending_skill = _normalize_skill_for_match(pending.get('check_type') or '')
     if not avrae_skill or not pending_skill or avrae_skill != pending_skill:
         # Skill mismatch (any actor) → silent ignore per spec.
-        return {'aside': None}
+        return out
 
     avrae_actor = canonicalize_actor_name(event.get('actor') or '')
     pending_actor = canonicalize_actor_name(pending.get('actor_name') or '')
@@ -444,26 +469,113 @@ def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> None:
     age_s = pending_directive_age_seconds(pending.get('created_at') or '')
 
     if avrae_actor == pending_actor and avrae_actor:
-        # Match: would-fire log + consume row. Phase 1 does NOT auto-fire
-        # dm_respond — that's Phase 2's wiring on top of this verified layer.
+        # Ship 1 (S34) — compute resolution before consume so the matcher
+        # has both the pending row (with dc) and the avrae event surface.
+        # Soft-fail per §9.5: any resolve error is logged + degrades to
+        # telemetry-only; row still consumes; no auto-fire.
+        resolution = None
+        resolve_err = None
+        try:
+            resolution = orch.resolve_directive(pending, event)
+        except Exception as e:
+            resolve_err = repr(e)
+            log(f"resolve_directive_error: campaign={campaign_id} "
+                f"actor={pending.get('actor_name', '')} "
+                f"skill={pending.get('check_type', '')} err={resolve_err}")
+
+        # Always-fire empirical-baseline log per §10.2 / §10.3.
+        if resolution is not None:
+            log(orch.resolution_log_summary(resolution, campaign_id))
+            outcome_str = 'PASSED' if resolution.passed else 'FAILED'
+            roll_total_str = str(resolution.roll_total)
+            dc_str = str(resolution.dc)
+        else:
+            # Determine skip reason for the empirical baseline.
+            if resolve_err is not None:
+                skip_reason = 'unresolvable'
+            elif kind == 'cast':
+                skip_reason = 'cast_kind'
+            elif pending.get('dc') is None:
+                skip_reason = 'no_dc'
+            elif not isinstance(event.get('result'), int):
+                skip_reason = 'malformed_embed'
+            else:
+                skip_reason = 'unresolvable'
+            log(orch.resolution_log_summary(
+                None, campaign_id, reason=skip_reason
+            ))
+            outcome_str = 'skipped'
+            roll_total = event.get('result')
+            roll_total_str = (str(roll_total) if isinstance(roll_total, int)
+                              else 'none')
+            pdc = pending.get('dc')
+            dc_str = str(pdc) if isinstance(pdc, int) else 'none'
+
+        # Phase 1 would-fire log, Ship 1 extension (§10.1): adds roll_total,
+        # dc, outcome fields. Log line NAME preserved per spec — the
+        # Bug 1 Phase 2 criterion 4 grep cross-references the same name.
         log(f"directive_would_fire_dm_respond: campaign={campaign_id} "
             f"actor={pending.get('actor_name', '')} "
             f"skill={pending.get('check_type', '')} "
-            f"directive_age_s={age_s}")
+            f"directive_age_s={age_s} "
+            f"roll_total={roll_total_str} "
+            f"dc={dc_str} "
+            f"outcome={outcome_str}")
+
         pending_directive_consume(campaign_id)
-        return {'aside': None}
+
+        if resolution is not None:
+            # Ship 1 (§9.3) — synthesized bracket-framed input gives the LLM
+            # narrative grounding (actor, skill, kind) without re-asserting an
+            # unbound action (avoiding F-45 surface). AUTHORITATIVE-CANON
+            # block at top-of-prompt does the actual binding work.
+            synthesized_input = (
+                f"[Roll resolution: {resolution.actor} rolled "
+                f"{resolution.skill_or_save} ({resolution.check_kind}); "
+                f"outcome bound at top-of-prompt.]"
+            )
+            controller_id = _resolve_bound_controller_id(
+                campaign_id, resolution.actor
+            )
+            synthesized_actions = [
+                (resolution.actor, synthesized_input, controller_id)
+            ]
+            out['auto_fire'] = {
+                'campaign_id': campaign_id,
+                'actions': synthesized_actions,
+                'combined_action': synthesized_input,
+                'resolution': resolution,
+            }
+        return out
 
     # Skill match + actor mismatch → log + aside, do NOT consume.
     log(f"directive_actor_mismatch: campaign={campaign_id} "
         f"expected_actor={pending.get('actor_name', '')} "
         f"actual_actor={event.get('actor', '')} "
         f"skill={pending.get('check_type', '')}")
-    return {
-        'aside': _wrong_actor_aside(
-            expected_actor=pending.get('actor_name', ''),
-            actual_actor=event.get('actor', ''),
-        ),
-    }
+    out['aside'] = _wrong_actor_aside(
+        expected_actor=pending.get('actor_name', ''),
+        actual_actor=event.get('actor', ''),
+    )
+    return out
+
+
+def _resolve_bound_controller_id(campaign_id: int, actor_name: str) -> str | None:
+    """Ship 1 (§9.4) — best-effort lookup of the Discord user ID controlling
+    a bound PC. Falls through to None when sheet/binding is missing. Soft-fail
+    only: this is informational metadata for downstream persistence-directive
+    typing-identity comparison (irrelevant in exploration mode where Ship 1
+    resolution fires)."""
+    try:
+        chars = get_characters(campaign_id) or []
+        target = (actor_name or '').strip().lower()
+        for c in chars:
+            if (c.get('name') or '').strip().lower() == target:
+                cid = c.get('controller')
+                return str(cid) if cid else None
+    except Exception as e:
+        log(f"_resolve_bound_controller_id error: {e!r}")
+    return None
 
 # Guild-wide AFK auto-move config. afk_timeout accepts a fixed set of values
 # (60, 300, 900, 1800, 3600). 1800 = 30 min.
@@ -1367,13 +1479,14 @@ async def on_message(message: discord.Message):
                     except Exception as e:
                         log(f"resolve_actor error: {e!r}")
                 buffer.add(event)
-                # Bug 1 Phase 1 (S32) — match this roll against any
-                # pending DM directive for the campaign. Telemetry-only:
-                # logs `directive_would_fire_dm_respond` on match (and
-                # consumes the row), `directive_actor_mismatch` + posts
-                # the wrong-actor aside on skill-match-actor-mismatch.
-                # Skill mismatch silent-ignores per spec. Soft-fail:
-                # matcher errors must NEVER raise into on_message.
+                # Bug 1 Phase 1 (S32) + Ship 1 (S34) — match this roll
+                # against any pending DM directive for the campaign. Phase 1
+                # consumed the row and logged telemetry; Ship 1 additionally
+                # resolves DC-vs-roll and auto-fires _dm_respond_and_post
+                # with the bound ResolutionResult when a DC was present.
+                # Soft-fail end-to-end: matcher errors must NEVER raise into
+                # on_message. _dm_respond_and_post failure falls through to
+                # the deterministic fallback aside per §11.11.
                 try:
                     if event.get('kind') in ('check', 'save', 'cast') and message.guild:
                         arrival_camp = get_active_campaign(str(message.guild.id))
@@ -1381,6 +1494,13 @@ async def on_message(message: discord.Message):
                             arrival = _handle_dm_roll_arrival(arrival_camp['id'], event)
                             if arrival and arrival.get('aside'):
                                 await _post_dm_aside(message.guild, arrival['aside'])
+                            if arrival and arrival.get('auto_fire'):
+                                asyncio.create_task(
+                                    _fire_resolution_narration(
+                                        arrival_camp, arrival['auto_fire'],
+                                        message.guild,
+                                    )
+                                )
                 except Exception as e:
                     log(f"_handle_dm_roll_arrival outer error: {e!r}")
                 # Rest events flush combat mode (Avrae doesn't fire !init end
@@ -2052,7 +2172,8 @@ async def _advisory_respond(message: discord.Message):
 
 async def _dm_respond_and_post(campaign, characters, actions: list, combined_action: str,
                                 transition_context: str = None,
-                                location_label_override: str = None):
+                                location_label_override: str = None,
+                                resolution_result=None):
     """Called by the batcher. Pulls Avrae events for the relevant actors,
     fires the DM, posts narration.
 
@@ -2134,13 +2255,15 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
             async with channel.typing():
                 response = await asyncio.to_thread(
                     dm_respond, campaign, characters, combined_action, avrae_events,
-                    actor_names, transition_context, first_user_id, actions
+                    actor_names, transition_context, first_user_id, actions,
+                    resolution_result,
                 )
         except (discord.HTTPException, asyncio.TimeoutError) as e:
             log(f"typing_indicator_failed: command=_dm_respond_and_post err={e!r}")
             response = await asyncio.to_thread(
                 dm_respond, campaign, characters, combined_action, avrae_events,
-                actor_names, transition_context, first_user_id, actions
+                actor_names, transition_context, first_user_id, actions,
+                resolution_result,
             )
 
         chroma_store(campaign['id'], 'dm', response)
@@ -2240,6 +2363,47 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
     except Exception as e:
         log(f"_dm_respond_and_post error: {e}")
         import traceback; log(traceback.format_exc())
+
+
+async def _fire_resolution_narration(campaign: dict, payload: dict, guild) -> None:
+    """Ship 1 (§9.5, §11.11) auto-fire wrapper for resolution-bound narration.
+
+    Schedules `_dm_respond_and_post` with the synthesized actions list +
+    resolution_result kwarg. On exception, logs `_dm_respond_and_post_failure:`
+    and posts a deterministic fallback aside to #dm-aside so the DM has
+    visibility of the engine-computed resolution even when the LLM-path
+    failed (matches the verifier escalation placeholder shape).
+    """
+    resolution = payload.get('resolution')
+    actions = payload.get('actions') or []
+    combined_action = payload.get('combined_action') or ''
+    campaign_id = payload.get('campaign_id')
+    try:
+        characters = get_characters(campaign_id) or []
+        await _dm_respond_and_post(
+            campaign, characters,
+            actions=actions,
+            combined_action=combined_action,
+            resolution_result=resolution,
+        )
+    except Exception as e:
+        actor = getattr(resolution, 'actor', '?')
+        skill = getattr(resolution, 'skill_or_save', '?')
+        log(f"_dm_respond_and_post_failure: campaign={campaign_id} "
+            f"actor={actor} skill={skill} err={e!r}")
+        if resolution is not None:
+            try:
+                outcome = 'PASSED' if resolution.passed else 'FAILED'
+                fallback_text = (
+                    f"Roll resolution: {resolution.actor} "
+                    f"{resolution.skill_or_save.replace('_', ' ').title()} "
+                    f"{resolution.check_kind} at DC {resolution.dc} "
+                    f"(rolled {resolution.roll_total}). "
+                    f"Result: {outcome}."
+                )
+                await _post_dm_aside(guild, fallback_text)
+            except Exception as inner_e:
+                log(f"_fire_resolution_narration fallback aside failed: {inner_e!r}")
 
 
 # ─────────────────────────────────────────────────────────

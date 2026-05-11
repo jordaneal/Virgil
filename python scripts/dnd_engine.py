@@ -642,8 +642,17 @@ def db_init():
         check_type         TEXT    NOT NULL,
         source_message_id  TEXT    NOT NULL,
         created_at         TEXT    NOT NULL,
-        expires_at         TEXT    NOT NULL
+        expires_at         TEXT    NOT NULL,
+        dc                 INTEGER
     )''')
+    # Ship 1 (S34) idempotent migration — add dc column when older schema lacks it.
+    pdr_cols = {
+        row[1] for row in
+        conn2.execute("PRAGMA table_info(dnd_pending_roll_directives)").fetchall()
+    }
+    if 'dc' not in pdr_cols:
+        conn2.execute("ALTER TABLE dnd_pending_roll_directives ADD COLUMN dc INTEGER")
+        conn2.commit()
     conn2.execute(
         "CREATE INDEX IF NOT EXISTS idx_pending_directive_msg "
         "ON dnd_pending_roll_directives(source_message_id)"
@@ -1988,12 +1997,18 @@ def get_combatants(campaign_id: int) -> dict:
 
 def pending_directive_upsert(campaign_id: int, actor_name: str,
                              check_type: str, source_message_id: str,
-                             ttl_seconds: int) -> dict:
+                             ttl_seconds: int,
+                             dc: int | None = None) -> dict:
     """Insert or replace the pending roll directive for this campaign.
 
     Returns a dict {'replaced': bool, 'prior': {actor_name, check_type,
     created_at} | None}. Caller logs `pending_directive_replaced` if
     `replaced` is True.
+
+    `dc` is the DM-set difficulty class parsed at directive-emit time per
+    RESOLUTION_BINDING_SPEC.md §6. None means the DM did not include a DC
+    in the directive; resolution binding falls through to free-narration
+    (§11.2 lock).
     """
     import datetime as _dt
     now_dt = _dt.datetime.utcnow()
@@ -2019,10 +2034,11 @@ def pending_directive_upsert(campaign_id: int, actor_name: str,
         conn.execute(
             "INSERT OR REPLACE INTO dnd_pending_roll_directives "
             "(campaign_id, actor_name, check_type, source_message_id, "
-            " created_at, expires_at) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
+            " created_at, expires_at, dc) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
             (campaign_id, actor_name, check_type,
-             str(source_message_id), now_iso, expires_iso)
+             str(source_message_id), now_iso, expires_iso,
+             int(dc) if isinstance(dc, int) else None)
         )
         conn.commit()
     finally:
@@ -2041,13 +2057,13 @@ def pending_directive_get_active(campaign_id: int) -> dict | None:
     try:
         row = conn.execute(
             "SELECT actor_name, check_type, source_message_id, "
-            "       created_at, expires_at "
+            "       created_at, expires_at, dc "
             "FROM dnd_pending_roll_directives WHERE campaign_id=?",
             (campaign_id,)
         ).fetchone()
         if not row:
             return None
-        actor_name, check_type, source_message_id, created_at, expires_at = row
+        actor_name, check_type, source_message_id, created_at, expires_at, dc = row
         now_dt = _dt.datetime.utcnow()
         try:
             exp_dt = _dt.datetime.fromisoformat(expires_at)
@@ -2074,6 +2090,8 @@ def pending_directive_get_active(campaign_id: int) -> dict | None:
             'source_message_id':  source_message_id or '',
             'created_at':         created_at or '',
             'expires_at':         expires_at or '',
+            'dc':                 (int(dc) if isinstance(dc, int) else None),
+            'campaign_id':        campaign_id,
         }
     finally:
         conn.close()
@@ -4865,6 +4883,7 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
                      combat_redirect="",
                      time_directive="",
                      arbitration_block="", arbitration_hardstop_echo="",
+                     resolution_block="", resolution_hardstop_echo="",
                      acting_character_names=None):
     """Compose the system prompt. Tone, pacing, voice — narration ONLY.
     Roll decisions come pre-made via roll_decision.
@@ -5082,6 +5101,29 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
         if arbitration_hardstop_echo else ""
     )
 
+    # Ship 1 (S34) — AUTHORITATIVE ROLL RESOLUTION block. Renders the
+    # engine-computed DC-vs-roll verdict when the matcher auto-fired
+    # _dm_respond_and_post via resolve_directive (RESOLUTION_BINDING_SPEC.md
+    # §7). Mutually exclusive with arbitration_section by flow (§2.3) —
+    # arbitration fires on player-typed input through dm_respond's normal
+    # path; resolution fires on DM-typed-directive consume. Both kwargs are
+    # rendered if both are populated (defensive §11.9); the warning log
+    # below surfaces any unexpected co-occurrence.
+    resolution_section = (
+        f"\n\n═══ AUTHORITATIVE ROLL RESOLUTION ═══\n{resolution_block}\n═══"
+        if resolution_block else ""
+    )
+    resolution_hardstop_section = (
+        f"\n8. {resolution_hardstop_echo}"
+        if resolution_hardstop_echo else ""
+    )
+    if arbitration_block and resolution_block:
+        try:
+            log(f"unexpected_binding_co_occurrence: campaign={campaign.get('id')} "
+                f"has_arbitration=1 has_resolution=1")
+        except Exception:
+            pass
+
     # DM philosophy block (Track 3, Session 14) — operating policy for
     # how all subsequent directives are interpreted. Authored by Jordan,
     # mtime-cached, reloads on file change. Sits HIGH in the prompt
@@ -5186,7 +5228,7 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
     if companions_block:
         companions_section = f"\n\n{companions_block}"
 
-    return f"""You are the Dungeon Master for a D&D 5th Edition campaign called "{campaign['name']}".{arbitration_section}
+    return f"""You are the Dungeon Master for a D&D 5th Edition campaign called "{campaign['name']}".{arbitration_section}{resolution_section}
 
 === SETTING & TONE (HARD CONSTRAINT — DO NOT VIOLATE) ===
 {tone}
@@ -5324,7 +5366,7 @@ This block reflects state that already exists; it does not create it.
 6. PLAYER ATTEMPTS, NOT OUTCOMES. Players declare what they try; the world decides what happens. The player CANNOT author scene physics, NPC reactions, or success conditions through declaration alone.
    (a) OUTCOME DICTATION — If the player narrates the result of an uncertain action ("I take the steering wheel off and leave", "I pick the lock easily", "I convince him to help me"), treat the verbs as ATTEMPTS, not facts. The action's outcome is decided by the ROLL DIRECTIVE and the world, not by the player's wording. Never echo "you manage to" or "the action feels easy" or any phrase that grants success the directive did not authorize. If the directive says NO ROLL but the action is non-trivial, describe the friction (mechanical complexity, time required, who notices) rather than narrating a clean success.
    (b) IMPOSSIBLE ACTIONS — If the player declares a capability the character does not have ("I fly", "I teleport", "I cast a spell I don't know", "I one-shot the dragon"), do NOT silently rewrite the action into something plausible. Interrupt in narration: state directly that the character cannot do this, briefly explain why ("you have no means of flight"), and ask what they want to do instead. Do not invent a workaround for them.
-   (c) CONTRADICTING ESTABLISHED SCENE — If the player's declaration contradicts a fact already in scene state (door position, NPC location, object placement, environmental constraint), the SCENE WINS. Describe the friction the contradiction creates ("the door is on the rear-passenger side, not the driver's — you'd have to climb over the console") and let the player adapt. Do not rewrite the scene to match the player's assumption.{arbitration_hardstop_section}"""
+   (c) CONTRADICTING ESTABLISHED SCENE — If the player's declaration contradicts a fact already in scene state (door position, NPC location, object placement, environmental constraint), the SCENE WINS. Describe the friction the contradiction creates ("the door is on the rear-passenger side, not the driver's — you'd have to climb over the console") and let the player adapt. Do not rewrite the scene to match the player's assumption.{arbitration_hardstop_section}{resolution_hardstop_section}"""
 
 
 def parse_auto_execute(response: str):
@@ -5465,7 +5507,8 @@ def execute_auto_actions(campaign_id: int, actions: list):
 
 def dm_respond(campaign, characters, player_action, avrae_events=None,
                 acting_character_names=None, transition_context=None,
-                typing_user_id=None, actions: list = None):
+                typing_user_id=None, actions: list = None,
+                resolution_result=None):
     """Run one DM turn. Returns response string. Roll-or-not decided by
     the orchestration engine, not the prompt.
 
@@ -5938,6 +5981,12 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
     else:
         guidance = ""
 
+    # Ship 1 (S34) — render the AUTHORITATIVE-CANON resolution block when
+    # the matcher auto-fired with a resolved directive. Both helpers return
+    # '' on None; build_dm_context section-assembly handles the empty case.
+    resolution_block_text = orch.render_resolution_block(resolution_result)
+    resolution_hardstop_text = orch.render_resolution_hardstop_echo(resolution_result)
+
     system = build_dm_context(
         campaign, characters,
         relevant_history=relevant,
@@ -5961,6 +6010,8 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         time_directive=time_text,
         arbitration_block=arbitration_block_text,
         arbitration_hardstop_echo=arbitration_hardstop_text,
+        resolution_block=resolution_block_text,
+        resolution_hardstop_echo=resolution_hardstop_text,
         acting_character_names=acting_character_names,
     )
     # S24: save build_dm_context output size before skeleton/transition prepends.
@@ -6185,6 +6236,7 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
                 scene_state=scene_state,
                 combatants=_adj_combatants if '_adj_combatants' in dir() else [],
                 npcs_canonical=_canonical_npc_names,
+                resolution_result=resolution_result,
             )
 
             if not _vfy_result.passed:
@@ -6203,6 +6255,7 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
                         scene_state=scene_state,
                         combatants=_adj_combatants if '_adj_combatants' in dir() else [],
                         npcs_canonical=_canonical_npc_names,
+                        resolution_result=resolution_result,
                     )
                     if _retry_result.passed and _retry_response and _retry_response.strip():
                         response = _retry_response
@@ -6216,6 +6269,7 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
                                  if _retry_result else _vfy_result.violation_class)
                                 or ''
                             ),
+                            resolution_result=resolution_result,
                         )
                         if _escalation and _escalation.strip():
                             response = _escalation

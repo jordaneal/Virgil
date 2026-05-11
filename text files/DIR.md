@@ -1,6 +1,6 @@
 # Directory Layout — Virgil Project
 
-Both ends of the tailnet sync. PC is the archive/work surface; server is the canonical runtime. This doc captures the layout on both sides and the routing between them. Verified May 7, 2026.
+Both ends of the tailnet sync. PC is the archive/work surface; server is the canonical runtime. This doc captures the layout on both sides and the routing between them. Verified May 11, 2026 (post-reorg).
 
 ---
 
@@ -23,15 +23,26 @@ Both ends of the tailnet sync. PC is the archive/work surface; server is the can
 │   └── .env                          # secrets — NEVER push, NEVER commit
 │
 ├── virgil-docs/                      # all .md project docs
-│   ├── *_SPEC.md                     # locked specs (ADJUDICATION_LAYER, COMBAT_PERSISTENCE,
-│   │                                 #   COMBAT_INITIATION_ORCHESTRATION, COMMITTED_ACTION_RESOLUTION,
+│   ├── (root .md)                    # canon + active cycle + server-only (BUG_1_SPEC):
+│   │                                 #   THE_GOAL, WORKING_WITH_CLAUDE, VIRGIL_MASTER, DOCTRINE,
+│   │                                 #   FAILURES, ROADMAP, SESSIONS, WHY, COMMANDS, DIR (this file),
+│   │                                 #   dm_philosophy.md (SYMLINK -> ../scripts/dm_philosophy.md),
+│   │                                 #   tests-to-run-post-session.md, MULTIPLAYER_FIXES.md (active plan),
+│   │                                 #   S32_MULTIPLAYER_PLAYTEST_FINDINGS.md (active evidence),
+│   │                                 #   RESOLUTION_BINDING_SPEC.md (current ship, locked),
+│   │                                 #   MULTIPLAYER_VERIFY_DEFERRED.md (pickup doc, status TBD),
+│   │                                 #   BUG_1_SPEC.md (server-only convention)
+│   ├── specs/                        # locked-and-shipped specs and their review companions:
+│   │                                 #   *_SPEC.md + *_REVIEW.md for completed tracks
+│   │                                 #   (ADJUDICATION_LAYER, COMBAT_INITIATION_ORCHESTRATION,
+│   │                                 #   COMBAT_PERSISTENCE_DIRECTIVE, COMMITTED_ACTION_RESOLUTION,
 │   │                                 #   CONSEQUENCE_SURFACING, ENCOUNTER_CADENCE_V1, PHASE_6_IDENTITY,
-│   │                                 #   TIME_MENTION_V1, TRACK_7_2)
-│   ├── *_REVIEW.md                   # spec review notes — siblings to _SPEC.md, route together to PC specs/
-│   ├── ROADMAP.md / VIRGIL_MASTER.md / DOCTRINE.md / FAILURES.md / SESSIONS.md / WHY.md
-│   ├── THE_GOAL.md / WORKING_WITH_CLAUDE.md / COMMANDS.md / CORPUS_BUILDER.md
-│   ├── tests-to-run-post-session.md / website.md / DIR.md (this file)
-│   ├── dm_philosophy.md → ../scripts/dm_philosophy.md   # SYMLINK
+│   │                                 #   TIME_MENTION_V1, TRACK_4_3, TRACK_6_4, TRACK_6_5_1, TRACK_7_2,
+│   │                                 #   RESOLUTION_BINDING_REVIEW)
+│   ├── research/                     # one-off research outputs (not load-bearing canon):
+│   │                                 #   CORPUS_BUILDER.md, track5_findings_loot_reward.md, website.md
+│   ├── _trash/                       # soft-deleted planner-to-Code prompts (recoverable):
+│   │                                 #   SHIP_1_SPEC_PROMPT.md, SHIP_1_IMPLEMENTATION_PROMPT.md
 │   └── refs/                         # reference material (Avrae Command List, etc.)
 │
 ├── corpus_builder/                   # Track 5 — production-isolated from scripts/
@@ -52,6 +63,8 @@ Both ends of the tailnet sync. PC is the archive/work surface; server is the can
 - `scripts/dm_philosophy.md` is the canonical source; `virgil-docs/dm_philosophy.md` is a symlink. PC has a regular-file copy in `text files/` which `push-docs` excludes (otherwise the symlink gets clobbered).
 - `~/.env` and any campaign skeleton secrets must never be pushed via bulk sync. `push-all-to-pc.sh` routes by file pattern and doesn't touch `.env`.
 - `corpus_builder/locks/` and `corpus_builder/logs/` are server-side runtime state. `pull-corpus` excludes them.
+- `BUG_1_SPEC.md` is server-only by convention — it doesn't have a PC counterpart and isn't pushed.
+- `MULTIPLAYER_VERIFY_DEFERRED.md` is at server root; its lifecycle status (still active vs. served-its-purpose) was not classified during the reorg and is pending decision.
 
 ---
 
@@ -61,11 +74,20 @@ Both ends of the tailnet sync. PC is the archive/work surface; server is the can
 Virgil Project/
 ├── python scripts/                   # mirror of server ~/scripts/*.py (excl. test_/calibrate_)
 ├── shell scripts/                    # mirror of server ~/scripts/*.sh
-├── text files/                       # mirror of server ~/virgil-docs/ (non-spec .md)
+├── text files/                       # canon + active cycle + server-only .md from ~/virgil-docs/ root
+│   │                                 #   (THE_GOAL, WORKING_WITH_CLAUDE, VIRGIL_MASTER, DOCTRINE,
+│   │                                 #   FAILURES, ROADMAP, SESSIONS, WHY, COMMANDS, DIR,
+│   │                                 #   dm_philosophy.md, tests-to-run-post-session.md,
+│   │                                 #   MULTIPLAYER_FIXES.md, S32_MULTIPLAYER_PLAYTEST_FINDINGS.md,
+│   │                                 #   MULTIPLAYER_VERIFY_DEFERRED.md)
 │   └── refs/                         # mirror of ~/virgil-docs/refs/
-├── specs/                            # mirror of server *_SPEC.md from ~/virgil-docs/
-│   │                                 #   PLUS PC-authored historical specs (PHASE_11_1_SPEC,
-│   │                                 #   PHASE_12_SPEC, skeleton_17.md) that live PC-only
+├── specs/                            # *_SPEC.md + *_REVIEW.md for shipped tracks (currently
+│   │                                 #   populated via push-all-to-pc.sh's suffix-based rule
+│   │                                 #   from ~/virgil-docs/ root). PLUS PC-only historical
+│   │                                 #   specs that don't exist server-side: PHASE_11_1_SPEC,
+│   │                                 #   PHASE_12_SPEC, skeleton_17.md. PLUS RESOLUTION_BINDING_SPEC
+│   │                                 #   (current ship — kept here on PC, lives at ~/virgil-docs/ root
+│   │                                 #   on server because it's an active cycle artifact).
 ├── calibration and test files/       # mirror of server test_*.py + calibrate_*.py
 │                                     #   (Jordan archives green tests here manually)
 ├── campaigns/<id>/skeleton.md        # mirror of server campaigns/
@@ -74,17 +96,25 @@ Virgil Project/
 │   ├── specs/                        # PC-authored corpus-scoped SPEC files (NOT pushed to server —
 │   │                                 #   excluded by push-corpus to avoid race with push-all-to-pc.sh)
 │   └── README.md
-├── research/                         # PC-authored research scratch (deep-research-report.md)
-├── website/                          # virgildm.com source (index.html, website.md)
+├── research/                         # one-off research scratch (CORPUS_BUILDER.md,
+│   │                                 #   track5_findings_loot_reward.md, website.md doc,
+│   │                                 #   deep-research-report.md — last one is PC-authored)
+├── website/                          # virgildm.com source (index.html, website.md source —
+│   │                                 #   distinct from research/website.md, which is the
+│   │                                 #   project doc describing the site)
 ├── media/                            # assets — don't touch unless asked
 ├── patches/                          # legacy patch scripts (archived; don't touch)
-└── _trash/                           # PC-only soft-delete bin — files staged for manual deletion
+└── _trash/                           # soft-delete bin (SHIP_1_SPEC_PROMPT.md,
+                                      #   SHIP_1_IMPLEMENTATION_PROMPT.md, Testing.txt)
 ```
 
 **Notes:**
-- PC `specs/` holds two file populations: server-mirrored `*_SPEC.md` (kept in sync via `push-all-to-pc.sh`) and PC-only historical files (`PHASE_NN_SPEC.md`, `skeleton_NN.md`). `push-all-to-pc.sh` is additive — never deletes PC-side files that aren't on the server.
+- PC `specs/` holds two file populations: server-mirrored `*_SPEC.md` / `*_REVIEW.md` (kept in sync via `push-all-to-pc.sh`'s suffix-based rule from `~/virgil-docs/` ROOT) and PC-only historical files (`PHASE_NN_SPEC.md`, `skeleton_NN.md`). `push-all-to-pc.sh` is additive — never deletes PC-side files that aren't on the server.
 - `_REVIEW.md` files route to `specs/` alongside their paired `_SPEC.md` — review docs and spec docs live together.
 - `corpus/specs/` is PC-only; corpus-scoped SPECs don't flow back up.
+- **PC vs server `research/` superset:** PC `research/` is a superset of server `research/`. Server holds `CORPUS_BUILDER.md`, `track5_findings_loot_reward.md`, `website.md`; PC mirrors those (via step 3d) AND keeps the PC-authored `deep-research-report.md`. The downward rsync is additive (no `--delete`), so PC-authored files in `research/` are preserved across syncs but don't flow upward. If you want a PC-authored research doc to live on the server too, use `push-docs` from PC or copy it manually.
+- **PC vs server `_trash/` superset:** same pattern. PC `_trash/` holds server-synced trashed items (via step 3e) plus any PC-side trash (e.g., `Testing.txt`). Additive; no upward sync.
+- **PC vs server `text files/` // `~/virgil-docs/` root divergence:** `RESOLUTION_BINDING_SPEC.md` lives at server `~/virgil-docs/` root (active cycle, current ship) but at PC `specs/` (because `push-all-to-pc.sh` step 3b routes everything matching `*_SPEC.md` from the server root to PC `specs/`). This is a known asymmetry: while the spec is active, it sits in the canon-active bucket on server but flows into the archival specs bucket on PC. When the ship completes, the server-side file should be moved to `~/virgil-docs/specs/` to match.
 
 ---
 
@@ -97,17 +127,20 @@ Virgil Project/
 | `backup-virgil` (PC alias) | SSH runs `~/scripts/push-all-to-pc.sh` on server | Mirrors `~/scripts/` and `~/virgil-docs/` to PC subfolders by file pattern |
 | `pull-corpus` (PC alias) | rsync from PC | server `~/corpus_builder/` → PC `corpus/` (excl. `locks/`, `logs/`) |
 
-`push-all-to-pc.sh` routing (suffix-based):
+`push-all-to-pc.sh` routing (mixed suffix-based at root + whole-folder for post-reorg subfolders):
 - `~/scripts/*.py` (excl. test_/calibrate_) → `python scripts/`
 - `~/scripts/*.sh` → `shell scripts/`
 - `~/scripts/test_*.py` + `calibrate_*.py` → `calibration and test files/`
 - `~/scripts/dm_philosophy.md` → `text files/`
 - `~/scripts/campaigns/` → `campaigns/`
-- `~/virgil-docs/*_SPEC.md` → `specs/`
-- `~/virgil-docs/*_REVIEW.md` → `specs/`
-- `~/virgil-docs/*.md` (non-spec, non-review) → `text files/`
-- `~/virgil-docs/refs/` → `text files/refs/`
+- `~/virgil-docs/*.md` (root-level, excl. dm_philosophy.md, *_SPEC.md, *_REVIEW.md) → `text files/`  (step 3)
+- `~/virgil-docs/*_SPEC.md` + `*_REVIEW.md` (root-level only) → `specs/`  (step 3b — picks up BUG_1_SPEC.md and any active-ship SPEC like RESOLUTION_BINDING_SPEC.md)
+- `~/virgil-docs/specs/` → `specs/`  (step 3c — shipped specs and their REVIEW companions, post-May-11 reorg)
+- `~/virgil-docs/research/` → `research/`  (step 3d — one-off research outputs)
+- `~/virgil-docs/_trash/` → `_trash/`  (step 3e — soft-deleted docs)
+- `~/virgil-docs/refs/` → `text files/refs/`  (step 4)
 - **No corpus routing** — `~/corpus_builder/` is intentionally untouched by the bulk script (production-isolation rule).
+- Steps 3c–3e are guarded with `if [ -d ... ]` so the script is forward-compatible with hosts where these subfolders haven't been created yet.
 
 ### PC → Server (upward sync)
 
@@ -146,4 +179,4 @@ Avoid pipes (`|`, `&&`) inside the SSH-quoted command unless wrapped in `bash -c
 - `push-all-to-pc.sh` — `~/scripts/push-all-to-pc.sh` (the source of truth for downward routing)
 - `feedback_corpus_routing.md` — Code memory; corpus-specific routing detail
 - `reference_pc_tailscale.md` — Code memory; SSH target + cygwin command patterns
-- `CORPUS_BUILDER.md` — Track 5 production-isolation rationale
+- `research/CORPUS_BUILDER.md` — Track 5 production-isolation rationale

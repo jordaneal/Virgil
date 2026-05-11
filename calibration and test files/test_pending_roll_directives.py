@@ -60,6 +60,7 @@ def _reset_state(campaign_id):
 
 
 def test_pending_table_columns():
+    # Ship 1 (S34) — `dc` added to existing six-column schema.
     conn = sqlite3.connect(TEST_DB)
     cols = conn.execute(
         "PRAGMA table_info(dnd_pending_roll_directives)"
@@ -68,7 +69,7 @@ def test_pending_table_columns():
     names = [c[1] for c in cols]
     assert names == [
         'campaign_id', 'actor_name', 'check_type', 'source_message_id',
-        'created_at', 'expires_at',
+        'created_at', 'expires_at', 'dc',
     ], f"unexpected columns: {names}"
 
 
@@ -259,6 +260,81 @@ def test_pending_directives_cleared_by_campaign_delete_cascade():
     assert result['deleted'], f"cascade did not delete: {result!r}"
     assert result['rows_deleted'].get('dnd_pending_roll_directives', 0) == 1, \
         f"cascade did not delete pending directive row: {result!r}"
+
+
+# ─── Ship 1 (S34) — Resolution Binding extensions ────────────────────
+# Per RESOLUTION_BINDING_SPEC.md §12.3. Covers schema migration, upsert
+# dc passthrough, get_active dc surfacing, and parse_skill_and_dc helper.
+
+def test_dc_column_present_after_db_init():
+    # Idempotent migration: re-running db_init on a schema that already
+    # has the dc column must be a no-op (no errors raised).
+    import dnd_engine as _de
+    _de.db_init()
+    conn = sqlite3.connect(TEST_DB)
+    cols = {c[1] for c in conn.execute(
+        "PRAGMA table_info(dnd_pending_roll_directives)"
+    ).fetchall()}
+    conn.close()
+    assert 'dc' in cols, f"dc column missing after db_init: {cols}"
+
+
+def test_pending_directive_upsert_stores_dc():
+    init_scene_state(310, 'seed')
+    _reset_state(310)
+    pending_directive_upsert(310, 'Donovan Ruby', 'perception', 'msg_dc1',
+                              300, dc=15)
+    row = pending_directive_get_active(310)
+    assert row is not None
+    assert row['dc'] == 15, f"dc not stored: {row}"
+
+
+def test_pending_directive_upsert_stores_null_when_no_dc():
+    init_scene_state(311, 'seed')
+    _reset_state(311)
+    # dc kwarg omitted — default is None
+    pending_directive_upsert(311, 'Donovan Ruby', 'perception', 'msg_dc2', 300)
+    row = pending_directive_get_active(311)
+    assert row is not None
+    assert row['dc'] is None, f"dc should be None: {row}"
+
+
+def test_pending_directive_get_active_surfaces_dc_and_campaign_id():
+    init_scene_state(312, 'seed')
+    _reset_state(312)
+    pending_directive_upsert(312, 'Hilda', 'stealth', 'msg_dc3', 300, dc=12)
+    row = pending_directive_get_active(312)
+    assert row is not None
+    assert row['dc'] == 12, f"dc not surfaced: {row}"
+    assert row['campaign_id'] == 312, f"campaign_id not surfaced: {row}"
+
+
+def test_parse_skill_and_dc_simple_and_multiword():
+    # parse_skill_and_dc lives in dnd_orchestration; test it inline so the
+    # behavior is anchored alongside the directive storage tests.
+    import dnd_orchestration as _orch
+    assert _orch.parse_skill_and_dc('perception 10') == ('perception', 10)
+    assert _orch.parse_skill_and_dc('perception') == ('perception', None)
+    assert _orch.parse_skill_and_dc('sleight of hand 12') == (
+        'sleight of hand', 12
+    )
+
+
+def test_parse_skill_and_dc_edge_cases_per_spec_table():
+    # RESOLUTION_BINDING_SPEC.md §6.3 — every locked edge case.
+    import dnd_orchestration as _orch
+    # Trailing word after DC rejects.
+    assert _orch.parse_skill_and_dc('perception 10 adv') == (
+        'perception 10 adv', None
+    )
+    # Non-numeric trailing rejects.
+    assert _orch.parse_skill_and_dc('stealth adv') == ('stealth adv', None)
+    # High DC allowed (resolve fires; narration almost certainly FAILED).
+    assert _orch.parse_skill_and_dc('perception 100') == ('perception', 100)
+    # DC 0 allowed — DM may want degenerate always-pass theater.
+    assert _orch.parse_skill_and_dc('perception 0') == ('perception', 0)
+    # Negative DCs rejected (regex \d+ doesn't match '-5').
+    assert _orch.parse_skill_and_dc('perception -5') == ('perception -5', None)
 
 
 # ─── Runner ──────────────────────────────────────────────────────────
