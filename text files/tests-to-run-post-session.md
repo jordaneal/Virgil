@@ -1562,3 +1562,139 @@ journalctl --user -u virgil-discord --since "$SINCE" | grep -c "_dm_respond_and_
 ```
 
 If any of the last three counts move above 0, the promotion gate is breached — surface as HALT, investigate via the relevant module (`narration_verifier.py` for drift, `dnd_engine.py:build_dm_context` for co-occurrence, `discord_dnd_bot.py:_fire_resolution_narration` for auto-fire failures).
+
+---
+
+## Ship A — LLM-Emitted-Directive Resolution Binding (S36, May 11, 2026) — promotion verify
+
+Spec source: `specs/LLM_EMIT_RESOLUTION_BINDING_SPEC.md` LOCKED v1. Engine-bound DC-vs-roll resolution on the **LLM-emitted-directive** surface (the primary 90% play loop). Ship 1 (S34) covered the DM-typed-directive secondary surface; Ship A closes the load-bearing case where the LLM emits `**!check skill DC : Name**` inside narration.
+
+**Verify the primary play loop end-to-end:**
+
+### Verify A — Natural-language intent triggers a roll
+
+Operator types intent in #dm-narration (any of these; each routes to a different skill):
+
+```
+I look closely at the merchants
+```
+```
+I try to find a missing detail
+```
+```
+I lift the heavy crate
+```
+```
+I dodge the falling rock
+```
+```
+I creep up the stairs
+```
+```
+I take a closer look at the room
+```
+
+**Expected:** Bot's narration ends with a single bold line `**!check <skill> : <First Name>**` — no DC visible to player.
+
+Greps:
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "llm_emit_directive_bound:" | tail -1
+# Expect: campaign={N} actor={Donovan Ruby} skill={skill} dc={N} kind=check source_message_id={msg.id}
+```
+
+### Verify B — Avrae rolls; auto-fire fires textured outcome
+
+After the bot's emit, Avrae rolls. Within ~6s, bot posts a second embed with the resolution narration — texture-scaled per difficulty, margin, stakes, and crit signal.
+
+Greps:
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_resolved:" | tail -1
+# Expect: outcome={PASSED|FAILED}, nat captured, crit flag captured
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "stakes_tier:" | tail -1
+# Expect: tier=low|medium|high with score breakdown
+
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "verification:" | tail -1
+# Expect: passed=1 violation_class=none
+```
+
+**Expected narration shape:** describes the actor's attempt, the outcome, and texture-appropriate detail (difficulty, margin, stakes). Nat 20 or nat 1 → memorable-element clause per §10.2.
+
+### Verify C — Cascading-roll prevention
+
+After auto-fire resolution narration posts, the bot should NOT emit another `!check` directive. The narration should end naturally without a new roll request. Next action waits for the operator's input.
+
+If a second `!check` appears in the resolution narration, Patch 7 (sentinel detection) has regressed. HALT and investigate:
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_emit:" | tail -2
+# The resolution-fire turn should show intent=meta or trivial in the prompt's classification (not exploration/combat/etc.)
+```
+
+### Verify D — DC preservation (manual !check echo)
+
+If the operator manually types `!check perception` after the bot's emit (e.g. confused or habituated to manual rolls), the existing pending row's dc=N should NOT be clobbered to dc=none.
+
+Grep:
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_preserve_existing_dc:" | tail -1
+# Expect: campaign={N} actor={X} skill={Y} existing_dc={N}
+```
+
+If this log fires, Patch 4 worked — the manual `!check` echo was correctly recognized as a manual roll completing the auto-emit cycle (not a new directive replacement).
+
+### Verify E — No-DC fall-through aside
+
+If the LLM mis-emits `!check skill` without a DC, the matcher skips resolution and posts a `#dm-aside` to the operator.
+
+Grep:
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" | grep "directive_resolution_skipped:" | grep "reason=no_dc" | tail -1
+# Expect: campaign={N} reason=no_dc
+```
+
+Operator sees `#dm-aside` text: `"Bot's roll request had no DC — resolution skipped. The outcome will be free-narrated on your next action..."`. Useful diagnostic when the LLM occasionally forgets to include a DC.
+
+### Verify F — Format check (operator-confirmed S36)
+
+Bot's emit format should be:
+- Narrative beat (1-2 sentences) describing the actor's attempt
+- Blank line
+- `**!check skill DC : First Name**` — single bold line; DC stripped from player view; character first name after colon
+
+Avrae rolls cleanly off the bold-wrapped form (confirmed S36 live walk). If Avrae stops rolling on bold-wrapped commands, fall back is post-emit unwrap (not Ship A's job — surface as v1.x ticket).
+
+### Aggregate end-of-session sanity (post Ship A verify)
+
+```bash
+SINCE="20 minutes ago"
+
+echo "Total LLM-emit binds:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep -c "llm_emit_directive_bound:"
+
+echo "Total resolutions:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep -c "directive_resolved:"
+
+echo "Outcomes:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep "directive_resolved:" | sed 's/.*outcome=\([A-Z]*\).*/\1/' | sort | uniq -c
+
+echo "Stakes tier distribution:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep "stakes_tier:" | sed 's/.*tier=\([a-z]*\).*/\1/' | sort | uniq -c
+
+echo "DC preservation events:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep -c "directive_preserve_existing_dc:"
+
+echo "No-DC skips:"
+journalctl --user -u virgil-discord --since "$SINCE" | grep "directive_resolution_skipped:" | grep "reason=no_dc" | wc -l
+
+echo "Drift violations (must be 0 — criterion 5):"
+journalctl --user -u virgil-discord --since "$SINCE" | grep "violation_class=roll_outcome_drift" | grep "retry_passed=0\|retry_passed=-" | wc -l
+
+echo "Auto-fire failures (must be 0):"
+journalctl --user -u virgil-discord --since "$SINCE" | grep -c "_dm_respond_and_post_failure:"
+```
+
+Promotion criteria per spec §15.9: ≥3 resolutions with mixed pass/fail, zero unretried drift violations, zero auto-fire failures, observable stakes-tier distribution.
+
+### Solo-operator caveat for Ship A verify
+
+Operator on a campaign where their Avrae binding matches the Virgil-side bound PC in `dnd_characters` (e.g., campaign 17 with Donovan Ruby in both). If Avrae rolls for Character X but Virgil's footer-actor is Character Y, the matcher's actor-mismatch path fires `_wrong_actor_aside` and the resolution doesn't fire. Operational fix: align Avrae binding via `!bindchar` OR switch to a campaign where the bindings agree.

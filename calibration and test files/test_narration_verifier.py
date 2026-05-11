@@ -683,5 +683,69 @@ class TestExistingClassesAfterShip1Insertion(unittest.TestCase):
         self.assertEqual(result.violation_class, VIOLATION_ACTOR_OMISSION)
 
 
+# ─────────────────────────────────────────────────────────
+# Ship A (S36) — regression: ROLL_OUTCOME_DRIFT detection unaffected
+# by ResolutionResult carrying a non-None texture field. Per
+# LLM_EMIT_RESOLUTION_BINDING_SPEC.md §14.5.
+# ─────────────────────────────────────────────────────────
+
+class TestRollOutcomeDriftWithTexture(unittest.TestCase):
+    """Confirm ROLL_OUTCOME_DRIFT still fires correctly when ResolutionResult
+    carries a non-None texture field. Texture is for rendering only — it
+    must not interfere with drift detection."""
+
+    def setUp(self):
+        nv.VERIFICATION_ENABLED = True
+
+    def _rr_with_texture(self, passed: bool, roll_total: int = 14, dc: int = 10):
+        from dnd_orchestration import (
+            ResolutionResult, ResolutionTexture, compute_resolution_texture
+        )
+        texture = compute_resolution_texture(
+            dc=dc, roll_total=roll_total, nat=roll_total - 1,
+            scene_state={'mode': 'exploration'},
+        )
+        return ResolutionResult(
+            actor='Donovan Ruby', check_kind='check',
+            skill_or_save='perception', dc=dc, roll_total=roll_total,
+            passed=passed, rolled_at=1.0, directive_id=22,
+            nat=roll_total - 1, crit=False, texture=texture,
+        )
+
+    def test_drift_fires_on_success_phrase_with_textured_failed(self):
+        rr = self._rr_with_texture(passed=False, roll_total=6, dc=15)
+        result = nv.verify_narration(
+            narration_text="You succeed with practiced ease.",
+            arbitration_result=None,
+            resolution_result=rr,
+        )
+        self.assertFalse(result.passed)
+        self.assertEqual(result.violation_class, nv.VIOLATION_ROLL_OUTCOME_DRIFT)
+
+    def test_aligned_narration_passes_with_textured_result(self):
+        rr = self._rr_with_texture(passed=True, roll_total=18, dc=10)
+        result = nv.verify_narration(
+            narration_text="Donovan moves with confidence and clears the gap.",
+            arbitration_result=None,
+            resolution_result=rr,
+        )
+        # No success-on-failure or failure-on-success phrase — passes
+        self.assertTrue(result.passed,
+                         f"unexpected violation: {result.violation_class}")
+
+    def test_escalation_placeholder_renders_with_textured_result(self):
+        rr = self._rr_with_texture(passed=False, roll_total=6, dc=15)
+        text = nv.build_escalation_placeholder(
+            arbitration_result=None,
+            failed_violation_class=nv.VIOLATION_ROLL_OUTCOME_DRIFT,
+            resolution_result=rr,
+        )
+        # Existing Ship 1 §8.7 deterministic block shape preserved
+        self.assertIn('Donovan Ruby', text)
+        self.assertIn('Perception check', text)
+        self.assertIn('rolled 6', text)
+        self.assertIn('Failure', text)
+
+
 if __name__ == '__main__':
     unittest.main()

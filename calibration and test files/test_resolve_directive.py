@@ -22,10 +22,12 @@ sys.path.insert(0, '/home/jordaneal/scripts')
 import dnd_orchestration as orch
 from dnd_orchestration import (
     ResolutionResult,
+    ResolutionTexture,
     resolve_directive,
     resolution_log_summary,
     render_resolution_block,
     render_resolution_hardstop_echo,
+    compute_resolution_texture,
 )
 
 
@@ -223,6 +225,88 @@ def test_resolution_result_is_immutable():
     except Exception:
         raised = True
     assert raised, "ResolutionResult must be immutable (frozen=True)"
+
+
+# ─── Ship A (S36) — ResolutionTexture extensions ────────────────────
+
+def test_resolve_directive_without_scene_state_returns_texture_none():
+    # Ship 1 backwards compat: no scene_state kwarg → texture is None
+    r = resolve_directive(_row(dc=10), _event(kind='check', result=15))
+    assert r is not None
+    assert r.texture is None
+
+
+def test_resolve_directive_with_scene_state_returns_texture_populated():
+    # Ship A: scene_state supplied → texture is ResolutionTexture instance
+    r = resolve_directive(
+        _row(dc=15),
+        _event(kind='check', result=17, nat=16),
+        scene_state={'mode': 'exploration'},
+    )
+    assert r is not None
+    assert isinstance(r.texture, ResolutionTexture)
+
+
+def test_texture_difficulty_band_buckets_by_effective_dc():
+    # DC 15, +1 modifier (roll 17, nat 16 → mod=1) → effective_dc=14 → medium
+    r = resolve_directive(
+        _row(dc=15),
+        _event(kind='check', result=17, nat=16),
+        scene_state={'mode': 'exploration'},
+    )
+    assert r.texture.difficulty_band == 'medium'
+    assert r.texture.effective_dc == 14
+    assert r.texture.modifier == 1
+
+
+def test_texture_margin_tier_buckets():
+    # Boundary cases for margin tiers. (dc, roll, expected_tier).
+    cases = [
+        (10, 10, 'razor_pass'),         # margin=0 → exact tie
+        (10, 15, 'clean_pass'),         # margin=+5 → clean
+        (10, 25, 'smashing_pass'),      # margin=+15 → smashing
+        (15, 14, 'close_fail'),         # margin=-1 → close
+        (15, 9, 'clear_fail'),          # margin=-6 → clear
+        (20, 5, 'catastrophic_fail'),   # margin=-15 → catastrophic
+    ]
+    for dc, roll, expected_tier in cases:
+        r = resolve_directive(
+            _row(dc=dc),
+            _event(kind='check', result=roll, nat=roll),  # nat=roll = mod 0
+            scene_state={'mode': 'exploration'},
+        )
+        assert r.texture.margin_tier == expected_tier, (
+            f"DC={dc} roll={roll}: expected {expected_tier}, "
+            f"got {r.texture.margin_tier}"
+        )
+
+
+def test_texture_stakes_tier_propagates():
+    # high-stakes scene → texture.stakes_tier == 'high'
+    r = resolve_directive(
+        _row(dc=15),
+        _event(kind='check', result=17, nat=16),
+        scene_state={'mode': 'combat', 'tension_int': 80,
+                      'progress_clocks': [{'urgency_int': 8}]},
+        combatants=[{'alive': 1}],
+    )
+    assert r.texture.stakes_tier == 'high'
+    assert r.texture.stakes_signals['combat_active'] == 1
+
+
+def test_resolution_texture_is_immutable():
+    # frozen=True on ResolutionTexture
+    t = ResolutionTexture(
+        effective_dc=10, modifier=2, difficulty_band='easy',
+        margin=5, margin_tier='clean_pass',
+        stakes_tier='low', stakes_signals={},
+    )
+    raised = False
+    try:
+        t.difficulty_band = 'hard'  # type: ignore[misc]
+    except Exception:
+        raised = True
+    assert raised, "ResolutionTexture must be immutable (frozen=True)"
 
 
 # ─── Runner ──────────────────────────────────────────────────────────

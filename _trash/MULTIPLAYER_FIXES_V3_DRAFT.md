@@ -1,6 +1,6 @@
-# Multiplayer Fixes Plan v3 — LOCKED, CANONICAL (S34, May 11, 2026)
+# Multiplayer Fixes Plan v3 — DRAFT, LOCKS APPLIED (S34+, May 11, 2026)
 
-**Status:** v3 LOCKED and promoted to canonical (May 11, 2026, post-Ship-1). Replaces v2; v2 archived at `_trash/MULTIPLAYER_FIXES_V2_20260511.md` for lineage. All 12 §12 decisions locked by operator review; Avrae A.2 recon cleared cleanly (form (a) — Avrae silently ignores trailing integer in `!check skill N`, modifier/roll/embed identical to bare-form baseline; Virgil's `parse_skill_and_dc` splits skill from DC correctly; shipped Ship 1's DM-typed-directive surface fired end-to-end through this format at 08:33:14–20 on 2026-05-11). Next active ship: **Ship A — LLM-Emitted-Directive Resolution Binding** (S35 spec drafting, S36 implementation).
+**Status:** DRAFT, all 12 §12 decisions LOCKED by operator review (May 11, 2026). **One pre-promotion blocker remains: Avrae compatibility recon for `!check skill N` format (decision A.2).** Once recon results land, draft promotes to replace `MULTIPLAYER_FIXES.md` as canonical. Until then, v2 stays canonical and v3 is the review-approved-pending-recon shape.
 
 **Trigger for re-plan:** Ship 1 (S34) promoted clean, but the verify walk surfaced a primary-surface mismatch that wasn't caught in S33 planning. Ship 1 closed the **DM-typed-directive surface** (operator with manage_guild perm types `!check perception 10` literally). The **load-bearing play loop** is different: operator types intent ("I take a closer look"), LLM narrates and emits `!check perception` inside the narration, Avrae rolls in response to the bot's emission, bot needs to auto-fire resolution narration bound to the rolled value.
 
@@ -59,11 +59,10 @@ Calendar drift from v2: +2 calendar days (Ship A insertion). v2's "9 days best c
 
 ---
 
-## §4. Ship A — LLM-Emitted-Directive Resolution Binding ✅ SHIPPED LIVE (S36, May 11, 2026)
+## §4. Ship A — LLM-Emitted-Directive Resolution Binding (NEW PRIMARY)
 
 **Closes:** Finding L on the **primary play loop** (LLM emits directive → Avrae rolls → bot auto-fires resolution narration). Companion to shipped Ship 1, which closes the same finding on the DM-typed-directive secondary surface.
 **Goal:** When the LLM emits `!check perception <DC>` inside narration, the bot writes a pending directive row at narration-emission time so the matcher will resolve the subsequent Avrae roll and auto-fire outcome narration bound to the rolled value.
-**Status (S36):** Implementation + 9 patches landed in S36 (initial implementation + 8 live-verify-surfaced refinements). ~120 test assertions across 2 new + 4 extended files. Live verify clean: nat-20 PASSED case rendered memorable-success texture; zero cascading rolls (Patch 7 sentinel detection); Avrae compat confirmed for `**!check skill : Name**` bold-wrapped format. Both surfaces of Finding L now structurally closed (Ship 1 DM-typed + Ship A LLM-emitted via same primitives). C1 doctrine candidate has 3 clean instances pending anchor per locked decision 11. C3 (single-writer compatible with multiple trigger surfaces) filed at 1 instance. New telemetry: `llm_emit_directive_bound:`, `stakes_tier:`, `directive_preserve_existing_dc:`, `directive_skill_mismatch:`, `llm_emit_multi_directive_count:`. Operator-flagged issues all resolved (cascading rolls, DC visibility, character name, bold formatting, blank line spacing, manual `!check` echo clobber, intent classifier under-triggering for natural language).
 
 ### §4.1 Architectural shape (additive to shipped Ship 1)
 
@@ -328,9 +327,9 @@ Best case 11 days / slow case 15. v2 was 9/13; +2 from Ship A insertion.
 |---------|---|---|---|
 | S33 (Ship 1 spec + review) | day 1 | day 1-2 | ✅ DONE |
 | S34 (Ship 1 implementation) | day 2 | day 3 | ✅ DONE |
-| S35 (Ship A spec + review) | day 3 | day 4-5 | ✅ DONE (May 11, 2026 — spec LOCKED v1 + review applied) |
-| S36 (Ship A implementation) | day 4 | day 6 | ✅ DONE (May 11, 2026 — Ship A ✅ SHIPPED LIVE; 9 patches; ~120 test assertions; live verify clean) |
-| **S37 (Ship 2 recon + spec + review)** | **day 5** | **day 7-8** | **next** |
+| **S35 (Ship A spec + review)** | **day 3** | **day 4-5** | **next** |
+| **S36 (Ship A implementation)** | **day 4** | **day 6** | pending |
+| S37 (Ship 2 recon + spec + review) | day 5 | day 7-8 | pending |
 | S38 (Ship 2a + 2c implementation) | day 6 | day 9 | pending |
 | S39 (Ship 2b implementation if needed) | day 7 | day 10 | pending |
 | S40 (Ship 3 recon + spec + review) | day 8 | day 11-12 | pending |
@@ -360,11 +359,12 @@ All 11 §12 decisions from the original v3 draft + one new decision (12, wrong-s
 
 ---
 
-## §13. What this plan is NOT
+## §13. What this draft is NOT (post-lock-state)
 
-- Not a code change. Planning artifact. Code lands in S36 (Ship A implementation) per §11 calendar; Ship 1 (DM-typed-directive surface) already shipped in S34.
+- Not a code change. Planning artifact only. Implementation lands in S36 after the plan flips canonical AND Avrae recon (A.2) confirms format compatibility.
 - Not a Ship 1 rework. Shipped Ship 1 stays as-shipped — its surface (DM-typed directive) is real, just secondary. Ship A's matcher composes with Ship 1's writer (both call `pending_directive_upsert`, both trigger the same `_handle_dm_roll_arrival` consumer).
-- Not a single canonical-plan-forever — when Ship A's verify exposes architectural surprises, the plan adapts. Ship 4.5's slot decision in particular waits for empirical signal at Ship A verify per locked decision 8.
+- **Not yet a canonical plan.** `MULTIPLAYER_FIXES.md` v2 remains canonical until Avrae recon (A.2) clears. Once recon results land, v3 promotes to replace v2; decisions are already locked, so promotion is a doc-mechanics step, not another review cycle.
+- Not a doc-update authorization for canon docs (ROADMAP / SESSIONS / DOCTRINE / tests-to-run-post-session) until v3 promotes.
 
 ---
 

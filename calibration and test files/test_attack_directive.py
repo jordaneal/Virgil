@@ -120,9 +120,12 @@ skill_decision = RollDecision(
     reason="Sneaking past a guard.",
 )
 skill_out = skill_decision.to_prompt_directive()
-check_in('skill: mentions !check',                'asking the player to roll: `!check stealth`', skill_out)
+check_in('skill: mentions !check',                '!check stealth <DC>', skill_out)
 check_not_in('skill: no attack template',         '<weapon-name>', skill_out)
 check_not_in('skill: no <No Target> warning',     '<No Target>', skill_out)
+check_in('skill: includes DC GUIDANCE',           'DC GUIDANCE', skill_out)
+check_in('skill: format template requires colon-name bold line',
+         '**!check stealth <DC> : <First Name>**', skill_out)
 
 
 save_decision = RollDecision(
@@ -133,8 +136,11 @@ save_decision = RollDecision(
     reason="Reflex save against trap.",
 )
 save_out = save_decision.to_prompt_directive()
-check_in('save: mentions !save',                  'asking the player to roll: `!save dex`', save_out)
+check_in('save: mentions !save',                  '!save dex <DC>', save_out)
 check_not_in('save: no attack template',          '<weapon-name>', save_out)
+check_in('save: includes DC GUIDANCE',            'DC GUIDANCE', save_out)
+check_in('save: format template requires colon-name bold line',
+         '**!save dex <DC> : <First Name>**', save_out)
 
 
 no_roll_decision = RollDecision(needs_roll=False, reason="Casual chat.")

@@ -206,3 +206,137 @@ def test_risky_rx_still_matches_real_steal():
 
 def test_risky_rx_still_matches_real_sneak():
     assert orch.RISKY_RX.search("I sneak past the patrol")
+
+
+
+# ─────────────────────────────────────────────────────────
+# Ship A live-verify patch (S36 #2) — classifier expansion regression
+# Spec source: LLM_EMIT_RESOLUTION_BINDING_SPEC.md + operator pushback
+# during Ship A live-verify (S36).
+# ─────────────────────────────────────────────────────────
+
+
+def test_trivial_no_longer_shadows_qualified_look():
+    """Bare `look` removed from TRIVIAL_RX. Only `look around` stays trivial."""
+    # Pre-patch this would have matched and short-circuited as trivial.
+    assert orch.classify_action_intent("Look closely at the notice board", 'exploration') == 'exploration'
+    assert orch.classify_action_intent("I look harder for clues", 'exploration') == 'exploration'
+    # `look around` (bare scanning) still trivial:
+    assert orch.classify_action_intent("I look around the tavern", 'exploration') == 'trivial'
+
+
+def test_exploration_catches_natural_investigative_verbs():
+    """New verb anchors: find, peer, peek, notice, spot, scan, scrutinize,
+    comb, figure out, discern, check (broader than check-for-traps)."""
+    for text in [
+        "I try to find a hidden detail",
+        "I peer at the parchment",
+        "I peek behind the curtain",
+        "I scrutinize the runes",
+        "I scan the room for anything strange",
+        "I comb the chamber",
+        "I figure out the lock mechanism",
+        "I check the parchment for hidden text",
+    ]:
+        intent = orch.classify_action_intent(text, 'exploration')
+        assert intent == 'exploration', f"{text!r} → {intent}, expected exploration"
+
+
+def test_exploration_catches_take_a_closer_look_idiom():
+    """The 'take a closer/careful/hard look' idiom now routes to exploration."""
+    for text in [
+        "I take a closer look at the room",
+        "I take a careful look at the map",
+        "I take a hard look at his face",
+    ]:
+        intent = orch.classify_action_intent(text, 'exploration')
+        assert intent == 'exploration', f"{text!r} → {intent}, expected exploration"
+
+
+def test_exploration_catches_physical_athletics_verbs():
+    """Athletics-shaped verbs: lift, hoist, force, pry, wrench, break, push, haul."""
+    for text, expected_skill in [
+        ("I try to lift the heavy stone", 'athletics'),
+        ("I break down the door", 'athletics'),
+        ("I push the bookshelf aside", 'athletics'),
+        ("I haul the chest to the corner", 'athletics'),
+    ]:
+        decision = orch.should_call_roll(
+            orch.classify_action_intent(text, 'exploration'),
+            'exploration', text,
+        )
+        assert decision.needs_roll, f"{text!r} should ROLL"
+        assert decision.skill == expected_skill, (
+            f"{text!r} → skill={decision.skill}, expected {expected_skill}"
+        )
+
+
+def test_physical_break_open_overrides_combat():
+    """smash/break/bash X open|down|through|apart routes to exploration
+    athletics before COMBAT_RX claims it. Pre-patch: 'smash the chest open'
+    classified as combat because `smash` was in COMBAT_RX."""
+    for text in [
+        "I smash the chest open",
+        "I break the door down",
+        "I bash the lock apart",
+        "I crush the crate open",
+    ]:
+        intent = orch.classify_action_intent(text, 'exploration')
+        assert intent == 'exploration', f"{text!r} → {intent}, expected exploration"
+
+
+def test_real_combat_verbs_still_fire():
+    """Regression: COMBAT_RX still catches genuine attack verbs."""
+    for text in [
+        "I attack the goblin",
+        "I strike the orc with my sword",
+        "I stab him in the back",
+        "I cast fireball at the dragon",
+    ]:
+        intent = orch.classify_action_intent(text, 'exploration')
+        assert intent == 'combat', f"{text!r} → {intent}, expected combat"
+
+
+def test_ship_a_resolution_sentinel_classifies_meta():
+    """S36 #6 — Ship A auto-fire synthesized input must NOT trigger a
+    new roll. Pre-patch: classifier matched skill nouns inside the
+    bracket-frame sentinel and routed to exploration → ROLL DIRECTIVE
+    block told LLM to emit another !check → cascading-roll bug.
+    Patched by sentinel-prefix detection routing to META → no-roll."""
+    sentinels = [
+        '[Roll resolution: Donovan Ruby rolled athletics (check); outcome bound at top-of-prompt.]',
+        '[Roll resolution: Donovan Ruby rolled perception (check); outcome bound at top-of-prompt.]',
+        '[Roll resolution: Mia rolled sleight of hand (check); outcome bound at top-of-prompt.]',
+        '[Roll resolution: Karrok rolled dexterity (save); outcome bound at top-of-prompt.]',
+    ]
+    for s in sentinels:
+        intent = orch.classify_action_intent(s, 'exploration')
+        assert intent == 'meta', f"{s!r} → {intent}, expected meta"
+        decision = orch.should_call_roll(intent, 'exploration', s)
+        assert not decision.needs_roll, (
+            f"{s!r} should not trigger a new roll; got {decision}"
+        )
+
+
+def test_skill_picker_routes_natural_verbs():
+    """New EXPLORATION_DEFAULT_SKILLS entries route the right skill."""
+    cases = [
+        ("I look closely at the notice board", 'perception'),
+        ("I look carefully at the runes", 'perception'),
+        ("try to find a missing detail", 'investigation'),
+        ("I peer at the parchment", 'perception'),
+        ("I read carefully the inscription", 'investigation'),
+        ("I scrutinize the seal", 'investigation'),
+        ("I take a closer look at the room", 'perception'),
+        ("I lift the heavy stone", 'athletics'),
+        ("I push the bookshelf aside", 'athletics'),
+        ("I smash the chest open", 'athletics'),
+    ]
+    for text, expected in cases:
+        decision = orch.should_call_roll(
+            orch.classify_action_intent(text, 'exploration'),
+            'exploration', text,
+        )
+        assert decision.skill == expected, (
+            f"{text!r} → skill={decision.skill}, expected {expected}"
+        )

@@ -446,12 +446,58 @@ COMBAT_RX = re.compile(
     re.IGNORECASE
 )
 EXPLORATION_RX = re.compile(
-    r'\b(search|investigate|examine|inspect|look closer|study|listen|'
+    # Ship A live-verify patch (S36 #2): expanded verb coverage so natural
+    # operator phrasings ("look closely", "find a hidden detail", "read
+    # carefully", "check the parchment", "lift the heavy stone", etc.)
+    # route to exploration intent instead of falling through to social
+    # default or being shadowed by TRIVIAL_RX's bare-`look` match.
+    r'\b('
+    # Original verbs:
+    r'search|investigate|examine|inspect|study|listen|'
     r'climb|jump|leap|swim|tracks?|follow|'
     r'disarm|pick|unlock|squeeze|crawl|'
-    r'check for traps?|'
+    # Look-qualified forms (TRIVIAL no longer shadows these). Two clauses:
+    # 1) direct adverbial: "look closely/carefully/etc"
+    # 2) "look around <adverb>" — bare "look around" stays trivial; only
+    #    qualified-with-adverb "look around carefully" is exploration.
+    r'look\s+(?:closely|carefully|harder|hard|closer|over|inside|'
+    r'behind|under|intently|slowly|methodically)|'
+    r'look\s+around\s+(?:carefully|closely|harder|hard|intently|'
+    r'slowly|methodically)|'
+    # Idiomatic "take a closer/careful/hard look":
+    r'take\s+(?:a|another)\s+(?:closer|careful|hard|harder|good|long)'
+    r'\s+look|'
+    # Investigative natural verbs. `peek` gets fixed-width negative
+    # lookbehinds to exclude the "steal a peek" / "sneak a peek" idioms
+    # that the existing RISKY_RX lookahead also recognizes as social
+    # (parallel idiom handling — keep both regexes consistent).
+    r'find|read\s+(?:closely|carefully|over)|peer|'
+    r'(?<!steal a )(?<!sneak a )peek|scrutinize|'
+    r'notice|spot|comb|scan|figure\s+out|discern|'
+    # check-for variants — broader than just traps:
+    r'check\s+(?:for|the|over|inside|behind|under)|'
+    # Physical exertion (athletics-shaped). Object-between patterns use
+    # bounded gap so "push the bookshelf aside" / "smash the chest open"
+    # match without being too greedy.
+    r'lift|hoist|pry|wrench|haul|drag|tug|yank|scramble|'
+    r'force\s+(?:open|the|it|\w+\s+open)|'
+    r'break\s+(?:open|down|through|\w+\s+(?:open|down|through))|'
+    r'smash\s+(?:\S+\s+){0,4}(?:open|down|through|apart)|'
+    r'kick\s+(?:open|down|\w+\s+(?:open|down))|'
+    r'push\s+(?:\S+\s+){0,4}(?:over|down|through|aside|away|out|'
+    r'across|back|apart)|'
+    r'shove\s+(?:\S+\s+){0,4}(?:open|aside|over|down|through|away)|'
+    r'shoulder\s+(?:\S+\s+){0,2}(?:open|down|through|aside)|'
+    r'swing\s+(?:on|off|across|over)|'
+    # Acrobatics-shaped (mobility + balance):
+    r'dodge|tumble|vault|balance(?!\s+sheet)|'
+    r'roll\s+(?:under|past|through|away|aside)|'
+    r'duck\s+(?:under|behind|into|past)|'
+    # Stealth-shaped exploration (non-RISKY stealth movement):
+    r'creep|slink|tiptoe|sneak\s+up|'
     # Skill-noun forms — "use perception", "roll investigation", "athletics check"
-    r'perception|investigation|survival|athletics|acrobatics)\b',
+    r'perception|investigation|survival|athletics|acrobatics'
+    r')\b',
     re.IGNORECASE
 )
 CONTESTED_RX = re.compile(
@@ -493,10 +539,36 @@ RISKY_RX = re.compile(
     re.IGNORECASE
 )
 TRIVIAL_RX = re.compile(
+    # Ship A live-verify patch (S36 #2): removed bare `look` from the
+    # alternation. Previously `look(?: around)?` would short-circuit on
+    # any sentence starting with "look" — including "look closely",
+    # "look carefully", "look harder" — blocking those from reaching
+    # EXPLORATION_RX. Now only the literal `look around` is trivial;
+    # all qualified looks fall through to exploration.
     r'^(i\s+)?(walk|head|go|move|sit|stand|wait|rest|drink|eat|'
     r'order|buy|pay|nod|smile|wave|wait|enter|leave|exit|continue|'
-    r'follow|approach|look(?: around)?)\b',
+    r'follow|approach|look\s+around)\b',
     re.IGNORECASE
+)
+
+
+# Ship A live-verify patch (S36 #2): pre-COMBAT carve-out so
+# "smash/break/bash/crush X open|down|through|apart" routes to
+# exploration athletics instead of being caught by COMBAT_RX's
+# `smash|bash|crush` verbs. EXPLORATION_RX already has these patterns;
+# this regex just settles the classifier order question.
+_PHYSICAL_BREAK_OPEN_RX = re.compile(
+    # Ship A S36 #2 + #8: pre-COMBAT carve-out for physical-exertion
+    # verbs that overlap with COMBAT_RX. Two clauses:
+    # (a) "smash/bash/crush/break/shove X open|down|through|apart|in|aside"
+    # (b) "swing on/off/across/over <object>" (mobility, not weapon swing)
+    r'\b(?:'
+    r'(?:smash|bash|crush|break|shove)\s+(?:\S+\s+){0,4}'
+    r'(?:open|down|through|apart|in|aside)'
+    r'|'
+    r'swing\s+(?:on|off|across|over)\s+\w+'
+    r')\b',
+    re.IGNORECASE,
 )
 
 
@@ -527,8 +599,29 @@ def classify_action_intent(text: str, mode: str = 'exploration') -> str:
     t = (text or '').strip()
     if not t:
         return INTENT_TRIVIAL
+    # Ship A live-verify patch (S36 #6): detect the bracket-frame sentinel
+    # used by Ship 1 / Ship A's auto-fire matcher
+    # (`[Roll resolution: ...; outcome bound at top-of-prompt.]`). Classify
+    # as META so should_call_roll returns no-roll, preventing the LLM from
+    # being prompted to emit a NEW !check during the resolution-narration
+    # turn. Pre-patch: classifier matched skill nouns inside the bracket
+    # text ("athletics", "perception") → fired exploration intent → ROLL
+    # DIRECTIVE block told LLM to end with another roll request → LLM
+    # cascaded a fresh directive that triggered another Avrae roll
+    # (operator-flagged bug at S36 #6).
+    if t.startswith('[Roll resolution:'):
+        return INTENT_META
     if META_RX.search(t):
         return INTENT_META
+    # Ship A live-verify patch (S36 #2): pre-COMBAT carve-out for
+    # "smash/break/bash/crush X open|down|through|apart" — these are
+    # physical exertion (athletics) on inanimate objects, not combat
+    # actions on creatures. COMBAT_RX has `smash` / `bash` / `crush`
+    # which would otherwise claim these. The exploration regex already
+    # has the patterns; here we just promote exploration over combat
+    # when both might match the physical-breaking shape.
+    if _PHYSICAL_BREAK_OPEN_RX.search(t):
+        return INTENT_EXPLORATION
     # COMBAT is universal — Avrae owns attack/spell mechanics regardless
     # of declared mode. The classifier just routes the intent.
     if COMBAT_RX.search(t):
@@ -657,6 +750,47 @@ class RollDecision:
         else:
             cmd = "!roll"
             label = "roll"
+        # Ship A §12.2 + S36 #5 live-verify patch: operator-locked format
+        # for the directive emission. Single bold line on its own at the
+        # end of the message, character name after colon.
+        if self.skill or self.save:
+            return (
+                f"ROLL DECISION: {label} required ({self.severity}). "
+                f"Reason: {self.reason}\n\n"
+                f"END YOUR MESSAGE WITH A ROLL REQUEST. Format your "
+                f"message as TWO parts:\n\n"
+                f"1) ONE OR TWO sentences of NARRATIVE describing the "
+                f"acting character's attempt — what they do, what tension "
+                f"is in the moment. Then a blank line.\n"
+                f"2) On its own final line, ENTIRELY BOLD (wrapped in "
+                f"`**...**`), in this exact shape:\n\n"
+                f"  `**{cmd} <DC> : <First Name>**`\n\n"
+                f"  Where:\n"
+                f"  - `<DC>` is an integer DC from the 5e RAW bands below\n"
+                f"  - `<First Name>` is the acting character's first name "
+                f"(e.g. 'Donovan' from 'Donovan Ruby' in the ACTING "
+                f"CHARACTER block above)\n\n"
+                f"EXAMPLE (substitute the real character name + DC):\n"
+                f"  Donovan leans closer, scanning the runes for any "
+                f"shift in the carved lines.\n\n"
+                f"  **!check perception 15 : Donovan**\n\n"
+                f"DC GUIDANCE: pick a DC from the 5e RAW bands:\n"
+                f"  5  = trivial (the actor would succeed on instinct)\n"
+                f"  10 = easy (routine for a competent character)\n"
+                f"  15 = medium (real friction, default for most "
+                f"uncertain attempts)\n"
+                f"  20 = hard (visible effort or skill required)\n"
+                f"  25 = very hard (extraordinary attempt; only experts "
+                f"succeed)\n"
+                f"  30 = nearly impossible (heroic stakes; success is rare)\n"
+                f"The DC is what the engine binds the outcome to. The "
+                f"narration after the roll is auto-generated bound to the "
+                f"rolled value vs the DC you picked.\n"
+                f"The bold roll-request line MUST appear as the final line "
+                f"of your message, alone, with NO trailing text after it. "
+                f"The line MUST be entirely wrapped in `**...**` so it "
+                f"renders bold to the player."
+            )
         return (
             f"ROLL DECISION: {label} required ({self.severity}). "
             f"End your message asking the player to roll: `{cmd}`. "
@@ -666,24 +800,118 @@ class RollDecision:
 
 # Default skill mapping for exploration/contested intents
 EXPLORATION_DEFAULT_SKILLS = {
+    # Ship A live-verify patch (S36 #2): expanded skill anchors so the
+    # new EXPLORATION_RX verbs route to specific skills instead of
+    # falling through to perception default. _pick_skill iterates in
+    # insertion order — multi-word keys (e.g. "look closely") must
+    # appear BEFORE their single-word prefix (e.g. "look") to win.
+
+    # Original anchors:
     'search': 'investigation',
     'investigate': 'investigation',
     'examine': 'investigation',
     'inspect': 'investigation',
     'study': 'investigation',
+    # Look-qualified — multi-word first per _pick_skill ordering rule:
     'look closer': 'perception',
+    'look closely': 'perception',
+    'look carefully': 'perception',
+    'look harder': 'perception',
+    'look hard': 'perception',
+    'look over': 'perception',
+    'look inside': 'perception',
+    'look behind': 'perception',
+    'look under': 'perception',
     'listen': 'perception',
+    # Investigative natural verbs (perception for "see/sense", investigation for "deduce/analyze"):
+    'peer': 'perception',
+    'peek': 'perception',
+    'notice': 'perception',
+    'spot': 'perception',
+    'scan': 'perception',
+    'scrutinize': 'investigation',
+    'comb': 'investigation',
+    'figure out': 'investigation',
+    'discern': 'insight',
+    'find': 'investigation',
+    'read closely': 'investigation',
+    'read carefully': 'investigation',
+    'read over': 'investigation',
+    # check-for variants (multi-word; "check for traps" stays first for back-compat):
+    'check for traps': 'investigation',
+    'check for': 'investigation',
+    'check the': 'investigation',
+    'check over': 'investigation',
+    'check inside': 'investigation',
+    'check behind': 'investigation',
+    'check under': 'investigation',
+    # Athletics anchors:
     'climb': 'athletics',
     'jump': 'athletics',
     'leap': 'athletics',
     'swim': 'athletics',
+    'lift': 'athletics',
+    'hoist': 'athletics',
+    'force open': 'athletics',
+    'force the': 'athletics',
+    'pry': 'athletics',
+    'wrench': 'athletics',
+    'break open': 'athletics',
+    'break down': 'athletics',
+    'break through': 'athletics',
+    'smash': 'athletics',
+    'kick open': 'athletics',
+    'kick down': 'athletics',
+    'push over': 'athletics',
+    'push down': 'athletics',
+    'push through': 'athletics',
+    'push aside': 'athletics',
+    'haul': 'athletics',
+    'drag': 'athletics',
+    # Bare-word fallbacks for physical verbs — substring match catches
+    # "push the bookshelf aside" / "bash the lock apart" where the
+    # multi-word keys above can't span the object gap.
+    'bash': 'athletics',
+    'smash': 'athletics',
+    'push': 'athletics',
+    'break': 'athletics',
+    'force': 'athletics',
+    'kick': 'athletics',
+    'shove': 'athletics',
+    'shoulder': 'athletics',
+    'tug': 'athletics',
+    'yank': 'athletics',
+    'scramble': 'athletics',
+    'swing on': 'athletics',
+    'swing off': 'athletics',
+    'swing across': 'athletics',
+    # Acrobatics-shaped (mobility/balance):
+    'dodge': 'acrobatics',
+    'tumble': 'acrobatics',
+    'vault': 'acrobatics',
+    'balance': 'acrobatics',
+    'roll under': 'acrobatics',
+    'roll past': 'acrobatics',
+    'roll through': 'acrobatics',
+    'roll aside': 'acrobatics',
+    'duck under': 'acrobatics',
+    'duck behind': 'stealth',
+    'duck into': 'stealth',
+    'duck past': 'acrobatics',
+    # Stealth-shaped exploration verbs (non-RISKY):
+    'creep': 'stealth',
+    'slink': 'stealth',
+    'tiptoe': 'stealth',
+    'sneak up': 'stealth',
+    # Tracking / wilderness:
     'track': 'survival',
-    'disarm': 'thieves',  # special handling
+    # Thieves' tools (special handling):
+    'disarm': 'thieves',
     'pick': 'thieves',
     'unlock': 'thieves',
+    # Mobility:
     'squeeze': 'acrobatics',
     'crawl': 'stealth',
-    'check for traps': 'investigation',
 }
 
 CONTESTED_DEFAULT_SKILLS = {
@@ -2975,6 +3203,198 @@ def advisory_log_summary(
 # returns an immutable ResolutionResult that downstream renders as the
 # AUTHORITATIVE-CANON top-of-prompt block + bottom-of-prompt hardstop echo.
 # Engine-bound binding > validator-on-LLM-output (filed doctrine candidate).
+#
+# Ship A (S36) extension: ResolutionTexture sub-dataclass attached to
+# ResolutionResult.texture carries difficulty band + margin tier + stakes
+# tier + crit signal for AUTHORITATIVE-CANON block scaling. Internal
+# scaffolding — player never sees the breakdown; only the LLM consumes
+# it as constraint on narration shape.
+
+
+@dataclass(frozen=True)
+class ResolutionTexture:
+    """Narrative-texture signals attached to a ResolutionResult (Ship A §4)."""
+    # Derived from DC vs actor modifier:
+    effective_dc: int
+    modifier: int
+    difficulty_band: str       # 'trivial'|'easy'|'medium'|'hard'|'very_hard'|'nearly_impossible'
+
+    # Derived from roll_total vs dc:
+    margin: int
+    margin_tier: str           # 'catastrophic_fail'|'clear_fail'|'close_fail'
+                               # |'razor_pass'|'clean_pass'|'smashing_pass'
+
+    # Derived from scene state at consume time:
+    stakes_tier: str           # 'low' | 'medium' | 'high'
+    stakes_signals: dict = field(default_factory=dict)
+
+
+def _bucket_difficulty(effective_dc: int) -> str:
+    """Map effective DC (DC - modifier) to a 5e RAW difficulty band (spec §8)."""
+    if effective_dc <= 5:    return 'trivial'
+    if effective_dc <= 10:   return 'easy'
+    if effective_dc <= 15:   return 'medium'
+    if effective_dc <= 20:   return 'hard'
+    if effective_dc <= 25:   return 'very_hard'
+    return 'nearly_impossible'
+
+
+def _bucket_margin(margin: int) -> str:
+    """Map margin (roll_total - dc, signed) to a margin tier (spec §9).
+    Margin == 0 is the single-value razor_pass bucket — strict-≥ pass per
+    Ship 1 §5.4."""
+    if margin <= -10:  return 'catastrophic_fail'
+    if margin <= -5:   return 'clear_fail'
+    if margin <= -1:   return 'close_fail'
+    if margin == 0:    return 'razor_pass'
+    if margin <= 9:    return 'clean_pass'
+    return 'smashing_pass'
+
+
+# Ship A §5.2 — strong-intent regex against scene_state.last_player_action.
+# Engine-bound (player text + regex); no LLM-touched field reads.
+_STRONG_INTENT_RX = re.compile(
+    r"\b(?:attack|threaten|demand|refuse|accept|commit|leave|enter|"
+    r"attempt|charge|cast|strike|defy|swear|insist|interrupt)\b",
+    re.IGNORECASE,
+)
+
+
+def compute_stakes_tier(
+    scene_state: Optional[dict],
+    active_turn: Optional[dict] = None,
+    active_quests: Optional[list] = None,
+    combatants: Optional[list] = None,
+) -> tuple[str, dict]:
+    """Compute stakes-tier signal for narrative texture scaling (Ship A §5).
+
+    Pure function. Reads no DB; caller supplies all inputs. No side effects.
+    Ninth Doctrine §59 instance — sibling to compute_persistence_directive
+    et al.
+
+    Returns (stakes_tier, signals_dict):
+      - stakes_tier ∈ {'low', 'medium', 'high'}
+      - signals_dict carries per-input contributions for log telemetry
+    """
+    signals = {
+        'mode': 'unknown',
+        'tension': 0,
+        'urgent_clocks': 0,
+        'strong_intent': 0,
+        'combat_active': 0,
+        'score': 0,
+    }
+
+    if not isinstance(scene_state, dict):
+        signals['mode'] = 'none'
+        return 'low', signals
+
+    mode = (scene_state.get('mode') or 'exploration').strip().lower()
+    signals['mode'] = mode
+
+    score = 0
+    if mode == 'combat':
+        score += 2
+    elif mode == 'social':
+        score += 1
+    elif mode == 'downtime':
+        score -= 1
+
+    tension = scene_state.get('tension_int') or 0
+    try:
+        tension = int(tension)
+    except (TypeError, ValueError):
+        tension = 0
+    signals['tension'] = tension
+    if tension >= 70:
+        score += 2
+    elif tension >= 40:
+        score += 1
+
+    clocks = scene_state.get('progress_clocks') or []
+    urgent = 0
+    if isinstance(clocks, list):
+        for c in clocks:
+            if isinstance(c, dict) and int(c.get('urgency_int') or 0) >= 7:
+                urgent = 1
+                break
+    signals['urgent_clocks'] = urgent
+    if urgent:
+        score += 1
+
+    last_action = scene_state.get('last_player_action') or ''
+    strong_intent = 1 if _STRONG_INTENT_RX.search(last_action) else 0
+    signals['strong_intent'] = strong_intent
+    if strong_intent:
+        score += 1
+
+    combat_active = 0
+    if mode == 'combat' and isinstance(combatants, list):
+        for c in combatants:
+            if isinstance(c, dict) and int(c.get('alive') or 0) == 1:
+                # Treat any alive combatant as "active threat" surface; v1.x
+                # may distinguish enemy-alive vs PC-alive.
+                combat_active = 1
+                break
+    signals['combat_active'] = combat_active
+    if combat_active:
+        score += 1
+
+    signals['score'] = score
+
+    if score >= 4:
+        tier = 'high'
+    elif score >= 2:
+        tier = 'medium'
+    else:
+        tier = 'low'
+
+    return tier, signals
+
+
+def stakes_tier_log_summary(signals: dict, tier: str) -> str:
+    """Compact log line per Doctrine §59 / Ship A spec §5.5. Always-fire."""
+    s = signals or {}
+    return (
+        f"stakes_tier: tier={tier} "
+        f"mode={s.get('mode', 'unknown')} "
+        f"tension={s.get('tension', 0)} "
+        f"urgent_clocks={s.get('urgent_clocks', 0)} "
+        f"strong_intent={s.get('strong_intent', 0)} "
+        f"combat_active={s.get('combat_active', 0)} "
+        f"score={s.get('score', 0)}"
+    )
+
+
+def compute_resolution_texture(
+    dc: int,
+    roll_total: int,
+    nat: Optional[int],
+    scene_state: Optional[dict],
+    active_turn: Optional[dict] = None,
+    active_quests: Optional[list] = None,
+    combatants: Optional[list] = None,
+) -> ResolutionTexture:
+    """Assemble difficulty + margin + stakes tiers into a ResolutionTexture
+    (Ship A §5.6). Pure. Caller supplies all inputs."""
+    modifier = (roll_total - nat) if isinstance(nat, int) else 0
+    effective_dc = dc - modifier
+    difficulty_band = _bucket_difficulty(effective_dc)
+    margin = roll_total - dc
+    margin_tier = _bucket_margin(margin)
+    stakes_tier, stakes_signals = compute_stakes_tier(
+        scene_state, active_turn, active_quests, combatants
+    )
+    return ResolutionTexture(
+        effective_dc=effective_dc,
+        modifier=modifier,
+        difficulty_band=difficulty_band,
+        margin=margin,
+        margin_tier=margin_tier,
+        stakes_tier=stakes_tier,
+        stakes_signals=stakes_signals,
+    )
+
 
 @dataclass(frozen=True)
 class ResolutionResult:
@@ -2988,6 +3408,7 @@ class ResolutionResult:
     directive_id: int         # campaign_id in v1 (§5.2 — no per-row id yet)
     nat: Optional[int] = None  # natural die roll, when surfaced by Avrae
     crit: bool = False         # explicit crit flag from Avrae embed
+    texture: Optional[ResolutionTexture] = None   # Ship A §4 — narrative scaling
 
 
 _DC_PARSE_RX = re.compile(
@@ -3019,15 +3440,24 @@ def parse_skill_and_dc(skill_raw: str) -> tuple[str, Optional[int]]:
 
 
 def resolve_directive(directive_row: Optional[dict],
-                      avrae_event: Optional[dict]) -> Optional[ResolutionResult]:
+                      avrae_event: Optional[dict],
+                      scene_state: Optional[dict] = None,
+                      active_turn: Optional[dict] = None,
+                      active_quests: Optional[list] = None,
+                      combatants: Optional[list] = None) -> Optional[ResolutionResult]:
     """Compute the resolution of a consumed pending roll directive.
 
     Pure function — reads no DB, no buffers. Caller (matcher in
-    discord_dnd_bot.py) supplies both inputs. No side effects.
+    discord_dnd_bot.py) supplies all inputs. No side effects.
 
     Returns None when inputs are structurally incomplete (no DC, no
     roll_total, kind mismatch); caller falls through to telemetry-only
     behavior. Returns a populated ResolutionResult otherwise.
+
+    Ship A (S36): when `scene_state` is supplied (any non-None value),
+    texture is computed via `compute_resolution_texture` and embedded in
+    the returned ResolutionResult.texture field. When scene_state is None,
+    texture is None — backwards-compatible with Ship 1 callers.
 
     Cast directives return None (§11.5 — cast resolution requires
     target-side save adjudication, filed v1.x). RAW D&D 5e per §11.3:
@@ -3057,6 +3487,20 @@ def resolve_directive(directive_row: Optional[dict],
     nat_raw = avrae_event.get('nat')
     nat_val = int(nat_raw) if isinstance(nat_raw, int) else None
 
+    # Ship A — compute texture when scene_state supplied. Pre-instantiation
+    # (frozen=True; no replace() patching).
+    texture: Optional[ResolutionTexture] = None
+    if scene_state is not None:
+        texture = compute_resolution_texture(
+            dc=dc,
+            roll_total=roll_total,
+            nat=nat_val,
+            scene_state=scene_state,
+            active_turn=active_turn,
+            active_quests=active_quests,
+            combatants=combatants,
+        )
+
     return ResolutionResult(
         actor=actor,
         check_kind=kind,
@@ -3068,6 +3512,7 @@ def resolve_directive(directive_row: Optional[dict],
         directive_id=int(directive_row.get('campaign_id') or 0),
         nat=nat_val,
         crit=bool(avrae_event.get('crit') or False),
+        texture=texture,
     )
 
 
@@ -3094,11 +3539,153 @@ def resolution_log_summary(result: Optional[ResolutionResult],
     )
 
 
+# Ship A §8.3 — locked difficulty-band guidance clauses
+_DIFFICULTY_GUIDANCE = {
+    'trivial': (
+        "This was a trivial check. Narrate the outcome with confidence and "
+        "zero friction; the actor's skill leaves no doubt."
+    ),
+    'easy': (
+        "This was an easy check. Narrate efficient execution; minor "
+        "competence on display."
+    ),
+    'medium': (
+        "This was a medium check. Narrate appropriate effort; the outcome "
+        "reflects steady skill, not chance."
+    ),
+    'hard': (
+        "This was a hard check. Narrate visible effort or close-quarters "
+        "tension; the success or failure feels earned."
+    ),
+    'very_hard': (
+        "This was a very hard check. Narrate strain, focus, or "
+        "near-impossibility; outcomes carry weight regardless of pass/fail."
+    ),
+    'nearly_impossible': (
+        "This was a nearly-impossible check. Narrate the attempt as "
+        "exceptional regardless of outcome; success is heroic, failure "
+        "is honorable."
+    ),
+}
+
+# Ship A §9.2 — locked margin-tier guidance clauses
+_MARGIN_GUIDANCE = {
+    'catastrophic_fail': (
+        "Margin ≤ −10. Narrate a substantial failure — the gap between "
+        "attempt and outcome is wide; render visible cost or consequence."
+    ),
+    'clear_fail': (
+        "Margin −5 to −9. Narrate a clear failure; the actor knows they "
+        "fell short but the gap was not catastrophic."
+    ),
+    'close_fail': (
+        "Margin −1 to −4. Narrate a near-miss; one detail short of "
+        "success, render the moment of falling just-shy."
+    ),
+    'razor_pass': (
+        "Margin = 0 (exact tie). Narrate the razor-thin quality; one "
+        "moment of doubt before barely-succeeding."
+    ),
+    'clean_pass': (
+        "Margin +1 to +9. Narrate competent success; render control "
+        "without flourish."
+    ),
+    'smashing_pass': (
+        "Margin ≥ +10. Narrate exceptional success; render flair, an "
+        "unintended bonus detail, or a confident extra beat."
+    ),
+}
+
+# Ship A §5.2-derived stakes-tier guidance clauses
+_STAKES_GUIDANCE = {
+    'low': (
+        "Low stakes — exploration or downtime context. Render outcome "
+        "with appropriate weight; consequences are local and recoverable."
+    ),
+    'medium': (
+        "Medium stakes — meaningful friction, real but not climactic. "
+        "Render outcome with noticeable weight."
+    ),
+    'high': (
+        "High stakes — active urgent clocks, combat pressure, or "
+        "committed-action moment. Narration must feel weighty; "
+        "consequences land harder."
+    ),
+}
+
+
+def _render_crit_clause(result: 'ResolutionResult') -> str:
+    """Ship A §10.2 — render crit-tier constraint clause when nat==20 or
+    nat==1. Returns empty string when neither fires.
+
+    Texture is locked verbatim for the four cells (nat 20 + PASSED, nat 20
+    + FAILED, nat 1 + PASSED, nat 1 + FAILED) plus scene-mode tonal
+    modulation for nat 1 + FAILED per §10.2."""
+    nat = result.nat
+    if nat not in (20, 1):
+        return ''
+
+    passed = result.passed
+    if nat == 20 and passed:
+        return (
+            "Critical signal: NAT 20. The roll was spectacular and the "
+            "outcome cleared the DC. Narrate a memorable success — extra "
+            "detail, a lore drop, an NPC reaction, an unintended bonus, "
+            "or future-scene advantage. Render the spectacular quality "
+            "of the moment."
+        )
+    if nat == 20 and not passed:
+        return (
+            "Critical signal: NAT 20 with FAILED outcome. The roll was "
+            "spectacular but the goal was beyond reach. Narrate the "
+            "near-miss as memorable — the actor did everything right, "
+            "the situation was just impossible. Lean into the tension "
+            "between the spectacular roll and the still-thwarted attempt; "
+            "render the actor's competence visible even in failure."
+        )
+    if nat == 1 and passed:
+        return (
+            "Critical signal: NAT 1 with PASSED outcome. The natural roll "
+            "was catastrophic but the actor's skill carried them through. "
+            "Narrate the graceless quality of the success — they got "
+            "there, but the path was awkward, fumbled, or pure-luck. "
+            "Render the success as honest but ugly; the actor noticed "
+            "how close it was to going wrong."
+        )
+    # nat == 1 and not passed
+    # Scene-mode tonal modulation per §10.2:
+    # downtime/travel → comic; combat/social → grim; exploration → either
+    mode = ''
+    try:
+        mode = (result.texture.stakes_signals.get('mode') or '')
+    except Exception:
+        mode = ''
+    if mode in ('combat', 'social'):
+        tone = 'grim — comedy breaks immersion here'
+    elif mode in ('downtime', 'travel'):
+        tone = 'comic — low-stakes contexts where bad-luck humor lands'
+    else:
+        tone = (
+            'either funny or grim — LLM judges based on scene tone '
+            '(investigation in a haunted ruin should stay grim; '
+            'a bantering perception check at a fair can be comic)'
+        )
+    return (
+        "Critical signal: NAT 1. The roll was catastrophic and the "
+        "outcome failed. Narrate a memorable failure. Scene mode dictates "
+        f"the tone: {tone}. Render bad luck visibly."
+    )
+
+
 def render_resolution_block(result: Optional[ResolutionResult]) -> str:
     """Render ResolutionResult as the inner text of the top-of-prompt
-    AUTHORITATIVE ROLL RESOLUTION block (spec §7.3). Returns empty when
-    result is None — caller's section-assembly truthiness check handles
-    suppression."""
+    AUTHORITATIVE ROLL RESOLUTION block (spec §7.3 + Ship A §10.3).
+    Returns empty when result is None — caller's section-assembly
+    truthiness check handles suppression.
+
+    When result.texture is non-None (Ship A path), the block includes
+    difficulty + margin + stakes + crit-tier lines. When texture is None
+    (Ship 1 v1 path), block reads as Ship 1 v1 (pass/fail only)."""
     if result is None:
         return ''
     skill_pretty = (result.skill_or_save or '').replace('_', ' ').title()
@@ -3106,16 +3693,62 @@ def render_resolution_block(result: Optional[ResolutionResult]) -> str:
     outcome_word = 'success' if result.passed else 'failure'
     opposite_word = 'failure' if result.passed else 'success'
     negation = '' if result.passed else 'NOT '
-    return (
+
+    head = (
         f"{result.actor} attempted a {skill_pretty} {result.check_kind} "
         f"(DC {result.dc}).\n"
         f"Roll total: {result.roll_total}.\n"
-        f"Outcome: {outcome}.\n\n"
-        f"You MUST narrate this as a {outcome_word}. "
+        f"Outcome: {outcome}.\n"
+    )
+
+    # Texture lines + crit signal — emit when texture present (Ship A path).
+    texture_block = ''
+    if result.texture is not None:
+        t = result.texture
+        mod_sign = '+' if t.modifier >= 0 else ''
+        signed_margin = f"+{t.margin}" if t.margin > 0 else str(t.margin)
+        texture_lines = [
+            f"Difficulty: {t.difficulty_band} "
+            f"(effective DC {t.effective_dc} after actor modifier "
+            f"{mod_sign}{t.modifier}).",
+            f"Margin: {signed_margin} ({t.margin_tier}).",
+            f"Stakes: {t.stakes_tier}.",
+        ]
+        crit_signal_line = ''
+        if result.nat == 20:
+            crit_signal_line = 'Critical signal: NAT 20.'
+        elif result.nat == 1:
+            crit_signal_line = 'Critical signal: NAT 1.'
+        if crit_signal_line:
+            texture_lines.append(crit_signal_line)
+        texture_block = '\n' + '\n'.join(texture_lines) + '\n'
+
+    must_narrate = (
+        f"\nYou MUST narrate this as a {outcome_word}. "
         f"{result.actor} does {negation}achieve the intended outcome.\n"
+    )
+
+    # Per-tier guidance — only when texture present.
+    guidance_block = ''
+    if result.texture is not None:
+        t = result.texture
+        guidance_lines = [
+            "The texture of the narration must reflect:",
+            f"  - Difficulty: {_DIFFICULTY_GUIDANCE.get(t.difficulty_band, '')}",
+            f"  - Margin: {_MARGIN_GUIDANCE.get(t.margin_tier, '')}",
+            f"  - Stakes: {_STAKES_GUIDANCE.get(t.stakes_tier, '')}",
+        ]
+        crit_clause = _render_crit_clause(result)
+        if crit_clause:
+            guidance_lines.append(f"  - {crit_clause}")
+        guidance_block = '\n'.join(guidance_lines) + '\n'
+
+    tail = (
         f"Do NOT narrate {opposite_word}. "
         f"Do NOT invent an alternative interpretation."
     )
+
+    return head + texture_block + must_narrate + guidance_block + tail
 
 
 def render_resolution_hardstop_echo(result: Optional[ResolutionResult]) -> str:

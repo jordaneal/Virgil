@@ -337,6 +337,43 @@ def test_parse_skill_and_dc_edge_cases_per_spec_table():
     assert _orch.parse_skill_and_dc('perception -5') == ('perception -5', None)
 
 
+# ─── Ship A (S36) — cross-trigger upsert regression ─────────────────
+
+def test_upsert_with_bot_msg_source_id_writes_row():
+    # Ship A's narration-emit writer uses str(msg.id) as source_message_id.
+    # Helper is unchanged; just confirm the writer surface works.
+    init_scene_state(420, 'seed')
+    _reset_state(420)
+    pending_directive_upsert(420, 'Donovan Ruby', 'perception',
+                              'bot-msg-id-7', 300, dc=15)
+    row = pending_directive_get_active(420)
+    assert row is not None
+    assert row['dc'] == 15
+    assert row['source_message_id'] == 'bot-msg-id-7'
+
+
+def test_two_disjoint_writers_share_helper_replaces_row():
+    # Surface A (DM-typed) writes first; Surface B (LLM-emitted) replaces.
+    # pending_directive_replaced semantics handle the sequential upserts.
+    # §17 status preserved: both surfaces call the same helper.
+    init_scene_state(421, 'seed')
+    _reset_state(421)
+    # Surface A
+    pending_directive_upsert(421, 'Donovan Ruby', 'perception',
+                              'human-msg-id', 300, dc=10)
+    row_a = pending_directive_get_active(421)
+    assert row_a['dc'] == 10
+    assert row_a['source_message_id'] == 'human-msg-id'
+    # Surface B (replaces)
+    result_b = pending_directive_upsert(
+        421, 'Donovan Ruby', 'perception', 'bot-msg-id', 300, dc=15
+    )
+    assert result_b['replaced'] is True
+    row_b = pending_directive_get_active(421)
+    assert row_b['dc'] == 15
+    assert row_b['source_message_id'] == 'bot-msg-id'
+
+
 # ─── Runner ──────────────────────────────────────────────────────────
 
 if __name__ == '__main__':

@@ -208,6 +208,93 @@ _DIRECTIVE_GROUP_KEYWORDS = (
 )
 
 
+# Ship A (S36) — LLM-emit directive parser. Distinct from _DM_DIRECTIVE_RX
+# which assumes the directive is the WHOLE message (^...$ anchors). LLM
+# emissions are embedded inside narration prose, typically at end of
+# response. S36 #5 patch: accept operator-locked format
+# `**!check skill DC : <First Name>**` — skill_raw capture stops at `:`
+# or `*` (bold markers) so the colon-and-name suffix doesn't leak into
+# the skill string; the trailing `:` + name + closing `**` are tolerated
+# via the optional suffix clause.
+_LLM_EMIT_DIRECTIVE_RX = re.compile(
+    r"!(?P<kind>check|save|cast)\s+(?P<skill_raw>[^\n!:*]+?)\s*"
+    r"(?::\s*[^\n!*]+?)?"     # optional ": <Character Name>" suffix
+    r"\s*(?=\n|$|\*)",        # stop at newline, end-of-string, or `**` close
+    re.IGNORECASE,
+)
+
+
+def _parse_llm_emit_directive(response: str) -> dict | None:
+    """Find the last !check/!save/!cast directive in the response text.
+
+    Multi-emit per Ship A §11.B.1 lock: LAST occurrence wins. The LLM's
+    final emission is treated as the operative one (matches HARD STOP
+    RULE 1's "your reply MUST end with the roll request" framing).
+
+    Returns {'kind': str, 'skill_raw': str, 'multi_count': int} on match;
+    None when no directive present.
+
+    Caller passes skill_raw through orch.parse_skill_and_dc to extract DC.
+    """
+    if not response:
+        return None
+    matches = list(_LLM_EMIT_DIRECTIVE_RX.finditer(response))
+    if not matches:
+        return None
+    m = matches[-1]
+    return {
+        'kind': m.group('kind').lower(),
+        'skill_raw': m.group('skill_raw').strip(),
+        'multi_count': len(matches),
+    }
+
+
+# Ship A live-verify patch (S36 #3): strip trailing DC integer from
+# !check/!save patterns in response text BEFORE posting to Discord.
+# Player sees `!check perception` (no DC); engine has the bound DC in
+# the pending directive row via _parse_llm_emit_directive parse done
+# earlier. Avrae silently ignores trailing integers per A.2 recon,
+# so the strip doesn't change Avrae's behavior. Cast directives NOT
+# stripped — Avrae's !cast accepts trailing integer as spell level
+# override, so leaving cast alone preserves spell mechanics. Reverses
+# locked decision 9 (Finding J retired) per operator pushback in S36.
+_DC_STRIP_RX = re.compile(
+    # Strips trailing DC integer from `!check skill DC` and `!save stat DC`.
+    # S36 #5 patch: also handles the operator-locked
+    # `**!check skill DC : <First Name>**` format — preserves the
+    # `: <Name>` suffix and `**` bold-close markers in the player-facing
+    # text while removing only the DC integer. Cast directives are NOT
+    # stripped (Avrae's !cast takes trailing integer as spell level).
+    r"(?P<head>!(?:check|save)\s+[^\n!:*]+?)"
+    r"\s+\d+"                              # the DC integer (this is what gets stripped)
+    r"(?P<tail>\s*(?::\s*[^\n!*]+?)?\s*(?:\*\*|(?=\n|$)))",
+    re.IGNORECASE,
+)
+
+
+def _strip_dc_from_llm_emit(response: str) -> str:
+    """Remove trailing DC integer from !check/!save directives in the
+    response. Idempotent — applying to already-stripped text is a no-op.
+    Cast directives unchanged. S36 #5 patch: preserves `: <Name>` suffix
+    and `**` bold close markers; only strips the DC integer."""
+    if not response:
+        return response
+    return _DC_STRIP_RX.sub(r"\g<head>\g<tail>", response)
+
+
+def _wrong_skill_aside(expected_skill: str, actual_skill: str) -> str:
+    """Ship A §13.3 — analog to _wrong_actor_aside. Posted to #dm-aside
+    when matcher receives a roll whose actor matches but skill does NOT
+    match the pending directive. Per locked decision 12 option (b), the
+    pending directive row stays alive; wrong-skill roll falls through to
+    normal player-input buffer flow."""
+    return (
+        f"Roll directive bound to {expected_skill} — "
+        f"that {actual_skill} roll is not consumed. "
+        f"Wait for a {expected_skill} roll, or revise the directive."
+    )
+
+
 def _is_dm_message(message, campaign) -> bool:
     """Sister of is_dm_or_creator() but for raw discord.Message events
     (on_message has no Interaction). Mirrors the same two-path check:
@@ -399,6 +486,30 @@ async def _handle_dm_roll_directive(message, campaign, parsed: dict) -> None:
             await _post_dm_aside(message.guild, _NO_FOOTER_ASIDE)
             return
 
+        # Ship A live-verify patch (S36 #4): preserve Ship A's dc=N pending
+        # row when a no-DC manual !check arrives for the same actor+skill.
+        # Operator's natural pattern: bot emits "!check skill DC" → operator
+        # types "!check skill" themselves to roll → previously this would
+        # REPLACE the dc=N row with dc=None and break Ship A's resolution.
+        # New rule: if existing row has dc=N AND new directive has no DC
+        # AND actor+skill match, treat as manual roll completing the
+        # auto-emit. Skip the upsert. Log for telemetry.
+        if dc is None:
+            existing = pending_directive_get_active(campaign_id)
+            if existing is not None and existing.get('dc') is not None:
+                existing_actor = (existing.get('actor_name') or '').strip()
+                existing_skill = _normalize_skill_for_match(
+                    existing.get('check_type', '')
+                )
+                new_skill_norm = _normalize_skill_for_match(skill)
+                if (existing_actor == footer_actor
+                        and existing_skill == new_skill_norm
+                        and existing_skill):
+                    log(f"directive_preserve_existing_dc: "
+                        f"campaign={campaign_id} actor={footer_actor} "
+                        f"skill={skill} existing_dc={existing['dc']}")
+                    return
+
         # Emit / replace. Single-writer is pending_directive_upsert via
         # this matcher; the helper returns prior-row info so we can log
         # `pending_directive_replaced` before the swap.
@@ -460,7 +571,23 @@ def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> dict:
     avrae_skill = _normalize_skill_for_match(event.get('detail') or '')
     pending_skill = _normalize_skill_for_match(pending.get('check_type') or '')
     if not avrae_skill or not pending_skill or avrae_skill != pending_skill:
-        # Skill mismatch (any actor) → silent ignore per spec.
+        # Ship A §13 (decision 12, option b) — skill mismatch now fires
+        # log + aside instead of silent-ignore. Pending directive row
+        # stays alive (no consume call); wrong-skill roll falls through
+        # to normal player-input buffer flow per Track 7 #1. Pre-Ship-A
+        # behavior was silent-ignore.
+        if avrae_skill and pending_skill:
+            # Both present but mismatched — surface the friction.
+            log(f"directive_skill_mismatch: campaign={campaign_id} "
+                f"expected_skill={pending.get('check_type', '')} "
+                f"actual_skill={event.get('detail', '')} "
+                f"actor={event.get('actor', '')}")
+            out['aside'] = _wrong_skill_aside(
+                expected_skill=pending.get('check_type', ''),
+                actual_skill=event.get('detail', ''),
+            )
+        # If avrae_skill or pending_skill is empty/None, fall through
+        # silently — that's the malformed-embed defensive case.
         return out
 
     avrae_actor = canonicalize_actor_name(event.get('actor') or '')
@@ -475,8 +602,31 @@ def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> dict:
         # telemetry-only; row still consumes; no auto-fire.
         resolution = None
         resolve_err = None
+        # Ship A (S36) — plumb scene_state + active_turn + combatants +
+        # active_quests through to resolve_directive so texture is computed
+        # at consume time. Soft-fail on any state-read failure: degrade to
+        # Ship-1-shape resolution (texture=None) rather than failing the
+        # whole matcher.
+        _scene_state = None
+        _active_turn = None
+        _combatants_list = None
+        _active_quests = None
         try:
-            resolution = orch.resolve_directive(pending, event)
+            _scene_state = get_scene_state(campaign_id)
+            _active_turn = get_active_turn(campaign_id)
+            _combatants_payload = get_combatants(campaign_id) or {}
+            _combatants_list = _combatants_payload.get('combatants') or []
+            _active_quests = get_active_quests(campaign_id) or []
+        except Exception as e:
+            log(f"resolve_state_read error: campaign={campaign_id} err={e!r}")
+        try:
+            resolution = orch.resolve_directive(
+                pending, event,
+                scene_state=_scene_state,
+                active_turn=_active_turn,
+                active_quests=_active_quests,
+                combatants=_combatants_list,
+            )
         except Exception as e:
             resolve_err = repr(e)
             log(f"resolve_directive_error: campaign={campaign_id} "
@@ -486,6 +636,12 @@ def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> dict:
         # Always-fire empirical-baseline log per §10.2 / §10.3.
         if resolution is not None:
             log(orch.resolution_log_summary(resolution, campaign_id))
+            # Ship A §5.5 — stakes_tier telemetry when texture fired.
+            if resolution.texture is not None:
+                log(orch.stakes_tier_log_summary(
+                    resolution.texture.stakes_signals,
+                    resolution.texture.stakes_tier,
+                ))
             outcome_str = 'PASSED' if resolution.passed else 'FAILED'
             roll_total_str = str(resolution.roll_total)
             dc_str = str(resolution.dc)
@@ -510,6 +666,20 @@ def _handle_dm_roll_arrival(campaign_id: int, event: dict) -> dict:
                               else 'none')
             pdc = pending.get('dc')
             dc_str = str(pdc) if isinstance(pdc, int) else 'none'
+
+            # Ship A live-verify patch (S36 #9): when the LLM emitted a
+            # directive without a DC, surface a #dm-aside so the operator
+            # knows resolution skipped and the outcome will be free-narrated
+            # on their next turn. Only fires for no_dc (the operator-actionable
+            # case); cast_kind / malformed_embed / unresolvable stay log-only
+            # since those are either deferred-by-design or defensive.
+            if skip_reason == 'no_dc':
+                out['aside'] = (
+                    f"Bot's roll request had no DC — resolution skipped. "
+                    f"The outcome will be free-narrated on your next "
+                    f"action (no engine-bound pass/fail this turn). "
+                    f"Skill: {pending.get('check_type', '')}."
+                )
 
         # Phase 1 would-fire log, Ship 1 extension (§10.1): adds roll_total,
         # dc, outcome fields. Log line NAME preserved per spec — the
@@ -2266,6 +2436,16 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
                 resolution_result,
             )
 
+        # Ship A live-verify patch (S36 #3) — DC strip. Parse the LLM-emit
+        # directive BEFORE the response is stored / posted, cache the
+        # parsed dict for the writer hook below, then strip the trailing
+        # DC from the player-facing response. Avrae sees the stripped
+        # form (silently ignores trailing integer per A.2 recon anyway);
+        # engine retains DC via the cached parse used downstream.
+        _ship_a_emit_cache = _parse_llm_emit_directive(response)
+        if _ship_a_emit_cache is not None:
+            response = _strip_dc_from_llm_emit(response)
+
         chroma_store(campaign['id'], 'dm', response)
         update_scene(campaign['id'], f"Last actions: {combined_action[:200]} | DM: {response[:200]}")
 
@@ -2358,6 +2538,47 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
 
         msg = await channel.send(embed=embed)
         log(f"_dm_respond_and_post: posted for guild {guild_id_str}, {len(avrae_events)} avrae events")
+
+        # Ship A (S36) — LLM-emitted-directive writer hook. Uses the
+        # pre-strip cached parse (computed above) so we don't re-parse
+        # the stripped response (which no longer has the DC visible).
+        # Writes a pending directive row keyed by the current acting
+        # character + parsed skill + parsed DC. Avrae's roll embed
+        # arrival (within seconds) triggers _handle_dm_roll_arrival →
+        # resolve → auto-fire textured outcome narration. Soft-fail
+        # end-to-end: parser or upsert failure must NEVER raise into
+        # _dm_respond_and_post.
+        try:
+            emit_directive = _ship_a_emit_cache
+            if emit_directive is not None:
+                primary_actor = (
+                    actor_names_display[0] if actor_names_display else ''
+                )
+                if primary_actor:
+                    skill, dc = orch.parse_skill_and_dc(
+                        emit_directive['skill_raw']
+                    )
+                    pending_directive_upsert(
+                        campaign_id=campaign['id'],
+                        actor_name=primary_actor,
+                        check_type=skill,
+                        source_message_id=str(msg.id),
+                        ttl_seconds=al.PENDING_DIRECTIVE_TTL_SECONDS,
+                        dc=dc,
+                    )
+                    dc_str = str(dc) if dc is not None else 'none'
+                    log(f"llm_emit_directive_bound: "
+                        f"campaign={campaign['id']} "
+                        f"actor={primary_actor} skill={skill} dc={dc_str} "
+                        f"kind={emit_directive['kind']} "
+                        f"source_message_id={msg.id}")
+                    multi_count = emit_directive.get('multi_count', 1)
+                    if multi_count > 1:
+                        log(f"llm_emit_multi_directive_count: "
+                            f"campaign={campaign['id']} count={multi_count}")
+        except Exception as e:
+            log(f"_llm_emit_directive_write error: {e!r}")
+
         asyncio.create_task(_attach_hints(msg, embed, response))
         asyncio.create_task(_extract_and_persist_world(campaign["id"], response, guild))
     except Exception as e:

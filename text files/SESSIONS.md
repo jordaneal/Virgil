@@ -38,6 +38,9 @@ For "how do I work with Claude" → `WORKING_WITH_CLAUDE.md`
 - **[Session 27 — Track 4 #3 Time Progression v1 (First Motion-Systems Ship)](#session-27--track-4-3-time-progression-v1-first-motion-systems-ship)** — `advance_time` single-write-path engine helper; `parse_elapsed` deterministic free-text → delta; `compute_time_directive` seventh §59 sibling; `render_state_footer` extension; four call sites (`/travel` / `!lr` / `!sr` / new `/advance`); skeleton `## Starting time` narrow §17 seed exception; 168 tests across six files; spec v1.2 LOCKED.
 - **[Session 33 — Multiplayer Fixes Plan: S32 Findings → Five-Ship Plan → Three-Reviewer Cycle → ROADMAP F-55 Refresh](#session-33--multiplayer-fixes-plan-s32-findings--five-ship-plan--three-reviewer-cycle--roadmap-f-55-refresh-may-10-2026)** — No code. `MULTIPLAYER_FIXES.md` v2 drafted (584 lines, 14 review-cycle revisions); 5 ROADMAP patches propagating cluster commitments; Ship 3 files as F-55 #5.5; three planner-discipline lessons named.
 - **[Session 34 — Ship 1 Resolution Binding: Engine-Bound DC-vs-Roll on the DM-Typed-Directive Surface](#session-34--ship-1-resolution-binding-engine-bound-dc-vs-roll-on-the-dm-typed-directive-surface-may-11-2026)** — Ship 1 implementation + 40 new test assertions across 4 files. Closes Finding L + F-45 regression + Bug 1 Phase 2 as side effect. Live verify A/B/D logged clean; E/F deferred via `MULTIPLAYER_VERIFY_DEFERRED.md` pickup doc. Two doctrine candidates filed unanchored.
+- **[Session 34 #2 — Multiplayer Fixes Plan V3: Primary-Surface Re-Diagnosis, Avrae Recon, Promotion](#session-34-2--multiplayer-fixes-plan-v3-primary-surface-re-diagnosis-avrae-recon-promotion-may-11-2026)** — No code. Planning ship. v2 → v3 re-sequence inserts Ship A (LLM-Emitted-Directive Resolution Binding) at front of post-Ship-1 queue; 12 §12 decisions locked; Avrae A.2 recon cleared (form (a) clean — Avrae ignores trailing integer); v3 promoted to canonical. v2 archived at `_trash/MULTIPLAYER_FIXES_V2_20260511.md`.
+- **[Session 35 — Ship A Spec + Review (DRAFT → LOCKED)](#session-35--ship-a-spec--review-may-11-2026)** — `LLM_EMIT_RESOLUTION_BINDING_SPEC.md` drafted (18 decisions: 12 pre-locked + 6 surfaced); review pass (S35b) applied 6 framing revisions; spec LOCKED v1.
+- **[Session 36 — Ship A Implementation + 9 Live-Verify Patches](#session-36--ship-a-implementation--9-live-verify-patches-may-11-2026)** — Ship A SHIPPED LIVE. ~120 test assertions across 2 new + 4 extended files. Live verify clean: nat-20 PASSED case rendered with memorable-success texture; zero cascading rolls; Avrae compat confirmed for `**!check skill : Name**` bold-wrapped format. 9 patches landed in one session covering classifier coverage, DC strip, dc-preservation, emit-template, sentinel detection (cascading-roll fix), wider verb coverage, and no-DC `#dm-aside` notification.
 
 ---
 
@@ -1506,3 +1509,262 @@ Neither candidate anchored in `DOCTRINE.md` this session — both filed in the c
 **None during implementation.** All five spec recon claims held up under live recon. The mid-session friction (Jordan-can't-DM-narrate-from-Donovan-bound-account) surfaced in the verify phase, not implementation, and was a test-prompt phrasing miss on my part — not a structural spec issue. The DM-directive intercept gate is the load-bearing surface for Ship 1 and works correctly for solo operator setups.
 
 **PC rsync:** All five doc-update files (`ROADMAP.md`, `SESSIONS.md`, `DOCTRINE.md`, `tests-to-run-post-session.md`, `MULTIPLAYER_FIXES.md`) + new `MULTIPLAYER_VERIFY_DEFERRED.md` + code files (`dnd_engine.py`, `dnd_orchestration.py`, `narration_verifier.py`, `discord_dnd_bot.py`) + new test files mirrored to PC via `push-all-to-pc.sh` at end of session.
+
+---
+
+# Session 34 #2 — Multiplayer Fixes Plan V3: Primary-Surface Re-Diagnosis, Avrae Recon, Promotion (May 11, 2026)
+
+**Ships (this session):** No code. Planning ship. Drafted `MULTIPLAYER_FIXES_V3_DRAFT.md` (383 lines); operator locked all 12 §12 decisions including new decision 12 (wrong-skill matcher behavior, option (b) HIGH confidence); Avrae A.2 compatibility recon ran cleanly (form (a) — Avrae silently ignores trailing integer in `!check skill N`); v3 promoted to canonical `MULTIPLAYER_FIXES.md`; v2 archived at `_trash/MULTIPLAYER_FIXES_V2_20260511.md`; ROADMAP + SESSIONS index updated to reflect v3 sequencing.
+
+## What surfaced
+
+The Ship 1 verify in S34 exposed an architectural framing miss that S33 planning didn't catch. Ship 1 was specced to close the **DM-typed-directive surface** (operator with `manage_guild` perm types `!check perception 10` literally in `#dm-narration`). It does that correctly — A/B/D scenarios fired clean. But the **load-bearing 90% play loop** is different: operator types intent ("I take a closer look"), LLM narrates a response and emits `!check perception 15` inside that narration, Avrae sees the embed and rolls, operator expects bot to auto-fire a resolution narration bound to the rolled value.
+
+That LLM-emitted-directive surface is NOT closed by Ship 1. The LLM's `!check perception 15` arrives in Discord as a bot-authored message, which short-circuits at `on_message`'s `message.author.bot: return` gate — Ship 1's writer (`_handle_dm_roll_directive`) never sees it, and no `dnd_pending_roll_directives` row is created. Avrae rolls; matcher finds no pending row; falls through to normal player-input buffer flow per Track 7 #1. The resolution-binding work is *upstream* of where Ship 1 writes — it needs to fire when the bot is about to post LLM-generated narration containing `!check`/`!save` patterns, before Discord even sees the message.
+
+The cause of the S33 miss: `BUG_1_SPEC.md` framed Phase 1 around "DM emits directive, Avrae rolls, bot waits silently" — with the assumed actor of the `!check` being the human DM. The LLM has always emitted `!check` inside narration (per HARD STOP RULE 1, which instructs it to end a roll-required turn with the exact roll command), but no pending-directive row was ever created for that emission. v2 spec needed a second writer at narration-emission time; v2 didn't specify one.
+
+## What shipped (planning artifacts)
+
+*`MULTIPLAYER_FIXES_V3_DRAFT.md` v3 (383 lines).* Six-ship plan, calendar S33–S43, 11–15 days. v3 supersedes v2; v2 archived.
+
+- **Ship 1 (S33–S34): Resolution Binding — DM-typed-directive surface.** ✅ shipped, closes a real-but-secondary 5–10% surface (operator-as-flagged-DM running deliberate set-piece checks).
+- **Ship A (S35–S36): LLM-Emitted-Directive Resolution Binding.** NEW PRIMARY. Adds a second writer to `dnd_pending_roll_directives` at narration-emission time (in `_dm_respond_and_post`, post-`dm_respond`-pre-Discord-post). Parses LLM-emitted `!check skill DC` / `!save stat DC` from response text, calls `pending_directive_upsert`. Reuses shipped Ship 1's `ResolutionResult` + `resolve_directive` + render helpers + matcher + ROLL_OUTCOME_DRIFT verifier + `_fire_resolution_narration` auto-fire coroutine. Adds `ResolutionTexture` sub-dataclass referenced by `ResolutionResult.texture` carrying difficulty band / margin tier / stakes tier / crit-tier signals; `compute_stakes_tier` pure function (§59 9th sibling) computes stakes from scene_state + active_turn + active_quests + combatants; difficulty band derived from DC vs Avrae embed's modifier (modifier = `roll_total - nat` is free from existing fields); margin tier derived from `roll_total - dc`; crit-tier renders separate constraint clauses for nat 20 / nat 1 regardless of pass/fail (RAW preserved — nat doesn't override `passed`). Prompt-side change: HARD STOP RULE extension instructing LLM to always include DC when emitting roll directive. Two-embed UX confirmed (initial narration + ~6s later outcome narration). Spec drafts S35 (Opus medium); implementation S36 (Opus high).
+- **Ship 2 (S37–S39): Scene State Canon Discipline.** Survives v3 sequencing unchanged. Possibly higher priority post-Ship-A since Ship A's `compute_stakes_tier` reads scene_state and benefits from canon discipline.
+- **Ship 3 (S40–S41): NPC State-Sync Boundary.** Survives unchanged. Independent of directive-emit surface.
+- **Ship 4 (S42): Scene-Scope-First Identity Resolution.** Survives unchanged. Surfaces clean opportunity for Ship A's `compute_stakes_tier` to consume `SceneComposition` post-Ship-4 refactor.
+- **Ship 4.5 (filed candidate):** Multi-Actor Temporal State. Decision criterion shifted from Ship 1 verify checkpoint to **Ship A verify checkpoint** — Ship A's verify is more natural-play-shaped; sock-puppet F walks don't produce real-play data per §7B.3 criterion.
+- **Ship 5 (S43): Polish cluster.** Survives with one sub-ship retired — **5a Finding J (DC leak in player-facing directive) retired entirely** under Ship A's design, because LLM-emitted directives intentionally show the DC to the player (Avrae sees the embed and rolls). 5a was solving the wrong problem.
+
+*Avrae A.2 compatibility recon (08:33:14–08:33:40, 2026-05-11).* Two-test recon in campaign 22 `#dm-narration`:
+
+- **Test 1:** `!check perception 15`. Avrae embed: `Donovan Ruby makes a Perception check! 1d20 (15) + 1 = 16`. Virgil's logs: `directive_bound_to_footer_actor: ... dc=15` + `directive_resolved: ... dc=15 roll_total=16 outcome=PASSED nat=15 crit=0` + `_dm_respond_and_post: posted` 5s later. Bot auto-narrated success (existing Ship 1 wiring firing through the recon format).
+- **Test 2:** `!check perception` (bare baseline). Avrae embed: `1d20 (17) + 1 = 18`. Virgil's logs: `directive_bound_to_footer_actor: ... dc=none` + `directive_resolution_skipped: reason=no_dc`.
+
+Critical finding: same modifier (+1) in both rolls, same dice formula, same embed shape — Avrae silently ignored the trailing 15 and rolled perception normally. **Form (a) clean.** Decision A.1 holds verbatim: LLM-emit format is `!check skill DC` with trailing integer, no separator. Virgil's `parse_skill_and_dc` (shipped Ship 1) splits skill from DC correctly. Avrae compatibility cleared as the only pre-promotion blocker.
+
+*v3 promotion to canonical.* Mechanical doc-shuffle:
+1. `mv MULTIPLAYER_FIXES.md _trash/MULTIPLAYER_FIXES_V2_20260511.md` (lineage preserved for cross-reference from existing S33 SESSIONS entry).
+2. `mv MULTIPLAYER_FIXES_V3_DRAFT.md MULTIPLAYER_FIXES.md` (v3 becomes canonical).
+3. Status banner updated from "DRAFT, LOCKS APPLIED" → "LOCKED, CANONICAL".
+4. §13 ("What this is NOT") rewritten to remove draft framing; §14 tabular handoff updated to post-promotion state.
+5. ROADMAP "Multiplayer Fixes plan" row updated: 5-ship → 6-ship, v2 → v3, "Ship 2 next" → "Ship A next"; FOOTINGS queue paragraph similarly. Last-updated timestamp flipped to S34 #2.
+
+## Locked decisions (12 total per v3 §12)
+
+1. v3 supersedes v2 as canonical ✅
+2. (A.1) DC source — inline `!check skill DC` ✅
+3. (A.2) Avrae compatibility recon cleared, form (a) holds ✅
+4. (A.4) `compute_stakes_tier` as §59 9th sibling ✅
+5. (A.5) `ResolutionTexture` separate dataclass referenced by `ResolutionResult.texture` ✅
+6. (A.6) Accept stale + TTL cleanup for bot-message edits; TTL = 300s kept for v1 (phantom-binding requires three-condition compound, rare in natural play; tighten only if multiplayer logs show actual events) ✅
+7. (A.8) Two-embed UX ✅
+8. Ship 4.5 decision criterion shifts to Ship A verify checkpoint ✅
+9. Ship 5 sub-ship 5a (Finding J) retired ✅
+10. Corpus discipline — defer to observation, no parallel drafting ✅
+11. Doctrine candidate C1 — wait for Ship A verify to prove third instance ✅
+12. **NEW** Wrong-skill matcher behavior — option (b) HIGH confidence: post `#dm-aside` clarification, leave pending row alive until correct skill arrives or TTL expires; wrong-skill roll falls through to normal player-input buffer flow. Aside copy template: `"expected {pending_skill}, got {avrae_skill}; the {pending_skill} directive is still active."` ✅
+
+## What this session does NOT do
+
+- **No code shipped.** Implementation lands in S36 per v3 §11 calendar.
+- **No spec drafted.** `LLM_EMIT_RESOLUTION_BINDING_SPEC.md` (the Ship A spec) drafts in S35 with the 12 decisions as input.
+- **No doctrine anchored.** Candidate C1 stays a candidate per locked decision 11.
+- **No Ship 1 rework.** Shipped Ship 1 stays as-shipped; v3 §13 makes the secondary-surface framing explicit.
+
+## Cross-references
+
+- `MULTIPLAYER_FIXES.md` v3 (now canonical) — the plan itself.
+- `_trash/MULTIPLAYER_FIXES_V2_20260511.md` — v2 archived for lineage.
+- `RESOLUTION_BINDING_SPEC.md` — Ship 1's spec, unchanged.
+- `MULTIPLAYER_VERIFY_DEFERRED.md` — Scenario F deferred pickup doc; decision criterion shifted to Ship A verify (per v3 §7B).
+- `ROADMAP.md` — Multiplayer Fixes plan row updated; FOOTINGS queue updated; Last-updated flipped to S34 #2.
+- `BUG_1_SPEC.md` — server-only, not modified. Original Phase 1/Phase 2 framing remains the lineage source; v3's diagnosis section narrates the framing-miss in passing.
+- `DOCTRINE.md` — not modified this session. Candidate C1 (engine-bound binding > validator) reaches potential third instance at Ship A; promotion timing per locked decision 11.
+- `FAILURES.md`, `VIRGIL_MASTER.md`, `WHY.md` — not modified.
+
+## HALT escalations during the session
+
+**None.** Two architectural surfaces were surfaced and resolved cleanly:
+
+1. **Primary-vs-secondary surface mismatch** — diagnosed in v3 §1, re-sequencing followed.
+2. **§17 single-writer status with two trigger surfaces** (Ship 1's writer + Ship A's writer both writing `dc` column) — resolved at v3 §4.2 by consolidating at the writer-helper layer (`pending_directive_upsert`), not the trigger layer. Two disjoint triggers calling one writer-helper is structurally compatible with §17.
+
+## Tabular handoff (S34 #2)
+
+| Field | Value |
+|---|---|
+| **Planning artifact written** | `MULTIPLAYER_FIXES.md` v3 (replaces v2) |
+| **Lineage preserved** | `_trash/MULTIPLAYER_FIXES_V2_20260511.md` |
+| **Decisions locked** | 12 (11 from v3 draft §12 + 1 new wrong-skill decision) |
+| **Recon cleared** | Avrae A.2 — form (a) clean, Avrae silently ignores trailing integer |
+| **Calendar delta from v2** | +2 days (9 best/13 slow → 11 best/15 slow) |
+| **Code shipped** | None (planning ship) |
+| **Ships promoted** | None (Ship 1 already ✅ S34) |
+| **Ships re-sequenced** | Ship A inserted as new primary post-Ship-1; Ships 2/3/4/4.5/5 carry from v2 with Ship 5 sub-ship 5a retired |
+| **Next session recommendation** | S35: Ship A spec drafting — write `LLM_EMIT_RESOLUTION_BINDING_SPEC.md` carrying the 12 §12 decisions as input. Opus medium per v3 §4.6. Output: locked spec ready for S36 implementation. |
+| **PC rsync** | `MULTIPLAYER_FIXES.md` (new canonical), `_trash/MULTIPLAYER_FIXES_V2_20260511.md`, `ROADMAP.md`, `SESSIONS.md` mirrored via `push-all-to-pc.sh`. |
+
+---
+
+# Session 35 — Ship A Spec + Review (May 11, 2026)
+
+**Ships (this session):** No code. Spec + review pair. Drafted `LLM_EMIT_RESOLUTION_BINDING_SPEC.md` v1 (1301 lines) carrying the 12 pre-locked decisions from v3 §12 plus 6 surfaced during drafting (§11.B.1–B.6). S35b review pass applied 6 framing revisions per `LLM_EMIT_RESOLUTION_BINDING_REVIEW.md` §4 — texture-computation surface clarification, ResolutionResult field invariant, stakes-tier scoring axis simplification, crit-tier mode mapping, live-verify count threshold, housekeeping framing. Spec flipped DRAFT → LOCKED.
+
+## Cross-references
+
+- `specs/LLM_EMIT_RESOLUTION_BINDING_SPEC.md` LOCKED v1 — spec source.
+- `specs/LLM_EMIT_RESOLUTION_BINDING_REVIEW.md` — planner-side review pass.
+- `MULTIPLAYER_FIXES.md` v3 §4 — Ship A architectural shape.
+
+## Tabular handoff (S35)
+
+| Field | Value |
+|---|---|
+| **Spec written** | `specs/LLM_EMIT_RESOLUTION_BINDING_SPEC.md` LOCKED v1 |
+| **Review written** | `specs/LLM_EMIT_RESOLUTION_BINDING_REVIEW.md` |
+| **Decision count** | 18 (12 pre-locked from v3 §12 + 6 surfaced in spec drafting) |
+| **Revisions applied** | 6 framing/wording (no architectural changes) |
+| **HALT escalations** | None |
+| **Next session** | S36 — Ship A implementation, Opus high per v3 §4.6. |
+
+---
+
+# Session 36 — Ship A Implementation + 9 Live-Verify Patches (May 11, 2026)
+
+**Ships (this session):** Ship A SHIPPED LIVE — LLM-Emitted-Directive Resolution Binding on the primary 90% play loop. ~600 LOC across 3 files. ~120 test assertions across 2 new + 4 extended files. Live verify in campaign 17 confirmed end-to-end loop: operator types intent → LLM narrates + emits `**!check skill DC : Name**` → DC stripped from player view → Avrae rolls → matcher resolves with texture → bot auto-fires textured outcome narration → ROLL_OUTCOME_DRIFT verifier clean. Nat-20 PASSED case fired with memorable-success texture (Donovan lifted heavy crate, found bundle of parchment + iron key, NPC reactions). Zero cascading rolls after Patch 7 sentinel detection. Avrae compat confirmed for `**!check skill : Name**` bold-wrapped format.
+
+**Closes:** Finding L surface 2 (LLM-emitted-directive — the 90% play loop). Companion to shipped Ship 1 (DM-typed-directive 5–10% surface). Both surfaces of Finding L now structurally closed via the same primitives (`ResolutionResult` + `resolve_directive` + render helpers + ROLL_OUTCOME_DRIFT verifier + matcher + auto-fire coroutine).
+
+## What surfaced (during implementation + live verify)
+
+Implementation followed spec §1–§17 cleanly. Five live-verify-surfaced issues drove 7 additional patches beyond the initial implementation:
+
+1. **Intent classifier under-triggered.** Operator's natural phrasings ("Look closely at the notice board", "try to find a missing detail", "I take a closer look") classified as `trivial` or `social` → no roll → LLM made up outcomes. Bug 1 in TRIVIAL_RX: bare `look` matched and short-circuited before EXPLORATION_RX could see `look closer`. Bug 2: most natural verbs not in EXPLORATION_RX. Bug 3: fall-through went to SOCIAL default. → Patch 1 + Patch 8 (classifier expansion + wider verb coverage).
+2. **DC visibility.** Operator pushed back on locked decision 9 (Finding J retired). LLM-emitted `!check perception 15` showed the DC to the player by design under decision 9. Operator wants DC hidden. → Patch 2 (DC strip in `_dm_respond_and_post` post-`dm_respond`-pre-channel-send).
+3. **DC clobber via manual echo.** Operator manually typing `!check perception` after the bot's emit caused `_handle_dm_roll_directive` to overwrite Ship A's `dc=10` row with `dc=none` → matcher saw no DC → resolution skipped. → Patch 4 (dc-preservation in `_handle_dm_roll_directive` — if existing row has dc=N AND new directive has no DC AND actor+skill match, skip the overwrite).
+4. **Emit format UX gaps.** Operator wanted character name in directive, blank line spacing, bold formatting. → Patch 5 + Patch 6 (`RollDecision.to_prompt_directive` template revisions to instruct LLM to emit single bold line `**!check skill DC : First Name**` after narrative beat + blank line).
+5. **Cascading rolls in auto-fire.** Resolution narration after Avrae roll ended with another `!check` directive, triggering a second Avrae roll the operator didn't ask for. Root cause: the auto-fire synthesized input `[Roll resolution: Donovan rolled athletics (check); outcome bound at top-of-prompt.]` contained the word `athletics`, which EXPLORATION_RX matched → classifier returned `INTENT_EXPLORATION` → ROLL DIRECTIVE block told LLM to end with another roll request. → Patch 7 (sentinel detection in `classify_action_intent` routes `[Roll resolution:` prefix to META → no-roll → no cascading instruction in prompt).
+
+Surfaced in verify, addressed in same session. All five operator-flagged issues resolved by Patch 9 deploy.
+
+## What shipped
+
+### Engine + orchestration
+
+- **`dnd_orchestration.py`** (~400 LOC additive):
+  - `ResolutionTexture` frozen dataclass with `effective_dc`, `modifier`, `difficulty_band`, `margin`, `margin_tier`, `stakes_tier`, `stakes_signals`.
+  - `_bucket_difficulty(effective_dc) → str` — 5e RAW DC-band bucketing (trivial / easy / medium / hard / very_hard / nearly_impossible).
+  - `_bucket_margin(margin: int) → str` — six-tier margin bucketing (catastrophic_fail / clear_fail / close_fail / razor_pass / clean_pass / smashing_pass).
+  - `_STRONG_INTENT_RX` regex for stakes-tier scoring (locked decision A.4 simplification per S35b review §3.B.4).
+  - `compute_stakes_tier(scene_state, active_turn, active_quests, combatants) → (str, dict)` — pure function, ninth Doctrine §59 instance. Five-axis scoring shape locked in spec §5.2.
+  - `stakes_tier_log_summary(signals, tier) → str` — always-fire telemetry per §59 sibling pattern.
+  - `compute_resolution_texture(dc, roll_total, nat, scene_state, ...) → ResolutionTexture` — assembler helper.
+  - Extended `ResolutionResult` with `texture: Optional[ResolutionTexture] = None` field (backwards-compatible — Ship 1 callers receive `texture=None`).
+  - Extended `resolve_directive` signature with optional `scene_state`, `active_turn`, `active_quests`, `combatants` kwargs. When `scene_state` supplied, computes texture inline at instantiation time (frozen-immutability preserved — no `dataclasses.replace`).
+  - Extended `render_resolution_block` with locked guidance clauses for difficulty + margin + stakes (per spec §8.3, §9.2) and crit-tier constraint clauses for nat-20 / nat-1 (per §10.2 including scene-mode-modulated tone for nat-1 + FAILED).
+  - Extended `RollDecision.to_prompt_directive` (skill + save branches) with explicit emit template instructing LLM to format as `**!check skill DC : First Name**` + DC GUIDANCE 5e RAW band table.
+  - **Classifier expansion (Patch 1 + 8):** TRIVIAL_RX shrunk (bare `look` removed; only `look around` stays trivial). EXPLORATION_RX expanded with ~25 new verb anchors (`find`, `peer`, `peek`, `scrutinize`, `notice`, `spot`, `comb`, `scan`, `figure out`, `discern`, `read closely/carefully/over`, `check for/the/over/inside/behind/under`, `look closely/carefully/harder/closer/over/inside/behind/under`, `look around carefully/closely/harder/intently/slowly`, `take a closer/careful/hard/good look`, `lift`, `hoist`, `pry`, `wrench`, `force open/the/it`, `break open/down/through`, `kick open/down`, `push X over/down/through/aside`, `haul`, `drag`, `tug`, `yank`, `scramble`, `swing on/off/across/over`, `shove X open/aside`, `shoulder X open`, `dodge`, `tumble`, `vault`, `balance`, `roll under/past/through`, `duck under/behind/into`, `creep`, `slink`, `tiptoe`, `sneak up`). EXPLORATION_DEFAULT_SKILLS extended with ~30 new skill-mapping entries routing to perception / investigation / athletics / acrobatics / insight / stealth as appropriate.
+  - `_PHYSICAL_BREAK_OPEN_RX` pre-COMBAT carve-out for "smash/bash/crush/break/shove X open|down|through|apart|in|aside" and "swing on/off/across/over X" — routes physical-exertion-shaped verbs to exploration athletics instead of being claimed by COMBAT_RX.
+  - **Sentinel detection (Patch 7):** `classify_action_intent` routes text starting with `[Roll resolution:` to `INTENT_META` → no-roll. Prevents cascading rolls in auto-fire narration.
+
+### Discord wiring
+
+- **`discord_dnd_bot.py`** (~150 LOC additive):
+  - `_LLM_EMIT_DIRECTIVE_RX` regex — handles operator-locked `**!check skill DC : Name**` format with optional colon-name suffix and `**` bold-close markers.
+  - `_parse_llm_emit_directive(response) → dict | None` — last-match-wins per spec §11.B.1.
+  - `_strip_dc_from_llm_emit(response) → str` — strips trailing DC integer while preserving bold markers and colon-name suffix.
+  - `_wrong_skill_aside(expected, actual) → str` analog to `_wrong_actor_aside` (spec §13).
+  - Writer hook in `_dm_respond_and_post` (post-channel-send, pre-`asyncio.create_task` for `_attach_hints`/`_extract_and_persist_world`): parses LLM emit cached pre-strip, writes pending row with parsed skill + DC, emits `llm_emit_directive_bound:` log.
+  - DC-strip applied to response text BEFORE `chroma_store` + embed-build, so player-facing message hides the DC while chroma/embed see the same stripped form.
+  - **dc-preservation (Patch 4):** `_handle_dm_roll_directive` checks existing pending row before upsert; if existing has dc=N AND new has no DC AND actor+skill match, skips the upsert and logs `directive_preserve_existing_dc:`. Prevents operator's manual `!check` echo from clobbering Ship A's row.
+  - **no-DC `#dm-aside` (Patch 9):** when resolution skips with `reason=no_dc`, matcher returns aside text for the async caller to post; helps operator see when the LLM forgot to include a DC.
+  - Plumbed `scene_state`, `active_turn`, `combatants`, `active_quests` from matcher to `resolve_directive` so texture computes at consume time.
+  - Skill-mismatch branch flipped from silent-ignore to log + aside per locked decision 12.
+
+### Prompt assembly
+
+- **`dnd_engine.py`** HARD STOP RULE 1 extended with DC-inclusion mandate.
+
+### Tests (~120 new assertions across 2 new + 4 extended files)
+
+- **NEW** `test_compute_stakes_tier.py` — 10 assertions.
+- **NEW** `test_llm_emit_writer.py` — 23 assertions (12 base + 7 DC strip + 4 operator-locked format).
+- **EXTENDED** `test_resolve_directive.py` — +6 texture assertions = 25 total.
+- **EXTENDED** `test_pending_roll_directives.py` — +2 cross-trigger assertions = 27 total.
+- **EXTENDED** `test_narration_verifier.py` — +3 regression (drift detection with texture) = 47 total.
+- **EXTENDED** `test_classify_action_intent.py` — +6 assertions for verb expansion + sentinel detection = 45 total.
+- **EXTENDED** `test_attack_directive.py` — +2 format-template assertions for the new `**!check skill <DC> : <First Name>**` shape = 40 total.
+
+### Telemetry log lines (new)
+
+- `llm_emit_directive_bound:` — fires when narration-emit writer creates a pending row from LLM emission.
+- `llm_emit_multi_directive_count:` — fires when LLM emits >1 directive in one response (telemetry for tuning).
+- `directive_skill_mismatch:` — fires on skill-mismatch path (Ship A decision 12 option b — log + aside, row stays alive).
+- `stakes_tier:` — fires when texture is computed; carries score breakdown for calibration.
+- `directive_preserve_existing_dc:` — fires when manual `!check` echo would have clobbered Ship A's dc=N row; the upsert is skipped.
+- `_llm_emit_directive_write error:` / `resolve_state_read error:` — soft-fail telemetry.
+
+## Live verification
+
+Walked across multiple turns in campaign 17 (Test10F → Donovan Ruby bound in dnd_characters + Avrae). Key events from journal:
+
+- `11:41:00 llm_emit_directive_bound: campaign=17 actor=Donovan Ruby skill=athletics dc=15 kind=check`
+- `11:41:10 directive_preserve_existing_dc: campaign=17 actor=Donovan Ruby skill=athletics existing_dc=15` (Patch 4 fired)
+- `11:41:10 directive_resolved: campaign=17 ... dc=15 roll_total=21 outcome=PASSED nat=20 crit=0`
+- `11:41:10 stakes_tier: tier=low ... score=0`
+- `11:41:13 verification: campaign=17 passed=1 violation_class=none`
+
+Operator's confirmation per screenshots:
+- ✅ No cascading second `!check` (Patch 7 confirmed)
+- ✅ Character name in directive (`: Donovan` suffix)
+- ✅ Roll request renders bold in embed (operator-confirmed bold-wrap survives DC strip)
+- ✅ Blank line between narrative and directive
+- ✅ DC hidden from player view (strip working)
+- ✅ Nat-20 PASSED case rendered memorable-success texture per §10.2 — "dwarf-born strength lifts the heavy lid clean off", "tightly wound bundle of parchment tied with a red ribbon and a glint of metal—a small iron key", NPC reactions (Eldrin + Lira)
+- ✅ Avrae compat for `**!check skill : Name**` bold-wrapped format
+
+## Bug 1 Phase 2 status
+
+Unchanged from S34 — Phase 2 trigger criteria all satisfied structurally by Ship 1 + Ship A. Both Finding L surfaces (DM-typed and LLM-emitted) now closed.
+
+## Doctrinal notes
+
+Three candidates accruing toward §59 anchoring discipline:
+
+- **C1 Engine-bound binding > validator** — three instances pending Ship A verify proof: Track 7 #1 CHECK_ACTION binding + Ship 1 Resolution Binding (DM-typed) + Ship A Resolution Binding (LLM-emitted, this ship). Anchoring deferred per locked decision 11 — wait for Ship A verify to confirm the shape holds. **All three instances now have clean live verify**; promotion to numbered §-entry could land in S37 doc-update or wait until a fourth instance surfaces (likely cast resolution binding when v1.x ships).
+- **C2 Reused vocabulary across sibling verifier classes** — Ship A doesn't add new verifier classes; C2 stays at one instance (ROLL_OUTCOME_DRIFT reusing VERDICT_CONTRADICTION's phrase tables). Reassess when F-55 #5.4 ships.
+- **C3 Single-writer compatible with multiple trigger surfaces** — one instance after Ship A (Ship 1's writer + Ship A's writer both calling `pending_directive_upsert`). Filed unanchored; anchor when second instance surfaces.
+
+## Surfaced for Ship 2 spec (filed as memory)
+
+S36 live-verify surfaced a time-of-day drift instance: bot narrated "Evening settles over the merchant market as lanterns flicker" while engine-tracked `dnd_scene_state.day_phase = 'Morning'`. LLM ignored canonical engine state when narrating time. Exactly the surface Ship 2 (Scene State Canon Discipline) is built to close. Logged as evidence for Ship 2's four-property latent-canon audit (per `project_ship2_drift_evidence.md` memory). Concrete examples accrue when natural play produces them — each tightens Ship 2's spec framing.
+
+## Cross-references
+
+- `specs/LLM_EMIT_RESOLUTION_BINDING_SPEC.md` LOCKED v1 — spec source.
+- `specs/LLM_EMIT_RESOLUTION_BINDING_REVIEW.md` — review pass with 6 framing revisions.
+- `MULTIPLAYER_FIXES.md` v3 §4 — Ship A architectural shape (canonical).
+- `ROADMAP.md` — Ship A row flipped ✅; FOOTINGS queue updated; Ship 2 next active.
+- `BUG_1_SPEC.md` — Phase 2 trigger criteria §L (server-only; both surfaces of Finding L now closed by Ship 1 + Ship A).
+
+## HALT escalations
+
+**None** during implementation. The five live-verify-surfaced issues were addressed in-session as Patches 4–9 without halting; each was a small, locally-scoped fix that didn't require architectural review.
+
+## Tabular handoff (S36)
+
+| Field | Value |
+|---|---|
+| **Code shipped** | `dnd_orchestration.py` (~400 LOC additive), `discord_dnd_bot.py` (~150 LOC additive), `dnd_engine.py` (HARD STOP RULE 1 extension) |
+| **Tests added** | ~120 assertions across 2 new + 4 extended files (test_compute_stakes_tier 10, test_llm_emit_writer 23, test_resolve_directive +6 = 25, test_pending_roll_directives +2 = 27, test_narration_verifier +3 = 47, test_classify_action_intent +6 = 45, test_attack_directive +2 = 40). |
+| **Tests passing** | 100% (all Ship A + classifier + adjacent suites green; pre-existing test_directive_emit + npc_extractor e2e failures unrelated). |
+| **Patches landed** | 9 (implementation + 7 live-verify-surfaced + 1 doc-update prep) |
+| **Live-verify result** | Clean. nat-20 PASSED texture rendered correctly. Zero cascading rolls. Avrae compat for bold-wrap format confirmed. All 5 operator-flagged issues resolved. |
+| **Promotion criteria met** | yes — Ship A ✅ SHIPPED LIVE |
+| **Doctrine candidates** | C1 has 3 clean instances; anchoring deferred per locked decision 11. C2 stays at 1 (no new verifier class). C3 filed at 1 (new candidate from §16.3). |
+| **HALT escalations** | None |
+| **Ship A status** | ✅ **PROMOTED** |
+| **Ship 2 status** | next active — spec drafts S37 per v3 §5. Drift evidence accruing (S36 time-of-day instance filed in memory). |
+| **Next session recommendation** | S37 — Ship 2 Scene State Canon Discipline spec drafting per `MULTIPLAYER_FIXES.md` v3 §5. Anchors candidate Doctrine §76 (recursive hallucination memory loop). Three subships: 2a delete `scene_state.location` LLM-write authority; 2b DELETE `established_details` field by default; 2c audit pass via four-property latent-canon test. Spec/review at Opus medium per v3 §5.3. |
+| **PC rsync** | All five doc-update files (`ROADMAP.md`, `SESSIONS.md`, `MULTIPLAYER_FIXES.md`, `tests-to-run-post-session.md`, `DOCTRINE.md`) + new spec/review pair + code files mirrored via `push-all-to-pc.sh` at end of session. |

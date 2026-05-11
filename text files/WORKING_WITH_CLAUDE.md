@@ -79,6 +79,28 @@ Jordan is not a developer by trade but builds like one when he cares about somet
 
 ---
 
+## Workflow refinements (S33–S35 cycle)
+
+Patterns that emerged during the multiplayer-fixes plan cycle and earned their place via repeated use:
+
+- **Loose-with-explicit-surface-clause is the deletion-safe framing when inventory is unknown.** When delegating file operations or categorization to Code on a surface the planner can't fully see (server-side filesystem, unknown subfolder contents), the prompt uses pattern-matching with explicit "surface anything you're unsure about" rather than a strict file list. Strict is fine when the planner accepts responsibility for omissions; loose with surface-clause is the correct framing when the agent has visibility the planner lacks. The choice is about who owns the consequences of "didn't think of that file," not about how much trust to extend.
+
+- **Time estimates are noise, sequencing is signal.** Code's calendar estimates ("2-4 hours," "9 days best case") have been consistently inflated 4-10x against actual velocity. Read time estimates as relative-complexity rankings ("Ship 2 is bigger than Ship 5") rather than wall-clock predictions. Don't surface calendar estimates as decision-relevant data unless Jordan asks. Sequencing and complexity comparisons stay useful; absolute day counts don't.
+
+- **Model selection is Jordan's call, not embedded in prompts.** The planner does not write `Model: Opus high` into Code prompts. The planner recommends a model with reasoning when asked; Jordan picks. The cadence table in this doc is reference material for Jordan's selection, not a prescription Claude applies unilaterally.
+
+- **Prompts paste into chat, not into the project folder.** Code prompts go in chat replies for Jordan to copy. They do not land as files in `text files/` or `specs/`. Prompts are single-use artifacts, not project documentation. If a prompt is large enough that it feels file-shaped, that's usually a sign the prompt is over-specified.
+
+- **Anticipated-friction dismissal must check evidence first.** When about to wave off a concern as "anticipated friction we'll handle if it surfaces," grep the actual playtest evidence or session logs for the pattern first. The multi-actor temporal state question got dismissed twice as anticipated, when concrete S32 evidence was already in hand. Rule: when reaching for the "anticipated friction" framing, check that the framing is honest about what's anticipated vs already-observed.
+
+- **When two thoughtful reviewers reach opposite conclusions, surface the axis disagreement.** Don't collapse to a unilateral planner recommendation. GPT-first vs Gemini-first on Ship 1 vs Ship 2 ordering was a real axis disagreement (cumulative-compounding vs episodic-recoverable). Right move was surfacing both arguments to Jordan and letting his trigger statement settle which axis to optimize for. Wrong move would have been asserting one as "the obvious call."
+
+- **Minimum-viable filter when reviewers propose architectural infrastructure.** When GPT or Gemini proposes a new abstraction (Scene Entity Graph, EncounterState rebuild, validator framework), the reflex is "what's the smallest version that captures the principle" not "reject the prescription wholesale." The principle is usually right; the implementation is usually overshoot. Three instances of this in S33 alone (scene-scope-first resolution, SceneComposition aggregator, Avrae-as-projection trajectory) — each survived as a minimum-viable version after the reflex was applied correctly.
+
+- **Planner does not add doc edits without earned justification.** When mid-conversation it feels like "we should also file X candidate while we're here," the integrity check is whether X has a concrete need or whether it's planner-side momentum. Filing candidates pre-emptively bloats the candidate space; filing when concrete need surfaces keeps the candidates load-bearing. The discipline applies to the planner as much as to Code.
+
+---
+
 ## Spec-then-review-then-implement cadence
 
 The dominant work pattern since Session 16 is three-session cycles for any architectural ship:
@@ -218,6 +240,8 @@ If Code is unsure which files to push, the answer is "the files this session tou
 **Syntax check before restart:** `python3 -c "import ast; ast.parse(open('/path/to/file.py').read())"` runs as part of every Code ship. A syntax error takes the whole bot down, so this is mandatory.
 
 **Structural verify happens during the ship; behavioral verify is a human-in-the-loop handoff afterward** (Doctrine §73, learned S27). Code restarts the bot ONCE at end of session, confirms structural soundness (tests pass, syntax check, modules import, migration applied), then produces a numbered list of Discord prompts for Jordan with expected behavior per step. Jordan walks the prompts in Discord and replies "ok done." Code reads `journalctl` and verifies expected log shapes. If verification fails, the fix ships in a new session — never two restarts in the same session. Module-import validation runs via `python3 -c "import <module>"`, never via `systemctl restart`. Restart is the deploy step, not the feedback loop.
+
+**Code reads logs; Jordan walks Discord.** When live-verify needs both Discord input and journalctl observation, Code does NOT ask Jordan to check journalctl and report back. Jordan's job in the verify loop is to type the Discord commands and reply "ok done" or describe what he saw on screen. Code reads `journalctl --user -u virgil-discord` itself, greps for the expected log shapes, and reports verification results. Asking Jordan to grep logs and report findings inverts the role split — Code has shell access; Jordan has the Discord client. Each side does what they have direct access to.
 
 **Cloudflare-WAF amplifier (S27 evidence):** cluster-restarts hit Cloudflare's edge-tier rate limit (Discord error 40062), distinct from Discord's per-endpoint application rate limits. The cooldown is multi-hour to overnight, decays per-endpoint not globally (login can thaw before message-send/typing endpoints — a 4-minute login latency is the canary signal that endpoints are still cold). Systemd hardening caps restart attempts via `StartLimitIntervalSec=300` + `StartLimitBurst=3` in the unit file; after 3 failures in 5 min, manual intervention required. Do not bypass the cap to retry faster — it's the structural fix for the amplifier.
 
