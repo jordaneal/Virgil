@@ -41,6 +41,7 @@ For "how do I work with Claude" → `WORKING_WITH_CLAUDE.md`
 - **[Session 34 #2 — Multiplayer Fixes Plan V3: Primary-Surface Re-Diagnosis, Avrae Recon, Promotion](#session-34-2--multiplayer-fixes-plan-v3-primary-surface-re-diagnosis-avrae-recon-promotion-may-11-2026)** — No code. Planning ship. v2 → v3 re-sequence inserts Ship A (LLM-Emitted-Directive Resolution Binding) at front of post-Ship-1 queue; 12 §12 decisions locked; Avrae A.2 recon cleared (form (a) clean — Avrae ignores trailing integer); v3 promoted to canonical. v2 archived at `_trash/MULTIPLAYER_FIXES_V2_20260511.md`.
 - **[Session 35 — Ship A Spec + Review (DRAFT → LOCKED)](#session-35--ship-a-spec--review-may-11-2026)** — `LLM_EMIT_RESOLUTION_BINDING_SPEC.md` drafted (18 decisions: 12 pre-locked + 6 surfaced); review pass (S35b) applied 6 framing revisions; spec LOCKED v1.
 - **[Session 36 — Ship A Implementation + 9 Live-Verify Patches](#session-36--ship-a-implementation--9-live-verify-patches-may-11-2026)** — Ship A SHIPPED LIVE. ~120 test assertions across 2 new + 4 extended files. Live verify clean: nat-20 PASSED case rendered with memorable-success texture; zero cascading rolls; Avrae compat confirmed for `**!check skill : Name**` bold-wrapped format. 9 patches landed in one session covering classifier coverage, DC strip, dc-preservation, emit-template, sentinel detection (cascading-roll fix), wider verb coverage, and no-DC `#dm-aside` notification.
+- **[Session 37 — Hybrid Combat Exploration: GPT + Gemini External Review → v3 Two-Horizon Reframe](#session-37--hybrid-combat-exploration-gpt--gemini-external-review--v3-two-horizon-reframe-may-11-2026)** — No code. Architectural exploration session. Ship 2 spec drafting started but paused mid-prompt when Jordan surfaced extended-play concerns (novelty/repetition + combat-pacing friction). Drafted `HYBRID_COMBAT_NOTES.md` through three iterations: v1 hybrid combat concept; v2 incorporated ChatGPT's 4-tier compression ladder + 9 architectural flags; v3 incorporated Gemini's structural pushback ("can't compress 5e without breaking 5e") plus broader directive (playtest-first, freeze feature list, ship dumb combat, listener edge-case verify). v3 reframes as two-horizon: long-term architectural vision preserved as reference design only; near-term execution is disciplined retreat per Gemini's discipline — finish Ships 2-3, ship listener verification + dumb combat, extensive playtest phase, then MVP-test Ships 4-5. ROADMAP updated with reframe; Ships 4 and 5 flagged for MVP-test scrutiny.
 
 ---
 
@@ -1768,3 +1769,114 @@ S36 live-verify surfaced a time-of-day drift instance: bot narrated "Evening set
 | **Ship 2 status** | next active — spec drafts S37 per v3 §5. Drift evidence accruing (S36 time-of-day instance filed in memory). |
 | **Next session recommendation** | S37 — Ship 2 Scene State Canon Discipline spec drafting per `MULTIPLAYER_FIXES.md` v3 §5. Anchors candidate Doctrine §76 (recursive hallucination memory loop). Three subships: 2a delete `scene_state.location` LLM-write authority; 2b DELETE `established_details` field by default; 2c audit pass via four-property latent-canon test. Spec/review at Opus medium per v3 §5.3. |
 | **PC rsync** | All five doc-update files (`ROADMAP.md`, `SESSIONS.md`, `MULTIPLAYER_FIXES.md`, `tests-to-run-post-session.md`, `DOCTRINE.md`) + new spec/review pair + code files mirrored via `push-all-to-pc.sh` at end of session. |
+
+---
+
+# Session 37 — Hybrid Combat Exploration: GPT + Gemini External Review → v3 Two-Horizon Reframe (May 11, 2026)
+
+No code. Architectural exploration session. Started as S37 Ship 2 spec drafting prep but pivoted when Jordan surfaced two extended-play concerns: novelty/repetition fatigue over long campaigns, and combat-pacing friction (30-minute init-based combats feel wrong in conversational AI play). Outcome: three iterations of `HYBRID_COMBAT_NOTES.md` (v1 → v2 → v3) plus ROADMAP refresh, no code shipped, no spec drafted. Ship 2 spec drafting deferred to S38.
+
+## Narrative arc
+
+The session began with Ship 2 spec-drafting prompt assembly, but Jordan paused mid-prompt to raise extended-play concerns coming out of the S36 Ship A screenshot. The architectural exploration that followed produced more useful output than any premature spec would have.
+
+**v1 (`HYBRID_COMBAT_NOTES.md` initial draft).** Captured hybrid combat as a candidate architecture: mechanical depth retained (Avrae owns math, class identity preserved, HP/rests/conditions track normally) but turn cadence replaced with narrative beats. Five state axes (momentum, danger, positioning, enemy intent, injury state) modeled per encounter. Multi-effect resolution per beat. Encounter ends objective-driven, not strictly HP-driven. Filed seven open architectural questions.
+
+**v2 (post-ChatGPT review).** ChatGPT surfaced nine architectural flags and one structural reframe (4-tier combat compression ladder). Walked each flag individually:
+- FLAG 1: hidden init is still init — need priority window system for engine-internal sequencing
+- FLAG 2: multi-effect beats risk over-compression destroying tactical texture
+- FLAG 3: reactions become cognitively explosive without filtering — four-tier reaction system (auto/interrupt/cinematic/silent)
+- FLAG 4: spellcasters favored over martials in compressed beats — candidate martial spotlight mechanics filed
+- FLAG 5: enemy intent risks becoming fake state — intent durability locked, engine-write-only per Ship 2's canon discipline
+- FLAG 6: shared-beat multiplayer unresolved — declaration windows replace lead-narrator-driven
+- FLAG 7: state explosion under multiplayer — positioning at narrative granularity (zones/engagement groups/ranges/threat relationships), no grid simulation
+- FLAG 8: encounter endings need stronger structure — explicit objectives (defend/escape/interrupt/survive/negotiate) beyond default `wipe_enemies`
+- FLAG 9: Avrae compatibility is the hardest engineering constraint — bookkeeping-vs-engine fork, Option A (bookkeeping) recommended
+
+Plus ChatGPT's strongest recommendation: combat compression ladder (Tier 0 trivial / Tier 1 skirmish / Tier 2 dangerous / Tier 3 boss-setpiece). v2 incorporated all nine flags + the ladder, expanded F-55 cluster reshape with five new siblings (#5.6-#5.10), filed `compute_stakes_tier` as load-bearing for tier selection.
+
+**v3 (post-Gemini binary-toggle pushback + Gemini broader directive).** Gemini pushed back on two fronts:
+
+*Combat-specific (binary toggle review):* "You cannot compress 5e without breaking 5e." The 4-tier ladder violates player agency at Tier 0/1 — if the engine resolves a goblin in one roll, the rogue doesn't get Cunning Action, the wizard doesn't get Shield, the fighter doesn't get Action Surge. Proposed binary toggle instead: Mode A (skill challenge for trivial conflicts, using Ship A's existing `!check` infrastructure) + Mode B (standard Avrae init with LLM-narrated transitions for tactical combat). Simpler, more honest, solo-dev-realistic, preserves full mechanical agency.
+
+*Broader directive (full-repo review):* The project is at the "almost there" phase where feature creep and architectural perfectionism stall a project indefinitely. Specific directive: freeze the feature list, define MVP (the loop Ship 1 + Ship A just shipped IS the MVP for non-combat play), establish strict boundaries (Avrae owns math, bot owns narrative wrap, no parallel physics/positioning/tracking engine), optimize compute economy (no prompt bloat), execution plan = (1) lock down listener for 5e edge cases, (2) ship dumb combat, (3) playtest extensively, let observed friction dictate next architectural sprint. Closing line: "Stop designing hypothetical fixes for pacing issues you haven't fully experienced yet."
+
+Jordan called the move: long-term vision survives as reference design, near-term execution is the structural retreat per Gemini's discipline. v3 reframes as two-horizon doc:
+
+**Near-term execution path (v3 §3):**
+1. Finish Ship 2 (Scene State Canon Discipline)
+2. Finish Ship 3 (NPC State-Sync Boundary)
+3. Playtest phase — extensive multi-hour solo + small-group sessions, no new architecture
+4. MVP-test Ships 4 and 5 against playtest evidence
+5. Listener edge-case verification ship
+6. "Dumb combat" ship (standard Avrae init + LLM-narrated transitions, no hidden init, no compression, no parallel state)
+7. Evaluate based on observed friction
+
+**Long-term reference design (v3 §4-§5):** Compression ladder (Tier 0 reframed as skill challenge using Ship A infrastructure; Tier 1-3 collapse to "standard Avrae init with varying narration intensity"). Priority window system. Reaction tier system. Enemy intent state. Encounter objectives. Class identity preservation mechanics. All filed as candidates that earn their keep only if playtest-observed friction justifies. F-55 cluster expansion to #5.6-#5.10 from v2 removed.
+
+v3 also explicitly rejects parallel positioning state entirely (per Gemini FLAG 3 broader pushback) and resolves the bookkeeping-vs-engine fork as Avrae-is-bookkeeping-AND-engine (no fork needed) per Gemini's Mode B framing.
+
+## What shipped
+
+No code. No spec. Three planning artifacts:
+
+- `HYBRID_COMBAT_NOTES.md` v3 — written at `text files/HYBRID_COMBAT_NOTES.md` (PC; needs push to server). 200+ lines. Two-horizon framing locked. Long-term reference design preserved; near-term execution disciplined.
+- `ROADMAP.md` updated — Last-updated stamp reflects S37 realignment; Multiplayer Fixes plan row reflects MVP-test scrutiny on Ships 4/5 + inserted playtest phase; FOOTINGS queue paragraph rewritten with post-Ship-3 next ships (listener verification, dumb combat, playtest phase, then MVP-test 4/5).
+- `SESSIONS.md` (this entry) — captured for traceability.
+
+No `MULTIPLAYER_FIXES.md` body changes — plan stays canonical; the reframe is captured at the ROADMAP layer and in `HYBRID_COMBAT_NOTES.md` as the controlling discipline doc.
+
+## Decisions locked
+
+1. **`HYBRID_COMBAT_NOTES.md` v3 stays as reference design only.** No combat architecture commits without playtest evidence.
+2. **Ships 2 and 3 of multiplayer-fixes plan ship as scoped.** Both close observed-friction seams from S32.
+3. **Ships 4 and 5 flagged for MVP-test scrutiny.** Ship 4 (Finding B name-resolution drift) may be cosmetic enough to defer; Ship 5 (polish) is cosmetic by definition.
+4. **Playtest phase inserts after Ship 3.** 3-5 multi-hour solo + small-group sessions; explicit notes on pacing/content/combat/novelty friction. This is the gate for any further architectural commits.
+5. **Listener edge-case verification ship is a real ship.** Confirms `avrae_listener.py` handles advantage, disadvantage, crits (attack + damage doubling), resistance/vulnerability, multi-attack embeds, saves with halved damage, death saves.
+6. **"Dumb combat" ship is the next combat ship.** Standard Avrae `!init begin` + bot-narrated transitions. No hidden init, no compression, no parallel state surfaces. Minimum viable.
+7. **F-55 cluster expansion (#5.6-#5.10) from v2 is dropped.** Long-term architectural candidates exist in `HYBRID_COMBAT_NOTES.md` v3 §5 but are not roadmapped.
+8. **Bookkeeping-vs-engine fork is resolved.** Avrae is bookkeeping AND engine. No translation layer. No parallel positioning state.
+9. **The hybrid combat doc as currently written is NOT authorization to design more combat architecture before playtest.** Architectural ambition without playtested grounding is the failure mode being explicitly avoided.
+
+## Doctrinal notes
+
+Three planner-discipline patterns surfaced or sharpened this session, worth holding:
+
+- **Two-horizon framing for architectural ambition.** When external review surfaces a structural conflict between vision and execution-capacity, the resolution is not to pick one. The resolution is to preserve both at different time scales: long-term architectural vision survives as reference design (so insights don't evaporate when the queue closes), near-term execution gets disciplined explicitly against observed friction (so the project doesn't stall on speculative work). This is the discipline `HYBRID_COMBAT_NOTES.md` v3 embodies.
+- **External review at architectural inflection points pays for itself.** Three iterations of GPT + Gemini review produced material improvements that planner-side review alone would have missed. The convergence (compression has real costs, mechanical depth must be preserved, objectives matter) is stronger signal than any single voice. The divergence (4-tier ladder vs binary toggle, hidden init vs visible init, positioning state vs no positioning state) surfaces axis disagreements that force explicit choice rather than collapse to false consensus. The pattern recurred at S33 (GPT-first vs Gemini-first on Ship 1 vs Ship 2 ordering) and S37 (GPT compression ladder vs Gemini binary toggle).
+- **Evolve from observed friction, not anticipated friction — applied to architecture itself.** The discipline was already in WORKING_WITH_CLAUDE.md as a coding rule. S37 extends it to architectural ambition. The hybrid combat doc as originally drafted was speculative — the 30-minute combat problem hadn't been experienced in real play, only anticipated theoretically. Gemini's broader directive enforced the same discipline at the architecture layer: don't design fixes for friction you haven't experienced. The discipline applies recursively.
+
+## Surfaced for future doctrine consideration
+
+- **Planner-discipline pattern: when external review surfaces a structural conflict, two-horizon resolution preserves both.** Worth filing as candidate once a second instance surfaces (current instance: S37 hybrid combat doc preserves long-term vision in §5 while disciplining near-term execution in §3). Promotion to numbered doctrine when second instance ships.
+- **Strategic inflection points warrant explicit pause and re-evaluation.** The S33 multiplayer-fixes plan revision came from real evidence (S32 playtest with a tabletop-experienced DM friend). The S37 hybrid combat exploration came from working through what extended play would actually look like, grounded against external review. Neither was deflection from the queue — both were the queue self-correcting based on real evidence about what the project should actually be. The discipline is not "never pause" but "don't pause for speculation." Pausing for grounded re-evaluation when real evidence accumulates is correct. Worth holding: the project's biggest architectural improvements have come at these inflection points, not during steady-state ship cycles.
+
+## Cross-references
+
+- `HYBRID_COMBAT_NOTES.md` v3 — the controlling document for this session's architectural output.
+- `ROADMAP.md` — Last-updated stamp + Multiplayer Fixes plan row + FOOTINGS queue paragraph all updated with the reframe.
+- `MULTIPLAYER_FIXES.md` v3 — plan stays canonical; the reframe is at the ROADMAP layer, not in the plan body.
+- `WORKING_WITH_CLAUDE.md` — "evolve from observed friction, not anticipated friction" discipline cited.
+- ChatGPT review (S37 external) — nine flags + 4-tier compression ladder.
+- Gemini review (S37 external) — binary toggle pushback + broader directive (playtest-first, feature freeze).
+
+## HALT escalations
+
+**None.** The session was exploratory by design; no implementation locked in that would have surfaced HALT conditions.
+
+## Tabular handoff (S37)
+
+| Field | Value |
+|---|---|
+| **Code shipped** | None. Planning + architectural exploration only. |
+| **Tests added** | None. |
+| **Tests passing** | N/A. |
+| **Patches landed** | None. |
+| **Live-verify result** | N/A. |
+| **Promotion criteria met** | N/A — no ship to promote. |
+| **Doctrine candidates** | One filed (two-horizon framing for architectural ambition). One pattern emerging (architectural-exploration pause from planned spec session) at two instances; promotion to candidate at third instance. |
+| **HALT escalations** | None. |
+| **Architectural artifacts** | `HYBRID_COMBAT_NOTES.md` v3 (PC, needs server push). `ROADMAP.md` updated. `SESSIONS.md` S37 entry (this). |
+| **Ship 2 status** | Spec drafting deferred to S38. Prompt context preserved; no re-read required on the spec-drafting agent. |
+| **Next session recommendation** | **S38 — Ship 2 Scene State Canon Discipline spec drafting** per `MULTIPLAYER_FIXES.md` v3 §5. Anchors candidate Doctrine §76 (recursive hallucination memory loop). Three subships: 2a delete `scene_state.location` LLM-write authority; 2b DELETE `established_details` field by default; 2c audit pass via four-property latent-canon test. The S37 architectural detour does NOT change Ship 2's scope — Ship 2 closes Finding A (recursive hallucination), independent of any combat architecture work. Spec/review at Opus medium per v3 §5.3. |
+| **PC rsync** | `HYBRID_COMBAT_NOTES.md` (new file), `ROADMAP.md` (updated), `SESSIONS.md` (this entry) need server push. No code files touched. |
