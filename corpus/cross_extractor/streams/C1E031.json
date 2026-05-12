@@ -1,0 +1,2861 @@
+{
+  "episode_combined": "C1E031",
+  "campaign": "C1",
+  "episode_int": 31,
+  "total_records": 31,
+  "per_source_counts": {
+    "TM": 18,
+    "CC": 4,
+    "EC": 3,
+    "LR": 6
+  },
+  "events": [
+    {
+      "source": "TM",
+      "turn_number": 23,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0095,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Cool. So that's awesome. Next announcement, for those who haven't had a chance to see it. A little over a year ago I Kickstarted a web series with a bunch of other really talented people. Sean Becker, who is director of The Guild, directed it. It's called Muzzled the Musical. Ashly Burch, a bunch of great talented people from The Lizzie Bennet Diaries and a bunch of other web series, Juliet Landau is in it. It's a great fun web series and it went live last week right before Halloween. So we have our three-episode arc up on YouTube. If you like musicals and you like fun silly dark, Doctor Horrible-style performances, then you're going to like this. Check it out, see if you like it. Let's see. Oh yeah, tomorrow is BlizzCon. BlizzCon, for all you crazy guys who are going or those who are watching on the digital online pass. A bunch of us Critters will be wandering the halls, doing panels and all kinds of fun stuff. Like, for me personally, I'll be there tomorrow at 4:30. I think, Liam, you are on that as well?",
+        "preceding_context_chars": 386,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a year",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Make more stuff for you guys, yeah.",
+            "turn_number": 16
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, the more that we can show the people upstairs that people do like our stuff and our content, the more you will get. So please go check it out if you have not yet. It helps.",
+            "turn_number": 17
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Here, actually, do this with me. Let's make a double rainbow gif, for later. (laughter)",
+            "turn_number": 18
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's beautiful.",
+            "turn_number": 19
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's on you, CritRoleSource.",
+            "turn_number": 20
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's on you, internet.",
+            "turn_number": 21
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You're welcome.",
+            "turn_number": 22
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 88,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.0363,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "for the next week",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "The last announcement is that they announced that The Witcher is coming to theaters in a couple of years, and that has nothing to do with us, other than the fact that I'm probably going to be at full mast for the next week, thinking of that possibility.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "LIAM",
+            "text": "I'm not familiar with that. What is that?",
+            "turn_number": 83
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's some game. Takes place in outer space.",
+            "turn_number": 84
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Is that a match three? Like Bejeweled?",
+            "turn_number": 85
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's like Candy Crush, but with more death.",
+            "turn_number": 86
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's available on Android.",
+            "turn_number": 87
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 88,
+      "category": "scene_transition",
+      "episode_position_pct": 0.0363,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "The last announcement is that they announced that The Witcher is coming to theaters in a couple of years, and that has nothing to do with us, other than the fact that I'm probably going to be at full mast for the next week, thinking of that possibility.",
+        "preceding_context_chars": 439,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the next week",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "I directed one, too, called Yoyotoki Happy Ears. So that's on there too.",
+            "turn_number": 79
+          },
+          {
+            "speaker": "MATT",
+            "text": "How's that go, again?",
+            "turn_number": 80
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yoyotoki Happy Ears. It's really weird and funny, and it's actually really awesome.",
+            "turn_number": 81
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Also, Halo 5 is out this week, which Laura and I are in. It's amazing.",
+            "turn_number": 82
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm not familiar with that. What is that?",
+            "turn_number": 83
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's some game. Takes place in outer space.",
+            "turn_number": 84
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Is that a match three? Like Bejeweled?",
+            "turn_number": 85
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's like Candy Crush, but with more death.",
+            "turn_number": 86
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's available on Android.",
+            "turn_number": 87
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 103,
+      "category": null,
+      "episode_position_pct": 0.0425,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So that's pretty cool. So to get you guys up to speed with the circumstance that has happened, those especially that are tuning in for the first time. A couple known as the Briarwoods that took over the city of Whitestone five years before, murdering most of the ruling family of Percy-- other than himself, escaping-- have recently been doing political discussions with the home city of Emon. Vox Machina, our troop of intrepid adventurers, upon discovering this, battled them at Emon. They fled to Whitestone, and the party has then gone after to seek to destroy them and free the town, the once-home to Percival. In the process, it appears that there have been a number of warnings set, and the entire town has been long held under this dark, ominous rule that they have kept at bay. Apparently, they have found notes of previous, failed rebellions, and things that die here don't seem to stay dead. A number of zombified giants are wandering the city as these giant lurching sentinels. And apparently, a number of the cutthroats that helped the Briarwoods come to power in this town have now been given titles and land here and are now called the new nobles by the locals. During this process, you guys managed to sneak into the town, began setting out word of coming rebellion and that Percival de Rolo has returned and the Briarwoods' time is numbered. Upon meeting the previous chancellor to your father of the town, Archibald, you guys came to an understanding, and he was going to reach out to all of his contacts and let them know that the rebellion is happening. You guys then set out to set a two-pronged attack against two of the remaining new nobles in the town. Most of the party going to seek the outside of Count-- what's his name?",
+        "preceding_context_chars": 793,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "five years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "They will. It'll be Mark Wahlberg.",
+            "turn_number": 92
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, no, no!",
+            "turn_number": 93
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Channing Tatum.",
+            "turn_number": 94
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Will Ferrell.",
+            "turn_number": 95
+          },
+          {
+            "speaker": "MATT",
+            "text": "I will... I would not!",
+            "turn_number": 96
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Channing Tatum is Geralt of Rivia.",
+            "turn_number": 97
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Done! Let's make this happen.",
+            "turn_number": 98
+          },
+          {
+            "speaker": "MATT",
+            "text": "Don't. Guys, I will stop this show. Your DM is out! If Channing Tatum becomes Geralt, I will be so furious. He's great at certain roles. I loved him in... I absolutely adored him in the 21 Jump Street movies.",
+            "turn_number": 99
+          },
+          {
+            "speaker": "SAM",
+            "text": "I guess he's not coming on our show, jeez.",
+            "turn_number": 100
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's enough of our silly talk. Let's go ahead and dive into the chaos that is the current circumstance. Keep in mind, the culmination of leading into Halloween with this story arc and now going and starting a rebellion in Whitestone on the Fifth of November has been a very delightful, unintentional coordination here.",
+            "turn_number": 101
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I almost wore my special spider belt, too, but it felt too weird.",
+            "turn_number": 102
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 109,
+      "category": "SCENE_CUT",
+      "episode_position_pct": 0.045,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "we cut to",
+        "extracted_surface_form": "explicit_cut",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "So that's your triceratops form. After becoming a triceratops, you squashed the front guard that was there, you slammed through the front of the building, destroying the front door, and we cut to the other group who is stealthing through the rain. At which point, the okay was given to Grog, whether intentionally or not. Grog then charged to the front door of Tylieri's estate, and the rest of you prepared for impact. And that was where we left off, in the center of this chaos.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Count Dooku.",
+            "turn_number": 104
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Count Duke.",
+            "turn_number": 105
+          },
+          {
+            "speaker": "MATT",
+            "text": "Duke Vedmeyer was the one that Scanlan went to, and then Tylieri is the one that the rest of you wandered outside. Now, as the rain pours down into the city, midday. Scanlan decided to open from a Polymorph spell, as a fly, to the top of the front doorstep of Vedmeyer's home. Then, proceeding to un-Polymorph and re-Polymorph into a triceratops. Of which, I have your statistics here for your triceratops form, if you want to come get that.",
+            "turn_number": 106
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Go get them stats, boy!",
+            "turn_number": 107
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "(chanting) Stats, stats, stats!",
+            "turn_number": 108
+          }
+        ]
+      }
+    },
+    {
+      "source": "EC",
+      "turn_number": 144,
+      "category": "interruption",
+      "episode_position_pct": 0.0594,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "In fact, roll initiative.",
+        "preceding_context_chars": 1425,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": false,
+        "narration_buildup_chars": 875,
+        "nearest_prior_trigger_turn_distance": null,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Lovely decor.",
+            "turn_number": 128
+          },
+          {
+            "speaker": "MATT",
+            "text": "You also notice that the entire interior is currently filled with guards. All seemingly prepared and almost expecting your arrival.",
+            "turn_number": 129
+          },
+          {
+            "speaker": "SAM",
+            "text": "I think I can take them, guys. I think I can take them.",
+            "turn_number": 130
+          },
+          {
+            "speaker": "MATT",
+            "text": "You also see, at the top, Duke Vedmeyer himself. A large, hairless, grey-skinned goliath, wielding a giant two-handed sword, armored with a breastplate.",
+            "turn_number": 131
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Vecmeyer?",
+            "turn_number": 132
+          },
+          {
+            "speaker": "MATT",
+            "text": "Vedmeyer.",
+            "turn_number": 133
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's a goliath?",
+            "turn_number": 134
+          },
+          {
+            "speaker": "MATT",
+            "text": "He's a goliath, yeah.",
+            "turn_number": 135
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Vedmeyer is a goliath?",
+            "turn_number": 136
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wow, that's going to be fun later, but not right now. Okay, do I know? So, let's assess my knowledge real quick. I know about him a little bit. He is one of the thugs that came into the city.",
+            "turn_number": 137
+          },
+          {
+            "speaker": "MATT",
+            "text": "Correct.",
+            "turn_number": 138
+          },
+          {
+            "speaker": "SAM",
+            "text": "He is not a magic-wielder, as far as I know.",
+            "turn_number": 139
+          },
+          {
+            "speaker": "MATT",
+            "text": "As far as you know, no. And at first glance, based on the fact that he is wearing heavy breastplate and is wielding a giant two-handed sword, you get the feeling he is probably not as heavily inclined towards the arcane arts as others you have encountered.",
+            "turn_number": 140
+          },
+          {
+            "speaker": "SAM",
+            "text": "As I quickly survey the room, do I see anyone else who is a threat greater than a heavily armed guard? Anything that is a creepy wizard or a weird old mage?",
+            "turn_number": 141
+          },
+          {
+            "speaker": "MATT",
+            "text": "Currently, no. Currently, all you see are a series of Whitestone guards in uniform armor, all with heavy crossbows, currently nocked. And as you come blasting through the door, they are already arranged in what appears to be a waiting pattern, should anything try and charge its way into the house.",
+            "turn_number": 142
+          },
+          {
+            "speaker": "SAM",
+            "text": "So they'll probably all shoot me, won't they?",
+            "turn_number": 143
+          }
+        ]
+      }
+    },
+    {
+      "source": "EC",
+      "turn_number": 152,
+      "category": "interruption",
+      "episode_position_pct": 0.0627,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "Roll initiative.",
+        "preceding_context_chars": 1495,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": false,
+        "narration_buildup_chars": 924,
+        "nearest_prior_trigger_turn_distance": 8,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "He's a goliath, yeah.",
+            "turn_number": 135
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Vedmeyer is a goliath?",
+            "turn_number": 136
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wow, that's going to be fun later, but not right now. Okay, do I know? So, let's assess my knowledge real quick. I know about him a little bit. He is one of the thugs that came into the city.",
+            "turn_number": 137
+          },
+          {
+            "speaker": "MATT",
+            "text": "Correct.",
+            "turn_number": 138
+          },
+          {
+            "speaker": "SAM",
+            "text": "He is not a magic-wielder, as far as I know.",
+            "turn_number": 139
+          },
+          {
+            "speaker": "MATT",
+            "text": "As far as you know, no. And at first glance, based on the fact that he is wearing heavy breastplate and is wielding a giant two-handed sword, you get the feeling he is probably not as heavily inclined towards the arcane arts as others you have encountered.",
+            "turn_number": 140
+          },
+          {
+            "speaker": "SAM",
+            "text": "As I quickly survey the room, do I see anyone else who is a threat greater than a heavily armed guard? Anything that is a creepy wizard or a weird old mage?",
+            "turn_number": 141
+          },
+          {
+            "speaker": "MATT",
+            "text": "Currently, no. Currently, all you see are a series of Whitestone guards in uniform armor, all with heavy crossbows, currently nocked. And as you come blasting through the door, they are already arranged in what appears to be a waiting pattern, should anything try and charge its way into the house.",
+            "turn_number": 142
+          },
+          {
+            "speaker": "SAM",
+            "text": "So they'll probably all shoot me, won't they?",
+            "turn_number": 143
+          },
+          {
+            "speaker": "MATT",
+            "text": "In fact, roll initiative.",
+            "turn_number": 144
+          },
+          {
+            "speaker": "SAM",
+            "text": "So directly in front of me, there's a staircase going up?",
+            "turn_number": 145
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep.",
+            "turn_number": 146
+          },
+          {
+            "speaker": "SAM",
+            "text": "Any other doors or exits?",
+            "turn_number": 147
+          },
+          {
+            "speaker": "MATT",
+            "text": "There are doors on each side that are currently locked, and other than that, no.",
+            "turn_number": 148
+          },
+          {
+            "speaker": "SAM",
+            "text": "Those are locked doors?",
+            "turn_number": 149
+          },
+          {
+            "speaker": "MATT",
+            "text": "They are closed currently, and they appear to be-- There's a giant wooden beam crossed over the front of each. Then there's the outside which leads to the exterior, to the raining outside of the household, and the stairs that go up.",
+            "turn_number": 150
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, man.",
+            "turn_number": 151
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 199,
+      "category": null,
+      "episode_position_pct": 0.0821,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's now your worst nemesis.",
+        "preceding_context_chars": 783,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Over here? It's about 35 feet.",
+            "turn_number": 184
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm going to turn right and blast through that door. (laughter)",
+            "turn_number": 185
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay!",
+            "turn_number": 186
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh shit, it could be trapped. Well, we'll find out.",
+            "turn_number": 187
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Expect the unexpected with Scanlan Shorthalt.",
+            "turn_number": 188
+          },
+          {
+            "speaker": "MATT",
+            "text": "He goes blasting through the doors.",
+            "turn_number": 189
+          },
+          {
+            "speaker": "SAM",
+            "text": "Do I have to roll to blast through the doors?",
+            "turn_number": 190
+          },
+          {
+            "speaker": "MATT",
+            "text": "We are going to find out. Yeah, go ahead and roll a strength check. Roll a d20 and add your strength modifier of the triceratops form.",
+            "turn_number": 191
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, strength modifier says plus five. So that's only a 17.",
+            "turn_number": 192
+          },
+          {
+            "speaker": "LAURA",
+            "text": "For a door!",
+            "turn_number": 193
+          },
+          {
+            "speaker": "SAM",
+            "text": "Me and doors don't get along too well.",
+            "turn_number": 194
+          },
+          {
+            "speaker": "MATT",
+            "text": "You, running, slam your head in, through, the horns protruding and tearing through the wood. The doors break inward, but the doors don't fully blast inward.",
+            "turn_number": 195
+          },
+          {
+            "speaker": "SAM",
+            "text": "The door beat me!",
+            "turn_number": 196
+          },
+          {
+            "speaker": "MATT",
+            "text": "The door is in bad shape. It won't take much more power to blast through.",
+            "turn_number": 197
+          },
+          {
+            "speaker": "SAM",
+            "text": "These fucking doors.",
+            "turn_number": 198
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 367,
+      "category": null,
+      "episode_position_pct": 0.1515,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "From their direction it's kind of hard. Especially because there's a table and chairs up against it, and part of it has been crushed by a triceratops that was previously here.",
+        "preceding_context_chars": 712,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it has been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "All right, one more round. What do you say, guys?",
+            "turn_number": 355
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We're not here.",
+            "turn_number": 356
+          },
+          {
+            "speaker": "SAM",
+            "text": "One more round. I am going to-- fuck. Do I have line-of-sight on the door?",
+            "turn_number": 357
+          },
+          {
+            "speaker": "MATT",
+            "text": "The door is right here. So you're by the window. So if you wanted to move over here, then you would have line of sight on pretty much everybody.",
+            "turn_number": 358
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, that would be so fun.",
+            "turn_number": 359
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You could move and then move back. I'm only helping with gameplay strategy.",
+            "turn_number": 360
+          },
+          {
+            "speaker": "SAM",
+            "text": "He could brain me.",
+            "turn_number": 361
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "He could.",
+            "turn_number": 362
+          },
+          {
+            "speaker": "SAM",
+            "text": "He could brain me in one shot. Okay. I will duck under the table so they think that's where I went, and then Dimension Door to the roof.",
+            "turn_number": 363
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay! You duck under the table. I'm going to say make a deception roll to try and successfully feint them.",
+            "turn_number": 364
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, okay.",
+            "turn_number": 365
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Can they see the top of his head behind the table?",
+            "turn_number": 366
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 381,
+      "category": null,
+      "episode_position_pct": 0.1572,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. Easy enough to do, because it will take a round for anyone to recover from that, anyway, because you have to use your action both turns. So as you are waiting up there, you cast Invisibility on yourself and wait.",
+        "preceding_context_chars": 648,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a round",
+        "granularity_bucket": "rounds",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "\"Oh, I'm going under the table.\"",
+            "turn_number": 368
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Sentences you never expect to hear in your D&D game.",
+            "turn_number": 369
+          },
+          {
+            "speaker": "SAM",
+            "text": "31.",
+            "turn_number": 370
+          },
+          {
+            "speaker": "MATT",
+            "text": "So you grab your head. Oh no! Do a very elaborate dive under the table.",
+            "turn_number": 371
+          },
+          {
+            "speaker": "SAM",
+            "text": "Here I go under the table!",
+            "turn_number": 372
+          },
+          {
+            "speaker": "MATT",
+            "text": "A little strange dull thud of arcane energy as you bamf up to the ceiling.",
+            "turn_number": 373
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, great.",
+            "turn_number": 374
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "He is reaching under the table, ladies and gentlemen.",
+            "turn_number": 375
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I know, what does this mean? Oh, okay.",
+            "turn_number": 376
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, is that your turn? You are now up on the rooftop. There's rain pouring down. You are immediately soaked from the heavy storm that's now coming into Whitestone.",
+            "turn_number": 377
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah. It's just me up here?",
+            "turn_number": 378
+          },
+          {
+            "speaker": "MATT",
+            "text": "Just you up there, yeah.",
+            "turn_number": 379
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay. I will go invisible and just hang and just see what happens.",
+            "turn_number": 380
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 493,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.2035,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "They don't burn off, but you feel they might be a little singed. You'd have to give it a few days to recover. And you hear screaming down inside the tunnel and both of them are currently dealing with the fact that they're on fire. So that's your movement, that's your bonus action. You still have an action.",
+        "preceding_context_chars": 769,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a few days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "I'll hoof it over there and just look around and punch myself in the gut, (belch).",
+            "turn_number": 484
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As you reach over, you look down, and there is a ladder that leads up to the front, and there are two guards that are currently making their way up to the roof. They look up and see you, and their eyes go wide within their helmets, and as you release the flames, all you see is their faces go, \"Ah!\" Just engulfing the entire tunnel. Roll 4d6.",
+            "turn_number": 485
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "4d6?",
+            "turn_number": 486
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes.",
+            "turn_number": 487
+          },
+          {
+            "speaker": "SAM",
+            "text": "I don't have any d6.",
+            "turn_number": 488
+          },
+          {
+            "speaker": "MATT",
+            "text": "There you go. They both fail their DC 13 dexterity saving throws because I can't roll tonight.",
+            "turn_number": 489
+          },
+          {
+            "speaker": "SAM",
+            "text": "15.",
+            "turn_number": 490
+          },
+          {
+            "speaker": "MATT",
+            "text": "15? Okay. They both take 15 points of fire damage and the entirety of that space has now burst into flames. You pull back because the heat is intense, backdraft-style, as you're at the top.",
+            "turn_number": 491
+          },
+          {
+            "speaker": "SAM",
+            "text": "Do my eyebrows burn off?",
+            "turn_number": 492
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 599,
+      "category": "scene_transition",
+      "episode_position_pct": 0.2472,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "A short rest is about half an hour to 40 minutes of waiting, so you might want to find a place that isn't quite so intense to do this. You can try and sneak into one of the nearby homes and do it, maybe.",
+        "preceding_context_chars": 307,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "A short rest",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "It's cool.",
+            "turn_number": 592
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's so cool.",
+            "turn_number": 593
+          },
+          {
+            "speaker": "MATT",
+            "text": "You just going to stay there and wait it out?",
+            "turn_number": 594
+          },
+          {
+            "speaker": "SAM",
+            "text": "I think I'll wait it out if I'm in a relatively safe place, because I can't really do anything for you guys, anyway. You're on your own.",
+            "turn_number": 595
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. We'll use that to hop over to the other party.",
+            "turn_number": 596
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, I'm taking a short rest.",
+            "turn_number": 597
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, that's good! Yes.",
+            "turn_number": 598
+          }
+        ]
+      }
+    },
+    {
+      "source": "EC",
+      "turn_number": 686,
+      "category": "wave_or_phase_shift",
+      "episode_position_pct": 0.2831,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "So 61. So you take half that, which would be 31 points of piercing damage on you in one volley of crossbow bolts at you. (shoosh) You protected Trinket, and the rage did descend it a little bit. The pain, as all these bolts are now sticking out of your chest. You look like this front-quilled porcupine. You just take the pain and grin for a second. You have that iron-y taste of blood reach the back of your throat from the immediate impact and it just further intensifies your rage. I'm going to have everyone here roll initiative because you're all acting simultaneously at this point.",
+        "preceding_context_chars": 1474,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": false,
+        "wave_subtype": "phase_shift",
+        "player_action_caused": false,
+        "narration_buildup_chars": 1167,
+        "nearest_prior_trigger_turn_distance": 534,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, I go in.",
+            "turn_number": 645
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Grog, you push your way in, Trinket following behind you right there. Immediately, you see the upper banister, right over the railing also, similar to what Scanlan encountered, has guards completely within this area, at the ready, crossbows pulled. In wait.",
+            "turn_number": 646
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, god. He just keeps adding them!",
+            "turn_number": 647
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Just 12 more.",
+            "turn_number": 648
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Cool.",
+            "turn_number": 649
+          },
+          {
+            "speaker": "MATT",
+            "text": "There is Tylieri. All waiting, crossbows at the ready. The doors slam open, you guys rush in. For a second, there's nothing immediately within your range, and you look up and see an entire array of guards all trained upon you and Trinket. A voice behind them goes, \"Loose!\" (fshh)",
+            "turn_number": 650
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "At least Trinket's behind me.",
+            "turn_number": 651
+          },
+          {
+            "speaker": "MATT",
+            "text": "(chuckles) What's your armor class?",
+            "turn_number": 652
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "19.",
+            "turn_number": 653
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You're going to tell us when we can do something in the back, right?",
+            "turn_number": 654
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep. This is just-- because of the speed everything goes, he gets there before anybody.",
+            "turn_number": 655
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah. Just curious.",
+            "turn_number": 656
+          },
+          {
+            "speaker": "MATT",
+            "text": "No worries. All right, that is-- ooh. That is 27 to hit?",
+            "turn_number": 657
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep.",
+            "turn_number": 658
+          },
+          {
+            "speaker": "MATT",
+            "text": "That is 15 to hit? No. Third one, that is 16 to hit? Nope. That is a 21 to hit?",
+            "turn_number": 659
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep.",
+            "turn_number": 660
+          },
+          {
+            "speaker": "MATT",
+            "text": "26 to hit.",
+            "turn_number": 661
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yes.",
+            "turn_number": 662
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's a 22 to hit?",
+            "turn_number": 663
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep.",
+            "turn_number": 664
+          },
+          {
+            "speaker": "LAURA",
+            "text": "All the shitty guards were over at the other house.",
+            "turn_number": 665
+          },
+          {
+            "speaker": "MATT",
+            "text": "14 to hit?",
+            "turn_number": 666
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "No.",
+            "turn_number": 667
+          },
+          {
+            "speaker": "MATT",
+            "text": "20 to hit?",
+            "turn_number": 668
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep.",
+            "turn_number": 669
+          },
+          {
+            "speaker": "MATT",
+            "text": "Then three more.",
+            "turn_number": 670
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah.",
+            "turn_number": 671
+          },
+          {
+            "speaker": "MATT",
+            "text": "22 to hit?",
+            "turn_number": 672
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep, that hits.",
+            "turn_number": 673
+          },
+          {
+            "speaker": "MATT",
+            "text": "12 to hit?",
+            "turn_number": 674
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "No. Last one?",
+            "turn_number": 675
+          },
+          {
+            "speaker": "MATT",
+            "text": "And ten to hit. Yeah.",
+            "turn_number": 676
+          },
+          {
+            "speaker": "MATT",
+            "text": "Six.",
+            "turn_number": 677
+          },
+          {
+            "speaker": "MATT",
+            "text": "Six crossbow bolts come at you. That's eight points of piercing damage. Don't halve them yet. We'll add them all up and then we'll halve that.",
+            "turn_number": 678
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 679
+          },
+          {
+            "speaker": "MATT",
+            "text": "So, eight plus 13. 21. Plus eight again, 29. Plus another nine.",
+            "turn_number": 680
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "38.",
+            "turn_number": 681
+          },
+          {
+            "speaker": "MATT",
+            "text": "38, plus another 11.",
+            "turn_number": 682
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "49.",
+            "turn_number": 683
+          },
+          {
+            "speaker": "MATT",
+            "text": "So 49, and then another 12.",
+            "turn_number": 684
+          },
+          {
+            "speaker": "LAURA",
+            "text": "61.",
+            "turn_number": 685
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 889,
+      "category": null,
+      "episode_position_pct": 0.3669,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Yeah. Unless you want to use your action to yell out for Trinket to attack, in which case, you can give Trinket a round of combat.",
+        "preceding_context_chars": 744,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a round",
+        "granularity_bucket": "rounds",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay, I'm going to use my stone's endurance to get rid of that stank.",
+            "turn_number": 874
+          },
+          {
+            "speaker": "MATT",
+            "text": "One of them, yeah.",
+            "turn_number": 875
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Roll, plus my constitution. 16.",
+            "turn_number": 876
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, so we'll say you reduce one of the crits from 16. The first one, take 15 points off that because I think one of the crits was 15. We'll say you used it on that one. That's 39 points of piercing damage, reduced by half. That will put you at 18.",
+            "turn_number": 877
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "18? Okay.",
+            "turn_number": 878
+          },
+          {
+            "speaker": "MATT",
+            "text": "We'll say you take 18 points of piercing damage from those four non-crits.",
+            "turn_number": 879
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 880
+          },
+          {
+            "speaker": "MATT",
+            "text": "So yeah. That ends the guards' volley. That brings us to Vex. You're up.",
+            "turn_number": 881
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Me? And Trinket.",
+            "turn_number": 882
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes. And Trinket. Both.",
+            "turn_number": 883
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay, so I run in after Percy and my brother.",
+            "turn_number": 884
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 885
+          },
+          {
+            "speaker": "LAURA",
+            "text": "And Trinket--",
+            "turn_number": 886
+          },
+          {
+            "speaker": "MATT",
+            "text": "Are you going to dash? Because you can move, you can double move, using your action to move, if you want.",
+            "turn_number": 887
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, I can?",
+            "turn_number": 888
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1080,
+      "category": null,
+      "episode_position_pct": 0.4457,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It is now his turn.",
+        "preceding_context_chars": 778,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I'm wearing my helmet, my shiny helmet.",
+            "turn_number": 1067
+          },
+          {
+            "speaker": "MATT",
+            "text": "I know. To look at you, reach up with the throat that he's grasped, and sink his fangs directly into your throat, Grog.",
+            "turn_number": 1068
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(angry noise) I have a little collar. Does that help at all?",
+            "turn_number": 1069
+          },
+          {
+            "speaker": "MATT",
+            "text": "Not in this moment. You have a big neck. Very big neck, and a very tiny collar. (laughs) That will be a 20 to hit?",
+            "turn_number": 1070
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep.",
+            "turn_number": 1071
+          },
+          {
+            "speaker": "MATT",
+            "text": "All righty. So you take nine points of piercing damage.",
+            "turn_number": 1072
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Is that halved?",
+            "turn_number": 1073
+          },
+          {
+            "speaker": "MATT",
+            "text": "That is halved. Yeah. So say five, round up.",
+            "turn_number": 1074
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Sure.",
+            "turn_number": 1075
+          },
+          {
+            "speaker": "MATT",
+            "text": "However, you do take 14 points of necrotic damage. That is not reduced. But your maximum hit points are now reduced by 14.",
+            "turn_number": 1076
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Got it.",
+            "turn_number": 1077
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you feel that same similar cold feeling as the life blood's being drained out of your body and you see his eyes cresting at you with this wild glare. That ends your turn, Vax?",
+            "turn_number": 1078
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, that's it.",
+            "turn_number": 1079
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1100,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.454,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Doing so gives you advantage on melee weapon attack rolls using strength during this turn. So yes, I apologize. It does give you advantage on all of your attacks. I misread that.",
+        "preceding_context_chars": 782,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "gives you advantage",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Doesn't it cancel out after one roll? Advantage versus disadvantage is one roll, right?",
+            "turn_number": 1088
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It ended on the first attack, right?",
+            "turn_number": 1089
+          },
+          {
+            "speaker": "MATT",
+            "text": "It was a one on the first attack, yeah. It's until your next turn. Attacks against you get advantage.",
+            "turn_number": 1090
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, I thought his first bite was the first one.",
+            "turn_number": 1091
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wait, so all attacks, even follow-up attacks get advantage, even though he only gets advantage on the first one?",
+            "turn_number": 1092
+          },
+          {
+            "speaker": "MATT",
+            "text": "I'll read it for you right now. It's a cool ability when you're not the only tank in the room.",
+            "turn_number": 1093
+          },
+          {
+            "speaker": "SAM",
+            "text": "No, it is not! It's the worst ability ever.",
+            "turn_number": 1094
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's a good ability if you're only fighting one person.",
+            "turn_number": 1095
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, but attack rolls against you have advantage until your next turn.",
+            "turn_number": 1096
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Because he's out of it. He's going cuckoo.",
+            "turn_number": 1097
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wait, did you not have-- Jesus, never use that thing again.",
+            "turn_number": 1098
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm using it every time. (laughter)",
+            "turn_number": 1099
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1100,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.454,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Doing so gives you advantage on melee weapon attack rolls using strength during this turn. So yes, I apologize. It does give you advantage on all of your attacks. I misread that.",
+        "preceding_context_chars": 782,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "give you advantage",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Doesn't it cancel out after one roll? Advantage versus disadvantage is one roll, right?",
+            "turn_number": 1088
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It ended on the first attack, right?",
+            "turn_number": 1089
+          },
+          {
+            "speaker": "MATT",
+            "text": "It was a one on the first attack, yeah. It's until your next turn. Attacks against you get advantage.",
+            "turn_number": 1090
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, I thought his first bite was the first one.",
+            "turn_number": 1091
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wait, so all attacks, even follow-up attacks get advantage, even though he only gets advantage on the first one?",
+            "turn_number": 1092
+          },
+          {
+            "speaker": "MATT",
+            "text": "I'll read it for you right now. It's a cool ability when you're not the only tank in the room.",
+            "turn_number": 1093
+          },
+          {
+            "speaker": "SAM",
+            "text": "No, it is not! It's the worst ability ever.",
+            "turn_number": 1094
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's a good ability if you're only fighting one person.",
+            "turn_number": 1095
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, but attack rolls against you have advantage until your next turn.",
+            "turn_number": 1096
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Because he's out of it. He's going cuckoo.",
+            "turn_number": 1097
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wait, did you not have-- Jesus, never use that thing again.",
+            "turn_number": 1098
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm using it every time. (laughter)",
+            "turn_number": 1099
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1103,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.4552,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "That's okay. Yeah, it's fine. But going forward, good to know. So it does give you advantage on all of your attacks.",
+        "preceding_context_chars": 798,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "give you advantage",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Wait, so all attacks, even follow-up attacks get advantage, even though he only gets advantage on the first one?",
+            "turn_number": 1092
+          },
+          {
+            "speaker": "MATT",
+            "text": "I'll read it for you right now. It's a cool ability when you're not the only tank in the room.",
+            "turn_number": 1093
+          },
+          {
+            "speaker": "SAM",
+            "text": "No, it is not! It's the worst ability ever.",
+            "turn_number": 1094
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's a good ability if you're only fighting one person.",
+            "turn_number": 1095
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, but attack rolls against you have advantage until your next turn.",
+            "turn_number": 1096
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Because he's out of it. He's going cuckoo.",
+            "turn_number": 1097
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wait, did you not have-- Jesus, never use that thing again.",
+            "turn_number": 1098
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm using it every time. (laughter)",
+            "turn_number": 1099
+          },
+          {
+            "speaker": "MATT",
+            "text": "Doing so gives you advantage on melee weapon attack rolls using strength during this turn. So yes, I apologize. It does give you advantage on all of your attacks. I misread that.",
+            "turn_number": 1100
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(quietly) Oh, shitfuck. (louder) That's okay. That's okay!",
+            "turn_number": 1101
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Stuff happens. Give him a bonus 15 HP or something.",
+            "turn_number": 1102
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1140,
+      "category": null,
+      "episode_position_pct": 0.4705,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Since you did not do reckless strike last time, they are not with advantage. That is 19?",
+        "preceding_context_chars": 795,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Since you",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, no. I'll stay.",
+            "turn_number": 1129
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, that brings us to the guards' turn. They all reload their crossbows. These four are now going to make shots at you, Percy. These three are going to take shots-- all five of these guys are going to take shots at Grog now. They're trying to take you down so they can move onto the next target. So four shots on you, Percy. That is 20?",
+            "turn_number": 1130
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That hits.",
+            "turn_number": 1131
+          },
+          {
+            "speaker": "MATT",
+            "text": "18?",
+            "turn_number": 1132
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That hits.",
+            "turn_number": 1133
+          },
+          {
+            "speaker": "MATT",
+            "text": "20?",
+            "turn_number": 1134
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That hits.",
+            "turn_number": 1135
+          },
+          {
+            "speaker": "MATT",
+            "text": "And 11.",
+            "turn_number": 1136
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That does not hit.",
+            "turn_number": 1137
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, so you take from three heavy crossbow bolts at you. Seven, 19, 32 points of piercing damage. All three bolts stick into your chest. They're big, long, thick, heavy crossbow bolts. One of them gleans off your shoulder and catches the edge of the wall, but the other two have actually sunk into your torso and are sticking out of you. The other five against you, Grog.",
+            "turn_number": 1138
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep.",
+            "turn_number": 1139
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1361,
+      "category": null,
+      "episode_position_pct": 0.5617,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Nice. All right, so (whack) the hammer comes streaking down, slamming into the guard there. His crossbow shatters from the impact and the flames begin to lick up the front of his body. The second slam smacks him again. This time, you hear the armor ring out from the metal-on-metal impact. He kind of shakes from it. The third time you're just in the middle of this series of swinging and he backs up, and you end up smashing the banister instead of him, the hammer cracking part of the ground on the second floor. He looks pretty messed up from that series of attacks. All right, that ends your turn, Grog. It's now the guards' turn.",
+        "preceding_context_chars": 732,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm up?",
+            "turn_number": 1340
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep.",
+            "turn_number": 1341
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Well, I can't get through the-- I mean, I don't know what the fuck--",
+            "turn_number": 1342
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You can get through the Wind Wall.",
+            "turn_number": 1343
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "What am I going to do to gas? Hit it? Can I start running up the motherfucking stairs and jump up like Vax did? He said to kill!",
+            "turn_number": 1344
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, yeah. You can get up to there, and you're just within reach to get one guy over the banister, probably.",
+            "turn_number": 1345
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah! I'd like to do that. That's a 23.",
+            "turn_number": 1346
+          },
+          {
+            "speaker": "MATT",
+            "text": "That hits. More attacks?",
+            "turn_number": 1347
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yes. Oh, how many attacks do I get?",
+            "turn_number": 1348
+          },
+          {
+            "speaker": "MATT",
+            "text": "All of them. That was just your movement.",
+            "turn_number": 1349
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yay, I get all of them?! That's amazing.",
+            "turn_number": 1350
+          },
+          {
+            "speaker": "MATT",
+            "text": "Your barbarian 40 feet of crazy movement.",
+            "turn_number": 1351
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yay! 22!",
+            "turn_number": 1352
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep.",
+            "turn_number": 1353
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Shit! 12.",
+            "turn_number": 1354
+          },
+          {
+            "speaker": "MATT",
+            "text": "12 does not hit.",
+            "turn_number": 1355
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(laughing) Okay.",
+            "turn_number": 1356
+          },
+          {
+            "speaker": "MATT",
+            "text": "(laughs) The first two hit.",
+            "turn_number": 1357
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "13. 17 for the first one.",
+            "turn_number": 1358
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, 17 damage.",
+            "turn_number": 1359
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "15, and 17 again. Two plus two.",
+            "turn_number": 1360
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1531,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.6319,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "You are flanking him, though. You have advantage on the attack.",
+        "preceding_context_chars": 699,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "You have advantage on the",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "Okay, I move the mist to the next guy.",
+            "turn_number": 1514
+          },
+          {
+            "speaker": "MATT",
+            "text": "All righty. You use a bonus action to re-curse him, by the way.",
+            "turn_number": 1515
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I had a bonus action, so I just used it.",
+            "turn_number": 1516
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's right, you do. Technically, you used the bonus action this turn to put it onto him from the last turn.",
+            "turn_number": 1517
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Did I? You're technically correct, so go ahead.",
+            "turn_number": 1518
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're probably going to do it on your next turn, anyway, so we'll just leave it there. It's fine. But keep that in mind, as this is a new ability.",
+            "turn_number": 1519
+          },
+          {
+            "speaker": "LIAM",
+            "text": "(sneezes)",
+            "turn_number": 1520
+          },
+          {
+            "speaker": "MATT",
+            "text": "Gesundheit.",
+            "turn_number": 1521
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Bless you.",
+            "turn_number": 1522
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Vax, you're up.",
+            "turn_number": 1523
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Is that fellow who's enveloped in schmutz right next to Grog?",
+            "turn_number": 1524
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep.",
+            "turn_number": 1525
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, I'm going to stab him. (laughter)",
+            "turn_number": 1526
+          },
+          {
+            "speaker": "SAM",
+            "text": "Your answer for everything.",
+            "turn_number": 1527
+          },
+          {
+            "speaker": "LIAM",
+            "text": "First one is not that great. It's a 14.",
+            "turn_number": 1528
+          },
+          {
+            "speaker": "MATT",
+            "text": "14 misses.",
+            "turn_number": 1529
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Second one is a 26.",
+            "turn_number": 1530
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1559,
+      "category": null,
+      "episode_position_pct": 0.6434,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That ends your turn. It is now the guards' turn. They all...",
+        "preceding_context_chars": 779,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "(groans) He falls over (thudding) down the stairs, past you, Percy. You let him tumble by as he slides to a stop at the very bottom of the stairs.",
+            "turn_number": 1545
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I put my foot on him to stop him.",
+            "turn_number": 1546
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, Vex stops him in place, face-down. There's a smear of his blood across the steps. This once-nice, fine wood is now completely coated in crimson. (laughs) Okay. Grog, you're up.",
+            "turn_number": 1547
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Is it me? (stuttering) Is it just a row of guys in front of me?",
+            "turn_number": 1548
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah.",
+            "turn_number": 1549
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I would like to hold my turn. Because if I stand in front of them, nobody can do anything to them.",
+            "turn_number": 1550
+          },
+          {
+            "speaker": "SAM",
+            "text": "You can.",
+            "turn_number": 1551
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's nice of you. You could just go (whoosh) and cross them off.",
+            "turn_number": 1552
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "How many's left?",
+            "turn_number": 1553
+          },
+          {
+            "speaker": "MATT",
+            "text": "There are five nervous-looking guards right now.",
+            "turn_number": 1554
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "They were trying to haul ass out?",
+            "turn_number": 1555
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Nah, I'll hold. Whoever's next can go.",
+            "turn_number": 1556
+          },
+          {
+            "speaker": "SAM",
+            "text": "So polite.",
+            "turn_number": 1557
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That is really kind of you, Grog.",
+            "turn_number": 1558
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1582,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.6529,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "I'll give you advantage on this because you're raging and it's reckless and it's just funnier.",
+        "preceding_context_chars": 738,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "I'll give you",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "That definitely hits him, though.",
+            "turn_number": 1569
+          },
+          {
+            "speaker": "MATT",
+            "text": "All righty.",
+            "turn_number": 1570
+          },
+          {
+            "speaker": "LAURA",
+            "text": "27.",
+            "turn_number": 1571
+          },
+          {
+            "speaker": "MATT",
+            "text": "27 hits. Go ahead and roll damage.",
+            "turn_number": 1572
+          },
+          {
+            "speaker": "LAURA",
+            "text": "11.",
+            "turn_number": 1573
+          },
+          {
+            "speaker": "MATT",
+            "text": "11 points of damage. Across that guy. Okay. Trinket reaches out and strikes across one of the guys, the guy you Hunter's Marked, who takes the claw across the side of his head, and you hear him yell out in pain, (scream) as he makes it out into the rain. Hurt, but not taken down. He continues to run past, and they all dart outside into the rainstorm.",
+            "turn_number": 1574
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'll take my turn now.",
+            "turn_number": 1575
+          },
+          {
+            "speaker": "MATT",
+            "text": "(laughs) Okay, Grog.",
+            "turn_number": 1576
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I leap over the banister with my war hammer high and jump down on the guy that's closest to me, bringing it down with a reckless attack and great weapon master.",
+            "turn_number": 1577
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, make an athletics check for the jump.",
+            "turn_number": 1578
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 1579
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh no, don't fall on your ass.",
+            "turn_number": 1580
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay, that's true. 13.",
+            "turn_number": 1581
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1686,
+      "category": null,
+      "episode_position_pct": 0.6958,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Oh, that's right! You can do it for up to a minute. Good call.",
+        "preceding_context_chars": 748,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "And I say, \"Get inside now.\"",
+            "turn_number": 1668
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Next up is Keyleth. Are you going to do anything?",
+            "turn_number": 1669
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do I kill him or do we keep him?",
+            "turn_number": 1670
+          },
+          {
+            "speaker": "SAM",
+            "text": "You have to make that decision yourself.",
+            "turn_number": 1671
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is he coming back inside?",
+            "turn_number": 1672
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's standing there now.",
+            "turn_number": 1673
+          },
+          {
+            "speaker": "MATT",
+            "text": "He's currently standing about ten feet outside in the rain, just (shaky breathing).",
+            "turn_number": 1674
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is that a window I'm up against, behind me?",
+            "turn_number": 1675
+          },
+          {
+            "speaker": "MATT",
+            "text": "Actually, no. There is no window to the front here. It's just a wall.",
+            "turn_number": 1676
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm just going to go, \"Excuse me. Excuse me, Trinket. Sorry.\" And I'm going to peek around the door and go (shkoof) and Sunbeam him.",
+            "turn_number": 1677
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're going to Sunbeam?",
+            "turn_number": 1678
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That guy. That scared-shitless guy.",
+            "turn_number": 1679
+          },
+          {
+            "speaker": "MATT",
+            "text": "(laughs) Okay. What level is Sunbeam?",
+            "turn_number": 1680
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's what I just did.",
+            "turn_number": 1681
+          },
+          {
+            "speaker": "MATT",
+            "text": "What level is Sunbeam?",
+            "turn_number": 1682
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Six.",
+            "turn_number": 1683
+          },
+          {
+            "speaker": "MATT",
+            "text": "How many 6th-level spells per day can you cast?",
+            "turn_number": 1684
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's a concentration spell.",
+            "turn_number": 1685
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1786,
+      "category": "MATERIAL_LOOT",
+      "episode_position_pct": 0.7371,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Okay. The two of you take a while upstairs looking about the rooms. You manage to acquire from just some of the local bits of cabinets and dust, you gather about 230 gold pieces.",
+        "preceding_context_chars": 670,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "230 gold pieces",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 230.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Okay. You begin to take the plume of smoke and filter into the dark rain clouds and you make the smoke go to a thicker, thicker black and take the next few moments to begin sculpting in the air until eventually we have a very well-defined de Rolo crest now staring down at the entire city of Whitestone.",
+            "turn_number": 1773
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh! Something's happening! Something's happening in the sky!",
+            "turn_number": 1774
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's me.",
+            "turn_number": 1775
+          },
+          {
+            "speaker": "SAM",
+            "text": "I think it's a magic wielder of some sort. Something-- I must flee! (laughter)",
+            "turn_number": 1776
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Investigation checks from both of you.",
+            "turn_number": 1777
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay.",
+            "turn_number": 1778
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Did I find anything on Smash-Face?",
+            "turn_number": 1779
+          },
+          {
+            "speaker": "LIAM",
+            "text": "(sighs) That's what you rolled the last time.",
+            "turn_number": 1780
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I know!",
+            "turn_number": 1781
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "16.",
+            "turn_number": 1782
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I've got to put this one away for a while.",
+            "turn_number": 1783
+          },
+          {
+            "speaker": "MATT",
+            "text": "What did you roll?",
+            "turn_number": 1784
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I rolled a nine.",
+            "turn_number": 1785
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1924,
+      "category": "LOCATION_DEPARTURE",
+      "episode_position_pct": 0.7941,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "You make your way to the alcove",
+        "extracted_surface_form": "location_exit",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "Correct. All right. You make your way to the alcove. As you're darting through, you can see in the distance small pocketed sounds of yells and the occasional sound of some sort of large-scale crumbling or crashing of wood and stone. Occasionally, darting past the streets, you see militant occupants of Whitestone: armored, rushing through, shouting orders to each other, some coming back wounded and helping their friends back. The midday rebellion has definitely started, and you get the sense that the initial surprise has been effective, but the longer this runs, the longer this wears on, the more and more of a body count this will be.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "SAM",
+            "text": "Natural 20.",
+            "turn_number": 1919
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "28.",
+            "turn_number": 1920
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "30.",
+            "turn_number": 1921
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. So making up for the bounding chaos that is Grog throughout the city, you manage to still make your way largely as a group stealthed to-- are you heading to the alcove, you said?",
+            "turn_number": 1922
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's where we had our little crash-base set up, right?",
+            "turn_number": 1923
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1930,
+      "category": "LOCATION_DEPARTURE",
+      "episode_position_pct": 0.7965,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "You make your way to the front",
+        "extracted_surface_form": "location_exit",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "You have not, but you all meet up back at the alcove, communicating over your earpieces. You make your way to the front of the building. The doors are closed and locked.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Seeing the chaos, can I get the Dust of Tracelessness and start trying to sprinkle it behind us?",
+            "turn_number": 1925
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah.",
+            "turn_number": 1926
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Guys, we should do something.",
+            "turn_number": 1927
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I know, we really should.",
+            "turn_number": 1928
+          },
+          {
+            "speaker": "SAM",
+            "text": "Am I with these guys yet?",
+            "turn_number": 1929
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2019,
+      "category": null,
+      "episode_position_pct": 0.8333,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Right now, I'd say you're close to three in the afternoon.",
+        "preceding_context_chars": 795,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the afternoon",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "We may have just started a revolution.",
+            "turn_number": 2000
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Does he look familiar to you?",
+            "turn_number": 2001
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You don't recognize us, it's not safe to walk these streets for outsiders, so we were using a little bit of trickery. This is us. We're the same people you were dealing with before.",
+            "turn_number": 2002
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Vox Machina.",
+            "turn_number": 2003
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We just need to rest.",
+            "turn_number": 2004
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Okay. You can rest here, but how long?\"",
+            "turn_number": 2005
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Until we're healed, and then we'll go.",
+            "turn_number": 2006
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Overnight.",
+            "turn_number": 2007
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 2008
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I feel like we should get word out to somebody, though, because--",
+            "turn_number": 2009
+          },
+          {
+            "speaker": "SAM",
+            "text": "To what? To hold the revolution?",
+            "turn_number": 2010
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I feel like everybody's going to die before we even get to the castle!",
+            "turn_number": 2011
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's the thing. I don't know if this is the time to rest.",
+            "turn_number": 2012
+          },
+          {
+            "speaker": "LAURA",
+            "text": "But we don't have any spells.",
+            "turn_number": 2013
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm okay. We can maybe make do.",
+            "turn_number": 2014
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I can't make do.",
+            "turn_number": 2015
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You might be cool, but we're fucked.",
+            "turn_number": 2016
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "How about we stay here until 4 00, 5 00 in the morning--",
+            "turn_number": 2017
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What time is it now?",
+            "turn_number": 2018
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2122,
+      "category": "scene_transition",
+      "episode_position_pct": 0.8758,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Yeah, you guys go ahead, use your hit dice to heal up while you're taking your short rest for those who've taken damage.",
+        "preceding_context_chars": 596,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "short rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "That's what I'm talking about. They're vampires.",
+            "turn_number": 2108
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No, they're zombies. They're undead.",
+            "turn_number": 2109
+          },
+          {
+            "speaker": "LAURA",
+            "text": "They're zombies.",
+            "turn_number": 2110
+          },
+          {
+            "speaker": "LIAM",
+            "text": "They're undead.",
+            "turn_number": 2111
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Those are two different things, huh?",
+            "turn_number": 2112
+          },
+          {
+            "speaker": "MATT",
+            "text": "They are two very different things.",
+            "turn_number": 2113
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Grog learns. (laughter)",
+            "turn_number": 2114
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. So what's the plan?",
+            "turn_number": 2115
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We short rest and get back out.",
+            "turn_number": 2116
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We take a short rest and then exterminate.",
+            "turn_number": 2117
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wait, join the rebellion or ride around town telling everyone, \"quell?\"",
+            "turn_number": 2118
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We're taking down these damn giants. These giants are killing people left and right; we watched them crush people on our way here.",
+            "turn_number": 2119
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We tell them that they take cover during the night.",
+            "turn_number": 2120
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm going to roll four hit dice.",
+            "turn_number": 2121
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2154,
+      "category": "scene_transition",
+      "episode_position_pct": 0.889,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Well, you guys are taking a short rest, about 30 minutes to an hour, so you have about two and a half, three hours before it goes down entirely.",
+        "preceding_context_chars": 773,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a short rest",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Correct.",
+            "turn_number": 2138
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, dear god almighty. Okay. Thank you.",
+            "turn_number": 2139
+          },
+          {
+            "speaker": "MATT",
+            "text": "Percy, Percy, Percy.",
+            "turn_number": 2140
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't mean to be doing this.",
+            "turn_number": 2141
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, it's great. Just glad you didn't take the Alertness feat. Then things would have gotten stupid.",
+            "turn_number": 2142
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Are you healing Trinket?",
+            "turn_number": 2143
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "How much more does he need?",
+            "turn_number": 2144
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's at 36. He needs 24 more.",
+            "turn_number": 2145
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Actually, I'm going to be using the Hat of Disguise just because it's probably safe. Does anybody want a Headband of Initiative?",
+            "turn_number": 2146
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah. Do you not need it?",
+            "turn_number": 2147
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I can't wear two things on my head.",
+            "turn_number": 2148
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I don't have anything on my head.",
+            "turn_number": 2149
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "So you've got plus two to your initiative, and I'm losing plus two to my initiative. It's called a Headband of Initiative.",
+            "turn_number": 2150
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You already have an eight to your initiative.",
+            "turn_number": 2151
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's very mystical.",
+            "turn_number": 2152
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "How much time do we have before the sun that is being blocked by the rainclouds goes down?",
+            "turn_number": 2153
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2403,
+      "category": null,
+      "episode_position_pct": 0.9917,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It doesn't matter. It still manages to keep its zombie form, though it seems like every single hit you're taking chunks off its body, but it continues to push through the damage until eventually it swings at you with the hit, Bad News goes off as it blasts through the center of its torso and takes out the back of its spine. It can't keep its physical form together, and as its body lunges forward, you throw both of your daggers, which go (thoonk thoonk) into each of its eyes. It falls forward. The torso seems to roll on impact and come after you like a slow-moving boulder for a few feet, but since you're all moving forward, you manage to outrun it, just barely keeping out of the way. The legs walk on their own for two more steps before it just falls forward into the mud, relieving all its intestines into the rain-soaked ground.",
+        "preceding_context_chars": 799,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since you",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I did.",
+            "turn_number": 2385
+          },
+          {
+            "speaker": "MATT",
+            "text": "What did you get?",
+            "turn_number": 2386
+          },
+          {
+            "speaker": "LIAM",
+            "text": "27 and an 18.",
+            "turn_number": 2387
+          },
+          {
+            "speaker": "MATT",
+            "text": "Both hit.",
+            "turn_number": 2388
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I got 28.",
+            "turn_number": 2389
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. And against Percy, that is a 17 and a 20.",
+            "turn_number": 2390
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "17 misses. The 20 hits.",
+            "turn_number": 2391
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. You take 16 points of bludgeoning damage as its fist comes down and (whack) slams into your side just as Bad News fires off and your daggers go (dagger sounds) towards it.",
+            "turn_number": 2392
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Keen Dagger, Flametongue, combined 20 hit points.",
+            "turn_number": 2393
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Good to know.",
+            "turn_number": 2394
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "And as soon as I'm able, I'm backing up and bringing down another lightning bolt.",
+            "turn_number": 2395
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Well, I've got another attack. That was just one attack that I did.",
+            "turn_number": 2396
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh yeah.",
+            "turn_number": 2397
+          },
+          {
+            "speaker": "SAM",
+            "text": "You need your spells. We need to hide. We need to run.",
+            "turn_number": 2398
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's okay, this is a concentration spell. I can keep doing it. I'm not blowing spells on it.",
+            "turn_number": 2399
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "22 points of damage, plus he's knocked prone.",
+            "turn_number": 2400
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Easy enough. Through the daggers--",
+            "turn_number": 2401
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, he can make a con saving throw, though.",
+            "turn_number": 2402
+          }
+        ]
+      }
+    }
+  ]
+}

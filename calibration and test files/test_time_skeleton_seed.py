@@ -24,24 +24,22 @@ def tmpenv(monkeypatch, tmp_path):
     """Per-test sqlite + skeleton path."""
     db = tmp_path / "seed.db"
     conn = sqlite3.connect(db)
+    # Ship 2 (S39) — schema mirrors production post-§76 deletion. Eight
+    # columns removed (see SCENE_STATE_CANON_SPEC.md §6.1 audit table):
+    # location, established_details, focus, open_questions, last_scene_change,
+    # active_npcs, active_threats, and legacy tension.
     conn.executescript("""
         CREATE TABLE dnd_scene_state (
             campaign_id INTEGER PRIMARY KEY,
-            location TEXT DEFAULT '',
             mode TEXT DEFAULT 'exploration',
-            focus TEXT DEFAULT '',
-            established_details TEXT DEFAULT '[]',
-            active_npcs TEXT DEFAULT '[]',
-            active_threats TEXT DEFAULT '[]',
-            open_questions TEXT DEFAULT '[]',
-            tension TEXT DEFAULT 'low',
             last_player_action TEXT DEFAULT '',
-            last_scene_change TEXT DEFAULT '',
             updated_at TEXT DEFAULT '',
             tension_int INTEGER DEFAULT 0,
             progress_clocks TEXT DEFAULT '[]',
             last_dm_response TEXT DEFAULT '',
             current_location_id INTEGER DEFAULT NULL,
+            turn_counter INTEGER DEFAULT 0,
+            last_active_actor TEXT DEFAULT '',
             campaign_day INTEGER DEFAULT 1,
             day_phase TEXT DEFAULT 'Morning'
         );

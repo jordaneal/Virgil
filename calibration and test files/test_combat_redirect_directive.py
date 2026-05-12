@@ -18,13 +18,11 @@ import dnd_orchestration as orch
 # ─── Fixture builders ───────────────────────────────────────────────
 
 def _scene(mode='combat'):
+    # Ship 2 (S39): fixture trimmed — combat_redirect reads only `mode`.
+    # Legacy `location` / `focus` / `tension` / `active_npcs` /
+    # `active_threats` were §76 / dead-column deletions.
     return {
-        'mode':           mode,
-        'location':       'Stumbling Stag',
-        'focus':          '',
-        'tension':        'low',
-        'active_npcs':    [],
-        'active_threats': [],
+        'mode': mode,
     }
 
 
@@ -89,7 +87,7 @@ def test_scene_state_none_does_not_fire():
 def test_scene_state_missing_mode_does_not_fire():
     # Defensive — mode key absent treated as gate_mode.
     body, signals = orch.compute_combat_redirect_directive(
-        {'location': 'Stumbling Stag'},
+        {'campaign_id': 1},  # Ship 2 (S39): any non-mode key
         _turn('Donovan Ruby'),
         [_comb('goblin', alive=1)],
         bound_character_name='Donovan Ruby',

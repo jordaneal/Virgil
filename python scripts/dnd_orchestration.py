@@ -3087,12 +3087,14 @@ def build_advisory_context(
     if scene_state:
         mode = (scene_state.get('mode') or 'exploration').strip() or 'exploration'
         lines.append(f"Mode: {mode}")
-        loc = (scene_state.get('location') or '').strip()
+        # Ship 2 (S39) — location renders from derived label (JOIN on
+        # dnd_locations via current_location_id). The freetext `location`
+        # column was deleted as a §76 four-property latent-canon surface.
+        # Scene focus line removed — its backing column was a §76 deletion
+        # target; no replacement (advisory state block doesn't need it).
+        loc = (scene_state.get('location_label') or '').strip()
         if loc:
             lines.append(f"Location: {loc}")
-        focus = (scene_state.get('focus') or '').strip()
-        if focus:
-            lines.append(f"Scene focus: {focus}")
         last_action = (scene_state.get('last_player_action') or '').strip()
         if last_action:
             # Truncate to a reasonable length so advisory context doesn't
@@ -3758,3 +3760,303 @@ def render_resolution_hardstop_echo(result: Optional[ResolutionResult]) -> str:
     if result is None:
         return ''
     return f"Outcome: {'PASSED' if result.passed else 'FAILED'}."
+
+
+# ─────────────────────────────────────────────────────────
+# Ship S43 (dumb combat) — Combat narration trigger detection + prompt build
+# ─────────────────────────────────────────────────────────
+# **North-star principle (filed doctrine candidate, anchors post-S43 verify
+# clean):** combat narration is atmospheric continuity, not adjudication.
+# The cliff-edge — the moment narration starts inferring tactical outcomes,
+# hidden intent, optimal targeting, or consequences beyond what listener +
+# engine established, the ship has silently graduated from "combat glue"
+# into "combat adjudication" and the renderer-not-ruler discipline is
+# broken. Every prompt invariant below treats this as the rejection
+# criterion.
+#
+# v1 trigger set (locked per S43 prompt §1):
+#   ROUND_START                — Avrae round transition (round_num increased)
+#   BLOODIED_THRESHOLD_CROSSED — combatant HP crossed 50% downward
+#   COMBATANT_DOWNED           — combatant HP reached 0
+#   DEATH_SAVE_EVENT_START     — DEFERRED v1 (S42 fixture blocker; stubbed)
+#
+# Excluded from v1: per-turn narration, ordinary attacks/misses,
+# reinforcements, environmental escalation, pacing pressure (no deterministic
+# detection surface). These DO NOT fire combat narration regardless of state.
+
+
+def _hp_state(hp_current, hp_max) -> str:
+    """Categorical HP label per Ship S43 prompt §2 — NEVER exact numbers.
+    Granularity: healthy / bloodied (≤50% hp_max) / downed (hp ≤ 0) /
+    unknown (hp_max is None — pre-hydration combatant)."""
+    if hp_max is None or hp_max <= 0:
+        return 'unknown'
+    if hp_current is None:
+        return 'unknown'
+    if hp_current <= 0:
+        return 'downed'
+    if hp_current <= hp_max / 2:
+        return 'bloodied'
+    return 'healthy'
+
+
+def compute_combat_state_transitions(prior_combatants: list,
+                                     new_combatants: list) -> list:
+    """Diff prior + new combatant snapshots; return list of state-transition
+    events per Ship S43 §1 trigger set.
+
+    Inputs: each combatants list is a sequence of dicts with at least
+    {name, hp_current, hp_max, alive}. Order doesn't matter (matched by name).
+
+    Returns a list of trigger events, each shaped:
+      {
+        'kind': 'BLOODIED_THRESHOLD_CROSSED' | 'COMBATANT_DOWNED',
+        'name': str,
+        'prior_state': 'healthy' | 'bloodied' | 'downed' | 'unknown',
+        'new_state':   'healthy' | 'bloodied' | 'downed' | 'unknown',
+      }
+
+    Detection rules:
+      - BLOODIED: prior_state == 'healthy' AND new_state == 'bloodied'.
+        Downward 50%-crossing only; healing back from bloodied to healthy
+        does NOT fire. (Avoids spam on per-turn healing waves.)
+      - DOWNED: prior_state != 'downed' AND new_state == 'downed'.
+        Edge fires once per descent; staying at 0 HP does not re-fire.
+
+    ROUND_START is detected at the caller layer (init_event 'turn' with
+    round_num increase), not here — this function compares HP states only.
+
+    Pure: no DB, no side effects.
+    """
+    if not isinstance(prior_combatants, list) or not isinstance(new_combatants, list):
+        return []
+    prior_by_name = {}
+    for c in prior_combatants:
+        if not isinstance(c, dict):
+            continue
+        n = (c.get('name') or '').strip()
+        if n:
+            prior_by_name[n] = c
+    transitions = []
+    for c in new_combatants:
+        if not isinstance(c, dict):
+            continue
+        name = (c.get('name') or '').strip()
+        if not name:
+            continue
+        prior = prior_by_name.get(name)
+        new_state = _hp_state(c.get('hp_current'), c.get('hp_max'))
+        if prior is None:
+            # New combatant; only fire if they entered already-downed
+            # (unusual but possible — pre-spent corpse added to init).
+            if new_state == 'downed':
+                transitions.append({
+                    'kind': 'COMBATANT_DOWNED',
+                    'name': name,
+                    'prior_state': 'unknown',
+                    'new_state': 'downed',
+                })
+            continue
+        prior_state = _hp_state(prior.get('hp_current'), prior.get('hp_max'))
+        # DOWNED edge: descent into HP ≤ 0
+        if prior_state != 'downed' and new_state == 'downed':
+            transitions.append({
+                'kind': 'COMBATANT_DOWNED',
+                'name': name,
+                'prior_state': prior_state,
+                'new_state': new_state,
+            })
+            continue  # don't also fire bloodied if same transition
+        # BLOODIED edge: downward 50%-crossing (healthy → bloodied)
+        if prior_state == 'healthy' and new_state == 'bloodied':
+            transitions.append({
+                'kind': 'BLOODIED_THRESHOLD_CROSSED',
+                'name': name,
+                'prior_state': prior_state,
+                'new_state': new_state,
+            })
+    return transitions
+
+
+# Combat narration prompt invariants — §3 MUST / MUST-NOT clauses + S43
+# verify-pass-surfaced additions. Locked at S43 spec; modifications require
+# operator re-approval because these are the prompt-side enforcement of
+# the atmospheric-vs-adjudication doctrine line.
+#
+# S43 verify-pass additions (May 11, 2026, post-Scenario-B drift):
+#   - MUST NOT: introduce combatants not in the roster (phantom-NPC fix —
+#     the LLM was pulling Eldrin/Borin/Lira from `recent_npcs` block and
+#     narrating their combat actions despite them not being in init).
+#   - MUST NOT: attribute specific actions to PCs the player hasn't
+#     narrated (round-start action-attribution fix — the LLM was narrating
+#     "Donovan darts forward" at round-top despite no player input).
+_COMBAT_NARRATION_INVARIANTS = (
+    "COMBAT NARRATION INVARIANTS:\n"
+    "- MUST: summarize what listener confirmed happened this round.\n"
+    "- MUST: stay inside atmospheric continuity — describe the scene as it stands.\n"
+    "- MUST NOT: establish new mechanical state. You cannot deal damage, "
+    "kill combatants, apply conditions, or trigger reactions that the "
+    "listener did not confirm.\n"
+    "- MUST NOT: narrate speculative outcomes. If a combatant is bloodied, "
+    "you may describe them faltering; you may NOT describe them about to fall.\n"
+    "- MUST NOT: declare a kill, knockout, or unconsciousness unless the "
+    "listener confirms it via HP→0 or death-save outcome.\n"
+    "- MUST NOT: invent damage numbers, attack outcomes, or condition "
+    "applications. Avrae is the source of mechanical truth.\n"
+    "- MUST NOT: infer enemy morale, tactical intent, or \"what they're "
+    "about to do.\" You are the scene's narrator, not its tactician.\n"
+    "- MUST NOT: describe action that didn't happen this round.\n"
+    "- MUST NOT: introduce or narrate actions for any combatant NOT in the "
+    "init roster above. If an NPC name appears in your scene memory but is "
+    "NOT in the roster, they are NOT in this fight — keep them out of the "
+    "narration entirely. The roster is the authoritative actor list.\n"
+    "- MUST NOT: attribute specific actions (attacking, moving, drawing "
+    "weapons, etc.) to any PC unless the player has narrated that action "
+    "OR the listener has confirmed a mechanical event. At round-start, "
+    "describe environmental atmosphere (lighting, sound, tension) rather "
+    "than specific PC actions."
+)
+
+
+def compute_combat_narration_directive(trigger_event: dict,
+                                       combat_state: dict,
+                                       scene_state) -> tuple:
+    """Build the combat-narration prompt context for one trigger event.
+
+    Tenth Doctrine §59 instance — pure function over (trigger, combat_state,
+    scene_state), no DB writes, no LLM calls. Returns
+    (combined_action: str, transition_context: str).
+
+    combined_action is the synthesized player_action string passed to
+    `_dm_respond_and_post`. Sentinel-shaped (`[Combat narration: ...]`) so
+    `classify_action_intent` recognizes it as META intent and doesn't
+    cascade into roll classification (Ship A §5.2 precedent).
+
+    transition_context is the directive block injected into the prompt —
+    contains categorical HP labels (NEVER exact numbers per spec §2), the
+    locked §3 MUST/MUST-NOT invariants, and trigger-specific framing.
+
+    trigger_event shape:
+      {'kind': 'ROUND_START', 'round': int}
+      {'kind': 'BLOODIED_THRESHOLD_CROSSED', 'name': str}
+      {'kind': 'COMBATANT_DOWNED', 'name': str}
+      {'kind': 'COMBAT_END'}  # Ship S45-F — auto-closeout on !init end
+
+    combat_state shape (from get_combatants):
+      {'combatants': [{name, init, hp_current, hp_max, conditions, alive}, ...]}
+
+    Returns ('', '') when scene_state isn't combat mode (gate per §1).
+    Caller must pass scene_state with mode='combat' for COMBAT_END dispatch
+    even though the mechanical mode flag may have already flipped — the
+    dispatch represents the closing moment OF combat, not post-combat.
+    """
+    if not isinstance(trigger_event, dict):
+        return ('', '')
+    kind = trigger_event.get('kind')
+    if kind not in ('ROUND_START', 'BLOODIED_THRESHOLD_CROSSED',
+                    'COMBATANT_DOWNED', 'COMBAT_END'):
+        return ('', '')
+    # Mode gate — Ship S43 §1: triggers only fire when mode='combat'.
+    mode = (scene_state or {}).get('mode') if isinstance(scene_state, dict) else None
+    if (mode or '').lower() != 'combat':
+        return ('', '')
+
+    combatants = (combat_state or {}).get('combatants') or []
+
+    # Build categorical roster (init order preserved; NEVER exact HP).
+    roster_lines = []
+    for c in combatants:
+        if not isinstance(c, dict):
+            continue
+        name = (c.get('name') or '').strip()
+        if not name:
+            continue
+        state = _hp_state(c.get('hp_current'), c.get('hp_max'))
+        if not c.get('alive', 1):
+            state = 'dead'
+        init_v = c.get('init', '?')
+        conds = (c.get('conditions') or '').strip()
+        line = f"  - {name} ({state}, init {init_v})"
+        if conds:
+            line += f" [conditions: {conds}]"
+        roster_lines.append(line)
+    roster_block = "\n".join(roster_lines) if roster_lines else "  (no combatants snapshot)"
+
+    # Trigger-specific framing line (sentinel + brief context for the LLM).
+    if kind == 'ROUND_START':
+        round_num = trigger_event.get('round', '?')
+        action = f"[Combat narration: round {round_num} starts.]"
+        framing = (
+            f"TRIGGER: round_start (round {round_num})\n"
+            "Render one short atmospheric beat marking the round-top. "
+            "Focus on environment and tension — lighting, sound, the room's "
+            "mood, the pause between exchanges. Do NOT narrate specific "
+            "combatant actions (no 'X darts forward', no 'Y raises their "
+            "weapon'). Combatants are present per the roster; you describe "
+            "the scene around them, not what they do. Do NOT preview "
+            "next-turn actions. Then hand back to the next acting combatant "
+            "per init order."
+        )
+    elif kind == 'BLOODIED_THRESHOLD_CROSSED':
+        name = trigger_event.get('name', '?')
+        action = f"[Combat narration: {name} is bloodied.]"
+        framing = (
+            f"TRIGGER: bloodied_threshold_crossed (combatant={name})\n"
+            f"Render one short atmospheric beat — {name} is now bloodied. "
+            "Describe them faltering / staggering / showing damage. Do NOT "
+            "describe them as about-to-fall, dying, or out of the fight — "
+            "they're hurt but standing. Avrae will tell us when they go down."
+        )
+    elif kind == 'COMBATANT_DOWNED':
+        name = trigger_event.get('name', '?')
+        action = f"[Combat narration: {name} dropped.]"
+        framing = (
+            f"TRIGGER: combatant_downed (combatant={name})\n"
+            f"Render one short atmospheric beat — {name} drops to 0 HP "
+            "this round. Listener confirms the descent. Describe the fall "
+            "concretely. Do NOT declare death unless the listener confirms "
+            "death-save failure or instant-death threshold; 'unconscious / "
+            "down / out of the fight' is the safe framing."
+        )
+    else:  # COMBAT_END (Ship S45-F — auto-closeout on !init end)
+        action = "[Combat narration: combat resolves.]"
+        framing = (
+            "TRIGGER: combat_end\n"
+            "Combat has ended this moment. Render one short atmospheric "
+            "beat marking the close — 2-3 sentences. Describe the falling "
+            "tension, the cessation of motion, the room settling. "
+            "Combatants who were standing at the close remain standing; "
+            "combatants marked downed/dead in the roster are still down. "
+            "Do NOT narrate post-combat decisions, dialogue, or next moves "
+            "— that's for the player to declare next turn. Do NOT preview "
+            "the next exploration beat or describe what the party does now. "
+            "Do NOT introduce any combatant or NPC who is not on the closing "
+            "roster above — no 'a thug emerges from the shadows', no "
+            "companions appearing to congratulate the party. Close THIS "
+            "moment and stop."
+        )
+
+    transition_context = (
+        f"=== COMBAT NARRATION (atmospheric, not adjudicative) ===\n"
+        f"{framing}\n\n"
+        f"Combatant roster (categorical HP labels — NEVER state exact numbers):\n"
+        f"{roster_block}\n\n"
+        f"{_COMBAT_NARRATION_INVARIANTS}"
+    )
+    return (action, transition_context)
+
+
+def combat_narration_log_summary(trigger_event: dict, fired: bool,
+                                  reason: str = '') -> str:
+    """Compact log line per Doctrine §59 / Ship S43 spec §6. Always-fire
+    when a trigger is evaluated, even if it doesn't dispatch."""
+    kind = (trigger_event or {}).get('kind', 'unknown')
+    name = (trigger_event or {}).get('name', '')
+    parts = [
+        f"combat_narration_fired: kind={kind} fired={1 if fired else 0}",
+    ]
+    if name:
+        parts.append(f"name='{name}'")
+    if reason:
+        parts.append(f"reason={reason}")
+    return " ".join(parts)

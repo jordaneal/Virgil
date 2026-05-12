@@ -47,6 +47,7 @@ from dnd_engine import (
     clock_create, clock_tick, clock_untick, clock_reset, clock_delete, get_clocks,
     set_active_turn, clear_active_turn, get_active_turn,
     update_last_active_actor,
+    reset_narrative_buffers_on_combat_exit,
     pending_directive_upsert, pending_directive_get_active,
     pending_directive_consume, pending_directive_delete_by_message,
     pending_directive_age_seconds,
@@ -1314,7 +1315,8 @@ async def _handle_init_event(message, init_evt):
     Pure mechanical mapping — no LLM.
     begin → combat mode
     end   → exploration mode + clear combat turn state
-    turn  → set active turn controller (2A.2)
+    turn  → set active turn controller (2A.2). On round transition
+            (round_num > prior_round), fire S43 ROUND_START narration trigger.
     'add' and 'end_prompt' are no-ops here.
     """
     try:
@@ -1334,18 +1336,133 @@ async def _handle_init_event(message, init_evt):
             set_scene_mode(campaign['id'], 'combat')
             log(f"init: combat started (guild={message.guild.id}) → mode='combat'")
         elif evt_type == 'end' and current_mode == 'combat':
+            # Ship S45-F: snapshot combat state BEFORE mechanical cleanup
+            # so the COMBAT_END dispatch (below) has the closing roster.
+            # The dispatch fires AFTER cleanup but uses these snapshots
+            # via override params so the directive's mode gate + roster
+            # build both succeed even though DB state has flipped.
+            pre_clear_combat_state = get_combatants(campaign['id'])
+
             set_scene_mode(campaign['id'], 'exploration')
             clear_active_turn(campaign['id'])
             clear_combatants(campaign['id'])
+            # Ship S45 — reset narrative buffers at combat→exploration
+            # boundary. Mechanical cleanup above doesn't touch the three
+            # rolling narrative buffers (current_scene, last_dm_response,
+            # last_player_action) which otherwise leak combat-specific
+            # framing into the next exploration message and drive
+            # post-combat drift (S44 follow-up diagnosis).
+            #
+            # Ordering note: buffer reset establishes a clean synthesized
+            # fallback. If the COMBAT_END dispatch below succeeds, its LLM
+            # closeout narration will overwrite the synthesized text in
+            # current_scene (richer atmospheric resolution for the next
+            # exploration turn's context). If dispatch fails (LLM timeout,
+            # no combatants, etc.), the synthesized reset stands as the
+            # fallback. Either way, no stale combat narration survives the
+            # boundary.
+            reset_narrative_buffers_on_combat_exit(campaign['id'])
             log(f"init: combat ended (guild={message.guild.id}) → mode='exploration', combat state cleared")
+
+            # Ship S45-F: COMBAT_END auto-closeout narration. Closes the
+            # silence-until-player-types gap the operator flagged in S45
+            # verify ("not plausible that we wait for a structured sentence
+            # before dm responds to init end"). Fires the same dispatch
+            # surface as ROUND_START/BLOODIED/DOWNED with full S43
+            # instruction-side + S44 information-side enforcement; the
+            # directive's roster shows the closing combatant state with
+            # categorical HP labels and the MUST/MUST-NOT clauses prevent
+            # post-combat speculation. Soft-fails per §59 — combat narration
+            # never blocks mechanical state.
+            await _dispatch_combat_narration(
+                campaign,
+                {'kind': 'COMBAT_END'},
+                combat_state_override=pre_clear_combat_state,
+                scene_override={'mode': 'combat'},
+            )
         elif evt_type == 'turn':
             controller_id = init_evt.get('controller_id')
             name = init_evt.get('name', '')
             round_num = init_evt.get('round', 0)
+            # Ship S43 — detect round transition for ROUND_START trigger.
+            # Compare against prior active_turn's round BEFORE overwriting.
+            prior_turn = get_active_turn(campaign['id'])
+            prior_round = (prior_turn or {}).get('round') or 0
             if controller_id and name:
                 set_active_turn(campaign['id'], str(controller_id), name, round_num)
+            # ROUND_START fires when round_num strictly increases (covers
+            # round 1 from round 0 init-begin OR round N from round N-1).
+            # Only when mode='combat' (gate per spec §1).
+            if (current_mode == 'combat' and isinstance(round_num, int)
+                    and round_num > prior_round and round_num > 0):
+                await _dispatch_combat_narration(
+                    campaign,
+                    {'kind': 'ROUND_START', 'round': round_num},
+                )
     except Exception as e:
         log(f"_handle_init_event error: {e}")
+
+
+async def _dispatch_combat_narration(campaign, trigger_event,
+                                      combat_state_override=None,
+                                      scene_override=None):
+    """Fire one combat-narration auto-post via _dm_respond_and_post.
+
+    Ship S43 dumb-combat dispatcher. Gates on scene_state.mode='combat'.
+    Computes the directive via orch.compute_combat_narration_directive
+    (pure function); empty action+context return signals the trigger
+    should be silently skipped (mode-gate fail, unsupported trigger, etc.).
+
+    Soft-fail on every error — combat narration must NEVER block the
+    underlying Avrae event flow. Mechanical state is Avrae's; narration
+    is a render-side enhancement.
+
+    Ship S45-F: optional `combat_state_override` and `scene_override`
+    decouple dispatch from current DB state. Used by COMBAT_END dispatch
+    which fires AFTER mechanical cleanup (clear_combatants + mode flip)
+    has already run. Override params let the caller snapshot pre-clear
+    combat state + simulate mode='combat' for the directive's gate while
+    the DB already reflects the post-combat state. Both override params
+    default to None → fall back to current DB state (S43/S44 behavior
+    unchanged).
+    """
+    try:
+        scene = (scene_override if scene_override is not None
+                 else get_scene_state(campaign['id']))
+        combat_state = (combat_state_override if combat_state_override is not None
+                        else get_combatants(campaign['id']))
+        action, transition_context = orch.compute_combat_narration_directive(
+            trigger_event, combat_state, scene,
+        )
+        if not action or not transition_context:
+            log(orch.combat_narration_log_summary(
+                trigger_event, fired=False, reason='mode_gate_or_empty',
+            ))
+            return
+        # Build a synthetic action tuple — actor='Combat', no user_id (None).
+        # _dm_respond_and_post tolerates 1-tuple and 3-tuple shapes.
+        # Ship S44: pass suppress_for_combat_narration=True so build_dm_context
+        # drops the chroma retrieval block (=== RELEVANT PAST EVENTS ===) and
+        # the `Recently active NPCs:` line — both surfaced as storytelling
+        # drift sources in S43's ROUND_START verify. The combat narration
+        # directive (transition_context above) carries the authoritative
+        # roster; chroma + recent_npcs duplicate and confuse the context.
+        # §77 doctrine line (atmospheric vs adjudication) is unaffected;
+        # this is the information-side enforcement layer complementing the
+        # instruction-side MUST/MUST-NOT clauses in _COMBAT_NARRATION_INVARIANTS.
+        characters = get_characters(campaign['id']) or []
+        await _dm_respond_and_post(
+            campaign,
+            characters,
+            [('Combat', action, None)],
+            action,
+            transition_context=transition_context,
+            suppress_for_combat_narration=True,
+        )
+        log(orch.combat_narration_log_summary(trigger_event, fired=True))
+    except Exception as e:
+        log(f"_dispatch_combat_narration error: trigger={trigger_event!r} "
+            f"err={e!r}")
 
 
 async def _post_hydration_prompt(channel, campaign_id: int, npc_name: str):
@@ -1370,6 +1487,212 @@ async def _post_hydration_prompt(channel, campaign_id: int, npc_name: str):
         log(f"_post_hydration_prompt error: npc='{npc_name}' err={e!r}")
 
 
+# ─────────────────────────────────────────────────────────
+# Ship 3 (S41) — NPC State-Sync suggester (§1b second instance)
+# ─────────────────────────────────────────────────────────
+# **Avrae bot-filter HALT-and-pivot (S41 verify pass, May 11, 2026):** the
+# originally-locked architectural shape (bot-emit `!init opt` commands
+# directly to #dm-narration, §65a narrow exception) was empirically blocked
+# by Avrae's API. Identical commands mutate state when human-typed and are
+# silently filtered when bot-typed. Documented as structural API boundary
+# in NPC_STATE_SYNC_SPEC.md §13.
+#
+# Pivot per operator decision: convert from bot-WRITER to bot-SUGGESTER
+# following the Track 6 #5.1 `_post_srd_suggestion` precedent. Bot posts a
+# copy-paste command block to #dm-aside; DM pastes; Avrae accepts. This
+# IS Doctrine §1b's second project instance (first: SRD suggestion hook,
+# S26). §65 holds in its original form — no amendment needed.
+#
+# Called from two disjoint trigger surfaces (same call sites as the
+# prior writer shape — only the helper's internal behavior changed):
+#   - /hydrate slash command (trigger='hydrate', Case A)
+#   - _handle_init_list_event hydration branch (trigger='init_list', Case B)
+#
+# Locked command syntax (per S41 D1 verify pass; the syntax is now suggested
+# to the DM rather than emitted by the bot):
+#   `!init opt <name> -hp <N>` sets max HP (NOT `-h` — that's Avrae's
+#   hidden-toggle shorthand; the verify pass surfaced this when bot-emitted
+#   `-h 13` silently hid the combatant instead of setting HP).
+#   `!init opt <name> -ac <N>` sets AC.
+#   Each command must be pasted as a separate Discord message — Avrae's
+#   parser cannot consume back-to-back commands in one code block.
+#
+# Sub-D2 case split survives the pivot — only the aside text changes:
+#   Case A (active /hydrate, combatant has numeric HP in Avrae): suggester
+#     posts a WARNING aside with the command sequence; DM sees HP-reset
+#     risk explicitly before pasting.
+#   Case B (passive init_list trigger, combatant has numeric HP):
+#     suggester NO-OPs silently. Avrae's mid-combat HP authoritative.
+
+async def _avrae_project_npc(channel, campaign_id: int, npc_name: str,
+                              trigger: str) -> tuple[bool, dict]:
+    """Suggest the Avrae command sequence the DM needs to paste to sync
+    a hydrated NPC's stats. §1b validated-suggester pattern.
+
+    Reads dnd_npcs canonical state, queries dnd_combatant_state for current
+    Avrae mirror, posts a copy-paste suggestion to #dm-aside if projection
+    would be useful (and safe). DM pastes the commands manually; Avrae
+    accepts (responds to human-typed commands, filters bot-typed).
+
+    Args:
+        channel: discord channel object — used only for guild lookup to
+            resolve #dm-aside. The suggestion is posted to #dm-aside, not
+            this channel.
+        campaign_id: campaign id.
+        npc_name: canonical NPC name (must match dnd_combatant_state.name).
+        trigger: 'hydrate' or 'init_list' — determines Case A vs Case B
+            behavior on mid-combat re-suggestion.
+
+    Returns:
+        (acted, signals): acted=True when a suggestion was posted;
+        signals['reason'] is one of:
+          'suggested' | 'suggested_with_warning' | 'noop_complete' |
+          'gate_not_in_init' | 'gate_engine_missing' |
+          'gate_engine_stats_null' | 'aside_post_failed'
+
+    The function name is preserved from the pre-pivot bot-writer shape to
+    minimize call-site churn; the behavior is suggester-pattern per S41
+    Avrae bot-filter HALT-and-pivot.
+    """
+    # 1. Engine state — must have NPC row with non-NULL hp_max + ac
+    npc = npc_get_by_name(campaign_id, npc_name)
+    if npc is None:
+        log(f"avrae_projection_skipped: campaign={campaign_id} "
+            f"npc='{npc_name}' trigger={trigger} reason=gate_engine_missing")
+        return (False, {'reason': 'gate_engine_missing'})
+
+    hp_max = npc.get('hp_max')
+    ac = npc.get('ac')
+    if hp_max is None or ac is None:
+        log(f"avrae_projection_skipped: campaign={campaign_id} "
+            f"npc='{npc_name}' trigger={trigger} reason=gate_engine_stats_null "
+            f"hp_max={hp_max} ac={ac}")
+        return (False, {'reason': 'gate_engine_stats_null'})
+
+    # 2. Combatant state — NPC must be currently in init (Avrae has a row)
+    snapshot = get_combatants(campaign_id)
+    target = None
+    npc_name_lower = npc_name.lower()
+    for c in (snapshot or {}).get('combatants', []):
+        if (c.get('name') or '').lower() == npc_name_lower:
+            target = c
+            break
+
+    if target is None:
+        log(f"avrae_projection_skipped: campaign={campaign_id} "
+            f"npc='{npc_name}' trigger={trigger} reason=gate_not_in_init")
+        return (False, {'reason': 'gate_not_in_init'})
+
+    # 3. Resolve #dm-aside (suggestion destination)
+    aside_ch = discord.utils.get(channel.guild.text_channels, name='dm-aside')
+    if aside_ch is None:
+        log(f"avrae_projection_failed: campaign={campaign_id} "
+            f"npc='{npc_name}' trigger={trigger} reason=aside_channel_missing")
+        return (False, {'reason': 'aside_post_failed',
+                        'error': 'dm-aside channel not found'})
+
+    # Engine init_mod for the `!init add <modifier> <name>` rebuild syntax.
+    # Defaults to 0 if NULL (every hydration source fills it from CR band,
+    # so NULL is the missing-engine-state case which gate_engine_stats_null
+    # should have caught — defensive fallback only).
+    init_mod = npc.get('init_mod') or 0
+
+    # Locked command syntax per S41 second verify pass (operator-confirmed):
+    # `-hp <N>` works at both `!init add` (sets max=current=N initially)
+    # AND `!init opt` (sets current HP). The earlier hypothesized `-h` flag
+    # was Avrae's hidden-toggle — applying it at !init add produced <Very
+    # Dead> (max=0 combatant) on every test. `-ac <N>` works at `!init opt`
+    # (live-verified set AC from 0 to 13). Combined `!init add ... -hp X
+    # -ac Y` not validated; the 3-line sequence below uses only verified
+    # flag-subcommand pairs to guarantee correct behavior.
+    rebuild_add_cmd = f"!init add {init_mod} {npc_name} -hp {hp_max}"
+    rebuild_ac_cmd = f"!init opt {npc_name} -ac {ac}"
+    rebuild_seq = [
+        f"!init remove {npc_name}",
+        rebuild_add_cmd,
+        rebuild_ac_cmd,
+    ]
+
+    # 4. Case A / Case B idempotency split
+    avrae_has_numeric_hp = target.get('hp_max') is not None
+    if avrae_has_numeric_hp:
+        if trigger == 'init_list':
+            # Case B: passive trigger; don't second-guess Avrae's mid-combat HP.
+            # No suggestion posted — Avrae state is the authoritative read.
+            log(f"avrae_projection_skipped: campaign={campaign_id} "
+                f"npc='{npc_name}' trigger={trigger} reason=noop_complete "
+                f"avrae_hp_max={target.get('hp_max')}")
+            return (False, {'reason': 'noop_complete'})
+        # Case A: active /hydrate mid-combat. Post suggestion WITH warning.
+        # Clean fix is remove + re-add (loses mid-combat state); partial fix
+        # via opt-only leaves max-HP wrong but preserves combat state.
+        body = (
+            f"⚠️ **Mid-combat `/hydrate` for `{npc_name}`** "
+            f"(engine: HP {hp_max}, AC {ac})\n"
+            f"Avrae's `!init opt` cannot set max-HP, so a clean sync needs "
+            f"remove + re-add — **this will lose `{npc_name}`'s current "
+            f"HP / conditions / init position**. Paste each line separately "
+            f"(Avrae filters batched commands):\n"
+            f"```\n{rebuild_seq[0]}\n```"
+            f"```\n{rebuild_seq[1]}\n```"
+            f"```\n{rebuild_seq[2]}\n```"
+            f"*Or partial fix (preserves combat state, leaves max-HP wrong): "
+            f"`!init opt {npc_name} -hp {hp_max}` then "
+            f"`!init opt {npc_name} -ac {ac}`.*"
+        )
+        try:
+            await aside_ch.send(body)
+        except Exception as e:
+            log(f"avrae_projection_failed: campaign={campaign_id} "
+                f"npc='{npc_name}' trigger={trigger} reason=aside_post_failed "
+                f"error={e!r}")
+            return (False, {'reason': 'aside_post_failed', 'error': repr(e)})
+        log(f"avrae_projection_succeeded: campaign={campaign_id} "
+            f"npc='{npc_name}' trigger={trigger} reason=suggested_with_warning "
+            f"hp={hp_max} ac={ac}")
+        return (True, {
+            'reason': 'suggested_with_warning',
+            'hp': hp_max,
+            'ac': ac,
+            'commands_suggested': rebuild_seq,
+        })
+
+    # 5. Happy path: post the canonical remove + re-add + AC-opt suggestion.
+    # Avrae's `!init opt` doesn't set max-HP, so `!init opt -hp 13` would
+    # produce `<13/0>` (current=13, max=0) which breaks bloodied/death-save
+    # calculations. The clean fix is remove + re-add with `-hp` (sets both
+    # current AND max at add-time) followed by `!init opt -ac` (the only
+    # subcommand that accepts -ac). Combatant has <None> status (no
+    # mid-combat state to lose) — this is a clean three-step operation.
+    body = (
+        f"🔧 **Sync `{npc_name}` to Avrae** (HP {hp_max}, AC {ac}). "
+        f"`!init opt` can't set max-HP, so the clean fix is remove + re-add "
+        f"with `-hp`, then set AC via `!init opt`. Paste each line as a "
+        f"separate message (Avrae filters back-to-back commands):\n"
+        f"```\n{rebuild_seq[0]}\n```"
+        f"```\n{rebuild_seq[1]}\n```"
+        f"```\n{rebuild_seq[2]}\n```"
+    )
+    log(f"avrae_projection_attempted: campaign={campaign_id} "
+        f"npc='{npc_name}' trigger={trigger} commands={len(rebuild_seq)}")
+    try:
+        await aside_ch.send(body)
+    except Exception as e:
+        log(f"avrae_projection_failed: campaign={campaign_id} "
+            f"npc='{npc_name}' trigger={trigger} reason=aside_post_failed "
+            f"error={e!r}")
+        return (False, {'reason': 'aside_post_failed', 'error': repr(e)})
+    log(f"avrae_projection_succeeded: campaign={campaign_id} "
+        f"npc='{npc_name}' trigger={trigger} reason=suggested hp={hp_max} "
+        f"ac={ac} commands={len(rebuild_seq)}")
+    return (True, {
+        'reason': 'suggested',
+        'hp': hp_max,
+        'ac': ac,
+        'commands_suggested': rebuild_seq,
+    })
+
+
 async def _handle_init_list_event(message, parsed):
     """Map an Avrae `!init list` snapshot onto dnd_combatant_state.
 
@@ -1377,6 +1700,11 @@ async def _handle_init_list_event(message, parsed):
     per-combatant snapshot. Pure mechanical mapping, no LLM. Replace-in-place
     via update_combatants_from_init_list, so each new snapshot supersedes the
     prior one for this campaign.
+
+    Ship S43 (dumb combat): snapshot prior combatant state BEFORE the write,
+    diff after, fire BLOODIED_THRESHOLD_CROSSED + COMBATANT_DOWNED triggers
+    when in mode='combat'. Mode-gate is at the dispatcher; this surface
+    always snapshots so future ships have the diff signal available.
     """
     try:
         if not message.guild:
@@ -1385,6 +1713,12 @@ async def _handle_init_list_event(message, parsed):
         if not campaign:
             return
         combatants = parsed.get('combatants') or []
+        # S43 — capture prior combatant snapshot for HP-transition diff
+        # BEFORE the engine update wipes/re-inserts the table.
+        prior_snapshot = get_combatants(campaign['id']) or {}
+        prior_combatants_list = prior_snapshot.get('combatants') or []
+        scene_for_mode = get_scene_state(campaign['id']) or {}
+        scene_mode = (scene_for_mode.get('mode') or 'exploration').lower()
         n = update_combatants_from_init_list(campaign['id'], parsed)
         hp_present = any(
             c.get('hp_max') is not None for c in combatants
@@ -1416,6 +1750,13 @@ async def _handle_init_list_event(message, parsed):
                 log(f"hydration: campaign={campaign_id} npc='{cbt_name}' "
                     f"source=miss stats_filled=none cr={npc.get('cr_str') or 'none'} "
                     f"status_token={status_token}")
+                # Ship 3 (S41): even on source=miss the engine row may be
+                # stat-complete but Avrae's combatant still <None>. Fire the
+                # projection writer to bring Avrae into line. The writer's
+                # Case B guard absorbs the case where Avrae is already in sync.
+                await _avrae_project_npc(
+                    message.channel, campaign_id, cbt_name, trigger='init_list'
+                )
                 continue
             cr_hint = npc.get('cr_str') if npc else None
             if cr_hint is None:
@@ -1428,6 +1769,11 @@ async def _handle_init_list_event(message, parsed):
                        if (npc and npc.get('skeleton_origin') and cr_hint)
                        else 'hook')
                 npc_hydrate_stats(campaign_id, cbt_name, cr_str=cr_hint, source=src)
+            # Ship 3 (S41): post-hydration projection. trigger='init_list' (Case B).
+            # Writer's idempotency absorbs already-synced + skips on numeric HP.
+            await _avrae_project_npc(
+                message.channel, campaign_id, cbt_name, trigger='init_list'
+            )
 
         log(
             f"init_list_parsed: campaign={campaign['id']} "
@@ -1437,6 +1783,20 @@ async def _handle_init_list_event(message, parsed):
             f"hp_present={1 if hp_present else 0} "
             f"conditions_present={1 if conditions_present else 0}"
         )
+        # Ship S43 (dumb combat) — compute HP-state transitions vs prior
+        # snapshot; fire BLOODIED_THRESHOLD_CROSSED + COMBATANT_DOWNED
+        # narration triggers when in mode='combat'. Mode gate at dispatcher;
+        # the diff itself runs unconditionally so future ships have signal.
+        if scene_mode == 'combat':
+            try:
+                transitions = orch.compute_combat_state_transitions(
+                    prior_combatants_list, combatants,
+                )
+                for trigger in transitions:
+                    await _dispatch_combat_narration(campaign, trigger)
+            except Exception as e:
+                log(f"_handle_init_list_event combat_narration "
+                    f"dispatch error: {e!r}")
     except Exception as e:
         log(f"_handle_init_list_event error: {e}")
 
@@ -1766,13 +2126,35 @@ async def on_message(message: discord.Message):
     # 2A.3 — Turn gating in combat. Only the active controller may submit
     # actionable input during combat. If we're in combat AND have a recorded
     # active turn AND the author isn't the active controller → react ⏳ and
-    # bail. If no turn is recorded yet (e.g. !init begin fired but no turn
-    # cycle has happened), we let messages through — gating only kicks in
-    # once Avrae has actually announced whose turn it is.
+    # bail.
+    #
+    # Ship S45-D v2 (extended init-setup gate): when mode='combat' but no
+    # active turn has been set yet (Avrae fired !init begin + adds/joins
+    # but the first !init next hasn't cycled), the bot must STAY SILENT.
+    # Init-setup is structurally a window where narration is premature —
+    # Avrae owns this window. Any player input here is either Avrae
+    # disambiguation (e.g. bare number to pick a monster source) or
+    # premature RP; either way, narration is wrong.
+    #
+    # Prior v1 (suppress_for_combat_narration auto-applied in
+    # _dm_respond_and_post) closed the phantom-companion leak but the LLM
+    # still generated combat narration from bare inputs like "2". v2 gates
+    # at the on_message level — bot reacts ⏳ and returns. ROUND_START
+    # dispatch will fire when Avrae announces the first turn, providing
+    # the proper atmospheric opener.
     scene = get_scene_state(campaign['id'])
     if scene and (scene.get('mode') or 'exploration') == 'combat':
         active = get_active_turn(campaign['id'])
-        if active and str(active['controller_id']) != str(message.author.id):
+        if not active:
+            # Init-setup window — combat mode set, no turn cycled yet.
+            try:
+                await message.add_reaction('⏳')
+            except Exception:
+                pass
+            log(f"init_setup_gate: dropped msg from {message.author.id} "
+                f"(mode=combat, no active_turn — Avrae setup phase)")
+            return
+        if str(active['controller_id']) != str(message.author.id):
             try:
                 await message.add_reaction('⏳')
             except Exception:
@@ -2343,7 +2725,8 @@ async def _advisory_respond(message: discord.Message):
 async def _dm_respond_and_post(campaign, characters, actions: list, combined_action: str,
                                 transition_context: str = None,
                                 location_label_override: str = None,
-                                resolution_result=None):
+                                resolution_result=None,
+                                suppress_for_combat_narration: bool = False):
     """Called by the batcher. Pulls Avrae events for the relevant actors,
     fires the DM, posts narration.
 
@@ -2371,6 +2754,39 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
         if not channel:
             log("_dm_respond_and_post: narration channel not found")
             return
+
+        # Ship S45-D v1: init-setup defense-in-depth suppression. When
+        # mode='combat' but no active_turn has been set yet (Avrae !init
+        # begin + adds/joins phase before !init next), the bot is
+        # structurally NOT in a position to render full exploration
+        # context.
+        #
+        # v2 (the primary gate) lives in `on_message` and prevents player
+        # messages from reaching `_dm_respond_and_post` at all during this
+        # window — bot stays silent. This v1 gate remains as defense-in-
+        # depth for non-`on_message` call sites (slash commands,
+        # `_handle_dm_roll_arrival` auto-fire, /travel, etc.) where the
+        # top-level gate doesn't apply. Same suppression set as S44
+        # dispatch path (10 blocks): keeps the bot responsive (it still
+        # replies) but structurally clean (no phantom NPC leak).
+        #
+        # Doctrine candidate (3rd instance of two-layer enforcement): mode
+        # transitions are state-reset surfaces; the init-setup window is a
+        # transitional state where the mode flag has flipped but mechanical
+        # state isn't fully populated yet, and the bot must structurally
+        # narrow its context accordingly.
+        try:
+            scene_for_setup_gate = get_scene_state(campaign['id'])
+            if (scene_for_setup_gate
+                    and (scene_for_setup_gate.get('mode') or '').lower() == 'combat'):
+                active_turn_for_setup_gate = get_active_turn(campaign['id'])
+                if not active_turn_for_setup_gate:
+                    if not suppress_for_combat_narration:
+                        log(f"init_setup_suppression: campaign={campaign['id']} "
+                            f"applied=1 (mode=combat, no active_turn)")
+                    suppress_for_combat_narration = True
+        except Exception as e:
+            log(f"init_setup_suppression: scene gate error: {e!r}")
 
         # Pull Avrae events for the actors who just spoke (consume so they
         # don't re-narrate next turn). Keep events for non-acting characters
@@ -2426,7 +2842,7 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
                 response = await asyncio.to_thread(
                     dm_respond, campaign, characters, combined_action, avrae_events,
                     actor_names, transition_context, first_user_id, actions,
-                    resolution_result,
+                    resolution_result, suppress_for_combat_narration,
                 )
         except (discord.HTTPException, asyncio.TimeoutError) as e:
             log(f"typing_indicator_failed: command=_dm_respond_and_post err={e!r}")
@@ -3795,14 +4211,20 @@ async def play(interaction: discord.Interaction, scene: str = None):
     # First-session detection (S23 #4): if scene_state has never been
     # initialized for this campaign, this is the FIRST /play call and the
     # opening narration should include a hint footer for un-bound players.
-    # Captured BEFORE init_scene_state replaces the row — that call always
-    # creates a row (INSERT OR REPLACE), so the gate flips to False after
+    # Captured BEFORE init_scene_state writes the row — that call always
+    # creates a row (ON CONFLICT preserves), so the gate flips to False after
     # this point and subsequent /play calls correctly suppress the hint.
     prior_scene = get_scene_state(campaign['id'])
     is_first_session = prior_scene is None
 
-    seed = scene or f"The party gathers, ready to begin {campaign['name']}."
-    init_scene_state(campaign['id'], seed)
+    # Ship 2 (S39): seed parameter dropped. The legacy seed string used to
+    # land in dnd_scene_state.last_scene_change, which was a four-property
+    # latent-canon contamination surface (Doctrine §76) and is now deleted.
+    # /play's opening narration is generated by the regular DM-respond loop
+    # downstream — no scene_state seeding required. The `scene` slash-command
+    # argument is no longer consumed here; it's preserved in the call signature
+    # for back-compat but does not flow into scene_state.
+    init_scene_state(campaign['id'])
 
     # Bug 1 Phase 1 (S32) — clear footer-actor on /play. Opening narration
     # doesn't address a specific player, so any prior turn's actor must
@@ -5250,6 +5672,36 @@ async def hydrate(interaction: discord.Interaction, npc: str, cr: str):
 
     # Fetch fresh row to show current stats in response.
     fresh = npc_get_by_name(campaign_id, canonical)
+
+    # Ship 3 (S41, post-pivot): suggest the Avrae sync command sequence to
+    # #dm-aside if NPC is currently in init. §1b suggester pattern; DM
+    # pastes the commands. Avrae filters bot-typed commands (S41 verify pass
+    # finding, NPC_STATE_SYNC_SPEC.md §13), so direct bot-emit is blocked.
+    # The channel arg here is only used for guild lookup → #dm-aside.
+    narration_ch = get_channel(interaction.guild, 'narration')
+    projection_status_line = ''
+    if narration_ch is not None:
+        proj_ok, proj_signals = await _avrae_project_npc(
+            narration_ch, campaign_id, canonical, trigger='hydrate'
+        )
+        reason = proj_signals.get('reason', 'unknown')
+        if reason == 'suggested':
+            projection_status_line = ' See #dm-aside for the Avrae sync paste.'
+        elif reason == 'suggested_with_warning':
+            projection_status_line = (
+                ' Mid-combat re-hydrate — see #dm-aside for HP-reset warning + paste.'
+            )
+        elif reason == 'noop_complete':
+            projection_status_line = ' Avrae already in sync.'
+        elif reason == 'gate_not_in_init':
+            projection_status_line = (
+                ' Not in init — Avrae sync will be suggested on `!init add` + `!init list`.'
+            )
+        elif reason == 'aside_post_failed':
+            projection_status_line = ' #dm-aside post FAILED — sync manually if needed.'
+        elif reason == 'gate_engine_stats_null':
+            projection_status_line = ' Engine stats incomplete; no Avrae sync suggested.'
+
     if fresh and wrote:
         hp = fresh.get('hp_max') or '?'
         ac = fresh.get('ac') or '?'
@@ -5257,7 +5709,7 @@ async def hydrate(interaction: discord.Interaction, npc: str, cr: str):
         dmg = fresh.get('damage_dice') or '?'
         await interaction.response.send_message(
             f"Hydrated `{canonical}` at CR {normalized}: "
-            f"HP {hp}, AC {ac}, Atk +{atk}, Dmg {dmg}.",
+            f"HP {hp}, AC {ac}, Atk +{atk}, Dmg {dmg}.{projection_status_line}",
             ephemeral=True
         )
     else:
@@ -5268,7 +5720,7 @@ async def hydrate(interaction: discord.Interaction, npc: str, cr: str):
         await interaction.response.send_message(
             f"Stats already complete for `{canonical}` at CR {normalized} — "
             f"no fields updated. "
-            f"Current: HP {hp}, AC {ac}, Atk +{atk}, Dmg {dmg}.",
+            f"Current: HP {hp}, AC {ac}, Atk +{atk}, Dmg {dmg}.{projection_status_line}",
             ephemeral=True
         )
 

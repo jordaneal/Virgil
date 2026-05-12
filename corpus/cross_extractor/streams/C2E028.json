@@ -1,0 +1,3163 @@
+{
+  "episode_combined": "C2E028",
+  "campaign": "C2",
+  "episode_int": 28,
+  "total_records": 32,
+  "per_source_counts": {
+    "TM": 22,
+    "LR": 7,
+    "EC": 1,
+    "CC": 2
+  },
+  "events": [
+    {
+      "source": "TM",
+      "turn_number": 30,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0104,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "They are the worst. You went and had a discussion at the Estate Sybaritic with Ophelia Mardun, of whom you were sent by The Gentleman to interface with and do a deed for her a little over two weeks ago. There it seemed that the intent of your job placed here in this city has aligned with your current goal of freeing your friends and seeking vengeance against the Iron Shepherds, as they currently work for a competitive family to the Mardun house, and in response to them destroying parts of the trade route that the Mardun family enjoys through the center and southern sides of the empire, they wish you to instill damage upon their traders as well, by eliminating the Iron Shepherds. You were given some ideas as to where you might find some help, you gathered your things, made your way north into the seemingly corrupted and haunted Savalierwood, to seek information about these Iron Shepherds and where they are. You narrowly avoided two large, immensely mutated, bone-spurred bear creatures. You sought out and cased the exterior of the Sour Nest, which is the fortress that was given to the Iron Shepherds by the family that pays them and keeps them in their employ. You decided to send your new druid friend, Nila, in the form of a small mouse, over the wall, delivery via owl. She snuck through some portions of the fortress to gather intel, and to get an idea of where you were going and what may reside within. A few close calls, and some discovery of what can be expected within the interior, you made your way back, safely, to join your friends.",
+        "preceding_context_chars": 725,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah.",
+            "turn_number": 24
+          },
+          {
+            "speaker": "MATT",
+            "text": "We've got some other fun surprises for folks that are coming, too. Anyway, much love, I think it's time--",
+            "turn_number": 25
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Oh, so tense.",
+            "turn_number": 26
+          },
+          {
+            "speaker": "MATT",
+            "text": "That we dive into tonight's episode of Critical Role. [click, TV static] [groovy Critical Role theme]",
+            "turn_number": 27
+          },
+          {
+            "speaker": "MATT",
+            "text": "Welcome back, everyone. Last we left off, The Mighty Nein, who had acquired two new allies in Keg, the dwarven fighter, and Nila, the firbolg druid, had made their way to the city of Shadycreek Run. After making your way through the town, spending an evening staying at the Landlocked Lady, and getting some information about where to find info about your quarry, and where your friends may have been taken to after they were captured by the Iron Shepherds, a traveling slavers crew.",
+            "turn_number": 28
+          },
+          {
+            "speaker": "SAM",
+            "text": "They're the worst.",
+            "turn_number": 29
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 38,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0132,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "At this point it would be midday, a little bit in the afternoon.",
+        "preceding_context_chars": 16,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the afternoon",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "What time is it?",
+            "turn_number": 37
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 195,
+      "category": "travel_duration",
+      "episode_position_pct": 0.0675,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Travel on foot is about roughly four to six hours depending on how well you can make your way through the terrain.",
+        "preceding_context_chars": 773,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "six hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "I'm into it, yeah.",
+            "turn_number": 182
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "So to Nott's point, what do we need? We need fighters, we need magic? What do we need?",
+            "turn_number": 183
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I like the idea of getting some sort of fighter, especially if Nila can maybe take out that outer onion layer with the lightning. We should have found a better analogy.",
+            "turn_number": 184
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Than an onion? Well, how about we're just going to kill the people on the wall, how is that for a metaphor?",
+            "turn_number": 185
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I like that.",
+            "turn_number": 186
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I like the idea of someone with a little bit of muscle and then another person who is adept at healing injuries.",
+            "turn_number": 187
+          },
+          {
+            "speaker": "SAM",
+            "text": "Well, we did hear about that weird-- someone said that there's some priest or something, or cleric?",
+            "turn_number": 188
+          },
+          {
+            "speaker": "LIAM",
+            "text": "In the woods.",
+            "turn_number": 189
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Ophelia mentioned that, yeah.",
+            "turn_number": 190
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, so we could go see if they could give us--",
+            "turn_number": 191
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Aid.",
+            "turn_number": 192
+          },
+          {
+            "speaker": "SAM",
+            "text": "Or come along?",
+            "turn_number": 193
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Did Ophelia mention how far out into the woods that person was?",
+            "turn_number": 194
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 197,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0682,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's like two in the afternoon, yeah.",
+        "preceding_context_chars": 634,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the afternoon",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Than an onion? Well, how about we're just going to kill the people on the wall, how is that for a metaphor?",
+            "turn_number": 185
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I like that.",
+            "turn_number": 186
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I like the idea of someone with a little bit of muscle and then another person who is adept at healing injuries.",
+            "turn_number": 187
+          },
+          {
+            "speaker": "SAM",
+            "text": "Well, we did hear about that weird-- someone said that there's some priest or something, or cleric?",
+            "turn_number": 188
+          },
+          {
+            "speaker": "LIAM",
+            "text": "In the woods.",
+            "turn_number": 189
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Ophelia mentioned that, yeah.",
+            "turn_number": 190
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, so we could go see if they could give us--",
+            "turn_number": 191
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Aid.",
+            "turn_number": 192
+          },
+          {
+            "speaker": "SAM",
+            "text": "Or come along?",
+            "turn_number": 193
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Did Ophelia mention how far out into the woods that person was?",
+            "turn_number": 194
+          },
+          {
+            "speaker": "MATT",
+            "text": "Travel on foot is about roughly four to six hours depending on how well you can make your way through the terrain.",
+            "turn_number": 195
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It is the same day?",
+            "turn_number": 196
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 250,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0866,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Pushing past two to three in the afternoon.",
+        "preceding_context_chars": 783,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Pushing past",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Well, how hardy would you say the mental state of your companions is?",
+            "turn_number": 229
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "The ones in captivity?",
+            "turn_number": 230
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yeah.",
+            "turn_number": 231
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, I thought you meant us, because we're right here. We can hear you.",
+            "turn_number": 232
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "No. I know that.",
+            "turn_number": 233
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Probably pretty unstable.",
+            "turn_number": 234
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What, do you think that they would be susceptible to torture?",
+            "turn_number": 235
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Being controlled.",
+            "turn_number": 236
+          },
+          {
+            "speaker": "SAM",
+            "text": "Fjord, probably not. Yasha's probably is okay. Jester has already turned. She's flipped. She's probably flipped.",
+            "turn_number": 237
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh, then there's no rush.",
+            "turn_number": 238
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Or wrapped them around her finger, one way or the other. No, they are actually pretty-- they've got their shit together.",
+            "turn_number": 239
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "They arguably have their shit together way more than the three of us do.",
+            "turn_number": 240
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Would they look after--",
+            "turn_number": 241
+          },
+          {
+            "speaker": "LIAM",
+            "text": "A child?",
+            "turn_number": 242
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yeah.",
+            "turn_number": 243
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yes.",
+            "turn_number": 244
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay.",
+            "turn_number": 245
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, especially Jester.",
+            "turn_number": 246
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Then maybe it's all right to take a little bit more time.",
+            "turn_number": 247
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We have to make a decision.",
+            "turn_number": 248
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What time is it?",
+            "turn_number": 249
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 252,
+      "category": "travel_duration",
+      "episode_position_pct": 0.0873,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Four to six hours depending on how well you travel.",
+        "preceding_context_chars": 788,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "six hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "The ones in captivity?",
+            "turn_number": 230
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yeah.",
+            "turn_number": 231
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, I thought you meant us, because we're right here. We can hear you.",
+            "turn_number": 232
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "No. I know that.",
+            "turn_number": 233
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Probably pretty unstable.",
+            "turn_number": 234
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What, do you think that they would be susceptible to torture?",
+            "turn_number": 235
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Being controlled.",
+            "turn_number": 236
+          },
+          {
+            "speaker": "SAM",
+            "text": "Fjord, probably not. Yasha's probably is okay. Jester has already turned. She's flipped. She's probably flipped.",
+            "turn_number": 237
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh, then there's no rush.",
+            "turn_number": 238
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Or wrapped them around her finger, one way or the other. No, they are actually pretty-- they've got their shit together.",
+            "turn_number": 239
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "They arguably have their shit together way more than the three of us do.",
+            "turn_number": 240
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Would they look after--",
+            "turn_number": 241
+          },
+          {
+            "speaker": "LIAM",
+            "text": "A child?",
+            "turn_number": 242
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yeah.",
+            "turn_number": 243
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yes.",
+            "turn_number": 244
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay.",
+            "turn_number": 245
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, especially Jester.",
+            "turn_number": 246
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Then maybe it's all right to take a little bit more time.",
+            "turn_number": 247
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We have to make a decision.",
+            "turn_number": 248
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What time is it?",
+            "turn_number": 249
+          },
+          {
+            "speaker": "MATT",
+            "text": "Pushing past two to three in the afternoon.",
+            "turn_number": 250
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You said it's four hours there.",
+            "turn_number": 251
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 391,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.1354,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That's fair. It takes you a few minutes and you find a couple of softer pieces of branch and vine that have fallen to the corruption. It's interesting; you touch them and they're supple like vines, but they're gray and freezing to the touch. It's a very weird, unnatural feeling, but it seems supple.",
+        "preceding_context_chars": 794,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a few minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "How tall are the gates?",
+            "turn_number": 375
+          },
+          {
+            "speaker": "MATT",
+            "text": "The areas where the fence has been pushed in is between five to six feet in places, areas where it seems to be pushed down lower to about four to even three and a half.",
+            "turn_number": 376
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Your friend's coat? I know it's maybe not--",
+            "turn_number": 377
+          },
+          {
+            "speaker": "SAM",
+            "text": "You mean the tapestry?",
+            "turn_number": 378
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "The tapestry. I know it might hurt it, but if we drape it over--",
+            "turn_number": 379
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We buried him with it.",
+            "turn_number": 380
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh, that's right.",
+            "turn_number": 381
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "But that's a good idea.",
+            "turn_number": 382
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "You want to go back? I could try to hack at it with my axe.",
+            "turn_number": 383
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Could an animal jump over it?",
+            "turn_number": 384
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah. You guys could attempt to climb and leap over. Elements of it are thorned and jagged.",
+            "turn_number": 385
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "This is what I used to do to hop fences back in the day. I look for a few broken-down branches that might be my height.",
+            "turn_number": 386
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make an investigation check.",
+            "turn_number": 387
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "A handful.",
+            "turn_number": 388
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We are going on a witch hunt. We can't go over it, we can't go under it.",
+            "turn_number": 389
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Ten.",
+            "turn_number": 390
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 422,
+      "category": null,
+      "episode_position_pct": 0.1462,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Each of you make your way over this element of the forest, continuing on past the next two boundaries, eventually making your way into the central area of the Blooming Grove. The term now striking a bell as you look around and can see these beautiful flowers as the sun rays hit and pass. It's like the color flares up once the light hits it and then seems to gray as it passes on. You now stand, temperature much warmer, and there's just that stone structure ahead.",
+        "preceding_context_chars": 739,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "as the sun",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "I'm coming!",
+            "turn_number": 415
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Careful.",
+            "turn_number": 416
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm just going to dash over.",
+            "turn_number": 417
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're just going to dash over? Make an acrobatics check.",
+            "turn_number": 418
+          },
+          {
+            "speaker": "SAM",
+            "text": "That was 12 plus... 19.",
+            "turn_number": 419
+          },
+          {
+            "speaker": "MATT",
+            "text": "Caleb has shown areas, as he passed over, where you can safely climb. The rest of you don't need to make checks. Nott ignores this entirely and goes leaping and flipping and attempting to make her way over. The actual fence bends slightly at the impact of foot, the iron beneath having wilted due to long-form rust and whatever perpetual weight has been placed upon it from this land attempting to reclaim it from underneath. Nott leaps, double flip in the air, lands on the opposite side, skids a bit as your feet hit a slight bit of the icy floor, but you manage to catch yourself, no issue.",
+            "turn_number": 420
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Keg holds up a ten.",
+            "turn_number": 421
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 428,
+      "category": null,
+      "episode_position_pct": 0.1483,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Looking through, there are a few languages that come through, most of them are elven and they are very old. Some of them appear to be 100, 200, 400-500 years old. Whatever individuals or families or bloodlines have been interred in this space have been placed here for a very long time, until recently.",
+        "preceding_context_chars": 738,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "500 years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Keg holds up a ten.",
+            "turn_number": 421
+          },
+          {
+            "speaker": "MATT",
+            "text": "Each of you make your way over this element of the forest, continuing on past the next two boundaries, eventually making your way into the central area of the Blooming Grove. The term now striking a bell as you look around and can see these beautiful flowers as the sun rays hit and pass. It's like the color flares up once the light hits it and then seems to gray as it passes on. You now stand, temperature much warmer, and there's just that stone structure ahead.",
+            "turn_number": 422
+          },
+          {
+            "speaker": "LIAM",
+            "text": "How far away is the structure?",
+            "turn_number": 423
+          },
+          {
+            "speaker": "MATT",
+            "text": "From where you're standing on the interior of it, about 40 or so feet.",
+            "turn_number": 424
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "On the tombstones that are around, do I recognize any of the language, or can I tell how old some of these gravesites are?",
+            "turn_number": 425
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make an investigation check.",
+            "turn_number": 426
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "21.",
+            "turn_number": 427
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 430,
+      "category": null,
+      "episode_position_pct": 0.1489,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You do see one that appears to be maybe about ten years old. Very faint elements of wear and tear.",
+        "preceding_context_chars": 576,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "How far away is the structure?",
+            "turn_number": 423
+          },
+          {
+            "speaker": "MATT",
+            "text": "From where you're standing on the interior of it, about 40 or so feet.",
+            "turn_number": 424
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "On the tombstones that are around, do I recognize any of the language, or can I tell how old some of these gravesites are?",
+            "turn_number": 425
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make an investigation check.",
+            "turn_number": 426
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "21.",
+            "turn_number": 427
+          },
+          {
+            "speaker": "MATT",
+            "text": "Looking through, there are a few languages that come through, most of them are elven and they are very old. Some of them appear to be 100, 200, 400-500 years old. Whatever individuals or families or bloodlines have been interred in this space have been placed here for a very long time, until recently.",
+            "turn_number": 428
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Until recently, okay.",
+            "turn_number": 429
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 762,
+      "category": "travel_duration",
+      "episode_position_pct": 0.2639,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It'll add an hour or so to go into Shadycreek. Essentially this is Shadycreek Run at the bottom of the forest and you've traveled, from your perspective, far northwest to get to the area where you met Caduceus. You're now heading back down and the Sour Nest is on the northeastern side of the city, just outside of it, so you have to scoot and ricochet off.",
+        "preceding_context_chars": 418,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Well, did we decide what we're doing?",
+            "turn_number": 753
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I think we were going to go straight there.",
+            "turn_number": 754
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We're going straight to the Shepherds?",
+            "turn_number": 755
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's on the way.",
+            "turn_number": 756
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We didn't really discuss; we got distracted.",
+            "turn_number": 757
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's true. Are you guys heading back to Shadycreek, or are you heading straight to the Sour Nest?",
+            "turn_number": 758
+          },
+          {
+            "speaker": "SAM",
+            "text": "Is it on the way?",
+            "turn_number": 759
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's on the way. I say we at least stop by and scout it.",
+            "turn_number": 760
+          },
+          {
+            "speaker": "SAM",
+            "text": "If it's more or less on the way then yeah, we can at least swing by.",
+            "turn_number": 761
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 840,
+      "category": "scene_transition",
+      "episode_position_pct": 0.291,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay, so you head straight to The Sour Nest? All right. Over the next couple of hours, you make your way, scooting as opposed to the more southern direction you were traveling, heading eastward. Carefully making your way on the outskirts of the northern side of North Clover of Shadycreek Run, I need you all to make stealth checks.",
+        "preceding_context_chars": 749,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Over the next",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Are you describing a date right now?",
+            "turn_number": 826
+          },
+          {
+            "speaker": "SAM",
+            "text": "The insertion goes well, maybe we go steady.",
+            "turn_number": 827
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't know what any of that means.",
+            "turn_number": 828
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "You will get used to it. I just laugh along now.",
+            "turn_number": 829
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "All right.",
+            "turn_number": 830
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Look, they're your people, so I'll leave it to you guys, but I don't love the odds.",
+            "turn_number": 831
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I know because of your abilities, if we can draw more of them outside, we will stand a better chance. We will have more power than you had last time.",
+            "turn_number": 832
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Let's go to the house.",
+            "turn_number": 833
+          },
+          {
+            "speaker": "SAM",
+            "text": "We're just going to watch.",
+            "turn_number": 834
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah.",
+            "turn_number": 835
+          },
+          {
+            "speaker": "SAM",
+            "text": "We're going to see what it's like at night so if we have to come back tomorrow night, we'll know what to expect. Are there more guards at night? We don't know, they could have six more dudes who come up there at night.",
+            "turn_number": 836
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Let's go. We're wasting time just talking.",
+            "turn_number": 837
+          },
+          {
+            "speaker": "SAM",
+            "text": "We'll just look.",
+            "turn_number": 838
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We'll go look.",
+            "turn_number": 839
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 889,
+      "category": "scene_transition",
+      "episode_position_pct": 0.3079,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Even still, you approach the outskirts of The Sour Nest. The clouds of the night are broken here and there, the very darkened night occasionally broken by the errant moonbeam that manages to sweep through the open grove where this fortress was built. The canopy itself cleared out, leaving it open for the occasional peek of white through the clouds. The same perimeter wall you see being slowly trained across by two guards dressed in the same hooded attire as those that you previously saw. As you saw as well bringing the three carts northward from the Glory Run Road. As you begin to approach, Keg, unfortunately, manages to step on a hornet's nest. It crunches under your foot, and, for a brief second, you inhale very sharply knowing this familiar sound-- This is not the first hornet's nest you've stepped into. Thankfully, a moment passes, no hornets. It was abandoned and had fallen from a tree. However, you do hear a voice on the wall say, \"Hello?\"",
+        "preceding_context_chars": 674,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "moment passes",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Do I know if Lorenzo is a loyal person, like would he give or would he just let someone die if they got taken?",
+            "turn_number": 864
+          },
+          {
+            "speaker": "MATT",
+            "text": "Best that you can tell, he's not a \"leave no man behind\" type individual.",
+            "turn_number": 865
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay.",
+            "turn_number": 866
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "He isn't?",
+            "turn_number": 867
+          },
+          {
+            "speaker": "MATT",
+            "text": "He is not.",
+            "turn_number": 868
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "But he is a vengeful type of individual?",
+            "turn_number": 869
+          },
+          {
+            "speaker": "MATT",
+            "text": "He's definitely a fan of an eye for an eye.",
+            "turn_number": 870
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "If it goes south, and we manage to kill one of them, he might chase us.",
+            "turn_number": 871
+          },
+          {
+            "speaker": "LIAM",
+            "text": "True.",
+            "turn_number": 872
+          },
+          {
+            "speaker": "SAM",
+            "text": "Or maybe not.",
+            "turn_number": 873
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Or maybe not. It could be a backup.",
+            "turn_number": 874
+          },
+          {
+            "speaker": "SAM",
+            "text": "No, it's good.",
+            "turn_number": 875
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Let's go.",
+            "turn_number": 876
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh, stealth checks, right.",
+            "turn_number": 877
+          },
+          {
+            "speaker": "MATT",
+            "text": "Stealth checks.",
+            "turn_number": 878
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "First stealth check. Where's my stealth? Seven.",
+            "turn_number": 879
+          },
+          {
+            "speaker": "SAM",
+            "text": "26.",
+            "turn_number": 880
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Seven.",
+            "turn_number": 881
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Ten.",
+            "turn_number": 882
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "12.",
+            "turn_number": 883
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "20.",
+            "turn_number": 884
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 885
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "These are such bad stealth checks.",
+            "turn_number": 886
+          },
+          {
+            "speaker": "MATT",
+            "text": "Thanks to you speaking with nature, I am ignoring one of the lowest stealth rolls.",
+            "turn_number": 887
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Only one?",
+            "turn_number": 888
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1008,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.3492,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. You guys wait an hour to get into position.",
+        "preceding_context_chars": 741,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Rescue the people in the basement.",
+            "turn_number": 996
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "So you've got to get in and out of the basement. That seems to be the conversation then, is getting in and out of the basement. I'm sure, inevitably, you're going to kill a whole bunch of people in the process of that, but as long as you're focused on where you're going and what you're doing, that may help with this wanton violence against Phil, who I'm sure is a terrible person. He shot an owl.",
+            "turn_number": 997
+          },
+          {
+            "speaker": "SAM",
+            "text": "Phil's friend did.",
+            "turn_number": 998
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "He thought it was funny, though, so he's still a dick.",
+            "turn_number": 999
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No, that ain't funny.",
+            "turn_number": 1000
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "All right, let's split up, take these guys out.",
+            "turn_number": 1001
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No, it's too early. We need to wait.",
+            "turn_number": 1002
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Jesus!",
+            "turn_number": 1003
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's 10 35 at night. We need to wait until they're asleep.",
+            "turn_number": 1004
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Call it 10 37 at this point.",
+            "turn_number": 1005
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No.",
+            "turn_number": 1006
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We wait an hour and get into position.",
+            "turn_number": 1007
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1044,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.3616,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "You guys can take a short rest.",
+        "preceding_context_chars": 688,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "take a short rest",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Okay. Until the next shift change. I could use a short rest anyway.",
+            "turn_number": 1030
+          },
+          {
+            "speaker": "SAM",
+            "text": "Get on different sides of the facility?",
+            "turn_number": 1031
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I think so.",
+            "turn_number": 1032
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, but Keg, you stay here.",
+            "turn_number": 1033
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "And do what?",
+            "turn_number": 1034
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Wait.",
+            "turn_number": 1035
+          },
+          {
+            "speaker": "SAM",
+            "text": "With two other people. We're splitting up so we can take them both out at the same time.",
+            "turn_number": 1036
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, you are just waiting until some of us are able to silently take out these people on the wall. Then we buy ourselves a little time while you can clink and clunk as we get closer.",
+            "turn_number": 1037
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "(laughs)",
+            "turn_number": 1038
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's good that you find levity in the situation. Then we go into the inside of this wall and take the next step.",
+            "turn_number": 1039
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "So it's not three and three, it's three and two.",
+            "turn_number": 1040
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Well, it's two groups, and you move less right now.",
+            "turn_number": 1041
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay. Fair.",
+            "turn_number": 1042
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Can I take a short rest?",
+            "turn_number": 1043
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1090,
+      "category": "scene_transition",
+      "episode_position_pct": 0.3776,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Shortly after midnight, you watch as two figures ascend from the inside of the wall climbing up different ladders that mark the entrance and exit. They both interface in a brief conversation, hushed voices, and then relieve the two previous guards, who then descend down on the inside of the courtyard via those same ladders and disappear into The Sour Nest fortress. So there has been a guard changeover now. It's past midnight, pushing one in the morning. What would you like to do?",
+        "preceding_context_chars": 753,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Shortly after",
+        "granularity_bucket": "days",
+        "is_anchored": true,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "No. No windows in the bottom floor. There is a front double door, and there is a single door in the back that you know leads into a kitchen.",
+            "turn_number": 1077
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Go Charlotte, go! You're radiant!",
+            "turn_number": 1078
+          },
+          {
+            "speaker": "LIAM",
+            "text": "He has three hit points, so I think he's actually a bigger spider than the one you're imagining. See, he's right there. He's very big.",
+            "turn_number": 1079
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "How big is that spider?",
+            "turn_number": 1080
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's a pretty big spider.",
+            "turn_number": 1081
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's three hit points worth of spider.",
+            "turn_number": 1082
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That looks like a three hit point spider.",
+            "turn_number": 1083
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Somebody could step on it and he could still go.",
+            "turn_number": 1084
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's a four or five hitter.",
+            "turn_number": 1085
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Get Brian Foster in here with his ping pong racket.",
+            "turn_number": 1086
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's arguably terrifying, I'll give it to you. I was a little wrong, just a little.",
+            "turn_number": 1087
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I put it on Beau's shoulder.",
+            "turn_number": 1088
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm not terrified of it, I'm just saying it could be terrifying. Hi, Frumpkin.",
+            "turn_number": 1089
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1090,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.3776,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Shortly after midnight, you watch as two figures ascend from the inside of the wall climbing up different ladders that mark the entrance and exit. They both interface in a brief conversation, hushed voices, and then relieve the two previous guards, who then descend down on the inside of the courtyard via those same ladders and disappear into The Sour Nest fortress. So there has been a guard changeover now. It's past midnight, pushing one in the morning. What would you like to do?",
+        "preceding_context_chars": 753,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the morning",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "No. No windows in the bottom floor. There is a front double door, and there is a single door in the back that you know leads into a kitchen.",
+            "turn_number": 1077
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Go Charlotte, go! You're radiant!",
+            "turn_number": 1078
+          },
+          {
+            "speaker": "LIAM",
+            "text": "He has three hit points, so I think he's actually a bigger spider than the one you're imagining. See, he's right there. He's very big.",
+            "turn_number": 1079
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "How big is that spider?",
+            "turn_number": 1080
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's a pretty big spider.",
+            "turn_number": 1081
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's three hit points worth of spider.",
+            "turn_number": 1082
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That looks like a three hit point spider.",
+            "turn_number": 1083
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Somebody could step on it and he could still go.",
+            "turn_number": 1084
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's a four or five hitter.",
+            "turn_number": 1085
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Get Brian Foster in here with his ping pong racket.",
+            "turn_number": 1086
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's arguably terrifying, I'll give it to you. I was a little wrong, just a little.",
+            "turn_number": 1087
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I put it on Beau's shoulder.",
+            "turn_number": 1088
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm not terrified of it, I'm just saying it could be terrifying. Hi, Frumpkin.",
+            "turn_number": 1089
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1121,
+      "category": "scene_transition",
+      "episode_position_pct": 0.3883,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "About a minute passes before Beauregard pulls back away, this strange trance passing over her.",
+        "preceding_context_chars": 763,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Do you have kids?",
+            "turn_number": 1105
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No.",
+            "turn_number": 1106
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Why are you badgering him with questions?",
+            "turn_number": 1107
+          },
+          {
+            "speaker": "SAM",
+            "text": "Well, he's a new friend and I talk when I'm nervous.",
+            "turn_number": 1108
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Why don't you let him think and answer questions one at a time?",
+            "turn_number": 1109
+          },
+          {
+            "speaker": "SAM",
+            "text": "You're right.",
+            "turn_number": 1110
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Thank you.",
+            "turn_number": 1111
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Sure, well, I'm learning from-- I don't know who, actually. None of us are good at this. Nila, I guess.",
+            "turn_number": 1112
+          },
+          {
+            "speaker": "SAM",
+            "text": "Nila is really good at this; she's great.",
+            "turn_number": 1113
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "What am I good at?",
+            "turn_number": 1114
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I don't know I can only hear muffles. Choice words. I think they're talking about you, though.",
+            "turn_number": 1115
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "It's okay.",
+            "turn_number": 1116
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I pull the haversack off and say  I have a decent idea, anyway. I think that you should use this.",
+            "turn_number": 1117
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh yeah.",
+            "turn_number": 1118
+          },
+          {
+            "speaker": "MATT",
+            "text": "Much like how you spend a moment with your smell bag, you watch as Beauregard seems to focus into this strange, vibrant pink satchel or shoulder bag that Caleb has been carrying.",
+            "turn_number": 1119
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "What is inside?",
+            "turn_number": 1120
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1281,
+      "category": "scene_transition",
+      "episode_position_pct": 0.4437,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's a long rest to come back.",
+        "preceding_context_chars": 786,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a long rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "I want to wait until right after he passes, and then I want to do some ninja stuff.",
+            "turn_number": 1257
+          },
+          {
+            "speaker": "SAM",
+            "text": "Are you just sipping tea?",
+            "turn_number": 1258
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yep.",
+            "turn_number": 1259
+          },
+          {
+            "speaker": "MATT",
+            "text": "First, I need you to make a stealth check because you're having to move right up against the wall. This is a ten-foot clearing.",
+            "turn_number": 1260
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I do.",
+            "turn_number": 1261
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Use the dodeca if you need to.",
+            "turn_number": 1262
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's true.",
+            "turn_number": 1263
+          },
+          {
+            "speaker": "MATT",
+            "text": "Both of you guys roll stealth checks.",
+            "turn_number": 1264
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Mmm.",
+            "turn_number": 1265
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Doesn't she get a plus ten to the stealth?",
+            "turn_number": 1266
+          },
+          {
+            "speaker": "MATT",
+            "text": "It is a plus ten to stealth check.",
+            "turn_number": 1267
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Then that gives me a 20 total. Okay, 20.",
+            "turn_number": 1268
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Oh shit, how did I get the same thing? Look.",
+            "turn_number": 1269
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I cursed you!",
+            "turn_number": 1270
+          },
+          {
+            "speaker": "SAM",
+            "text": "You need to stealth too?",
+            "turn_number": 1271
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Luck, you have luck still.",
+            "turn_number": 1272
+          },
+          {
+            "speaker": "MATT",
+            "text": "What's your total?",
+            "turn_number": 1273
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Does that apply to her, the Pass without a Trace?",
+            "turn_number": 1274
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah.",
+            "turn_number": 1275
+          },
+          {
+            "speaker": "LIAM",
+            "text": "But you have a luck left.",
+            "turn_number": 1276
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I have two luck points left, but I feel like--",
+            "turn_number": 1277
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, you have one because you used one last game.",
+            "turn_number": 1278
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "But we short rested, didn't we?",
+            "turn_number": 1279
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Oh, we rested.",
+            "turn_number": 1280
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1290,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.4468,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Rolled a six on his perception. Would you both make your attack rolls, please? Because you are unseen, you have advantage on the attack.",
+        "preceding_context_chars": 799,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "you have advantage on the",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Both of you guys roll stealth checks.",
+            "turn_number": 1264
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Mmm.",
+            "turn_number": 1265
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Doesn't she get a plus ten to the stealth?",
+            "turn_number": 1266
+          },
+          {
+            "speaker": "MATT",
+            "text": "It is a plus ten to stealth check.",
+            "turn_number": 1267
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Then that gives me a 20 total. Okay, 20.",
+            "turn_number": 1268
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Oh shit, how did I get the same thing? Look.",
+            "turn_number": 1269
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I cursed you!",
+            "turn_number": 1270
+          },
+          {
+            "speaker": "SAM",
+            "text": "You need to stealth too?",
+            "turn_number": 1271
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Luck, you have luck still.",
+            "turn_number": 1272
+          },
+          {
+            "speaker": "MATT",
+            "text": "What's your total?",
+            "turn_number": 1273
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Does that apply to her, the Pass without a Trace?",
+            "turn_number": 1274
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah.",
+            "turn_number": 1275
+          },
+          {
+            "speaker": "LIAM",
+            "text": "But you have a luck left.",
+            "turn_number": 1276
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I have two luck points left, but I feel like--",
+            "turn_number": 1277
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, you have one because you used one last game.",
+            "turn_number": 1278
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "But we short rested, didn't we?",
+            "turn_number": 1279
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Oh, we rested.",
+            "turn_number": 1280
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's a long rest to come back.",
+            "turn_number": 1281
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You got one left.",
+            "turn_number": 1282
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Farts.",
+            "turn_number": 1283
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I think I need to hold that.",
+            "turn_number": 1284
+          },
+          {
+            "speaker": "MATT",
+            "text": "So 15 and 20? You're throwing a javelin and you're firing.",
+            "turn_number": 1285
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah.",
+            "turn_number": 1286
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay.",
+            "turn_number": 1287
+          },
+          {
+            "speaker": "MATT",
+            "text": "You both run up to the wall. You go ahead and hoist up, hanging on the edge right there. Walks past, doesn't seem to have noticed the both of you.",
+            "turn_number": 1288
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Woo!",
+            "turn_number": 1289
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1410,
+      "category": "MATERIAL_LOOT",
+      "episode_position_pct": 0.4884,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "You manage to pilfer about 62 gold pieces.",
+        "preceding_context_chars": 772,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "62 gold pieces",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": true,
+        "nearest_prior_perception_check_turn_distance": 4,
+        "currency_total_gp_equivalent": 62.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Easy enough to do.",
+            "turn_number": 1395
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I like this guy.",
+            "turn_number": 1396
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's cool, I haven't done this.",
+            "turn_number": 1397
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you give the Deuce your nod, you watch as his form actually shifts smaller and matches the shape of the previous guard.",
+            "turn_number": 1398
+          },
+          {
+            "speaker": "SAM",
+            "text": "Mr. Clay!",
+            "turn_number": 1399
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Cool trick!",
+            "turn_number": 1400
+          },
+          {
+            "speaker": "MATT",
+            "text": "Finishing your Detect Magic, you do not detect anything magical of the outer gate. It is locked.",
+            "turn_number": 1401
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Are we going in together? Should we do back entrance/front entrance?",
+            "turn_number": 1402
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I can unlock the front entrance for you guys.",
+            "turn_number": 1403
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I take my wire and I say  Nott are you on the ground still? Can you meet me at the front gates quietly?",
+            "turn_number": 1404
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, give us a minute. I am going to rifle through the dude's pockets and go through the guy we just killed's stuff.",
+            "turn_number": 1405
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Make an investigation check, because you're doing this quickly.",
+            "turn_number": 1406
+          },
+          {
+            "speaker": "SAM",
+            "text": "15.",
+            "turn_number": 1407
+          },
+          {
+            "speaker": "MATT",
+            "text": "15? Not too bad.",
+            "turn_number": 1408
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do we want to go front entrance/back entrance?",
+            "turn_number": 1409
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1431,
+      "category": "MATERIAL_LOOT",
+      "episode_position_pct": 0.4957,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "16, okay. You find 22 gold pieces.",
+        "preceding_context_chars": 761,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "You find 22 gold pieces",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": true,
+        "nearest_prior_perception_check_turn_distance": 5,
+        "currency_total_gp_equivalent": 22.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "You manage to pilfer about 62 gold pieces.",
+            "turn_number": 1410
+          },
+          {
+            "speaker": "SAM",
+            "text": "62?!",
+            "turn_number": 1411
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes.",
+            "turn_number": 1412
+          },
+          {
+            "speaker": "SAM",
+            "text": "Why is he so rich?!",
+            "turn_number": 1413
+          },
+          {
+            "speaker": "MATT",
+            "text": "Because you caught him at the moment outside of the town and he had his money on him.",
+            "turn_number": 1414
+          },
+          {
+            "speaker": "SAM",
+            "text": "But does he have anything else useful, like keys?",
+            "turn_number": 1415
+          },
+          {
+            "speaker": "MATT",
+            "text": "No keys on him, no.",
+            "turn_number": 1416
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, make sure we get the gold out of our dude's pockets, you're right there on the ground.",
+            "turn_number": 1417
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, cool. Anything else?",
+            "turn_number": 1418
+          },
+          {
+            "speaker": "MATT",
+            "text": "He felt safe on that wall.",
+            "turn_number": 1419
+          },
+          {
+            "speaker": "SAM",
+            "text": "Anything else useful? No.",
+            "turn_number": 1420
+          },
+          {
+            "speaker": "MATT",
+            "text": "The crossbow that he had seems to have snapped in the process of his body being yanked from the top of the wall. His armor is standard leather armor.",
+            "turn_number": 1421
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, great.",
+            "turn_number": 1422
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is there anything on the dude's armor that I put on?",
+            "turn_number": 1423
+          },
+          {
+            "speaker": "MATT",
+            "text": "You didn't stop to check, you're already up on the wall.",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I can check.",
+            "turn_number": 1425
+          },
+          {
+            "speaker": "MATT",
+            "text": "If you want to. Make an investigation check.",
+            "turn_number": 1426
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "17, what do I add?",
+            "turn_number": 1427
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Investigation.",
+            "turn_number": 1428
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Minus one.",
+            "turn_number": 1429
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "16.",
+            "turn_number": 1430
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1549,
+      "category": null,
+      "episode_position_pct": 0.5365,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All right. Going past the barrel pile where you had previously made your way in and out via owl the previous day. As you guys scoot past, you hear the front door of the facility (thudding) (creaking). It opens ever so faintly to the inside, and a figure peers out, having apparently heard something.",
+        "preceding_context_chars": 787,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the previous day",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I think it's as long as they're within 30 feet, it's like a field and you can say yea or nay. That's my view.",
+            "turn_number": 1530
+          },
+          {
+            "speaker": "MATT",
+            "text": "It doesn't say at the moment of casting you have to select; just that for the duration you choose. So, my interpretation, I would allow someone to step into the radius, and you could then choose.",
+            "turn_number": 1531
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, so we know better. We know you don't have to cast it.",
+            "turn_number": 1532
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll snuggle up to Nila.",
+            "turn_number": 1533
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I choose Keg.",
+            "turn_number": 1534
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Let's tippy-toe around the back door.",
+            "turn_number": 1535
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, let's go!",
+            "turn_number": 1536
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, everyone who's now making their way around the back, make another stealth check.",
+            "turn_number": 1537
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Am I at disadvantage now? Still?",
+            "turn_number": 1538
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're still at disadvantage, because you still have your armor.",
+            "turn_number": 1539
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "So two plus ten plus five. 17.",
+            "turn_number": 1540
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I miss Vax so much.",
+            "turn_number": 1541
+          },
+          {
+            "speaker": "SAM",
+            "text": "23.",
+            "turn_number": 1542
+          },
+          {
+            "speaker": "LIAM",
+            "text": "14.",
+            "turn_number": 1543
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Plus ten.",
+            "turn_number": 1544
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Plus ten, whatever it is.",
+            "turn_number": 1545
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "12.",
+            "turn_number": 1546
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. You guys begin to head around this direction?",
+            "turn_number": 1547
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah.",
+            "turn_number": 1548
+          }
+        ]
+      }
+    },
+    {
+      "source": "EC",
+      "turn_number": 1753,
+      "category": "npc_turns_hostile",
+      "episode_position_pct": 0.6072,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "All right, roll initiative, you guys.",
+        "preceding_context_chars": 1364,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": false,
+        "narration_buildup_chars": 829,
+        "nearest_prior_trigger_turn_distance": null,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Inside-- tickle, right.",
+            "turn_number": 1722
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Tickle means right.",
+            "turn_number": 1723
+          },
+          {
+            "speaker": "SAM",
+            "text": "Nothing, left. Liam eats farts. I'm ready.",
+            "turn_number": 1724
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You've got it.",
+            "turn_number": 1725
+          },
+          {
+            "speaker": "SAM",
+            "text": "Got it.",
+            "turn_number": 1726
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Tickle means right.",
+            "turn_number": 1727
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I do another check to see if I see any movement upstairs.",
+            "turn_number": 1728
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're still keeping tabs on it. I'm not going to have you roll just for consistently staring.",
+            "turn_number": 1729
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I just want to make sure.",
+            "turn_number": 1730
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, you do see a shadow pass by the door-- by the window.",
+            "turn_number": 1731
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "By the window.",
+            "turn_number": 1732
+          },
+          {
+            "speaker": "SAM",
+            "text": "I cast Mage Hand just in case.",
+            "turn_number": 1733
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. What do you do?",
+            "turn_number": 1734
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will go through and wait for a tickle.",
+            "turn_number": 1735
+          },
+          {
+            "speaker": "LIAM",
+            "text": "My hand is on Keg's shoulder in case things go to shit.",
+            "turn_number": 1736
+          },
+          {
+            "speaker": "MATT",
+            "text": "To the right is a hallway, an open entrance that goes into a pantry or storage room. To the left is a door that leads beyond the kitchen.",
+            "turn_number": 1737
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Tickle means right; left is nothing.",
+            "turn_number": 1738
+          },
+          {
+            "speaker": "SAM",
+            "text": "Is there a tickle?",
+            "turn_number": 1739
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No.",
+            "turn_number": 1740
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will go straight.",
+            "turn_number": 1741
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're at a door.",
+            "turn_number": 1742
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will try the door.",
+            "turn_number": 1743
+          },
+          {
+            "speaker": "MATT",
+            "text": "It opens, it's not locked.",
+            "turn_number": 1744
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Tickle, tickle.",
+            "turn_number": 1745
+          },
+          {
+            "speaker": "MATT",
+            "text": "You feel a tickle.",
+            "turn_number": 1746
+          },
+          {
+            "speaker": "SAM",
+            "text": "I turn right.",
+            "turn_number": 1747
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a stealth check, please, because you're now passing within ear shot of--",
+            "turn_number": 1748
+          },
+          {
+            "speaker": "SAM",
+            "text": "That's a one!",
+            "turn_number": 1749
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "No!",
+            "turn_number": 1750
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As you turn the corner, part of your cloak seems to have caught the edge of one of the pots that was layered on the table right here. As you pull through, pots start clattering. You guys watch as this whole stack of pots start pulling off into the kitchen. The door here swings open and both of these figures come rushing in. \"Hey, what the hell!\" They both pull out blades.",
+            "turn_number": 1751
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I drop it. We're in, go! I walk into the building.",
+            "turn_number": 1752
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1850,
+      "category": null,
+      "episode_position_pct": 0.6408,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "(counting) That puts you right there. That ends your go. It is now Clay's turn.",
+        "preceding_context_chars": 519,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Oh Jesus. I will bonus action disengage, and run through the door that the spider told me to go through.",
+            "turn_number": 1837
+          },
+          {
+            "speaker": "MATT",
+            "text": "Which one?",
+            "turn_number": 1838
+          },
+          {
+            "speaker": "SAM",
+            "text": "The closed one.",
+            "turn_number": 1839
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, you go to that door. It's locked.",
+            "turn_number": 1840
+          },
+          {
+            "speaker": "SAM",
+            "text": "Locked? Great, I'll go through the other door.",
+            "turn_number": 1841
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can use your action to try and fast pick it, if you like. It's up to you. Because you can do that as a rogue.",
+            "turn_number": 1842
+          },
+          {
+            "speaker": "SAM",
+            "text": "Sure, I'll do that. I'll fast pick.",
+            "turn_number": 1843
+          },
+          {
+            "speaker": "MATT",
+            "text": "Go for it.",
+            "turn_number": 1844
+          },
+          {
+            "speaker": "SAM",
+            "text": "Pick fast. 12.",
+            "turn_number": 1845
+          },
+          {
+            "speaker": "MATT",
+            "text": "12? It holds tight.",
+            "turn_number": 1846
+          },
+          {
+            "speaker": "SAM",
+            "text": "Sure. I have any more movement?",
+            "turn_number": 1847
+          },
+          {
+            "speaker": "MATT",
+            "text": "You have currently 20 feet.",
+            "turn_number": 1848
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will run into the next room, as far as I can get.",
+            "turn_number": 1849
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1961,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.6793,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Go for it. Swing for the attack. Actually, you could, if you wanted to, I'll allow you to move in to flank with Keg. That'll give you advantage on the attack roll.",
+        "preceding_context_chars": 676,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "I'll allow you",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Oh, that's right, they had the weapons. Shit.",
+            "turn_number": 1944
+          },
+          {
+            "speaker": "MATT",
+            "text": "However, that's her turn. That brings us to Nila. You're up.",
+            "turn_number": 1945
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Okay. I want to get to the trapdoor.",
+            "turn_number": 1946
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What do you do, mom?",
+            "turn_number": 1947
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Yes. I would like to move. Oh wait, he's not dead yet.",
+            "turn_number": 1948
+          },
+          {
+            "speaker": "MATT",
+            "text": "He is not. You can just barely see another individual who appears to be joining the fray across the way. One of the slavers that is responsible for taking your family.",
+            "turn_number": 1949
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Fucking slavers.",
+            "turn_number": 1950
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Okay. I'd like to move forward and finish off Phil.",
+            "turn_number": 1951
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 1952
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Sorry.",
+            "turn_number": 1953
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Mother's vengeance. Fuck you, Phil!",
+            "turn_number": 1954
+          },
+          {
+            "speaker": "MATT",
+            "text": "Are you going Poison Spray, or you going--",
+            "turn_number": 1955
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I'm going to use the shillelagh.",
+            "turn_number": 1956
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. You step in--",
+            "turn_number": 1957
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(singing) I can feel it coming in the air tonight.",
+            "turn_number": 1958
+          },
+          {
+            "speaker": "SAM",
+            "text": "(synth drums)",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "This is for my son, Asar!",
+            "turn_number": 1960
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1961,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.6793,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Go for it. Swing for the attack. Actually, you could, if you wanted to, I'll allow you to move in to flank with Keg. That'll give you advantage on the attack roll.",
+        "preceding_context_chars": 676,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "give you advantage",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Oh, that's right, they had the weapons. Shit.",
+            "turn_number": 1944
+          },
+          {
+            "speaker": "MATT",
+            "text": "However, that's her turn. That brings us to Nila. You're up.",
+            "turn_number": 1945
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Okay. I want to get to the trapdoor.",
+            "turn_number": 1946
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What do you do, mom?",
+            "turn_number": 1947
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Yes. I would like to move. Oh wait, he's not dead yet.",
+            "turn_number": 1948
+          },
+          {
+            "speaker": "MATT",
+            "text": "He is not. You can just barely see another individual who appears to be joining the fray across the way. One of the slavers that is responsible for taking your family.",
+            "turn_number": 1949
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Fucking slavers.",
+            "turn_number": 1950
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Okay. I'd like to move forward and finish off Phil.",
+            "turn_number": 1951
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 1952
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Sorry.",
+            "turn_number": 1953
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Mother's vengeance. Fuck you, Phil!",
+            "turn_number": 1954
+          },
+          {
+            "speaker": "MATT",
+            "text": "Are you going Poison Spray, or you going--",
+            "turn_number": 1955
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I'm going to use the shillelagh.",
+            "turn_number": 1956
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. You step in--",
+            "turn_number": 1957
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(singing) I can feel it coming in the air tonight.",
+            "turn_number": 1958
+          },
+          {
+            "speaker": "SAM",
+            "text": "(synth drums)",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "This is for my son, Asar!",
+            "turn_number": 1960
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1982,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.6865,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "For the next minute",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "in_scene",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "For the next minute, yes.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "SUMALEE",
+            "text": "I don't know!",
+            "turn_number": 1977
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm being a nerd. Have fun!",
+            "turn_number": 1978
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Yes, okay. I place my Bear Spirit Totem.",
+            "turn_number": 1979
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, so you're taking the totem.",
+            "turn_number": 1980
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "This will protect anyone who comes within 30 feet of it.",
+            "turn_number": 1981
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 2256,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.7814,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "for the next minute",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "in_scene",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "So ten temporary hit points to Caleb, Nila, Nott, and Beau for the next minute.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "SUMALEE",
+            "text": "Saving throws.",
+            "turn_number": 2251
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wow.",
+            "turn_number": 2252
+          },
+          {
+            "speaker": "LIAM",
+            "text": "On all saving throws?",
+            "turn_number": 2253
+          },
+          {
+            "speaker": "MATT",
+            "text": "When the spirit appears, so you guys do not get it, unfortunately.",
+            "turn_number": 2254
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Okay, so you're still fucked. Goddamn it.",
+            "turn_number": 2255
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 2417,
+      "category": "MATERIAL_LOOT",
+      "episode_position_pct": 0.8372,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "14? Okay. You manage to find about 38 gold pieces in the pouch that she keeps on her side. You find another pouch that is a bunch of dried meats that have been salted and smoked, like a jerky. You also find another pack that has teeth in it. Just a collection of teeth. Different sizes, different ages.",
+        "preceding_context_chars": 723,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "38 gold pieces",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 38.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Nott, wait for me.",
+            "turn_number": 2394
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "12 points to you.",
+            "turn_number": 2395
+          },
+          {
+            "speaker": "SAM",
+            "text": "Come, quickly!",
+            "turn_number": 2396
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I follow too.",
+            "turn_number": 2397
+          },
+          {
+            "speaker": "SAM",
+            "text": "Everyone stand back! Caleb's going to do a thing.",
+            "turn_number": 2398
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm going to watch this front door and make sure no one else comes down the steps.",
+            "turn_number": 2399
+          },
+          {
+            "speaker": "MATT",
+            "text": "Over here?",
+            "turn_number": 2400
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No, here.",
+            "turn_number": 2401
+          },
+          {
+            "speaker": "SAM",
+            "text": "(stammering) Get the sword!",
+            "turn_number": 2402
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh, the sword? I'll grab the sword, then.",
+            "turn_number": 2403
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, get the sword. Sword in the haversack.",
+            "turn_number": 2404
+          },
+          {
+            "speaker": "MATT",
+            "text": "Grab the sword. You pull the sheath off her back and slip it in the haversack.",
+            "turn_number": 2405
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Anything else worth checking?",
+            "turn_number": 2406
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What?",
+            "turn_number": 2407
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Attune to the sword.",
+            "turn_number": 2408
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No, I'm putting it in the haversack.",
+            "turn_number": 2409
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Before I leave, could I investigate--",
+            "turn_number": 2410
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's Yasha's sword.",
+            "turn_number": 2411
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "--to see if I see anything else worth taking?",
+            "turn_number": 2412
+          },
+          {
+            "speaker": "MATT",
+            "text": "If you'd like to. It takes a moment for you to rifle through her stuff.",
+            "turn_number": 2413
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll do that. What is that check?",
+            "turn_number": 2414
+          },
+          {
+            "speaker": "MATT",
+            "text": "Investigation.",
+            "turn_number": 2415
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That's a 14.",
+            "turn_number": 2416
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2692,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.9325,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay, so you have one minute before that spell goes away.",
+        "preceding_context_chars": 639,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "one minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "All right. What's everybody else doing?",
+            "turn_number": 2675
+          },
+          {
+            "speaker": "SAM",
+            "text": "The gate's open.",
+            "turn_number": 2676
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "I want to go down.",
+            "turn_number": 2677
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I feel like I want to stay with Caleb, in case.",
+            "turn_number": 2678
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, so Keg is staying up with Caleb.",
+            "turn_number": 2679
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Is that cool with you, Caleb?",
+            "turn_number": 2680
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'll go with you, Nila.",
+            "turn_number": 2681
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I can't hear anything.",
+            "turn_number": 2682
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nila, you head down.",
+            "turn_number": 2683
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Well, I'm going to stand behind you, in case.",
+            "turn_number": 2684
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Oh, that's great.",
+            "turn_number": 2685
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "Come join us.",
+            "turn_number": 2686
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'll come down with you, that's fine.",
+            "turn_number": 2687
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Do I feel you next to me?",
+            "turn_number": 2688
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yeah, maybe I'll put my hand on you?",
+            "turn_number": 2689
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Do I? If I feel the dwarf next to me, I would use a free hand to jam some licorice back into my mouth and start chewing furiously, anxiously. I'm so scared of everything. And cast Haste again, into the dwarf.",
+            "turn_number": 2690
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Tight.",
+            "turn_number": 2691
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2796,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.9685,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That puts it over 20. Both of you together (strains), and one of the bars comes off on one side. He gets in quickly and puts his shoulder in and pushes against the other, and that bends off to the side, leaving just enough room for him to push through. It takes a minute and you're helping him and grabbing his elbow, and the two of your together-- You feel something pop in his shoulder, but it's just enough to get his body to wedge out of the space, and he comes back out of it and embraces you-- the other arm limply hanging at one side, but he takes you in his hand. He looks down at his son and looks over at the rest of you, tired. Still, amongst the trauma he has suffered, there is a pride and a silent strength to him-- very much similar to that you've seen in Nila. \"I do not know by what grace you've come to us, but thank you.\"",
+        "preceding_context_chars": 468,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SUMALEE",
+            "text": "It's okay, they're safe. They came to help. Can you get out?",
+            "turn_number": 2792
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Help me.\"",
+            "turn_number": 2793
+          },
+          {
+            "speaker": "SUMALEE",
+            "text": "How? Tell me.",
+            "turn_number": 2794
+          },
+          {
+            "speaker": "MATT",
+            "text": "He stands up in the cage; his hunched form is crammed in by this cage that was not designed for his firbolg body. Nevertheless, he reaches out and grabs the bars where you had started. \"On three: one, two, three-- (strains).\" He's going to go ahead and make a strength check with advantage. That's a natural 17... and a natural 19! I love it when it works for the narrative! (laughing)",
+            "turn_number": 2795
+          }
+        ]
+      }
+    }
+  ]
+}

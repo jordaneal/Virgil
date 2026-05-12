@@ -1,6 +1,6 @@
 # Virgil + Avrae Command Reference
 
-Last updated: May 7, 2026
+Last updated: May 12, 2026
 
 This is the canonical command reference for Virgil and the Avrae subset Jordan's
 campaigns use. Loaded into advisory mode (`#dm-aside`) on every request.

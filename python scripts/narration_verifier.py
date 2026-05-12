@@ -56,6 +56,7 @@ VIOLATION_VERDICT_CONTRADICTION = 'verdict_contradiction'
 VIOLATION_STATE_MUTATION_CLAIM  = 'state_mutation_claim'
 VIOLATION_ROLL_OUTCOME_DRIFT    = 'roll_outcome_drift'  # Ship 1 (S34)
 VIOLATION_ACTOR_OMISSION        = 'actor_omission'
+VIOLATION_VERIFIER_ERROR        = 'verifier_error'  # sentinel: verifier raised; emitted from dnd_engine.py fallback (not a classified violation)
 
 
 # ─────────────────────────────────────────────────────────

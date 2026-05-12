@@ -65,25 +65,40 @@ def is_avrae(message) -> bool:
 # Parsing
 # ─────────────────────────────────────────────────────────
 
-# Matches "1d20 (15) + 4 = `19`" or "1d20 (15) - 1 = 14" or "= **19**"
-# Captures: natural roll inside parens, final result after =.
+# Dice notation including Avrae's modifier suffixes (kh1/kl1/dh/dl/etc.).
+# Avrae renders advantage as `2d20kh1 (kept, ~~dropped~~)` and disadvantage
+# as `2d20kl1 (~~dropped~~, kept)`. Pre-S42 the regex only matched bare
+# `\d*d\d+` immediately before `(`, so advantage/disadvantage rolls weren't
+# parsed at all — `parse_avrae_embed` returned None for those embeds.
+# S42 fix: allow optional letter-digit suffix between dice notation and
+# the paren-rolls. Captures the same first/second/third groups as before.
+_DICE_NOTATION = r"\d*d\d+(?:[a-zA-Z]+\d*)*"
+
+# Matches "1d20 (15) + 4 = `19`" or "2d20kh1 (15, ~~6~~) + 3 = `18`"
+# or "= **19**". Captures: dice notation, rolls-in-parens, final result.
 _ROLL_RE = re.compile(
-    r"\b(\d*d\d+)\s*\(([^)]+)\)"           # dice notation + (rolls)
-    r".*?"                                  # mods
-    r"=\s*[`*_~]*\s*(-?\d+)\s*[`*_~]*",     # final = N (with optional formatting)
+    rf"\b({_DICE_NOTATION})\s*\(([^)]+)\)"  # dice notation + (rolls)
+    r".*?"                                   # mods
+    r"=\s*[`*_~]*\s*(-?\d+)\s*[`*_~]*",      # final = N (optional formatting)
     re.IGNORECASE | re.DOTALL,
 )
 
 # Matches a damage roll line — distinguishes from to-hit when both are present.
+# Avrae renders resisted damage as `Damage: (2 [bludgeoning]) / 2 = 1` — the
+# non-greedy `.*?=` ensures we capture the LAST `=` value (= post-resistance
+# final), not an internal `=` that might appear in flavor text.
 _DAMAGE_LINE_RE = re.compile(
     r"(?:\*\*)?(?:Damage|DMG)\b[^:]*(?:\*\*)?\s*:\s*"
     r".*?=\s*[`*_~]*\s*(-?\d+)\s*[`*_~]*",
     re.IGNORECASE | re.DOTALL,
 )
 
+# Matches a to-hit roll line. `Attack(?:\s*\d+)?` covers multi-attack
+# numbering (Attack 1, Attack 2, ...). S42 fix: dice notation now allows
+# kh1/kl1 modifiers per _DICE_NOTATION.
 _TO_HIT_LINE_RE = re.compile(
-    r"(?:\*\*)?(?:To Hit|Attack(?:\s*\d+)?)\b[^:]*(?:\*\*)?\s*:\s*"
-    r"\b\d*d\d+\s*\(([^)]+)\)"
+    rf"(?:\*\*)?(?:To Hit|Attack(?:\s*\d+)?)\b[^:]*(?:\*\*)?\s*:\s*"
+    rf"\b{_DICE_NOTATION}\s*\(([^)]+)\)"
     r".*?=\s*[`*_~]*\s*(-?\d+)\s*[`*_~]*",
     re.IGNORECASE | re.DOTALL,
 )
@@ -500,9 +515,60 @@ def parse_init_list_embed(text: str) -> Optional[Dict[str, Any]]:
     }
 
 
+def _extract_attack_from_field(field_value: str) -> Optional[Dict[str, Any]]:
+    """Parse a single attack sub-block out of one embed field's value.
+
+    Avrae's multi-target attacks (`!attack <weapon> -t A -t B`) render one
+    embed field PER target. Each field's value contains a To Hit line and
+    (on hit) a Damage line. This helper extracts (nat, result, damage)
+    from one field's value.
+
+    Returns None when no to-hit line found in the field value.
+    Otherwise returns {'nat': int|None, 'result': int|None, 'damage': int|None}.
+    """
+    hit_m = _TO_HIT_LINE_RE.search(field_value)
+    if not hit_m:
+        return None
+    nat = None
+    inside_clean = re.sub(r"~~[^~]*~~", "", hit_m.group(1))
+    tokens = (re.findall(r"-?\d+", inside_clean)
+              or re.findall(r"-?\d+", hit_m.group(1)))
+    if tokens:
+        try:
+            nat = int(tokens[0])
+        except ValueError:
+            nat = None
+    try:
+        result = int(hit_m.group(2))
+    except ValueError:
+        result = None
+    damage = None
+    dmg_m = _DAMAGE_LINE_RE.search(field_value)
+    if dmg_m:
+        try:
+            damage = int(dmg_m.group(1))
+        except ValueError:
+            damage = None
+    return {'nat': nat, 'result': result, 'damage': damage}
+
+
 def parse_avrae_embed(message) -> Optional[Dict[str, Any]]:
     """Turn one Avrae message into a structured event, or None if it doesn't
-    look mechanical (e.g. lookup output, error, help)."""
+    look mechanical (e.g. lookup output, error, help).
+
+    Returns a dict with: actor, kind ('attack'|'cast'|'save'|'check'|'damage'
+    |'rest'|'roll'), detail (weapon/skill/spell name), result (final int),
+    nat (natural d20 kept), damage (final damage int), crit (bool),
+    channel_id, guild_id, ts, raw.
+
+    S42 multi-attack support: for `kind=='attack'` embeds with multiple
+    target fields (each carrying its own to-hit + damage line), the event
+    dict ALSO includes `attacks: list[dict]` where each entry is
+    {'target': field-name, 'nat': int, 'result': int, 'damage': int}. The
+    top-level nat/result/damage continue to hold the FIRST attack's values
+    for back-compat with single-attack consumers; multi-attack-aware
+    consumers iterate `event['attacks']` when present.
+    """
     if not is_avrae(message):
         return None
 
@@ -530,31 +596,48 @@ def parse_avrae_embed(message) -> Optional[Dict[str, Any]]:
     nat = None
     damage = None
     crit = bool(_CRIT_RE.search(raw))
+    # S42 multi-attack: per-target sub-attacks extracted from embed fields
+    # when kind is 'attack' AND multiple fields each carry a to-hit line.
+    attacks: List[Dict[str, Any]] = []
 
     if kind == 'attack':
-        # Attack: extract to-hit and damage separately
-        hit_m = _TO_HIT_LINE_RE.search(raw)
-        if hit_m:
-            inside_clean = re.sub(r"~~[^~]*~~", "", hit_m.group(1))
-            tokens = re.findall(r"-?\d+", inside_clean) or re.findall(r"-?\d+", hit_m.group(1))
-            if tokens:
-                try:
-                    nat = int(tokens[0])
-                except ValueError:
-                    nat = None
-            try:
-                result = int(hit_m.group(2))
-            except ValueError:
-                result = None
+        # First pass: walk embed.fields to collect per-target sub-attacks.
+        for field in (embed.fields or []):
+            sub = _extract_attack_from_field(field.value or '')
+            if sub is not None:
+                sub['target'] = (field.name or '').strip()
+                attacks.append(sub)
+        # Top-level fields: use first sub-attack if available, otherwise
+        # fall back to whole-raw regex (handles embeds with no fields).
+        if attacks:
+            first = attacks[0]
+            nat = first['nat']
+            result = first['result']
+            damage = first['damage']
         else:
-            result = _final_result(raw)
-            nat = _kept_nat_roll(raw)
-        dmg_m = _DAMAGE_LINE_RE.search(raw)
-        if dmg_m:
-            try:
-                damage = int(dmg_m.group(1))
-            except ValueError:
-                damage = None
+            hit_m = _TO_HIT_LINE_RE.search(raw)
+            if hit_m:
+                inside_clean = re.sub(r"~~[^~]*~~", "", hit_m.group(1))
+                tokens = (re.findall(r"-?\d+", inside_clean)
+                          or re.findall(r"-?\d+", hit_m.group(1)))
+                if tokens:
+                    try:
+                        nat = int(tokens[0])
+                    except ValueError:
+                        nat = None
+                try:
+                    result = int(hit_m.group(2))
+                except ValueError:
+                    result = None
+            else:
+                result = _final_result(raw)
+                nat = _kept_nat_roll(raw)
+            dmg_m = _DAMAGE_LINE_RE.search(raw)
+            if dmg_m:
+                try:
+                    damage = int(dmg_m.group(1))
+                except ValueError:
+                    damage = None
     elif kind == 'cast':
         # Cast: damage line is what matters for narration; nat is rare
         dmg_m = _DAMAGE_LINE_RE.search(raw)
@@ -571,7 +654,7 @@ def parse_avrae_embed(message) -> Optional[Dict[str, Any]]:
         result = _final_result(raw)
         nat = _kept_nat_roll(raw)
 
-    return {
+    event = {
         'actor': actor,
         'kind': kind,
         'detail': detail,
@@ -584,6 +667,18 @@ def parse_avrae_embed(message) -> Optional[Dict[str, Any]]:
         'ts': time.time(),
         'raw': raw[:500],
     }
+    # Only surface 'attacks' field when multiple sub-attacks present.
+    # Single-attack embeds keep the original event shape (no 'attacks' key).
+    if len(attacks) > 1:
+        event['attacks'] = attacks
+
+    # S42 telemetry: always-fire per-parse log so future audits don't need
+    # to instrument from scratch. Tracks kind, actor, edge-case signals.
+    log(f"listener_parsed: kind={kind} actor={actor!r} nat={nat} "
+        f"result={result} damage={damage} crit={1 if crit else 0} "
+        f"subattacks={len(attacks)}")
+
+    return event
 
 
 # ─────────────────────────────────────────────────────────

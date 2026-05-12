@@ -1,0 +1,1427 @@
+{
+  "episode_combined": "C1E046",
+  "campaign": "C1",
+  "episode_int": 46,
+  "total_records": 13,
+  "per_source_counts": {
+    "TM": 11,
+    "EC": 1,
+    "LR": 1
+  },
+  "events": [
+    {
+      "source": "TM",
+      "turn_number": 183,
+      "category": null,
+      "episode_position_pct": 0.0774,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "An hour, yeah, so you can still be under that effect.",
+        "preceding_context_chars": 750,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "An hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yes!",
+            "turn_number": 165
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Tread gently and see if they react.",
+            "turn_number": 166
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do you have Pass Without a Trace, Vex?",
+            "turn_number": 167
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I do. But, Keyleth, the minute we start fighting, they will notice us, and then they'll attack us from behind.",
+            "turn_number": 168
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "So it would be best to get their attention now when everything's quiet.",
+            "turn_number": 169
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We also don't want to waste all of our abilities on undead.",
+            "turn_number": 170
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There's only two, maybe four of them.",
+            "turn_number": 171
+          },
+          {
+            "speaker": "MATT",
+            "text": "There's four of them.",
+            "turn_number": 172
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That we see.",
+            "turn_number": 173
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Why don't we just tread that way, and we'll see what happens.",
+            "turn_number": 174
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's exactly what we're saying.",
+            "turn_number": 175
+          },
+          {
+            "speaker": "SAM",
+            "text": "What could happen?",
+            "turn_number": 176
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I guess I use Pass Without a Trace on all of us.",
+            "turn_number": 177
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You did.",
+            "turn_number": 178
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Did we already have it?",
+            "turn_number": 179
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Did we already have it? From last time?",
+            "turn_number": 180
+          },
+          {
+            "speaker": "MATT",
+            "text": "As long as you're maintaining your concentration, how long does it last for? Concentration? I believe it--",
+            "turn_number": 181
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It holds for up to an hour.",
+            "turn_number": 182
+          }
+        ]
+      }
+    },
+    {
+      "source": "EC",
+      "turn_number": 622,
+      "category": "interruption",
+      "episode_position_pct": 0.263,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "Anyone who wishes to immediately go into battle now, let's roll initiative.",
+        "preceding_context_chars": 1240,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": false,
+        "narration_buildup_chars": 790,
+        "nearest_prior_trigger_turn_distance": null,
+        "preceding_turns": [
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "On the Ice Storm Candle. All affected must make a dexterity saving throw, DC 12, or suffer 4d6 cold damage.",
+            "turn_number": 602
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's a fail and a save. And it's half damage on success?",
+            "turn_number": 603
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Half damage on success.",
+            "turn_number": 604
+          },
+          {
+            "speaker": "MATT",
+            "text": "Great. Okay, so one of them failed and one of them saved. So go ahead and roll 4d6 damage.",
+            "turn_number": 605
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Dang. I think that's a good way to start.",
+            "turn_number": 606
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Thank you, thank you, thank you. Oh boy. Three, six, nine.",
+            "turn_number": 607
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nine? Okay, nine and five cold damage to each. So (bang) it blasts open. Oh, and a dexterity check for your buddy, who makes it! So, Fatty Arbuckle actually walks out of there with a mere five points of cold damage.",
+            "turn_number": 608
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Nice, Fatty!",
+            "turn_number": 609
+          },
+          {
+            "speaker": "MATT",
+            "text": "Out of ice and frost. His busted-open rib cage, though, he did suffer...",
+            "turn_number": 610
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Super duper!",
+            "turn_number": 611
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Putting on the Ritz!",
+            "turn_number": 612
+          },
+          {
+            "speaker": "MATT",
+            "text": "Did suffer seven damage from the impact of this weapon. So Fatty Arbuckle, pretty damaged, but still standing there just going (snarling).",
+            "turn_number": 613
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Keep standing, Fatty, you can do it! I love you, Fatty!",
+            "turn_number": 614
+          },
+          {
+            "speaker": "MATT",
+            "text": "Is everyone just going to sit back at this, or--?",
+            "turn_number": 615
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No, we should probably attack.",
+            "turn_number": 616
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's up to you. Or you can watch this horrible bludgeoning of this skeleton in the teeth of death.",
+            "turn_number": 617
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "When I see the salamander take out the big, shiny sharp thing, I go into a rage.",
+            "turn_number": 618
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I hide.",
+            "turn_number": 619
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Travis, I assume you're going to be rushing in there, then?",
+            "turn_number": 620
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah.",
+            "turn_number": 621
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1115,
+      "category": "KNOWLEDGE_GRANT",
+      "episode_position_pct": 0.4715,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "(laughs) And as you say that, you recognize this entity and blurt out its name, just instinctually as you get a proper view of it. One of the many denizens of the fire elemental plane, this is an efreeti, it is a fire genie.",
+        "preceding_context_chars": 788,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "you recognize this",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Oh, seven, thought I got you.",
+            "turn_number": 1090
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Nobody cares, Marisha.",
+            "turn_number": 1091
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I know, I'll just... be back here... caboose.",
+            "turn_number": 1092
+          },
+          {
+            "speaker": "MATT",
+            "text": "There we go. So right before Grog is Keyleth. Great. All right. Top of the combat round.",
+            "turn_number": 1093
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, nope. Not leading.",
+            "turn_number": 1094
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right.",
+            "turn_number": 1095
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Shitty initiative roll.",
+            "turn_number": 1096
+          },
+          {
+            "speaker": "SAM",
+            "text": "It's going to be fine.",
+            "turn_number": 1097
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "He's cut things out of cardboard. This doesn't look fun.",
+            "turn_number": 1098
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "There was planning. There was a thought process.",
+            "turn_number": 1099
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh shit, towers.",
+            "turn_number": 1100
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There was an instructables involved in this. This is just really-- we're doomed.",
+            "turn_number": 1101
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "No, no, he was down in the play zone before!",
+            "turn_number": 1102
+          },
+          {
+            "speaker": "MATT",
+            "text": "Tell me who wants to roll an arcana check as you see this entity rising up--",
+            "turn_number": 1103
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, absolutely.",
+            "turn_number": 1104
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will, as well.",
+            "turn_number": 1105
+          },
+          {
+            "speaker": "MATT",
+            "text": "For people who are proficient with it.",
+            "turn_number": 1106
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Two.",
+            "turn_number": 1107
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, with disadvantage, right?",
+            "turn_number": 1108
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, you do.",
+            "turn_number": 1109
+          },
+          {
+            "speaker": "LIAM",
+            "text": "So tired.",
+            "turn_number": 1110
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "24.",
+            "turn_number": 1111
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Whoa! Get out of here, dragonborn!",
+            "turn_number": 1112
+          },
+          {
+            "speaker": "SAM",
+            "text": "Look at the big brain on Gern.",
+            "turn_number": 1113
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "I'm very smart.",
+            "turn_number": 1114
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1175,
+      "category": null,
+      "episode_position_pct": 0.4968,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That's the end of Vex's turn. It is now the elementals' turns.",
+        "preceding_context_chars": 765,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "All righty. Mark the efreeti.",
+            "turn_number": 1158
+          },
+          {
+            "speaker": "LAURA",
+            "text": "And then I'm going to use my Longbow of the Sky Sentinel. And I'm going to shoot him three times!",
+            "turn_number": 1159
+          },
+          {
+            "speaker": "MATT",
+            "text": "Go for it.",
+            "turn_number": 1160
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That first one probably does not succeed. It is a 16.",
+            "turn_number": 1161
+          },
+          {
+            "speaker": "MATT",
+            "text": "That does not hit, nope.",
+            "turn_number": 1162
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What about 23?",
+            "turn_number": 1163
+          },
+          {
+            "speaker": "MATT",
+            "text": "That does hit.",
+            "turn_number": 1164
+          },
+          {
+            "speaker": "LAURA",
+            "text": "All right. How about... mega miss. So one of those hits, because I'm a loser.",
+            "turn_number": 1165
+          },
+          {
+            "speaker": "MATT",
+            "text": "Streaking past, and the third one hits as he's holding the flame balls in his hands. Seeing the small impact, he just glares at you though the impact.",
+            "turn_number": 1166
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You need to sacrifice a small mammal. Maybe we can find a squirrel or something.",
+            "turn_number": 1167
+          },
+          {
+            "speaker": "LAURA",
+            "text": "11.",
+            "turn_number": 1168
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "A pagan ritual.",
+            "turn_number": 1169
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I can hook you up. I have a kit.",
+            "turn_number": 1170
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(laughter) Why am I not surprised?",
+            "turn_number": 1171
+          },
+          {
+            "speaker": "LAURA",
+            "text": "17 points of damage and that's it because I suck.",
+            "turn_number": 1172
+          },
+          {
+            "speaker": "MATT",
+            "text": "17 points of damage. And you are hiding behind the tree?",
+            "turn_number": 1173
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I am hiding behind the tree.",
+            "turn_number": 1174
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1215,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.5137,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So you can move around to this side of the elemental, pushing past your allies, whip around, you get a little bit of a view through the fire and flames swirling around you. You concentrate and release a burst of cold energy. It might not be close enough.",
+        "preceding_context_chars": 790,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "pushing past",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Yep. At the top of your turn, because you're now on fire, you take six points of fire damage. You're just wreathed in fire, all around. It's a bad, bad Sunday for Gern.",
+            "turn_number": 1205
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Oh boy. I'm trying to find something that won't destroy-- How close is everyone to me? Everyone's pretty close.",
+            "turn_number": 1206
+          },
+          {
+            "speaker": "SAM",
+            "text": "No one's near the big guy.",
+            "turn_number": 1207
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "No, but I'm standing right there.",
+            "turn_number": 1208
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Here, you can see it right here. You're that little red ring right there, and then your two followers are right there. If you have anything that goes in a cube, you'd be fine. Do you have anything that's a cube shot?",
+            "turn_number": 1209
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "And which way am I facing?",
+            "turn_number": 1210
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Whichever way you want to be facing.",
+            "turn_number": 1211
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "I mean, I guess-- I'd like to run around and throw another Cone of Cold aimed at that guy, and then up at the prick hovering above everyone.",
+            "turn_number": 1212
+          },
+          {
+            "speaker": "MATT",
+            "text": "This direction, you mean?",
+            "turn_number": 1213
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Yes. Aye!",
+            "turn_number": 1214
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1246,
+      "category": null,
+      "episode_position_pct": 0.5268,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "But the flames do eventually go out, over the next five to six seconds or so. What would you like Stimpy to do?",
+        "preceding_context_chars": 612,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "over the next",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "This is Coral.",
+            "turn_number": 1236
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Is there like snow or ice on the ground?",
+            "turn_number": 1237
+          },
+          {
+            "speaker": "MATT",
+            "text": "There is behind the elemental, yes.",
+            "turn_number": 1238
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Can he scoop some up?",
+            "turn_number": 1239
+          },
+          {
+            "speaker": "MATT",
+            "text": "The zombie can take one action, unfortunately, it's not a super intelligent creature. One or the other.",
+            "turn_number": 1240
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "All right, then, I suppose he just has to roll on top of me.",
+            "turn_number": 1241
+          },
+          {
+            "speaker": "MATT",
+            "text": "You guys glance over out of the corner of your eye and you see is the dragonborn all of a sudden jumps to the ground, sprawled out, snow angel style.",
+            "turn_number": 1242
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Do it! Just do it already! What are you waiting for?!",
+            "turn_number": 1243
+          },
+          {
+            "speaker": "MATT",
+            "text": "As this undead begins flailing about on top of his body. You're starting to get elements of decaying goo and--",
+            "turn_number": 1244
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Yes, it's fucking terrible!",
+            "turn_number": 1245
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1429,
+      "category": null,
+      "episode_position_pct": 0.6042,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Total of eight fire damage just from slamming and attacking this salamander. All righty, that brings us to the very end. It is now the salamander's turn. After being hacked twice by you, Grog, it turns around, takes its trident in both hands, looks at you with this horrible snarl. You can see now these glistening, almost ruby-like sharp teeth in its wide grin. (snarl) These long catfish-like tendrils that waft off its face as it slams down the spear towards you.",
+        "preceding_context_chars": 341,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yes.",
+            "turn_number": 1422
+          },
+          {
+            "speaker": "MATT",
+            "text": "However, because you've taken... With each strike within melee of the salamander's heated body, it's so intense by its proximity that you suffer six points of fire damage from the first melee attack against you.",
+            "turn_number": 1423
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "She gave me resistance, so halved to three?",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "MATT",
+            "text": "Halved to two.",
+            "turn_number": 1425
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Halved to two.",
+            "turn_number": 1426
+          },
+          {
+            "speaker": "MATT",
+            "text": "The other one would be 12, so you take six.",
+            "turn_number": 1427
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Eight total.",
+            "turn_number": 1428
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1588,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.6715,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Ten. Trying to recall and hum the song that Scanlan once sang to you, naught but ten minutes before, you don't recall it much at all, and it comes out (tuneless humming).",
+        "preceding_context_chars": 655,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "All right. As the skeleton leaps down into the worm (crash), just flat laid out, cracking part of its pelvis...",
+            "turn_number": 1568
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Dancing without music.",
+            "turn_number": 1569
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep. No music whatsoever.",
+            "turn_number": 1570
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Is the zombie like (zombie groaning). The tip of his arm falls off at the ulna.",
+            "turn_number": 1571
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Pop and lock! Pop and lock!",
+            "turn_number": 1572
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. I'm going to go ahead and--",
+            "turn_number": 1573
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "These guys are great!",
+            "turn_number": 1574
+          },
+          {
+            "speaker": "MATT",
+            "text": "I'm going to ask you to go ahead and roll a performance check.",
+            "turn_number": 1575
+          },
+          {
+            "speaker": "SAM",
+            "text": "We never do those!",
+            "turn_number": 1576
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I feel really bad that I killed Carol now.",
+            "turn_number": 1577
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh, that was almost bad.",
+            "turn_number": 1578
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Wait, plus, plus--",
+            "turn_number": 1579
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, you have inspiration!",
+            "turn_number": 1580
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You do!",
+            "turn_number": 1581
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Use it!",
+            "turn_number": 1582
+          },
+          {
+            "speaker": "SAM",
+            "text": "Use a d10!",
+            "turn_number": 1583
+          },
+          {
+            "speaker": "LIAM",
+            "text": "This is the time.",
+            "turn_number": 1584
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Oh. So seven, plus performance plus one, eight, and then a d10.",
+            "turn_number": 1585
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Roll the d10, add it.",
+            "turn_number": 1586
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Jesus Christ. Ten.",
+            "turn_number": 1587
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1654,
+      "category": null,
+      "episode_position_pct": 0.6994,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Technically, a second spell can only be as high as second level. You used two spells in one round.",
+        "preceding_context_chars": 770,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "one round",
+        "granularity_bucket": "rounds",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Oh, snap. Okay.",
+            "turn_number": 1630
+          },
+          {
+            "speaker": "SAM",
+            "text": "And yeah, that's it. That'll be my--",
+            "turn_number": 1631
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can still move after that.",
+            "turn_number": 1632
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, good! Okay, good, thank you for saving me.",
+            "turn_number": 1633
+          },
+          {
+            "speaker": "MATT",
+            "text": "So the bolt arcs past, go ahead.",
+            "turn_number": 1634
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "I saw that, it was great!",
+            "turn_number": 1635
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, for once! Thank you! Thank you, it was for you!",
+            "turn_number": 1636
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Much appreciated!",
+            "turn_number": 1637
+          },
+          {
+            "speaker": "MATT",
+            "text": "Five, no. And a 12 plus three, 15, no. Both fail their saving throw.",
+            "turn_number": 1638
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, so 8d6?",
+            "turn_number": 1639
+          },
+          {
+            "speaker": "MATT",
+            "text": "8d6 points of lightning damage to both of them. It's a wonderful display, Gern.",
+            "turn_number": 1640
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I ship Scanlan and Gern.",
+            "turn_number": 1641
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Shh, guys, please.",
+            "turn_number": 1642
+          },
+          {
+            "speaker": "SAM",
+            "text": "33.",
+            "turn_number": 1643
+          },
+          {
+            "speaker": "MATT",
+            "text": "33, nice roll.",
+            "turn_number": 1644
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Oh, that Lightning Bolt was so big. And wide!",
+            "turn_number": 1645
+          },
+          {
+            "speaker": "SAM",
+            "text": "It's the width that really does it.",
+            "turn_number": 1646
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "It really does. It's not so much the length.",
+            "turn_number": 1647
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It's the girth of Gern.",
+            "turn_number": 1648
+          },
+          {
+            "speaker": "SAM",
+            "text": "And I will re-inspire Gern. Oh, wait, you're still injured, aren't you?",
+            "turn_number": 1649
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Yeah.",
+            "turn_number": 1650
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will heal Gern.",
+            "turn_number": 1651
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Please.",
+            "turn_number": 1652
+          },
+          {
+            "speaker": "SAM",
+            "text": "With another Healing Word. This time at third level.",
+            "turn_number": 1653
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1662,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.7027,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Well, it's currently being surrounded by a swirl of Hex shadow and looking around very confused and wondering why it got up in the morning.",
+        "preceding_context_chars": 760,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the morning",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Yeah.",
+            "turn_number": 1650
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will heal Gern.",
+            "turn_number": 1651
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Please.",
+            "turn_number": 1652
+          },
+          {
+            "speaker": "SAM",
+            "text": "With another Healing Word. This time at third level.",
+            "turn_number": 1653
+          },
+          {
+            "speaker": "MATT",
+            "text": "Technically, a second spell can only be as high as second level. You used two spells in one round.",
+            "turn_number": 1654
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's still very romantic, though.",
+            "turn_number": 1655
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay, I'll do a 2nd-level Healing Word, and I will sing to him, because I'm running out of things that rhyme with his name: (singing) Gern down for what! (EDM beat) Gern down for what! That's it.",
+            "turn_number": 1656
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Might I remind you I am unable to get an erection at the moment?",
+            "turn_number": 1657
+          },
+          {
+            "speaker": "MATT",
+            "text": "However, in spite of that, the blue pill does give you ten additional hit points healed.",
+            "turn_number": 1658
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Did the skeleton and the zombie start dancing better, after that?",
+            "turn_number": 1659
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, it actually does pick up their pace a little bit now that they have a backtrack.",
+            "turn_number": 1660
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "What is the elemental doing while they're dancing?",
+            "turn_number": 1661
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1810,
+      "category": null,
+      "episode_position_pct": 0.7653,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You leap in the air and jump on it again and as you do the orb (sinking noise) and just slowly, over the next 15 seconds shove it down to the point where you're over the orb on the very top, as you can feel the spell about to dissipate.",
+        "preceding_context_chars": 691,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "over the next",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "That's as far as it goes?",
+            "turn_number": 1795
+          },
+          {
+            "speaker": "MATT",
+            "text": "What do you want to do?",
+            "turn_number": 1796
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "I'd like to try to cast a memory spell on it, if possible.",
+            "turn_number": 1797
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Well, you've already cast a 5th-level spell twice, how many 5th-level spells can you cast per day?",
+            "turn_number": 1798
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Two.",
+            "turn_number": 1799
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, unfortunately you're out of 5th-level slots.",
+            "turn_number": 1800
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "Could I cast it on you to forget that I've already cast it twice?",
+            "turn_number": 1801
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Scanlan, how much time do we have with this bubble?",
+            "turn_number": 1802
+          },
+          {
+            "speaker": "SAM",
+            "text": "A minute, but about 30 seconds have gone by.",
+            "turn_number": 1803
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, you're getting down to about the 40-second mark.",
+            "turn_number": 1804
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Can I put myself out while all of this is happening?",
+            "turn_number": 1805
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, you can do that.",
+            "turn_number": 1806
+          },
+          {
+            "speaker": "SAM",
+            "text": "Can he push down?",
+            "turn_number": 1807
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can jump onto it and begin to push down.",
+            "turn_number": 1808
+          },
+          {
+            "speaker": "CHRIS HARDWICK",
+            "text": "I'm going to push down with all my might, to try to get him down on the ground.",
+            "turn_number": 1809
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1987,
+      "category": null,
+      "episode_position_pct": 0.8402,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All righty. (two impacts) Just as it manages to cauterize the wounds from the Disintegrate spell, both bullets blast into its torso, and you can see it's now, thinking the height advantage would be helpful, after being locked in a hamster ball and now being repeatedly blasted from every which way, it's not enjoying its current experience by any means.",
+        "preceding_context_chars": 745,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Go for it.",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's 22.",
+            "turn_number": 1960
+          },
+          {
+            "speaker": "MATT",
+            "text": "22 hits.",
+            "turn_number": 1961
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "And that's, what's the saving throw for that? Strength throw.",
+            "turn_number": 1962
+          },
+          {
+            "speaker": "MATT",
+            "text": "Strength? 23.",
+            "turn_number": 1963
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Aw, really?",
+            "turn_number": 1964
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah. Sorry.",
+            "turn_number": 1965
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's fine, he'll just take his damage.",
+            "turn_number": 1966
+          },
+          {
+            "speaker": "MATT",
+            "text": "Little bitch. Plus 1d6, don't forget.",
+            "turn_number": 1967
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yes, thank you.",
+            "turn_number": 1968
+          },
+          {
+            "speaker": "MATT",
+            "text": "Wow, Disintegrate spell fucked him up.",
+            "turn_number": 1969
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's 17 points of damage.",
+            "turn_number": 1970
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nice.",
+            "turn_number": 1971
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to shoot again.",
+            "turn_number": 1972
+          },
+          {
+            "speaker": "MATT",
+            "text": "Is this with your pistol?",
+            "turn_number": 1973
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yeah, just with the pistol right now.",
+            "turn_number": 1974
+          },
+          {
+            "speaker": "MATT",
+            "text": "And what's your first range increment on that?",
+            "turn_number": 1975
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "400.",
+            "turn_number": 1976
+          },
+          {
+            "speaker": "MATT",
+            "text": "The pistol?",
+            "turn_number": 1977
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yeah. 1,200 for Bad News.",
+            "turn_number": 1978
+          },
+          {
+            "speaker": "MATT",
+            "text": "Your first range increment.",
+            "turn_number": 1979
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm sharpshooter, I have no range increment.",
+            "turn_number": 1980
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's right. Good call. All right, so fire again.",
+            "turn_number": 1981
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Range increments are for-- We don't do that here.",
+            "turn_number": 1982
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah.",
+            "turn_number": 1983
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That's a 31 to hit.",
+            "turn_number": 1984
+          },
+          {
+            "speaker": "MATT",
+            "text": "That hits, roll damage. Scanlan, you're up next, by the way.",
+            "turn_number": 1985
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "And that's 16 points of damage.",
+            "turn_number": 1986
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2213,
+      "category": null,
+      "episode_position_pct": 0.9357,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Taking another 21 points of fire damage. Reduced to ten. The druids look around and give a nod of acceptance. All of them acknowledge you, who they have not met and don't understand quite where you came from or why you're here. One of them, who is currently missing an arm on one hand. Dark, weathered skin, long jet black hair cruising down to the middle of his back, approaches you and his one right arm he puts on the shoulder and says, into your eyes, \"I do not know you, friend, but you have come to our aid at an hour when we really required it.\"",
+        "preceding_context_chars": 590,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Nice job, Vax!",
+            "turn_number": 2203
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Where am I, am I near her, on the ground?",
+            "turn_number": 2204
+          },
+          {
+            "speaker": "MATT",
+            "text": "She would be back here. You're on the ground, right next to a dancing skeleton.",
+            "turn_number": 2205
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I moved up, I moved up. I would be over there.",
+            "turn_number": 2206
+          },
+          {
+            "speaker": "MATT",
+            "text": "You would be part of the ritual. But you fell next to the dancing skeleton.",
+            "turn_number": 2207
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Okay, I look at the skeleton, I look at her. I look at the skeleton, I look at her. I'm an idiot.",
+            "turn_number": 2208
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, no, I already knew that. It's fine. You did good. You did good. I reach down and I help him on his feet. How bad are you?",
+            "turn_number": 2209
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm pretty bad.",
+            "turn_number": 2210
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I Cure Wounds, level four.",
+            "turn_number": 2211
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, cool, do that. I'm going to walk out of the lava now. (laughter)",
+            "turn_number": 2212
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,4431 @@
+{
+  "episode_combined": "C2E043",
+  "campaign": "C2",
+  "episode_int": 43,
+  "total_records": 50,
+  "per_source_counts": {
+    "EC": 1,
+    "LR": 2,
+    "TM": 41,
+    "CC": 6
+  },
+  "events": [
+    {
+      "source": "EC",
+      "turn_number": 141,
+      "category": "interruption",
+      "episode_position_pct": 0.0646,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "Mm-hmm. 17 for Bouldergut. To the guy it got put on directly, that's a failure on his point. He takes a full 17 points of damage. The guy who's guarding the other plank there, that's a failure on him. He takes 17. Avantika fails with a natural one. Avantika takes a full 17. Then we have the guy over there. He fails with a three. He takes another 17. Then Vera rolls a natural 20. Vera's right there. Vera takes eight. Now that the Wall of Fire is in place, crackling around you, blackening the surface of the deck, the roaring of its sound as it (whooshing), roll initiative, please.",
+        "preceding_context_chars": 1492,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": false,
+        "narration_buildup_chars": 748,
+        "nearest_prior_trigger_turn_distance": null,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "He was there too. He was there.",
+            "turn_number": 119
+          },
+          {
+            "speaker": "MATT",
+            "text": "In the final moment-- we lost one of them up top, too.",
+            "turn_number": 120
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Fucking real D&D, people. It went better in rehearsal.",
+            "turn_number": 121
+          },
+          {
+            "speaker": "MATT",
+            "text": "Sure. That'll do.",
+            "turn_number": 122
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We all know-- I'm not going to touch it-- the gangplanks are open.",
+            "turn_number": 123
+          },
+          {
+            "speaker": "SAM",
+            "text": "We lost a guy on top. Wasn't there a guy on top?",
+            "turn_number": 124
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "He's right here behind Avantika.",
+            "turn_number": 125
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That's right. He's just out of your line of sight.",
+            "turn_number": 126
+          },
+          {
+            "speaker": "MATT",
+            "text": "Perfect. Now meticulously, carefully placed to not waste anyone's time. At that moment, you all, noticing this moment of tension, there's a flash from Caleb's hands. Figures, their eyes dart in his direction as he finishes releasing his arms and firing out of the actual deck of the ship, you see a 20-foot tall high wall of roaring flame and fire burn around in a U-shape encompassing the exterior. You can feel the heat on you, but it's not so intense as to hurt. However, I need you to roll damage.",
+            "turn_number": 127
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's a ten-foot reach on the outside of this thing.",
+            "turn_number": 128
+          },
+          {
+            "speaker": "MATT",
+            "text": "Correct. That's 5d8 fire damage, if you don't mind.",
+            "turn_number": 129
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "On the burn side?",
+            "turn_number": 130
+          },
+          {
+            "speaker": "LIAM",
+            "text": "On the outside. I choose the side, so clearly I'm not going to burn us.",
+            "turn_number": 131
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Anyone within ten feet of the outside gets 5d8?",
+            "turn_number": 132
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's fucking rad. Kill some bitches.",
+            "turn_number": 133
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I don't know why I didn't expect it to be that amazing.",
+            "turn_number": 134
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Shit! Bad rolls. 17 total.",
+            "turn_number": 135
+          },
+          {
+            "speaker": "SAM",
+            "text": "That's fine. That's a good start.",
+            "turn_number": 136
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's a success for the dwarf over there. He takes--",
+            "turn_number": 137
+          },
+          {
+            "speaker": "LIAM",
+            "text": "A one, a two, and a three were the first three rolls.",
+            "turn_number": 138
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's a shame. Eight damage for him. For Bouldergut, that is a failure.",
+            "turn_number": 139
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Also to toss out  the flames are opaque, so they cannot be seen through.",
+            "turn_number": 140
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 208,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.0952,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Yeah, it doesn't require you to have seen the person. You know the spell's happening, you know the direction of the person. You rolled a high enough perception. I'll allow it. As you hear her chanting beneath her breath and you hear the wave rising, you glance over in the direction and you, having an instinctual affinity with flames and fire, can barely see the darkened shape of her on the opposite side of the flames being warped by the light. Using that moment, you put your hand forward and release the destructive pattern of your Counterspell. With that, the swelling ocean splatters back down to the surface.",
+        "preceding_context_chars": 691,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-12T22:28:18Z",
+        "trigger_phrase": "I'll allow it",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": true,
+        "nearest_prior_perception_check_turn_distance": 5,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Counterspell.",
+            "turn_number": 192
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. It's a 4th-level spell, so I need you to roll.",
+            "turn_number": 193
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I know, and it's at disadvantage. (gasps)",
+            "turn_number": 194
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What did you get?!",
+            "turn_number": 195
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I rolled a 14 and a 19! She fails!",
+            "turn_number": 196
+          },
+          {
+            "speaker": "MATT",
+            "text": "She does! (cheering and laughter)",
+            "turn_number": 197
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Look at the veins! Oh my god!",
+            "turn_number": 198
+          },
+          {
+            "speaker": "SAM",
+            "text": "That was two weeks of tension being released.",
+            "turn_number": 199
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Orgasms all under the table right now!",
+            "turn_number": 200
+          },
+          {
+            "speaker": "MATT",
+            "text": "Holy shit! You watch as the ocean begins to swell upwards. Avantika raises her arm-- but you said the walls are opaque. Can you see through the walls?",
+            "turn_number": 201
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Can I hear her go (arcane chanting)?",
+            "turn_number": 202
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a perception check. (groaning)",
+            "turn_number": 203
+          },
+          {
+            "speaker": "SAM",
+            "text": "This is a fair point.",
+            "turn_number": 204
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Oh, natural 20 and a 16, plus perception-- The lowest roll was a 19.",
+            "turn_number": 205
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I like that you don't know where your perception is right now.",
+            "turn_number": 206
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I never do.",
+            "turn_number": 207
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 231,
+      "category": null,
+      "episode_position_pct": 0.1058,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That's two hours of online research about Control Water and Wall of Fire and interactions completely mute. That is awesome.",
+        "preceding_context_chars": 772,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Oh my gosh.",
+            "turn_number": 221
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh my god.",
+            "turn_number": 222
+          },
+          {
+            "speaker": "MATT",
+            "text": "You also do notice now that there are some folks and some of The Revelry watch that are now glancing over at the very bright inferno that is this beacon of flame over there in the shipyard. You appear out of nowhere and there's two of them that look over in your direction, noticing you appear. That's all. That's all that happens. You still have your movement and your bonus.",
+            "turn_number": 223
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I'm going to start moving towards-- yeah? Okay. I start moving towards the Plank King.",
+            "turn_number": 224
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'll catch up with you.",
+            "turn_number": 225
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Good to know. That finishes Jester's go. Yasha's up.",
+            "turn_number": 226
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yasha. What is she doing again? Wow, my brain is so scrambled.",
+            "turn_number": 227
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I know, it's hard to think right now.",
+            "turn_number": 228
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're down two party members in the middle of a U of flames.",
+            "turn_number": 229
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah. She's over here, right? Is this her? Okay.",
+            "turn_number": 230
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 383,
+      "category": null,
+      "episode_position_pct": 0.1754,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That ends their go. It's now Ipess' turn. As a bonus action, he's going to hide and move underneath and around the rocks to this side and he's going to pull around from the corner with his hand crossbow and take a shot at Caduceus from behind. Caduceus, what's your passive perception?",
+        "preceding_context_chars": 33,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, no, I wouldn't dream of it.",
+            "turn_number": 382
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 395,
+      "category": null,
+      "episode_position_pct": 0.1809,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You channel divinity to prevent the critical. It is now a regular hit. Fantastic. You take three points of piercing damage. It sticks into your shield and grinds inside and actually hits a little bit of the forearm, but you manage to deflect most of the impact and bolt gets caught in the center of there, mostly no damage to you.",
+        "preceding_context_chars": 589,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "My passive perception is 18.",
+            "turn_number": 384
+          },
+          {
+            "speaker": "MATT",
+            "text": "18, okay. You do notice him out of the corner of your eye just barely, so he is not hidden from you. This means he does not get sneak attack damage or advantage on the attack. That is still a natural 20 on this hit.",
+            "turn_number": 385
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Is he within 30 feet of me? Wait, no! I can cast this on myself, can't I?",
+            "turn_number": 386
+          },
+          {
+            "speaker": "MATT",
+            "text": "Which one?",
+            "turn_number": 387
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Can I cast-- Let me take a look really quick if I can do this. Sentinel. Can I cast Sentinel on myself?",
+            "turn_number": 388
+          },
+          {
+            "speaker": "MATT",
+            "text": "What does it say? What's the wording?",
+            "turn_number": 389
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "As a reaction, when you or a creature you can see within 30 feet--",
+            "turn_number": 390
+          },
+          {
+            "speaker": "MATT",
+            "text": "When you or a creature?",
+            "turn_number": 391
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh yeah!",
+            "turn_number": 392
+          },
+          {
+            "speaker": "MATT",
+            "text": "Then yeah!",
+            "turn_number": 393
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "So none of that.",
+            "turn_number": 394
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 399,
+      "category": null,
+      "episode_position_pct": 0.1827,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That ends there. It's now the rest of the crew's turn. He's going to come to the side there, this one's going to move over to this side there, this guy's going to run across, this one's going to move over here, and this half orc's going to go and hide in there.",
+        "preceding_context_chars": 726,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "What does it say? What's the wording?",
+            "turn_number": 389
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "As a reaction, when you or a creature you can see within 30 feet--",
+            "turn_number": 390
+          },
+          {
+            "speaker": "MATT",
+            "text": "When you or a creature?",
+            "turn_number": 391
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh yeah!",
+            "turn_number": 392
+          },
+          {
+            "speaker": "MATT",
+            "text": "Then yeah!",
+            "turn_number": 393
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "So none of that.",
+            "turn_number": 394
+          },
+          {
+            "speaker": "MATT",
+            "text": "You channel divinity to prevent the critical. It is now a regular hit. Fantastic. You take three points of piercing damage. It sticks into your shield and grinds inside and actually hits a little bit of the forearm, but you manage to deflect most of the impact and bolt gets caught in the center of there, mostly no damage to you.",
+            "turn_number": 395
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "(nervous laugh) Cool.",
+            "turn_number": 396
+          },
+          {
+            "speaker": "MATT",
+            "text": "One of the guards turns and looks towards Ipess-- Actually both of these guards turn and glance over and having this moment of not entirely certain which side to go with.",
+            "turn_number": 397
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I am looking irritated at the guards at this.",
+            "turn_number": 398
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 403,
+      "category": null,
+      "episode_position_pct": 0.1845,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Yeah, heavy crossbow. With 100 feet, you're going to be within the disadvantage range increment but those things are going to fire at you, Caleb. Since you're the one that's the furthest away.",
+        "preceding_context_chars": 671,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Since you",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I am looking irritated at the guards at this.",
+            "turn_number": 398
+          },
+          {
+            "speaker": "MATT",
+            "text": "That ends there. It's now the rest of the crew's turn. He's going to come to the side there, this one's going to move over to this side there, this guy's going to run across, this one's going to move over here, and this half orc's going to go and hide in there.",
+            "turn_number": 399
+          },
+          {
+            "speaker": "SAM",
+            "text": "Don't forget our crow's nest guy.",
+            "turn_number": 400
+          },
+          {
+            "speaker": "MATT",
+            "text": "With that, we've got some heavy crossbow action from this guy and this guy. Caleb is out of range of both of them unfortunately. Both of these guys right here, I'm going to roll four attacks. One of them is going to be heavy crossbow to Fjord, because Fjord is still within-- Oh no, it's a 400-foot range for the next one.",
+            "turn_number": 401
+          },
+          {
+            "speaker": "SAM",
+            "text": "400 feet?!",
+            "turn_number": 402
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 557,
+      "category": null,
+      "episode_position_pct": 0.255,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All right, that finishes your go, Fjord. It is now Bouldergut's go.",
+        "preceding_context_chars": 582,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Creepily. Very creepily.",
+            "turn_number": 551
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah.",
+            "turn_number": 552
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, god. Oh, god. (groaning)",
+            "turn_number": 553
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Six.",
+            "turn_number": 554
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Well, they seem to be more focused on what just appeared through the scar in reality you left. All right, so you charge past. You're coming upon the group of guards now that are around the rest of the crew of the Mistake, but they've forgotten about that crew at that point. They saw Caleb rush past. Two of them went over to figure out what the hell happened as he basically darted-- football fumbled off to the side. The others are turning and coming towards your direction, but it's not their turn yet.",
+            "turn_number": 555
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 556
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 722,
+      "category": null,
+      "episode_position_pct": 0.3306,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That finishes the crew's go as they're all laying into this demon that appeared on there. You watch as (growl) as it turns back to yell, all of a sudden it gets another bolt in the chest and in the side. It's getting all of these bolts that are now sticking out of its body as it's raging angrily on the deck of the ship. You can see now there's a giant, burned U on the side. It wasn't around long enough to catch the ship on fire, but there is a dark scarring on the base of the deck there. All right. One more round, and it would've caught fire.",
+        "preceding_context_chars": 694,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's getting",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "That's great!",
+            "turn_number": 699
+          },
+          {
+            "speaker": "MATT",
+            "text": "They're turning like, \"Oh, Jesus!\"",
+            "turn_number": 700
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You are tanking. This is a tank. This is a good tank.",
+            "turn_number": 701
+          },
+          {
+            "speaker": "MATT",
+            "text": "He's going to move over here, and attempt to fire at it from there. This one's going to stand where he is and reload. These guys are going to spin around and focus on this terrible creature. All right. This guy here is going to stay behind. That's (counting) six shots against the barlgura.",
+            "turn_number": 702
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Six shots. Oh, fuck.",
+            "turn_number": 703
+          },
+          {
+            "speaker": "MATT",
+            "text": "So, all right. 18 to hit?",
+            "turn_number": 704
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yes.",
+            "turn_number": 705
+          },
+          {
+            "speaker": "MATT",
+            "text": "One point of damage.",
+            "turn_number": 706
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 707
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nine to hit.",
+            "turn_number": 708
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yes. Oh, no, misses, sorry.",
+            "turn_number": 709
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Seven to hit.",
+            "turn_number": 710
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Misses. Three more.",
+            "turn_number": 711
+          },
+          {
+            "speaker": "MATT",
+            "text": "18 to hit.",
+            "turn_number": 712
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Hits.",
+            "turn_number": 713
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nine points of damage.",
+            "turn_number": 714
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 715
+          },
+          {
+            "speaker": "MATT",
+            "text": "16 to hit.",
+            "turn_number": 716
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Hits.",
+            "turn_number": 717
+          },
+          {
+            "speaker": "MATT",
+            "text": "Seven points of damage.",
+            "turn_number": 718
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 719
+          },
+          {
+            "speaker": "MATT",
+            "text": "The last one is 14 to hit.",
+            "turn_number": 720
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Misses. Yeah, misses. Armor class 15.",
+            "turn_number": 721
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 751,
+      "category": null,
+      "episode_position_pct": 0.3439,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's now Avantika's turn. Avantika sees the guards shifting their allegiance under the effect of this Mass Suggestion spell. She's going to turn and attempt to go after Yasha.",
+        "preceding_context_chars": 725,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Bathe in their blood. No, no!",
+            "turn_number": 742
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's up to you. You can go along with it and stay there and wait for your friends, or anything else you want to try. They are not aggressive at this point; they're just holding the line.",
+            "turn_number": 743
+          },
+          {
+            "speaker": "SAM",
+            "text": "You've got a big stick.",
+            "turn_number": 744
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Do not attack them!",
+            "turn_number": 745
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Sam Riegel, shut the fuck up!",
+            "turn_number": 746
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I... wait.",
+            "turn_number": 747
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah!",
+            "turn_number": 748
+          },
+          {
+            "speaker": "MATT",
+            "text": "The tension in your body is rising up, and for a second, the muscles bulge and the veins begin to pop from the sheer amount of adrenaline that's in your system and your urge to charge through. You just breathe heavily as your entire form sinks into it. The two guards, you can see their tension, as their hands were going for a weapon, drop. They both go into a watching but waiting pose. That ends your go.",
+            "turn_number": 749
+          },
+          {
+            "speaker": "LIAM",
+            "text": "With great power.",
+            "turn_number": 750
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 842,
+      "category": null,
+      "episode_position_pct": 0.3855,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "A few people nearby take this and go, \"Oh, oh!\" and start going inside to avoid this. Other folks are getting angry and throwing their glasses on the ground and, \"Oh! I knew one day-- Ugh!\" They're pissed and going to grab their things and maybe start a militia against her. We don't know. You've rallied the corner.",
+        "preceding_context_chars": 697,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "one day",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "I understand. I thought it was different.",
+            "turn_number": 825
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nope.",
+            "turn_number": 826
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Thank you for that clarification.",
+            "turn_number": 827
+          },
+          {
+            "speaker": "MATT",
+            "text": "No worries. That ends the barlgura's turn. Jester, you're up.",
+            "turn_number": 828
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay.",
+            "turn_number": 829
+          },
+          {
+            "speaker": "MATT",
+            "text": "You've ducked to the side. You've cast Disguise Self on yourself.",
+            "turn_number": 830
+          },
+          {
+            "speaker": "LAURA",
+            "text": "To look like a pirate.",
+            "turn_number": 831
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 832
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah. I'm going to--",
+            "turn_number": 833
+          },
+          {
+            "speaker": "MATT",
+            "text": "Like a pirate.",
+            "turn_number": 834
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I'm going to walk out and start shouting at guards nearby. Avantika's attacking everyone! I heard 'em say it! Avantika's-- She's finally doing it! She's trying to take over! She's finally doing it!",
+            "turn_number": 835
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a deception check.",
+            "turn_number": 836
+          },
+          {
+            "speaker": "SAM",
+            "text": "We always knew she was--",
+            "turn_number": 837
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm mad as hell! And I'm not going to take it anymore!",
+            "turn_number": 838
+          },
+          {
+            "speaker": "LAURA",
+            "text": "20!",
+            "turn_number": 839
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. People in the nearby streets that are seeing this go like, \"Are you serious? That crazy bitch!\"",
+            "turn_number": 840
+          },
+          {
+            "speaker": "LAURA",
+            "text": "She's finally-- Finally!",
+            "turn_number": 841
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 924,
+      "category": "OVERNIGHT_REST",
+      "episode_position_pct": 0.4231,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "you come to consciousness",
+        "extracted_surface_form": "diurnal_transition",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "All right. So you come to consciousness on the ground.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "MATT",
+            "text": "That succeeds. They literally rolled a natural 14 plus two. 16 was the highest roll. The other rolled a two. You manage to shrug past. You push out of his grasp. He's like, \"Hey, wait!\"",
+            "turn_number": 919
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Great. One more.",
+            "turn_number": 920
+          },
+          {
+            "speaker": "MATT",
+            "text": "Well, no, you--",
+            "turn_number": 921
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "That was it? Yeah, oh, okay. I'll run down and kneel next to Caleb and go: (English accent) Help me help this man! I will pour a healing potion into his mouth.",
+            "turn_number": 922
+          },
+          {
+            "speaker": "SAM",
+            "text": "Ooh! He does have a potion.",
+            "turn_number": 923
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 924,
+      "category": "scene_transition",
+      "episode_position_pct": 0.4231,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All right. So you come to consciousness on the ground.",
+        "preceding_context_chars": 545,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "you come to consciousness",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 916
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make your acrobatics or athletics check to try and break free.",
+            "turn_number": 917
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Acrobatics or athletics. We'll make it athletics, straight up. That is a 17.",
+            "turn_number": 918
+          },
+          {
+            "speaker": "MATT",
+            "text": "That succeeds. They literally rolled a natural 14 plus two. 16 was the highest roll. The other rolled a two. You manage to shrug past. You push out of his grasp. He's like, \"Hey, wait!\"",
+            "turn_number": 919
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Great. One more.",
+            "turn_number": 920
+          },
+          {
+            "speaker": "MATT",
+            "text": "Well, no, you--",
+            "turn_number": 921
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "That was it? Yeah, oh, okay. I'll run down and kneel next to Caleb and go: (English accent) Help me help this man! I will pour a healing potion into his mouth.",
+            "turn_number": 922
+          },
+          {
+            "speaker": "SAM",
+            "text": "Ooh! He does have a potion.",
+            "turn_number": 923
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 945,
+      "category": null,
+      "episode_position_pct": 0.4327,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Oh, reckless. That's right, yeah. No! A four and a two. So both of those worked out fine. That's the end of Bouldergut's turn. Bouldergut's slamming onto this demon going, \"Go to sleep! Don't hurt my friends!\" Finishing her go, it is now Nott's turn.",
+        "preceding_context_chars": 722,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Well. Now it's Bouldergut's turn. Bouldergut's going to move up, shove past, and begin to take a giant club towards the barlgura. Down towards it.",
+            "turn_number": 926
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Make out!",
+            "turn_number": 927
+          },
+          {
+            "speaker": "MATT",
+            "text": "First hit is a 20 to hit?",
+            "turn_number": 928
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "That hits.",
+            "turn_number": 929
+          },
+          {
+            "speaker": "MATT",
+            "text": "Other's an 18.",
+            "turn_number": 930
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay. They both hit.",
+            "turn_number": 931
+          },
+          {
+            "speaker": "MATT",
+            "text": "Both hit, okay. First hit is 12 points of bludgeoning damage.",
+            "turn_number": 932
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 933
+          },
+          {
+            "speaker": "MATT",
+            "text": "The other one is 16 points of bludgeoning damage.",
+            "turn_number": 934
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay.",
+            "turn_number": 935
+          },
+          {
+            "speaker": "SAM",
+            "text": "Matty? Can Avantika see that happening?",
+            "turn_number": 936
+          },
+          {
+            "speaker": "MATT",
+            "text": "Avantika see what?",
+            "turn_number": 937
+          },
+          {
+            "speaker": "SAM",
+            "text": "Her friend using her book to smash on top of somebody else's head?",
+            "turn_number": 938
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah. It's really confusing.",
+            "turn_number": 939
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Those last attacks were reckless.",
+            "turn_number": 940
+          },
+          {
+            "speaker": "MATT",
+            "text": "She's like, \"No! What are you doing!\" But she's used to Bouldergut not being the brightest.",
+            "turn_number": 941
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "His last attacks were reckless, so you could roll twice for both of them, if you want.",
+            "turn_number": 942
+          },
+          {
+            "speaker": "MATT",
+            "text": "What's that?",
+            "turn_number": 943
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "She--",
+            "turn_number": 944
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 981,
+      "category": "OVERNIGHT_REST",
+      "episode_position_pct": 0.4492,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "You wake up",
+        "extracted_surface_form": "diurnal_transition",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "You wake up, come to consciousness on the ground. Fjord is getting you up. You look over your shoulder, and you can see there's a whole shit ton of guards in the area that are subduing Yasha. Caduceus seems to have put his hands up.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "SAM",
+            "text": "It's alive? Oh, wow!",
+            "turn_number": 976
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We're in single digits, kids!",
+            "turn_number": 977
+          },
+          {
+            "speaker": "MATT",
+            "text": "Caleb, you're up.",
+            "turn_number": 978
+          },
+          {
+            "speaker": "SAM",
+            "text": "Caleb.",
+            "turn_number": 979
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm just--",
+            "turn_number": 980
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 981,
+      "category": "scene_transition",
+      "episode_position_pct": 0.4492,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You wake up, come to consciousness on the ground. Fjord is getting you up. You look over your shoulder, and you can see there's a whole shit ton of guards in the area that are subduing Yasha. Caduceus seems to have put his hands up.",
+        "preceding_context_chars": 787,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "You wake",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, I do? Okay, I will make it a fist attack.",
+            "turn_number": 960
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Fist to the skull!",
+            "turn_number": 961
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Reckless.15.",
+            "turn_number": 962
+          },
+          {
+            "speaker": "MATT",
+            "text": "15 just hits. Just hits.",
+            "turn_number": 963
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Get a ten!",
+            "turn_number": 964
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's a six plus four. That's ten points of damage.",
+            "turn_number": 965
+          },
+          {
+            "speaker": "MATT",
+            "text": "Ten points of damage, ugh. All right, makes it. Natural ten again. Doesn't break the spell.",
+            "turn_number": 966
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Fuck.",
+            "turn_number": 967
+          },
+          {
+            "speaker": "MATT",
+            "text": "She's having good luck with those rolls. Takes it, climbs to the top, spins around, is going to Scorching Ray towards the barlgura. That's 3d20s against it. Okay, that's going to be 20, 20, and 17.",
+            "turn_number": 968
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "To hit? Or damage points?",
+            "turn_number": 969
+          },
+          {
+            "speaker": "MATT",
+            "text": "To hit.",
+            "turn_number": 970
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, yeah, they all hit.",
+            "turn_number": 971
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Is he within 30 feet of me? No, not 30 feet. Goddamn it.",
+            "turn_number": 972
+          },
+          {
+            "speaker": "MATT",
+            "text": "No. All right. Not a great damage roll. The balgura takes 18 points of fire damage.",
+            "turn_number": 973
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Halved because it has resistance to nine.",
+            "turn_number": 974
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is it still alive?",
+            "turn_number": 975
+          },
+          {
+            "speaker": "SAM",
+            "text": "It's alive? Oh, wow!",
+            "turn_number": 976
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We're in single digits, kids!",
+            "turn_number": 977
+          },
+          {
+            "speaker": "MATT",
+            "text": "Caleb, you're up.",
+            "turn_number": 978
+          },
+          {
+            "speaker": "SAM",
+            "text": "Caleb.",
+            "turn_number": 979
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm just--",
+            "turn_number": 980
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 994,
+      "category": "OVERNIGHT_REST",
+      "episode_position_pct": 0.4551,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "you wake up",
+        "extracted_surface_form": "diurnal_transition",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "At the mast? All righty. As you wake up, you spin, fire. This ray streaks past. All the guards, who are calm at this point, see this happen, and watch the streak go by and detonate on the ship. The bright flash of light echoes against everybody's faces as the impact hits. Go ahead and roll damage.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "TRAVIS",
+            "text": "She was over here.",
+            "turn_number": 989
+          },
+          {
+            "speaker": "MATT",
+            "text": "In your state-- where do you want to put it?",
+            "turn_number": 990
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Well, where's Avantika? I don't know.",
+            "turn_number": 991
+          },
+          {
+            "speaker": "MATT",
+            "text": "You don't know. Where are you putting it?",
+            "turn_number": 992
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm putting it there, at the mast.",
+            "turn_number": 993
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 994,
+      "category": "scene_transition",
+      "episode_position_pct": 0.4551,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "At the mast? All righty. As you wake up, you spin, fire. This ray streaks past. All the guards, who are calm at this point, see this happen, and watch the streak go by and detonate on the ship. The bright flash of light echoes against everybody's faces as the impact hits. Go ahead and roll damage.",
+        "preceding_context_chars": 772,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "you wake",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Caleb, you're up.",
+            "turn_number": 978
+          },
+          {
+            "speaker": "SAM",
+            "text": "Caleb.",
+            "turn_number": 979
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm just--",
+            "turn_number": 980
+          },
+          {
+            "speaker": "MATT",
+            "text": "You wake up, come to consciousness on the ground. Fjord is getting you up. You look over your shoulder, and you can see there's a whole shit ton of guards in the area that are subduing Yasha. Caduceus seems to have put his hands up.",
+            "turn_number": 981
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What is my distance from the boat?",
+            "turn_number": 982
+          },
+          {
+            "speaker": "MATT",
+            "text": "From the boat? From now, you'd be about 160 feet.",
+            "turn_number": 983
+          },
+          {
+            "speaker": "LIAM",
+            "text": "160 feet? If I got to my feet, that's half my movement.",
+            "turn_number": 984
+          },
+          {
+            "speaker": "MATT",
+            "text": "Correct.",
+            "turn_number": 985
+          },
+          {
+            "speaker": "LIAM",
+            "text": "If I moved ten feet I'd be within 150 feet, correct? Yeah?",
+            "turn_number": 986
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah.",
+            "turn_number": 987
+          },
+          {
+            "speaker": "LIAM",
+            "text": "So I will weakly stand, and I will weakly trudge ten feet forward, and I will throw a Fireball and center it-- where's Vera?",
+            "turn_number": 988
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "She was over here.",
+            "turn_number": 989
+          },
+          {
+            "speaker": "MATT",
+            "text": "In your state-- where do you want to put it?",
+            "turn_number": 990
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Well, where's Avantika? I don't know.",
+            "turn_number": 991
+          },
+          {
+            "speaker": "MATT",
+            "text": "You don't know. Where are you putting it?",
+            "turn_number": 992
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm putting it there, at the mast.",
+            "turn_number": 993
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1171,
+      "category": "scene_transition",
+      "episode_position_pct": 0.5362,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Anyway, about 30 or so minutes pass for the rest of you. As make your way up the steps now, trying to jaunt, you manage to catch up to the armored fellow, who now acts as the tip of the spear, essentially. Now you're flanked and to the front, although the flanking has to shift as the space for the steps ascending to the Throne Roost get only wide for one person at a time. You are being held at that point. You make your way up to the Throne Roost, to the shelf of stone. There you see, standing at the edge, is the Plank King himself, blackened curls still dangling around his massive goliath head, his long coat billowing slightly with the bit of wind that's whipping around the side of the cliff face. The morning fog is burning off of the nearby reefs, and you can see a little bit further out. The sky itself is still dull gray. Looks over and goes, \"That was quite the display, wouldn't you say?\" The guard goes, \"Right, sir. One of them, we found at least someone running from the bit who says they have information for you.\" He goes, \"Oh yeah, no, I recognize this one. Step forward.\"",
+        "preceding_context_chars": 795,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "minutes pass",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Come on.",
+            "turn_number": 1160
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Eight. Well, I hope those people are going to be okay. They look like they're pretty hurt up in there. Some of them look like they're bloody. That one looks burned.",
+            "turn_number": 1161
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you begin to subtly try and sneak your verbal components of your spell into the discussion, one of the guards goes: \"Hey! Sorry, we're making sure there's no casting this close to it, if you don't mind.\"",
+            "turn_number": 1162
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Makes sense. I just saw some were hurt. I was trying to help out, but if they don't want it, then I ain't going to do it.",
+            "turn_number": 1163
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It's best not to get involved. Terribly sorry about that.\"",
+            "turn_number": 1164
+          },
+          {
+            "speaker": "SAM",
+            "text": "I want to hear more!",
+            "turn_number": 1165
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nah, that's it.",
+            "turn_number": 1166
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No! It was so good!",
+            "turn_number": 1167
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "This is what you get for Counterspell.",
+            "turn_number": 1168
+          },
+          {
+            "speaker": "MATT",
+            "text": "He's telling everyone, \"Please, hold tight. Don't worry. We're taking care of it.\"",
+            "turn_number": 1169
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It's just a cheek caress, then gone. Not even a kiss goodnight.",
+            "turn_number": 1170
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1179,
+      "category": null,
+      "episode_position_pct": 0.5398,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "He glances through the paperwork, looks at you giving him this sly grin, and goes, \"You, newcomer into these waters, spent less than a day amongst our people and have already attacked and stolen from one of our own, as well.\"",
+        "preceding_context_chars": 548,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a day",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "'Sup?",
+            "turn_number": 1172
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"So what's all this?\"",
+            "turn_number": 1173
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What, the display you just saw, or this?",
+            "turn_number": 1174
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"If you don't mind, tell me what's going on.\"",
+            "turn_number": 1175
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I think you just won the lottery, friend. I toss him the book.",
+            "turn_number": 1176
+          },
+          {
+            "speaker": "MATT",
+            "text": "He flips through the pages. \"This is gibberish.\"",
+            "turn_number": 1177
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I know. Luckily, one of our crew members is smart enough, and he deciphered the whole thing. In there you'll find everything you need to know about the coup that Avantika has been planning. Whispers about wanting to rule the sea. She has been worshipping an outer-worldly being called Uk'otoa, left over from the Betrayer Gods.",
+            "turn_number": 1178
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1226,
+      "category": "scene_transition",
+      "episode_position_pct": 0.5614,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Actually, you know what? No, it's about an hour of short rest. I give that to you.",
+        "preceding_context_chars": 620,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "You think?",
+            "turn_number": 1215
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah.",
+            "turn_number": 1216
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "He's the fighter.",
+            "turn_number": 1217
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you guys are all patiently waiting here, looking amongst yourselves, is there anything you wish to do, or are you succumbing to the hope that Jester, Beauregard, and/or possibly the Plank King comes to situate this? Eventually, you see Avantika brought up from the ship in manacles, as well.",
+            "turn_number": 1218
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Well, I've noticed that they're not letting any of us cast anything, correct?",
+            "turn_number": 1219
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, they shut that down.",
+            "turn_number": 1220
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Then no. I would do Mage Armor, but no.",
+            "turn_number": 1221
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "This is basically a short rest? Is this what this is?",
+            "turn_number": 1222
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's not quite long enough to be a short rest.",
+            "turn_number": 1223
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Motherfucker.",
+            "turn_number": 1224
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I know, I was going to say the same thing.",
+            "turn_number": 1225
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1228,
+      "category": null,
+      "episode_position_pct": 0.5623,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "For the travel of Beau to the front, and the rest of the guard to get there; for the Plank King conversation; for him to descend the Throne Roost to make his way through the city to the docks; yeah, that's over an hour.",
+        "preceding_context_chars": 720,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "You think?",
+            "turn_number": 1215
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah.",
+            "turn_number": 1216
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "He's the fighter.",
+            "turn_number": 1217
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you guys are all patiently waiting here, looking amongst yourselves, is there anything you wish to do, or are you succumbing to the hope that Jester, Beauregard, and/or possibly the Plank King comes to situate this? Eventually, you see Avantika brought up from the ship in manacles, as well.",
+            "turn_number": 1218
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Well, I've noticed that they're not letting any of us cast anything, correct?",
+            "turn_number": 1219
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, they shut that down.",
+            "turn_number": 1220
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Then no. I would do Mage Armor, but no.",
+            "turn_number": 1221
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "This is basically a short rest? Is this what this is?",
+            "turn_number": 1222
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's not quite long enough to be a short rest.",
+            "turn_number": 1223
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Motherfucker.",
+            "turn_number": 1224
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I know, I was going to say the same thing.",
+            "turn_number": 1225
+          },
+          {
+            "speaker": "MATT",
+            "text": "Actually, you know what? No, it's about an hour of short rest. I give that to you.",
+            "turn_number": 1226
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Bless you, Mercer.",
+            "turn_number": 1227
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1234,
+      "category": null,
+      "episode_position_pct": 0.565,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Eventually, as the crowd begins to part, you see a number of the guard, a few of the bodyguards that you had seen previously sitting amongst the shadows of the Throne Roost when you first arrived the night before. You guys came roaring into this town; you definitely did. There you see Beauregard being flanked by three guards, one better-armored than the others, and then there, stepping behind that, the looming figure of the Plank King. He approaches. \"So not here but 24 hours and you've already made a mess of our little home, have you? I could see the flames from my Roost. My crow's men tell me they spotted you walking aboard the Squalleater and assault Avantika, one of our own. Apparently a few of you fleeing into the city. You know I have my misgivings about trusting anyone, but I'm far more likely to toss in with those that I've mistrusted long enough to at least know where they stand. I don't know a fucking bit about all of you. So my other friend--\" and he points towards Jamedi, who's now in the back, and the rest of you see, \"-- says that you've all come in with her lot naught but maybe two weeks back, and that not most of you have much of an experience on the sea, naught but one. The rest of you still haven't quite found your legs on the waters. I'm going to ask you right now, what brought you out there, to mucking with the pirates' deals? Speak up!\"",
+        "preceding_context_chars": 779,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "24 hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Bless you, Mercer.",
+            "turn_number": 1227
+          },
+          {
+            "speaker": "MATT",
+            "text": "For the travel of Beau to the front, and the rest of the guard to get there; for the Plank King conversation; for him to descend the Throne Roost to make his way through the city to the docks; yeah, that's over an hour.",
+            "turn_number": 1228
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Then in these circumstances, I would dismiss Frumpkin from the Material Plane and bring him back on my shoulder, so he's with me.",
+            "turn_number": 1229
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As Frumpkin appears on the shoulder, one of the watch goes, \"Oh, where'd you come from, little one? Didn't even see you come in.\" Begins scritching Frumpkin.",
+            "turn_number": 1230
+          },
+          {
+            "speaker": "LIAM",
+            "text": "He's friendly. That's my pet cat.",
+            "turn_number": 1231
+          },
+          {
+            "speaker": "MATT",
+            "text": "Doesn't even talk to you. Just looks at Frumpkin. \"Who's a cute little kitty? We don't get cats much on this island. It's good to see one. Wonder what ship you came aboard?\" (laughter)",
+            "turn_number": 1232
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm thinking really bad thoughts.",
+            "turn_number": 1233
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1234,
+      "category": null,
+      "episode_position_pct": 0.565,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Eventually, as the crowd begins to part, you see a number of the guard, a few of the bodyguards that you had seen previously sitting amongst the shadows of the Throne Roost when you first arrived the night before. You guys came roaring into this town; you definitely did. There you see Beauregard being flanked by three guards, one better-armored than the others, and then there, stepping behind that, the looming figure of the Plank King. He approaches. \"So not here but 24 hours and you've already made a mess of our little home, have you? I could see the flames from my Roost. My crow's men tell me they spotted you walking aboard the Squalleater and assault Avantika, one of our own. Apparently a few of you fleeing into the city. You know I have my misgivings about trusting anyone, but I'm far more likely to toss in with those that I've mistrusted long enough to at least know where they stand. I don't know a fucking bit about all of you. So my other friend--\" and he points towards Jamedi, who's now in the back, and the rest of you see, \"-- says that you've all come in with her lot naught but maybe two weeks back, and that not most of you have much of an experience on the sea, naught but one. The rest of you still haven't quite found your legs on the waters. I'm going to ask you right now, what brought you out there, to mucking with the pirates' deals? Speak up!\"",
+        "preceding_context_chars": 779,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Bless you, Mercer.",
+            "turn_number": 1227
+          },
+          {
+            "speaker": "MATT",
+            "text": "For the travel of Beau to the front, and the rest of the guard to get there; for the Plank King conversation; for him to descend the Throne Roost to make his way through the city to the docks; yeah, that's over an hour.",
+            "turn_number": 1228
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Then in these circumstances, I would dismiss Frumpkin from the Material Plane and bring him back on my shoulder, so he's with me.",
+            "turn_number": 1229
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As Frumpkin appears on the shoulder, one of the watch goes, \"Oh, where'd you come from, little one? Didn't even see you come in.\" Begins scritching Frumpkin.",
+            "turn_number": 1230
+          },
+          {
+            "speaker": "LIAM",
+            "text": "He's friendly. That's my pet cat.",
+            "turn_number": 1231
+          },
+          {
+            "speaker": "MATT",
+            "text": "Doesn't even talk to you. Just looks at Frumpkin. \"Who's a cute little kitty? We don't get cats much on this island. It's good to see one. Wonder what ship you came aboard?\" (laughter)",
+            "turn_number": 1232
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm thinking really bad thoughts.",
+            "turn_number": 1233
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1280,
+      "category": null,
+      "episode_position_pct": 0.5861,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Not much of a reader. But your folk have done good work for our interests in the past. So! It's the woman of the hour. What have you to say about yourself when these strangers have come waltzing into our little haven and causing all sorts of ruckus. Murdering your crew and making these claims against you. Known you for years.\" Avantika, hand behind in shackles goes, \"Well.\" Her face, you can see bits where dirt, sweat lines have made their way across and down the sides of her chin and jaw. Looking intently at the rest of you with a forced smile through her teeth, there is a look of murderous rage and loss in her eyes, as you have murdered a majority of her crew. She goes, \"Well, I can guarantee that I kept no journal. They came to me at sea with discussion of perhaps coming and joining my crew, looking for means of aid and gold. They began to talk of this strange entity, this Uk'otoa. Well, I followed suit. I wanted to make for some kind of alliance. I found particular interest with one of their individuals.\" She looks over towards Fjord, \"But it seems such a romance was merely just another way to try and toss me to the proverbial wolves, or merrow if it will. They've now killed my crew. They've taken a number of my things, damaged my ship, and they're trying to smear my name. One who has walked alongside you and all of you fine, fine folks for the past ten years! Even using the memory of Vandren against me.\" You hear a few voices go like, (murmuring) \"Vandren.\" \"Vandren raised this one and he sabotaged his ship. Blew it asunder in the middle of the ocean. That was the last he was seen. He's already killed one of our own. Is this untrue?\"",
+        "preceding_context_chars": 735,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Where does your allegiance lie?\"",
+            "turn_number": 1264
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "My allegiance is completely separate and isolated from any persons here. My allegiance is with the Cobalt Soul.",
+            "turn_number": 1265
+          },
+          {
+            "speaker": "MATT",
+            "text": "His eyes narrow. Make a deception check. I'll say with advantage because you did drop the Cobalt Soul. In particular with the Plank King, that has meaning.",
+            "turn_number": 1266
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I would like to read her as well.",
+            "turn_number": 1267
+          },
+          {
+            "speaker": "MATT",
+            "text": "Insight check.",
+            "turn_number": 1268
+          },
+          {
+            "speaker": "LIAM",
+            "text": "At disadvantage.",
+            "turn_number": 1269
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, for you.",
+            "turn_number": 1270
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "22.",
+            "turn_number": 1271
+          },
+          {
+            "speaker": "MATT",
+            "text": "The Plank King nods and goes--",
+            "turn_number": 1272
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "My voice is shaking. I'm so nervous.",
+            "turn_number": 1273
+          },
+          {
+            "speaker": "LIAM",
+            "text": "22 for me.",
+            "turn_number": 1274
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, you barely see through. There's a hint of truth, and there's a hint of not so true. It's a half-truth.",
+            "turn_number": 1275
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Caleb sees it! Go away, Fjord! Go away!",
+            "turn_number": 1276
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Mixed lies or half-truths.",
+            "turn_number": 1277
+          },
+          {
+            "speaker": "MATT",
+            "text": "The Plank King nods and goes, \"Ah, the Archives. I've had some dealings.\"",
+            "turn_number": 1278
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Hmm. So you have your library card?",
+            "turn_number": 1279
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1317,
+      "category": null,
+      "episode_position_pct": 0.603,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "She just doesn't meet his gaze. \"Hmm. By the power of The Revelry that surrounds me, let this be a lesson to those who would work against the words we swore to each other on this land. May your memory be besmirched for the few days it's recalled.\" He reaches forward and grabs Avantika by the throat and lifts her up and she's fighting against it. He lifts her and looks at her. \"I hope your sea god, whatever it is, is very merciful on the other side.\" (cracking) He breaks her neck with one hand. Her body goes limp in his grasp and he throws it to the docks. \"Don't worry about the cipher.\" Solon goes, \"It's actually quite interesting. I'd like to continue.\" \"Fine.\"",
+        "preceding_context_chars": 729,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "few days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Intimidation checks? Oh, charisma checks! Yeah, persuasion, everything else. That's right, yeah.",
+            "turn_number": 1308
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Mein Gott.",
+            "turn_number": 1309
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Make sure you tell the Plank King it's a limited time engagement.",
+            "turn_number": 1310
+          },
+          {
+            "speaker": "MATT",
+            "text": "She's like  \"Ugh!\"",
+            "turn_number": 1311
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You have 60 seconds, but I have more knuckles.",
+            "turn_number": 1312
+          },
+          {
+            "speaker": "MATT",
+            "text": "The Plank King steps forward. \"Avantika, is what they're saying true?\" She goes, (frustrated grunt) Glances aside. Doesn't respond. He leans forward closer. \"Tell me.\"",
+            "turn_number": 1313
+          },
+          {
+            "speaker": "LIAM",
+            "text": "(whispering) Silence speaks volumes, though.",
+            "turn_number": 1314
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Is what they're saying true? Is that book containing passages where you're looking to take this island for yourself?\" Her eyes look away. She just looks down at the rest of the dock. He leans in real close, pushing his forehead almost to hers. \"Look me in the eye, woman.\"",
+            "turn_number": 1315
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh my god!",
+            "turn_number": 1316
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1324,
+      "category": null,
+      "episode_position_pct": 0.6062,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "They have had a terrible few weeks here! Except for Orly, who's sitting there, smoking a pipe, and his one eye goes.",
+        "preceding_context_chars": 732,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "few weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Breakfast.",
+            "turn_number": 1320
+          },
+          {
+            "speaker": "SAM",
+            "text": "I have a sample of her penmanship here if you want to see some more of it.",
+            "turn_number": 1321
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Oh, certainly!\" He goes and starts taking it. At this point, the Plank King goes, \"Take her up top. She'll be the next on the pike. As for the rest of you, you've pulled out a conspiracy, I'll give you that. You've also snuck your way into The Revelry under false pretenses. You've broken our laws within but a day of being presented with them, in multiple ways. That's a serious offense. So hear my judgment upon these folk. You are hereby banished from Darktow. Take the remnants of the Squalleater as your own. Take whatever--\" He looks over towards the rest of the crew you hired, who are like (panicked panting).",
+            "turn_number": 1322
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(laughter) Those poor fuckers!",
+            "turn_number": 1323
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1413,
+      "category": "travel_duration",
+      "episode_position_pct": 0.647,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Just so you know, this ship travels on an average pace of around 48 miles a day. Right now with the damage the sails have sustained, you're close to 20. You're less than half speed on the ship with the damage it's sustained at the sails. It's going to take you a while to get anywhere. But you have it.",
+        "preceding_context_chars": 694,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a day",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Yes, but the upside was so--",
+            "turn_number": 1399
+          },
+          {
+            "speaker": "MATT",
+            "text": "It was.",
+            "turn_number": 1400
+          },
+          {
+            "speaker": "SAM",
+            "text": "Then you singed the other sails, too.",
+            "turn_number": 1401
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, there's a lot of sail-- you have--",
+            "turn_number": 1402
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, 20 feet tall. For six to 12 seconds. That didn't last more than two rounds.",
+            "turn_number": 1403
+          },
+          {
+            "speaker": "MATT",
+            "text": "I know, but that's a very intense--",
+            "turn_number": 1404
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Absolutely.",
+            "turn_number": 1405
+          },
+          {
+            "speaker": "MATT",
+            "text": "I would say comparatively, you're limping on one full mast of functionality, and the rest of the sails are partially damaged.",
+            "turn_number": 1406
+          },
+          {
+            "speaker": "LIAM",
+            "text": "(gasps) (pigeon coos) Paint on the mast.",
+            "turn_number": 1407
+          },
+          {
+            "speaker": "LAURA",
+            "text": "(pigeon coo) I was thinking about it, but it's a lot of the use of the paint because--",
+            "turn_number": 1408
+          },
+          {
+            "speaker": "SAM",
+            "text": "(pigeon coo) How about a few sails?",
+            "turn_number": 1409
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We don't have to pigeon this. I mean, we know what you can do, so maybe paint the fix for it.",
+            "turn_number": 1410
+          },
+          {
+            "speaker": "MATT",
+            "text": "Just so you know--",
+            "turn_number": 1411
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's what I want. I don't want to paint the whole thing.",
+            "turn_number": 1412
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1466,
+      "category": "scene_transition",
+      "episode_position_pct": 0.6712,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's funny, I didn't realize who played him until years later and I was like, really, him?",
+        "preceding_context_chars": 767,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "years later",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Do we know if we are making our way--?",
+            "turn_number": 1450
+          },
+          {
+            "speaker": "MATT",
+            "text": "You guys have just managed to make your way out of here.",
+            "turn_number": 1451
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, going the wrong way.",
+            "turn_number": 1452
+          },
+          {
+            "speaker": "LIAM",
+            "text": "So we're going right into her vagina.",
+            "turn_number": 1453
+          },
+          {
+            "speaker": "MATT",
+            "text": "Well, that is the Wildmother. She is nature, I guess.",
+            "turn_number": 1454
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'll tell Orly  Orly, if you could help us plot a course, as damaged as we are, heading north to this point.",
+            "turn_number": 1455
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Shouldn't we get to a port or something before we--?",
+            "turn_number": 1456
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, we need to repair first.",
+            "turn_number": 1457
+          },
+          {
+            "speaker": "LIAM",
+            "text": "There ain't no fucking port around here, motherfucker.",
+            "turn_number": 1458
+          },
+          {
+            "speaker": "SAM",
+            "text": "Well, maybe there's something over here! He knows about something. Let's ask! Orly? M-m-maybe?",
+            "turn_number": 1459
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Wow.",
+            "turn_number": 1460
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Max Headroom, coming at you from the mid-80s! W-w-what?",
+            "turn_number": 1461
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's a good thing I grew up a stutterer.",
+            "turn_number": 1462
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah. Matt is just barely old enough to know what that is.",
+            "turn_number": 1463
+          },
+          {
+            "speaker": "MATT",
+            "text": "Oh, I know Max Headroom.",
+            "turn_number": 1464
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I said you know what it is! Just barely.",
+            "turn_number": 1465
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1662,
+      "category": null,
+      "episode_position_pct": 0.761,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's going to take you about a week to get to the location that you're seeking.",
+        "preceding_context_chars": 779,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a week",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Can she respond to these messages?",
+            "turn_number": 1646
+          },
+          {
+            "speaker": "LAURA",
+            "text": "She usually responds with, \"We're pirates, and I miss you, and--\"",
+            "turn_number": 1647
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(as Jester) Go fuck yourself.",
+            "turn_number": 1648
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No, she doesn't say that. She says, \"Yes, I'm very cute,\" a lot.",
+            "turn_number": 1649
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Right. I suppose, what would you put in the letter to the Plank King?",
+            "turn_number": 1650
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Whatever you want me to.",
+            "turn_number": 1651
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I mean, I don't know if it's necessary. I can't think of anything as of yet. I don't know, maybe I'll just let you know. Thank you for offering, though.",
+            "turn_number": 1652
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Of course. Your teeth are coming in.",
+            "turn_number": 1653
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah.",
+            "turn_number": 1654
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I saw it peek out of your lip just now.",
+            "turn_number": 1655
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay, all right. Yeah. Thank you for not telling the others.",
+            "turn_number": 1656
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Of course, Fjord.",
+            "turn_number": 1657
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I've got to go check on Orly, make sure we're going the right way.",
+            "turn_number": 1658
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, I'm going to go see if everything's mended over this way.",
+            "turn_number": 1659
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Mended over this way.",
+            "turn_number": 1660
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Put a piece of paper back together.",
+            "turn_number": 1661
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1667,
+      "category": null,
+      "episode_position_pct": 0.7633,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Yeah, it would take a shorter time. It's about eight days or so to get there, eyeballing it from here, I'd say. More than that, ten days.",
+        "preceding_context_chars": 771,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "eight days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Whatever you want me to.",
+            "turn_number": 1651
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I mean, I don't know if it's necessary. I can't think of anything as of yet. I don't know, maybe I'll just let you know. Thank you for offering, though.",
+            "turn_number": 1652
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Of course. Your teeth are coming in.",
+            "turn_number": 1653
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah.",
+            "turn_number": 1654
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I saw it peek out of your lip just now.",
+            "turn_number": 1655
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Okay, all right. Yeah. Thank you for not telling the others.",
+            "turn_number": 1656
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Of course, Fjord.",
+            "turn_number": 1657
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I've got to go check on Orly, make sure we're going the right way.",
+            "turn_number": 1658
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, I'm going to go see if everything's mended over this way.",
+            "turn_number": 1659
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Mended over this way.",
+            "turn_number": 1660
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Put a piece of paper back together.",
+            "turn_number": 1661
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's going to take you about a week to get to the location that you're seeking.",
+            "turn_number": 1662
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "The boat or the island?",
+            "turn_number": 1663
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "The island.",
+            "turn_number": 1664
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, the island's going to take longer than that-- to get to where the last time you recall your ship going down.",
+            "turn_number": 1665
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "With our shit all fucked up?",
+            "turn_number": 1666
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1683,
+      "category": null,
+      "episode_position_pct": 0.7706,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Between the two of you, it allows you a brief moment where you can actually surge the water and grant you a speed boost. I'd say that'll cut three days off of your travel-- the two of you, each day, spending that slot to push it. It's like a speedboat burst. All of a sudden, your giant, three-mast ship is going (crashing water), speedboating across the ocean briefly.",
+        "preceding_context_chars": 792,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "three days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "No, the island's going to take longer than that-- to get to where the last time you recall your ship going down.",
+            "turn_number": 1665
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "With our shit all fucked up?",
+            "turn_number": 1666
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, it would take a shorter time. It's about eight days or so to get there, eyeballing it from here, I'd say. More than that, ten days.",
+            "turn_number": 1667
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Can we cast Control Water to get us there faster at all?",
+            "turn_number": 1668
+          },
+          {
+            "speaker": "MATT",
+            "text": "Do you have access to Control Water?",
+            "turn_number": 1669
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Of course I do.",
+            "turn_number": 1670
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You do?",
+            "turn_number": 1671
+          },
+          {
+            "speaker": "MATT",
+            "text": "Then yeah.",
+            "turn_number": 1672
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Oh fuck.",
+            "turn_number": 1673
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Maybe I can do that every day.",
+            "turn_number": 1674
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. I'll say, with the Control Water--",
+            "turn_number": 1675
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Fucking secrets.",
+            "turn_number": 1676
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I was about to say, I might be able to do that too.",
+            "turn_number": 1677
+          },
+          {
+            "speaker": "SAM",
+            "text": "Come on, everyone has Control Water, don't they? I've got it.",
+            "turn_number": 1678
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I've been waiting to drop it. Fucking water genasi heritage, man.",
+            "turn_number": 1679
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Nope, never mind-- oh, yeah, I've got it, too.",
+            "turn_number": 1680
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's in the cleric list, yeah.",
+            "turn_number": 1681
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's a cleric-- oh god! d4 just went flying!",
+            "turn_number": 1682
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1690,
+      "category": "LOCATION_DEPARTURE",
+      "episode_position_pct": 0.7738,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "you make your way to the open",
+        "extracted_surface_form": "location_exit",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "player_intent",
+        "extracted_buildup_window_turns": 2,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "Eventually, you make your way to the open waters in the vicinity of-- Orly goes with you each day and looks about and gives you the once-over and goes, \"I'm pretty sure that we're pretty dang close to that place you were asking about.\"",
+        "preceding_turns_last5": [
+          {
+            "speaker": "TALIESIN",
+            "text": "It's like in Mary Poppins; everyone holds the china.",
+            "turn_number": 1685
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Exactly!",
+            "turn_number": 1686
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "And 12 o'clock.",
+            "turn_number": 1687
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "And let's go.",
+            "turn_number": 1688
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You're so stupid, Rose.",
+            "turn_number": 1689
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1706,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.7811,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. That's 2nd-level? It lasts for ten minutes.",
+        "preceding_context_chars": 772,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "What do you-- I don't entirely understand what you're--",
+            "turn_number": 1692
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I don't know, I don't want to put you in a box or anything, but you seem to pick up the most.",
+            "turn_number": 1693
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You want to see if I get-- oh, for the ship. I don't know. That's a--",
+            "turn_number": 1694
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That'd be a Locate Object sort of situation?",
+            "turn_number": 1695
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I've got Locate Creature. Yeah, we've both got Locate Object, so we can both help with that.",
+            "turn_number": 1696
+          },
+          {
+            "speaker": "SAM",
+            "text": "What object?",
+            "turn_number": 1697
+          },
+          {
+            "speaker": "LAURA",
+            "text": "A ship.",
+            "turn_number": 1698
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'll summon the falchion and I'll say Maybe try to locate this, and I'll point towards the eye. Not this eye, but a similar eye.",
+            "turn_number": 1699
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Do you mean your penis?",
+            "turn_number": 1700
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Nope.",
+            "turn_number": 1701
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I'm going to do it.",
+            "turn_number": 1702
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. It's a thousand-foot range, and it has to be something familiar to you.",
+            "turn_number": 1703
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm looking for a boat. I'm looking for a ship. I'm looking for a shipwreck, not an object. We could do object, too.",
+            "turn_number": 1704
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, I'm going to look for his.",
+            "turn_number": 1705
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1710,
+      "category": null,
+      "episode_position_pct": 0.783,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So if you're both trading off, it's about three chances per type of use per day. How many days you want to spend looking total?",
+        "preceding_context_chars": 763,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "many days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "You want to see if I get-- oh, for the ship. I don't know. That's a--",
+            "turn_number": 1694
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That'd be a Locate Object sort of situation?",
+            "turn_number": 1695
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I've got Locate Creature. Yeah, we've both got Locate Object, so we can both help with that.",
+            "turn_number": 1696
+          },
+          {
+            "speaker": "SAM",
+            "text": "What object?",
+            "turn_number": 1697
+          },
+          {
+            "speaker": "LAURA",
+            "text": "A ship.",
+            "turn_number": 1698
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'll summon the falchion and I'll say Maybe try to locate this, and I'll point towards the eye. Not this eye, but a similar eye.",
+            "turn_number": 1699
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Do you mean your penis?",
+            "turn_number": 1700
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Nope.",
+            "turn_number": 1701
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I'm going to do it.",
+            "turn_number": 1702
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. It's a thousand-foot range, and it has to be something familiar to you.",
+            "turn_number": 1703
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm looking for a boat. I'm looking for a ship. I'm looking for a shipwreck, not an object. We could do object, too.",
+            "turn_number": 1704
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, I'm going to look for his.",
+            "turn_number": 1705
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. That's 2nd-level? It lasts for ten minutes.",
+            "turn_number": 1706
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "So we can take turns.",
+            "turn_number": 1707
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, and how many spell slots do you have 2nd-level each?",
+            "turn_number": 1708
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Three each.",
+            "turn_number": 1709
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1759,
+      "category": "travel_duration",
+      "episode_position_pct": 0.8054,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Altogether with the eight of them, it cuts the travel time down to five days. So you've got time.",
+        "preceding_context_chars": 767,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "five days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "He thinks I'm going to go into the water for some fucking buttons.",
+            "turn_number": 1746
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I heard tell there was a button ship that crashed right along the water.",
+            "turn_number": 1747
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, the old button ship legend, really?! Oh! Buttonbeard the Pirate?!",
+            "turn_number": 1748
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yep.",
+            "turn_number": 1749
+          },
+          {
+            "speaker": "SAM",
+            "text": "He had buttons for beards!",
+            "turn_number": 1750
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Nott the Brave. We have things to accomplish here. If you allow me, I could do what I have done in the past a little sneakily to help you cope with this fear you have. If you allow me.",
+            "turn_number": 1751
+          },
+          {
+            "speaker": "SAM",
+            "text": "I appreciate that, Caleb, but I've got my own way of doing it.",
+            "turn_number": 1752
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Is it Mike Myers?",
+            "turn_number": 1753
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "There might be bronzed shoes, maybe little silver cups. Decoder rings.",
+            "turn_number": 1754
+          },
+          {
+            "speaker": "SAM",
+            "text": "Ooh, those spoons? The little spoons, the collectible ones? Fuck this guy.",
+            "turn_number": 1755
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We're not there yet, though, we're talking in advance at this point? All in advance?",
+            "turn_number": 1756
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah.",
+            "turn_number": 1757
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We're coming upon the area, right?",
+            "turn_number": 1758
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1783,
+      "category": "scene_transition",
+      "episode_position_pct": 0.8164,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. First day goes through. Nothing catches your attention. You pass around, and then once you make it quite past the area, based on the measurements, where you think that you recall it happening. The next day, you make a curved turn and begin to head out to see some more land, as you can, to widen the perspective of your search. For the second day, roll again.",
+        "preceding_context_chars": 720,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "The next day",
+        "granularity_bucket": "days",
+        "is_anchored": true,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "So we're going to hang around this area before we get to the boat wrecks, yeah?",
+            "turn_number": 1763
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, I think so.",
+            "turn_number": 1764
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay.",
+            "turn_number": 1765
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, so taking your time, I would like you to each to roll a base wisdom check for each pass as you go through.",
+            "turn_number": 1766
+          },
+          {
+            "speaker": "SAM",
+            "text": "You two, right?",
+            "turn_number": 1767
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes. d20 plus your wisdom modifier.",
+            "turn_number": 1768
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "19.",
+            "turn_number": 1769
+          },
+          {
+            "speaker": "LAURA",
+            "text": "12.",
+            "turn_number": 1770
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Again.",
+            "turn_number": 1771
+          },
+          {
+            "speaker": "LAURA",
+            "text": "God. Nine.",
+            "turn_number": 1772
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, I'm doing save. I'm so sorry. Fuck, I was doing the wrong--",
+            "turn_number": 1773
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, shit! I was, too.",
+            "turn_number": 1774
+          },
+          {
+            "speaker": "MATT",
+            "text": "This is just check. Add your wisdom modifier.",
+            "turn_number": 1775
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Even lower.",
+            "turn_number": 1776
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I said 19? 16, and then 19.",
+            "turn_number": 1777
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Roll again. Your third spell slot of the first day, hitting this space and scanning the load.",
+            "turn_number": 1778
+          },
+          {
+            "speaker": "LAURA",
+            "text": "15.",
+            "turn_number": 1779
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "14.",
+            "turn_number": 1780
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, and you're utilizing your memory of passage through here, as well as Orly's direction on this ocean. Go ahead and roll an intelligence check for me.",
+            "turn_number": 1781
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "13.",
+            "turn_number": 1782
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1818,
+      "category": "scene_transition",
+      "episode_position_pct": 0.8324,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You circle around again. You've closed off a distance, but you haven't quite located the specific area yet. You're trying to guide into a vicinity. I mean, it's hard to really remember specifically where, when it's just open water and a storm looming, especially. So you get to a certain point where you're like, I'm not sure I'm being able to help, but you're starting to get something. You're not entirely sure. The divination seems to be helping, or this aspect of your Locate spell. Evening comes to a close. You ride the night out. The clouds are still thick. The next morning, you can attempt again if you like, both of you.",
+        "preceding_context_chars": 763,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "You ride the",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I had a moment.",
+            "turn_number": 1804
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You did?",
+            "turn_number": 1805
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yeah. It's gone now. Would I know direction, even?",
+            "turn_number": 1806
+          },
+          {
+            "speaker": "MATT",
+            "text": "Vague direction.",
+            "turn_number": 1807
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "But we're moving, I know.",
+            "turn_number": 1808
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, you're moving. So it's like, all right, let's go ahead and turn it around.",
+            "turn_number": 1809
+          },
+          {
+            "speaker": "SAM",
+            "text": "Just point. Caleb will know the direction.",
+            "turn_number": 1810
+          },
+          {
+            "speaker": "MATT",
+            "text": "You turn the ship back in the direction of where it goes. At the very end of the second day, just as dusk is starting to creep in, you make your way back in the area, and you sense another hit.",
+            "turn_number": 1811
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Ooh. Should I use another 3rd-level spell and try to find the orb-y thing?",
+            "turn_number": 1812
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Let's do one more.",
+            "turn_number": 1813
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As you're attempting to find the orb, roll a wisdom check.",
+            "turn_number": 1814
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'll also join in for one more for that as well. It's my last spell slot.",
+            "turn_number": 1815
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. You lose your concentration on the Locate Object.",
+            "turn_number": 1816
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh. Okay, I'm still holding the boat. That's fine.",
+            "turn_number": 1817
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1870,
+      "category": null,
+      "episode_position_pct": 0.8562,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. About an hour goes by. Nothing. Roll again.",
+        "preceding_context_chars": 782,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Does this mean we don't have to go in the water?",
+            "turn_number": 1856
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, this means we'll probably have to go in the water.",
+            "turn_number": 1857
+          },
+          {
+            "speaker": "SAM",
+            "text": "What? Why? He's got an octopus.",
+            "turn_number": 1858
+          },
+          {
+            "speaker": "LIAM",
+            "text": "An hour later, an octopus pops out, if we wait that long.",
+            "turn_number": 1859
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, I'd be okay with it.",
+            "turn_number": 1860
+          },
+          {
+            "speaker": "MATT",
+            "text": "So you create a Frumpkin octopus.",
+            "turn_number": 1861
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah. (sighs) Well, we had one or two days together. Just throw him off.",
+            "turn_number": 1862
+          },
+          {
+            "speaker": "MATT",
+            "text": "(splashing) Frumpkin makes his way in the darkness.",
+            "turn_number": 1863
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm also going to put Bless on the octopus before it.",
+            "turn_number": 1864
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. How long does it last?",
+            "turn_number": 1865
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It's one minute.",
+            "turn_number": 1866
+          },
+          {
+            "speaker": "LIAM",
+            "text": "So I'll watch for the first thousand feet, but I assume he goes beyond that, because it's the ocean, so he keeps going down and down and down. I will tell him to look for this wreck, for what we are looking for, and when he finds it to come back and tell me about it.",
+            "turn_number": 1867
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Make a perception check for Frumpkin.",
+            "turn_number": 1868
+          },
+          {
+            "speaker": "LIAM",
+            "text": "13.",
+            "turn_number": 1869
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1911,
+      "category": null,
+      "episode_position_pct": 0.875,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Over an hour.",
+        "preceding_context_chars": 757,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Oh yeah?",
+            "turn_number": 1894
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, there you go, back in your shoulder.",
+            "turn_number": 1895
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Oh, come here you. You are the most important member of this team and don't let Beauregard tell you different. Or Nott.",
+            "turn_number": 1896
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do you ever feel like your relationship with your cat is hindering building stronger relationships with human people?",
+            "turn_number": 1897
+          },
+          {
+            "speaker": "SAM",
+            "text": "I've told him that a lot of times.",
+            "turn_number": 1898
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I feel concerned about you sometimes.",
+            "turn_number": 1899
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, that is so silly, isn't it? Silly, yes it is.",
+            "turn_number": 1900
+          },
+          {
+            "speaker": "SAM",
+            "text": "Tell us what he found!",
+            "turn_number": 1901
+          },
+          {
+            "speaker": "LIAM",
+            "text": "He found the boat, Nott. he found the boat. He will lead us to the boat. He found it. He did it.",
+            "turn_number": 1902
+          },
+          {
+            "speaker": "SAM",
+            "text": "That's great.",
+            "turn_number": 1903
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "That is great news. Does anybody not want to join? Really? You want to stay up here?",
+            "turn_number": 1904
+          },
+          {
+            "speaker": "SAM",
+            "text": "How far down is it?",
+            "turn_number": 1905
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's the bottom of the ocean.",
+            "turn_number": 1906
+          },
+          {
+            "speaker": "SAM",
+            "text": "And how far is that?",
+            "turn_number": 1907
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's thousands of feet.",
+            "turn_number": 1908
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No, it wasn't a thousand.",
+            "turn_number": 1909
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Thousands of feet.",
+            "turn_number": 1910
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1953,
+      "category": "OVERNIGHT_REST",
+      "episode_position_pct": 0.8942,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "you wake up",
+        "extracted_surface_form": "diurnal_transition",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "All right, so you guys have another night's rest. As you wake up the next morning, it is raining. There appears to be a small storm making its way in there.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "LIAM",
+            "text": "There was no battle. There was no battle with Avantika, man!",
+            "turn_number": 1948
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We're not on the boat, we're in sand.",
+            "turn_number": 1949
+          },
+          {
+            "speaker": "LAURA",
+            "text": "There's no nothing.",
+            "turn_number": 1950
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We're sitting in your mom's sitting room right now.",
+            "turn_number": 1951
+          },
+          {
+            "speaker": "MATT",
+            "text": "You look up and on the side, there's the Plank King and Avantika looking at him. He's like, \"Where you'd find these people?\" (laughter)",
+            "turn_number": 1952
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1953,
+      "category": "scene_transition",
+      "episode_position_pct": 0.8942,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All right, so you guys have another night's rest. As you wake up the next morning, it is raining. There appears to be a small storm making its way in there.",
+        "preceding_context_chars": 759,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "you wake",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "It's too late. Fjord's in the water, swimming around.",
+            "turn_number": 1938
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Caduceus, you making breakfast?",
+            "turn_number": 1939
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm always making breakfast. I'm not going to even use the weird plants.",
+            "turn_number": 1940
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'll get up for Caduceus' breakfast.",
+            "turn_number": 1941
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I've been putting that weird fruit in everyone's food for a week now, by the way. Just so we're clear.",
+            "turn_number": 1942
+          },
+          {
+            "speaker": "LIAM",
+            "text": "In minimal amounts, or full dose?",
+            "turn_number": 1943
+          },
+          {
+            "speaker": "MATT",
+            "text": "The stuff that you found at Urukayxl?",
+            "turn_number": 1944
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Just kidding, but wouldn't that be great?",
+            "turn_number": 1945
+          },
+          {
+            "speaker": "MATT",
+            "text": "That would be amazing",
+            "turn_number": 1946
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Everyone's just be like, \"Wow!\"",
+            "turn_number": 1947
+          },
+          {
+            "speaker": "LIAM",
+            "text": "There was no battle. There was no battle with Avantika, man!",
+            "turn_number": 1948
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We're not on the boat, we're in sand.",
+            "turn_number": 1949
+          },
+          {
+            "speaker": "LAURA",
+            "text": "There's no nothing.",
+            "turn_number": 1950
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We're sitting in your mom's sitting room right now.",
+            "turn_number": 1951
+          },
+          {
+            "speaker": "MATT",
+            "text": "You look up and on the side, there's the Plank King and Avantika looking at him. He's like, \"Where you'd find these people?\" (laughter)",
+            "turn_number": 1952
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1979,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.9061,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "for the next 24 hours",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "in_scene",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "All right, all of you now have the capability for the next 24 hours to breathe underwater. Your lungs feel heavier than they do while you breathe air. It's unique. No gills sprout from the side of your neck, per se, but the air itself seems to have a weight to it, and you're like (exhales). It's still breathable air, but the process seems to have changed a bit.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "MARISHA",
+            "text": "No, that was Keyleth. Sorry.",
+            "turn_number": 1974
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It was literally just Beau singing.",
+            "turn_number": 1975
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Just me trying to do--",
+            "turn_number": 1976
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Well, while it's happening, because it was such a good song, I will cast Underwater Breathing on all seven of us.",
+            "turn_number": 1977
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "My song was that good.",
+            "turn_number": 1978
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1979,
+      "category": null,
+      "episode_position_pct": 0.9061,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All right, all of you now have the capability for the next 24 hours to breathe underwater. Your lungs feel heavier than they do while you breathe air. It's unique. No gills sprout from the side of your neck, per se, but the air itself seems to have a weight to it, and you're like (exhales). It's still breathable air, but the process seems to have changed a bit.",
+        "preceding_context_chars": 794,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "24 hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "(singing) Kumbaya, the cursed woman--",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "LAURA",
+            "text": "(singing) Dashilla the Dreadful--",
+            "turn_number": 1960
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(singing) Kumbaya Dashilla, Dashilla with claws that grasp.",
+            "turn_number": 1961
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Do we need to have the rights to that song?",
+            "turn_number": 1962
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(singing) Oh god I hope not.",
+            "turn_number": 1963
+          },
+          {
+            "speaker": "LAURA",
+            "text": "(singing) And a hungry eye.",
+            "turn_number": 1964
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(singing) She's got a hungry eye and with a lantern light. Dashilla, the cursed woman, treasures in her eyes.",
+            "turn_number": 1965
+          },
+          {
+            "speaker": "SAM",
+            "text": "This is nice.",
+            "turn_number": 1966
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Uh-huh. Cool.",
+            "turn_number": 1967
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(singing) Dashilla the cursed.",
+            "turn_number": 1968
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I am casting Mage Armor during whatever the fuck this is.",
+            "turn_number": 1969
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 1970
+          },
+          {
+            "speaker": "SAM",
+            "text": "That was good.",
+            "turn_number": 1971
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm just saying.",
+            "turn_number": 1972
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Did you give us anything for that? Did we get bonuses or did we just get to hear you sing?",
+            "turn_number": 1973
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No, that was Keyleth. Sorry.",
+            "turn_number": 1974
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It was literally just Beau singing.",
+            "turn_number": 1975
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Just me trying to do--",
+            "turn_number": 1976
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Well, while it's happening, because it was such a good song, I will cast Underwater Breathing on all seven of us.",
+            "turn_number": 1977
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "My song was that good.",
+            "turn_number": 1978
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1988,
+      "category": null,
+      "episode_position_pct": 0.9103,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As a note, too, when the Squalleater came to port that night, Darktow was resupplied with cannonballs on board. For those who are keeping track, which would be--",
+        "preceding_context_chars": 711,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "that night",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "My song was that good.",
+            "turn_number": 1978
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, all of you now have the capability for the next 24 hours to breathe underwater. Your lungs feel heavier than they do while you breathe air. It's unique. No gills sprout from the side of your neck, per se, but the air itself seems to have a weight to it, and you're like (exhales). It's still breathable air, but the process seems to have changed a bit.",
+            "turn_number": 1979
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's the abyss.",
+            "turn_number": 1980
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "In preparation for this, I went and I gathered a few sandbags. Took some burlap, filled them with--",
+            "turn_number": 1981
+          },
+          {
+            "speaker": "MATT",
+            "text": "There's no sand to fill them with out in the ocean, unfortunately.",
+            "turn_number": 1982
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Uh-huh.",
+            "turn_number": 1983
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Cannonballs?",
+            "turn_number": 1984
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay, yeah sure. I got the eight-pounders.",
+            "turn_number": 1985
+          },
+          {
+            "speaker": "SAM",
+            "text": "You have to clear that with me.",
+            "turn_number": 1986
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I brought out a few-- but look, I'm the barrel person.",
+            "turn_number": 1987
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2024,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.9267,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "This poor little-- it's better over the days that it's been able to spend with you since Darktow, but this ferret's been through quite a few experiences.",
+        "preceding_context_chars": 791,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it's been",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "That's true. How far does the anchor go?",
+            "turn_number": 2000
+          },
+          {
+            "speaker": "SAM",
+            "text": "200 feet? 100 feet?",
+            "turn_number": 2001
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's not going to go that far.",
+            "turn_number": 2002
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No, ships don't go to anchor in the middle of the ocean. They just float.",
+            "turn_number": 2003
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "If you're ready, take a seat on the rail and I'll hop up and put my butt out towards the sea.",
+            "turn_number": 2004
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's going to be dark down there.",
+            "turn_number": 2005
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do we have light spells?",
+            "turn_number": 2006
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I don't.",
+            "turn_number": 2007
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yasha does.",
+            "turn_number": 2008
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I do.",
+            "turn_number": 2009
+          },
+          {
+            "speaker": "LIAM",
+            "text": "(popping)",
+            "turn_number": 2010
+          },
+          {
+            "speaker": "MATT",
+            "text": "Dancing Lights. You cast Light on?",
+            "turn_number": 2011
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "On my staff.",
+            "turn_number": 2012
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yasha casts Light on her sword, the Magician's Judge.",
+            "turn_number": 2013
+          },
+          {
+            "speaker": "SAM",
+            "text": "I need a minute!",
+            "turn_number": 2014
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You need a minute?",
+            "turn_number": 2015
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm going to drink heavily.",
+            "turn_number": 2016
+          },
+          {
+            "speaker": "MATT",
+            "text": "To the point where you're intoxicated?",
+            "turn_number": 2017
+          },
+          {
+            "speaker": "SAM",
+            "text": "To the point of intoxication.",
+            "turn_number": 2018
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 2019
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That's important because I switched the Transmuter's Stone away from darkvision, so I cannot see in low light, so it's got to be guiding lights for me.",
+            "turn_number": 2020
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I'm going to take Sprinkle out of my hood--",
+            "turn_number": 2021
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Ah, smart.",
+            "turn_number": 2022
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh, buddy.",
+            "turn_number": 2023
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 2075,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.9501,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "I'll allow it, yeah.",
+        "preceding_context_chars": 786,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-12T22:28:18Z",
+        "trigger_phrase": "I'll allow it",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "He carries him off. All right, you gather your supplies, you gather your cannonballs.",
+            "turn_number": 2062
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh my god.",
+            "turn_number": 2063
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "On the count of three, when you're ready, you'll lean backwards off the rail and fall into the water.",
+            "turn_number": 2064
+          },
+          {
+            "speaker": "LAURA",
+            "text": "On the count of three, when you're ready.",
+            "turn_number": 2065
+          },
+          {
+            "speaker": "MATT",
+            "text": "As it stands, the cannonballs are smooth, solid metal. How are you bringing them down with you?",
+            "turn_number": 2066
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There's a couple of options here.",
+            "turn_number": 2067
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We're going to hold on to the sides.",
+            "turn_number": 2068
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Well, we want to be able to carry them so if we have some small bags maybe?",
+            "turn_number": 2069
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Like rope or chain? Oh! Yeah.",
+            "turn_number": 2070
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We can just put them in a bag that we can hold.",
+            "turn_number": 2071
+          },
+          {
+            "speaker": "MATT",
+            "text": "That can be done. You do have a few sacks.",
+            "turn_number": 2072
+          },
+          {
+            "speaker": "LIAM",
+            "text": "They're iron, right? I would say that with Nott piggybacking, Caleb would take his dagger and transmute it into iron to meld with the cannonball and grip it that way.",
+            "turn_number": 2073
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Ooh, make a little handle.",
+            "turn_number": 2074
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2112,
+      "category": null,
+      "episode_position_pct": 0.967,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Your feet find the bottom of the ocean after minutes. Ten minutes. Who knows how much time has past? It seemed longer than you expected until you eventually you hit the bottom of the ocean.",
+        "preceding_context_chars": 795,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Ten minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Shit.",
+            "turn_number": 2098
+          },
+          {
+            "speaker": "MATT",
+            "text": "It takes a little bit to adjust and anxiety is still spiked in you, but you begin to find yourself breathing water in and out-- like thicker air, but still air-- and it's more comfortable than you expected.",
+            "turn_number": 2099
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Can we talk down here?",
+            "turn_number": 2100
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can.",
+            "turn_number": 2101
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We can?",
+            "turn_number": 2102
+          },
+          {
+            "speaker": "MATT",
+            "text": "It doesn't have the same volume you do above water, which means you can cast spells underwater without issue.",
+            "turn_number": 2103
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We can?",
+            "turn_number": 2104
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, same as you had before. It carries vibration and sound travels far, but it loses enunciation at longer distances, but you can hear voices longer.",
+            "turn_number": 2105
+          },
+          {
+            "speaker": "LIAM",
+            "text": "There are four globules of light slowly circling around.",
+            "turn_number": 2106
+          },
+          {
+            "speaker": "SAM",
+            "text": "(gurgling) When we get back to the surface, I will kill you.",
+            "turn_number": 2107
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That was pretty good, though.",
+            "turn_number": 2108
+          },
+          {
+            "speaker": "MATT",
+            "text": "Oh, this is going to be awful.",
+            "turn_number": 2109
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(gurgling) Well listen, Nott, as long as we're down here--",
+            "turn_number": 2110
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Cannot do that joke anymore. That joke has past.",
+            "turn_number": 2111
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2145,
+      "category": null,
+      "episode_position_pct": 0.9821,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Oof. All right, overall party  not so great. It takes you a little while, about two to three hours of searching the bottom of the ocean. You're starting to get a little hungry again from all the strenuous activity of moving and dragging these cannonballs with you to keep you weighted down so you can step across the surface. You come past some deep sea corals and beautiful colorful visions and schools of fish scooting and coasting around. At one point, they swarm past you, and you feel them tickling past your torso before they skitter past. Eventually, this lift begins to descend into a small bowl or at least a point where the shelf begins to head in a downward direction at a decline. Within the next 15 or so minutes of traveling in that direction, you see the outline of a familiar ship.",
+        "preceding_context_chars": 706,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "three hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I can't see shit.",
+            "turn_number": 2123
+          },
+          {
+            "speaker": "MATT",
+            "text": "Not with a--",
+            "turn_number": 2124
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I put my goggles on by the way--",
+            "turn_number": 2125
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You're good. I'm blind and are you blind?",
+            "turn_number": 2126
+          },
+          {
+            "speaker": "MATT",
+            "text": "He still has the light. You can still see; Caduceus and Yasha still have the light on their weapons.",
+            "turn_number": 2127
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "My weapon glows but I did snuff it down. I was waiting until we knew that we were okay. I move my light over to him.",
+            "turn_number": 2128
+          },
+          {
+            "speaker": "MATT",
+            "text": "The whale continues on, slowly moving, not really acknowledging your presence. You can see two other smaller whales alongside it.",
+            "turn_number": 2129
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Aww, baby calves.",
+            "turn_number": 2130
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Hey. Technically they can understand me.",
+            "turn_number": 2131
+          },
+          {
+            "speaker": "MATT",
+            "text": "Everyone make an investigation check. This will be perception. Underwater, perception.",
+            "turn_number": 2132
+          },
+          {
+            "speaker": "SAM",
+            "text": "Disadvantage!",
+            "turn_number": 2133
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep.",
+            "turn_number": 2134
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Natural one.",
+            "turn_number": 2135
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "19.",
+            "turn_number": 2136
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Nine.",
+            "turn_number": 2137
+          },
+          {
+            "speaker": "SAM",
+            "text": "Four.",
+            "turn_number": 2138
+          },
+          {
+            "speaker": "LAURA",
+            "text": "14.",
+            "turn_number": 2139
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "At disadvantage?",
+            "turn_number": 2140
+          },
+          {
+            "speaker": "SAM",
+            "text": "No. Just me.",
+            "turn_number": 2141
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, 16.",
+            "turn_number": 2142
+          },
+          {
+            "speaker": "MATT",
+            "text": "Roll for Yasha as well.",
+            "turn_number": 2143
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Five for her.",
+            "turn_number": 2144
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2165,
+      "category": null,
+      "episode_position_pct": 0.9913,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Oh yeah. This has gone really interesting, fun places. Well, thank you guys. I'm excited to pick this up next week at the shipwreck. Thank you guys for tuning in. Yeah, I missed this-- two weeks off and suddenly--",
+        "preceding_context_chars": 793,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "What a game!",
+            "turn_number": 2150
+          },
+          {
+            "speaker": "MATT",
+            "text": "That was a good session, guys.",
+            "turn_number": 2151
+          },
+          {
+            "speaker": "LIAM",
+            "text": "One of the best ever. So many great games!",
+            "turn_number": 2152
+          },
+          {
+            "speaker": "MATT",
+            "text": "That went some interesting places. There's a number of scenarios that didn't happen.",
+            "turn_number": 2153
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "There was a number of scenarios that didn't happen?",
+            "turn_number": 2154
+          },
+          {
+            "speaker": "SAM",
+            "text": "I feel like there was so much more on the island that we did not--",
+            "turn_number": 2155
+          },
+          {
+            "speaker": "MATT",
+            "text": "There's a lot more on that island.",
+            "turn_number": 2156
+          },
+          {
+            "speaker": "SAM",
+            "text": "There's Allison, there was shit alleys, and there was all kinds of fun stuff.",
+            "turn_number": 2157
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Just because we're banished doesn't mean we're never going back.",
+            "turn_number": 2158
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We keep pissing off the towns.",
+            "turn_number": 2159
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, I'm so sorry. Like a cop said \"you're trespassing\" and now we're just going to never trespass again?",
+            "turn_number": 2160
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Well said.",
+            "turn_number": 2161
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, we're not because we're law abiding citizens.",
+            "turn_number": 2162
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I was going to say, when you go into a convenience store and it's got the \"Have you seen this person?\"",
+            "turn_number": 2163
+          },
+          {
+            "speaker": "LIAM",
+            "text": "This campaign is a social experiment.",
+            "turn_number": 2164
+          }
+        ]
+      }
+    }
+  ]
+}

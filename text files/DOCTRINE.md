@@ -103,6 +103,14 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Why the split matters:** Track 7 #1's spec rejected LLM-classified intent for the ADJUDICATION layer because the classified intent BOUND mechanical outcomes through the adjudication chain — correct under §1a. That decision does NOT generalize to all LLM uses. §1b explicitly permits the validated-suggester pattern that Track 7 #1 correctly rejected for its specific surface but that operates correctly elsewhere.
 **Doctrinal application — Combat Playability Cluster (#5):** #5.1 SRD fuzzy match — §1b applies (LLM suggests candidate monster name + confidence score; SRD index validates existence; DM approves the proposed `!init madd` command before it fires). #5.4 target disambiguation — §1b applies (LLM suggests target when intent is ambiguous across multiple valid init-list targets; init-list validator confirms target exists; player confirms before binding; deterministic fallback to clarifying-prompt when LLM call fails or confidence is low). #5.2 NPC turn target selection and attack-choice — §1a applies, stays fully deterministic. #5.3 Turn Card — §1a applies, deterministic rendering only.
 
+**Project instances of §1b's suggester pattern (running list, updated S41):**
+1. **Track 6 #5.1 SRD suggester (S26).** `_post_srd_suggestion` posts SRD monster card to `#dm-aside`; DM types the suggested `!init madd` command; Avrae executes. LLM/parser/SRD-index proposes; deterministic validator confirms (SRD index lookup); DM approves by paste; Avrae executes. First project instance — anchored the §1b doctrine.
+2. **Ship 3 NPC state-sync suggester (S41 post-pivot).** `_avrae_project_npc` posts a copy-paste 3-line block (`!init remove` + `!init add -hp` + `!init opt -ac`) to `#dm-aside` when a hydrated NPC needs Avrae sync; DM pastes; Avrae executes. Engine state + Avrae's `<None>` status precondition proposes; idempotency gate confirms the proposal is safe (`gate_*` paths + Case A/B mid-combat split); DM approves by paste; Avrae executes. **Second instance** — empirically proves the doctrine generalizes across surfaces. The S41 in-session pivot from fix candidate (a) (bot-emit) to (a') (bot-suggest) was forced by the Avrae bot-filter empirical finding (identical commands mutate state when human-typed, silently filtered when bot-typed — structural API boundary documented in `NPC_STATE_SYNC_SPEC.md` §13.1).
+
+The shape repeats: **bot proposes via `#dm-aside`, deterministic gate confirms the proposal is safe to suggest, DM approves by pasting, Avrae executes**. Two distinct surfaces (SRD monster creation + NPC stat sync) both close their respective failure modes (F-49 fabrication + Finding H state-sync gap) via the same architectural primitive.
+
+**Operational implication for future combat ships (locked S41):** any combat ship that imagined bot-emitted `!`-prefixed commands to Avrae's channel must inherit the bot-filter finding. The suggester pattern is the architectural default; direct bot-emit to Avrae is permanently off the table without TOS-violating self-botting. F-55 cluster ships #5.2 / #5.4 either find their work elsewhere (deterministic logic that doesn't need to drive Avrae directly) OR adopt the suggester pattern for Avrae interactions.
+
 ## §2. Hard-stop rules go at the END of the prompt
 
 **Learned:** Session 6
@@ -193,6 +201,14 @@ The corollary: Friends & Fables learned this lesson over four years and rebuilt 
 **Trigger:** Phase 12 chose strict matching with `npc_health` fragmentation reporting because fuzzy collapse risks false-positive identity merges.
 **Doctrine:** Strict literal match + telemetry + future merge tool beats fuzzy match. Cost: occasional duplicate rows. Benefit: no silently-wrong merges. Telemetry tells us if drift is bounded or exponential.
 **Applied in:** S13 (Ship 4 phantom-location telemetry — "skeleton_origin=0 AND mention_count=1" surfaces phantoms without auto-purging), S15 (`names_overlap` with explicit clauses, not fuzzy), S18 S23 (levenshtein `near_match` log surfaces disagreement; resolution stays human).
+
+### §14.1 Exception: unique skeleton anchor collapse
+
+**Locked:** Sx (post-S46 cleanup queue, doctrinally-consequential amendment with convergent external review — ChatGPT + Gemini both landed on write-path fix with skeleton-anchor safety boundary)
+**Trigger:** S46 `dnd_npcs` recon (campaign 17) surfaced bare-firstname rows accumulating at ~9× the canonical row's mention_count over ~12 days of play. Strict-equality lookup missed short-form LLM emissions ("Eldrin" missed "Eldrin Stormbow"); recency-ordered resolver (`get_recently_active_npcs`, ORDER BY `last_mentioned DESC`) re-injected the bare row into the prompt; LLM kept emitting short form → feedback loop.
+**Doctrine amendment:** Strict literal matching remains the default identity rule. Exception: deterministic whole-token prefix collapse is permitted only when the incoming canonical_name matches a unique `skeleton_origin=1` row's leading whole-token within the same `campaign_id`. If multiple `skeleton_origin=1` rows in the same campaign share the leading whole-token, no collapse occurs; insert proceeds normally and ambiguity telemetry is logged.
+**Four-constraint lock:** unique anchor / skeleton_origin=1 / same campaign_id / whole-token. The surface area is fixed; loosening any constraint reopens the §14 strict-literal decision.
+**Applied in:** Sx implementation ship — `npc_upsert` collapse branch in `dnd_engine.py` (~40 LOC); `npc_token_prefix_collapse:` / `npc_anchor_ambiguous:` log lines; cleanup migration on campaign 17 rows 4/5/6 (sum-into-canonical per §11.1 lock); test file `test_npc_token_prefix_collapse.py` (41 assertions). Spec at `NPC_TOKEN_PREFIX_COLLAPSE_SPEC.md`, review at `NPC_TOKEN_PREFIX_COLLAPSE_REVIEW.md`.
 
 ## §15. Authoritative-canon framing
 
@@ -661,6 +677,95 @@ except (discord.HTTPException, asyncio.TimeoutError) as e:
 
 ---
 
+## §76. Recursive hallucination memory loop — the four-property latent-canon test
+
+**Anchored:** Session 39 (Ship 2 — Scene State Canon Discipline; promoted from candidate after Ship 2 ships live-verify clean per `SCENE_STATE_CANON_SPEC.md` §3.4 anchoring criterion).
+
+**Trigger:** Session 32 surfaced `scene_state.location` cave-drift recursion. The pattern was retrospectively identified in two earlier project instances (S22 #2 chroma contamination, S36 time-of-day drift) and earned the test.
+
+**Doctrine:** A persisted scalar field is a **latent-canon contamination surface** iff it hits all four of:
+
+1. **LLM-writable** — the LLM has a non-gated write path into the field (direct prompt-emitted writes, structured-extraction writes, or laundered through any non-helper write surface).
+2. **Persisted** — the field outlives the turn it was written on (stored in a table, not just in-memory turn state).
+3. **Retrieved** — the field is read back into a subsequent turn's LLM prompt context (in the system prompt, the user prompt, or retrieval-injected context).
+4. **Narratively inferential** — the field's rendered value invites narrative elaboration by the LLM. A one-line phrase ("dripping cave passages"), a comma-list ("torch on the wall, bloodstain by the door"), or a free-text scene change ("the merchants grew suspicious") all qualify. Numeric, mechanical, or strictly tokenized values (HP, mode='combat', day_phase='Morning' as a fixed-enum value rendered into a fixed-template footer) do NOT — they offer no surface for narrative elaboration.
+
+When a field hits all four properties, **structural removal beats validator-on-LLM-output**. Validators have intrinsic limits (surface enumeration, false-positive calibration, drift accumulation between catches). Removing the LLM's write authority closes the loop at the source — the recursion has no surface to feed back into.
+
+**Operational discipline:** every new persisted scalar column undergoes a manual four-property check at add time. Each table that gains LLM-writable scalar fields gains its own four-property regression test (per-table default per Ship 2 §11.D5; D5-general system-wide audit pass filed as v1.x candidate after a second table earns its parallel test).
+
+**Project instances:**
+1. **S22 #2 chroma contamination** (`FAILURES.md` §F-40) — loot-directive narration laundered through chroma. Directive narrations were LLM-writable (narration), persisted (chroma index), retrieved (per-turn chroma query), narratively inferential (LLM elaborated loot context from indexed prior narration). Fix shipped via chroma purge + AUTHORITATIVE/EXHAUSTIVE override clause — behavioral patch that did not close the structural loop.
+2. **S32 `scene_state.location` cave drift** — Guild Hall buried under cave-imagery recursion. Location field hit all four properties at the schema layer.
+3. **S36 time-of-day drift** (`project_ship2_drift_evidence.md`) — narrative time-of-day ("Evening settles...") contradicted engine `day_phase = 'Morning'`. Read-side analogue: the narrative drift was indistinguishable from a four-property leak even though the underlying scalar was deterministic. Tightens the case for structural removal over read-side validators.
+
+**Applied in:** S39 (Ship 2). Five `dnd_scene_state` columns hitting 4/4 were structurally removed: `location` (freetext), `established_details`, `focus`, `open_questions`, `last_scene_change`. Path A taken on `location` — column dropped entirely; reads migrate to `location_label` derived from `dnd_locations.canonical_name` via `current_location_id` (set_current_location single writer). Three dead-column housekeeping drops bundled (`active_npcs`, `active_threats`, legacy `tension`). `update_scene_state` gained `DELETED_FIELDS` guard logging dropped LLM-write attempts as defense-in-depth.
+
+**Cross-references:** §17 (single write paths per field — §76 generalizes to "which fields should have any LLM write path at all"); §1a (LLM never decides mechanical outcomes — §76 extends to narrative canon); MULTIPLAYER_FIXES.md §2.3 (structural removal beats validation — §76 is the operational test for which fields qualify); §70 (fix blast radius can be wider than the bug — §76's deletion is wider than any single drift instance).
+
+**Read-side analogue:** S36 time-of-day drift demonstrates that even a fully-locked field (engine-bound `day_phase`) can be drifted-against in adjacent narrative prose that no four-property field caused. The four-property test catches **write-side loops**; read-side narrative drift requires a different intervention (narrative verifier on time/place adjacency — filed candidate for future Ship 4/5 if observed friction accumulates).
+
+**§17+§76 composition observation (filed S41 per Ship 3 audit):** Where a column has a §17 single-writer helper as its only write path (e.g., `npc_upsert`, `npc_hydrate_stats`, `npc_register_avrae_madd`, scene-state's various single-writers), the column structurally cannot become a §76 four-property contamination surface — the gated-write boundary fails property 1 ("LLM-writable" requires a non-gated write path). The Ship 3 audit empirically validates this: 20 `dnd_npcs` columns audited, zero 4/4 hits, because every LLM-influenced write flows through a §17-disciplined helper. **Operational consequence:** when designing new persisted scalar columns, the four-property audit checklist can be short-circuited at column-add time by routing the column's write path through a single-writer helper with appropriate gates (skeleton_origin protection, canonicalize_name normalization, source classification, idempotency contract). §17 names the discipline; §76 names the failure mode that discipline preempts. The two compose: apply §17 at write-design time; §76's audit becomes a regression guard rather than a deletion-finding tool.
+
+---
+
+## §77. Combat narration is atmospheric continuity, not adjudication
+
+**Anchored:** Session 43 (Dumb Combat Narration — `HYBRID_COMBAT_NOTES.md` v3 §3.1 step 4). Promoted from candidate after S43 ship + live-verify confirmed the doctrine line holds at the cliff-edge across BLOODIED, DOWNED, and mode-flip-cleanup scenarios.
+
+**Trigger:** S43's auto-narration ship surfaced a fundamental question for any LLM-driven render layer that fires on combat-mode state transitions: what is narration ALLOWED to do, and where does it silently graduate into rules adjudication? Combat narration that infers tactical outcomes, hidden intent, optimal targeting, or consequences beyond what listener + engine confirmed has graduated from "combat glue" into "combat adjudication" — the renderer-not-ruler discipline (§1a) is broken.
+
+**Doctrine:** Combat narration is **atmospheric continuity**, NOT adjudication. The narrator describes the scene as it stands per listener-confirmed events; the narrator does NOT decide what happens, infer what will happen, or extrapolate mechanical state. The cliff-edge — the rejection criterion for any combat narration code path — is: **does this narration require the LLM to decide a mechanical outcome the listener+engine has not already established?** If yes, the path is adjudication and must be re-spec'd.
+
+Concrete clauses (S43 prompt-side enforcement, verified live):
+- **Allowed:** describe atmosphere (lighting, sound, tension, environment); render combatant state in categorical terms (faltering, staggering, falling); hand back to the next acting combatant per init order; summarize listener-confirmed events.
+- **Forbidden:** declare kills/knockouts/unconsciousness without listener confirmation (HP→0 or death-save outcome); invent damage numbers; apply conditions; infer enemy morale or tactical intent; describe action that didn't happen this round; narrate combatants not in the init roster; attribute specific actions to PCs without player-narration or listener-event anchor; preview next-turn actions.
+
+**Why this is doctrine, not just policy:** the failure mode it prevents is structural. An LLM rendering combat with full context (recent narration, campaign NPCs, scene state) has the linguistic surface to fabricate any of: "the goblin's resolve breaks and it flees" (inferred morale), "your blade finds a weak point" (invented mechanical outcome), "the dying creature curses its god" (declared death pre-listener). Each is a one-token-at-a-time graduation from glue into adjudication. The doctrine line names the rejection criterion before each token gets generated.
+
+**Operational discipline:** any future combat ship that fires LLM narration on mechanical events MUST carry verbatim MUST/MUST-NOT clauses enforcing this line. The clauses live in `_COMBAT_NARRATION_INVARIANTS` (`dnd_orchestration.py`); modifications require operator re-approval because edits change runtime LLM behavior, not just framing. F-55 cluster ships #5.2 (NPC Turn Automation), #5.3 (Combat Cockpit), #5.4 (Intent-to-Avrae Resolver) inherit the line — any of them that would cross it requires re-spec.
+
+**Applied in:** S43 (Dumb Combat Narration). Three trigger surfaces (ROUND_START, BLOODIED_THRESHOLD_CROSSED, COMBATANT_DOWNED) each render via `_dm_respond_and_post` with `transition_context` carrying the invariant block verbatim + categorical HP roster (NEVER exact HP integers). Live verify: BLOODIED ("staggers... unsteady but still defiant") and DOWNED ("knees give way... slumps... now out of the fight") render exactly within the doctrine line — no mechanical inference, no speculation past listener-confirmed state, no death-without-confirmation. ROUND_START surfaced quality drift (phantom NPCs from `recent_npcs` block; stale narrative from `last_dm_response`) — filed as v1.x prompt-purity candidate, NOT a doctrine violation (the drift is storytelling-context leakage, not mechanical-state inference). Doctrine holds.
+
+**Cross-references:** §1a (LLM never decides mechanical outcomes — §77 is the combat-narration application); §1b (validated-suggester pattern — different shape: §1b governs proposed state changes the DM approves; §77 governs RENDER of state changes the listener has already confirmed); §17 (single write paths — §77's narration is render-only, doesn't write); §76 (four-property latent-canon test — §77 is the read-side adjudication-prevention analogue); MULTIPLAYER_FIXES.md §9 (combat narration is the renderer-not-ruler instance most exposed to drift).
+
+**Two-layer enforcement composition observation (filed S44, now subsumed by §78):** §77 atmospheric continuity is enforced at TWO layers — **instruction-side** (verbatim MUST/MUST-NOT clauses inside the prompt body, S43 `_COMBAT_NARRATION_INVARIANTS`) and **information-side** (context-block suppression in `build_dm_context`, S44 `suppress_for_combat_narration` flag). Both layers together provide structural protection that neither alone reliably provides. S43's instruction-side enforcement was sufficient for BLOODIED + DOWNED narrations (anchored to specific listener-confirmed events); ROUND_START (weak-anchor case — no specific event to focus on) needed information-side suppression too, because the LLM falls back to whatever context is available when its task has weak event anchoring. The S44 implementation suppresses 10 prompt blocks: two chroma-derived blocks, two phantom-NPC sources (companions block + recent_npcs line), five campaign-arc bleed sources (quests/inventory/central-thread/consequences/commitment), and one rolling-narration buffer (`campaign.current_scene`). Three verify passes were required to identify the full block set, each pass narrowing via direct DB inspection or full block audit. The two-layer composition pattern gained its third structural instance at S45 (COMBAT_END dispatch carries both instruction-side framing + information-side suppression) and is now anchored as **§78 mode-transition state-reset surfaces** — see below.
+
+**Filed v1.x candidate:** prompt-purity layer extension if future combat ships surface additional bleed blocks. The current 10-block suppression set is the empirically-verified complete answer for `build_dm_context` as of S44; future blocks added to `build_dm_context` should classify against the combat-narration-relevant vs bleed-source matrix at design time.
+
+---
+
+## §78. Mode-transition state-reset surfaces
+
+**Anchored:** Session 45 (Combat-Boundary Hardening Bundle). Promoted from S44's filed two-layer enforcement candidate after S45 verified a third structural instance and surfaced the broader pattern: mode transitions are state-reset surfaces; the mode flag flip alone is structurally insufficient; the boundary requires coordinated mechanical-state cleanup, narrative-buffer reset, transitional-window silence, AND boundary atmospheric closeout for the next-mode narration to start from a clean slate.
+
+**Trigger:** S44 closed prompt purity at the dispatch surface (ROUND_START / BLOODIED / DOWNED). S45 surfaced three remaining boundary failure modes when combat ends: (1) post-`!init end` exploration narration drift (the originally specced surface — rolling-narrative-buffer pollution leaked combat framing into the next exploration message; the model produced locally-coherent "thug emerges" narration because `campaigns.current_scene` still carried prior combat narration verbatim); (2) **mid-init-setup premature combat narration** — when `mode='combat'` is set by `!init begin` but no `active_turn` exists yet (Avrae setup phase before `!init next`), any player text triggers `_dm_respond_and_post` with full unsuppressed context, and the LLM generates combat-round narrative from minimal input including bare Avrae disambiguation replies; (3) **silence-until-player-types gap** on combat close — the bot stays silent on `!init end` and the operator has to seed the next narration, breaking play flow.
+
+**Doctrine:** Mode transitions are **state-reset surfaces**. The mode flag flip + mechanical state cleanup (clear_combatants / clear_active_turn etc.) is necessary but structurally insufficient. The boundary requires four coordinated layers:
+
+1. **Mechanical state cleanup** — clear the engine state that drove the prior mode (combatants, active turn, turn-order metadata).
+2. **Narrative buffer reset** — clear the rolling-narrative buffers that accumulated content under the prior mode (in Virgil's case: `campaigns.current_scene`, `dnd_scene_state.last_dm_response`, `dnd_scene_state.last_player_action`). Empty strings are wrong (they trigger first-turn fallback framing); synthesized neutral framing is the safe default.
+3. **Transitional-window structural silence** — when the mode flag has flipped but mechanical state isn't fully populated yet (e.g., combat mode set but no active turn), narration is structurally premature regardless of message content. A top-level gate must drop messages with a ⏳ reaction; defense-in-depth gates at downstream call sites cover non-message dispatch surfaces.
+4. **Boundary atmospheric closeout** — the boundary itself dispatches its own narration with **both-layer enforcement** (instruction-side §77 MUST/MUST-NOT clauses + information-side context-block suppression). This closes the silence gap and gives the next-mode narration a clean atmospheric handoff.
+
+**Why this is doctrine, not just policy:** the failure mode it prevents is **structural and recurrent**. Every mode transition in the system (combat→exploration, exploration→travel, social→combat, downtime→exploration, etc.) is a state-reset surface that needs the four-layer treatment. Without it, the next-mode narration reads polluted context and produces drift that is locally coherent but globally wrong — phantom entities, residual mode framing, premature action narration. The doctrine names the rejection criterion before any mode-transition handler is written: **does this handler reset all four state surfaces at the boundary, or only mechanical state?** If only mechanical, the handler is structurally incomplete.
+
+**Operational discipline:** any handler that flips `dnd_scene_state.mode` MUST reset narrative buffers at the boundary, MUST gate the transitional window where mechanical state isn't fully populated, and SHOULD dispatch a boundary atmospheric closeout for the prior mode. The buffer-reset writer is the single point of definition for closeout text; the gate placement follows the existing turn-gate pattern; the closeout dispatch reuses the §59 combat-narration sibling infrastructure (extended for boundary triggers like COMBAT_END).
+
+**Applied in:** S45 (Combat-Boundary Hardening Bundle). Combat→exploration boundary fully sealed across all four layers:
+- **Layer 1 (mechanical):** existing `set_scene_mode('exploration')` + `clear_active_turn` + `clear_combatants` in `_handle_init_event` evt_type='end'.
+- **Layer 2 (narrative buffer reset):** new `reset_narrative_buffers_on_combat_exit(campaign_id)` helper in `dnd_engine.py` (single writer for boundary reset, §17-compatible). Writes synthesized neutral closeout to all three rolling buffers. Idempotent.
+- **Layer 3 (transitional silence):** v2 primary gate in `on_message` (`if mode='combat' AND no active_turn: react ⏳ and return`) + v1 defense-in-depth gate inside `_dm_respond_and_post` (force `suppress_for_combat_narration=True` under same condition) for non-`on_message` call sites.
+- **Layer 4 (boundary closeout):** COMBAT_END as 4th kind in `compute_combat_narration_directive` (§59 10th sibling extended); dispatched from `_handle_init_event` evt_type='end' with `combat_state_override` + `scene_override` decoupling dispatch from post-cleanup DB state. Carries both §77 instruction-side MUST/MUST-NOT clauses + S44 information-side 10-block suppression.
+
+**Two-layer enforcement (instruction + information) is structurally embedded in §78 layer 4.** S43 (instruction-side) + S44 (information-side) + S45 (both layers at the boundary closeout, AND the surrounding three layers around it) provide the three project instances anchoring the composition pattern. §77 governs WHAT can be narrated (atmospheric continuity, not adjudication); §78 governs WHEN narration is structurally appropriate (boundary-aware, transitional-window-silenced).
+
+**Cross-references:** §77 (atmospheric-vs-adjudication — §78 is the structural-window sibling); §17 (single write paths — `reset_narrative_buffers_on_combat_exit` as boundary-reset single writer); §59 (pure-function sibling pattern — COMBAT_END extends the 10th sibling); §65 (Bot-Avrae write boundary — analogous structural-window rule); MULTIPLAYER_FIXES.md §10 (post-combat exploration drift row closed by S45).
+
+**Filed v1.x candidate:** apply the pattern to other mode-transition surfaces if drift surfaces. Candidates: `_handle_rest_event` !lr/!sr (parallel combat→exploration trigger that doesn't currently call the buffer-reset helper); future exploration→travel transitions in `/travel`; downtime→exploration transitions if downtime mode lands. Each surface needs the same four-layer audit at design time.
+
+---
+
 ## Candidates (filed, not anchored)
 
 Doctrine candidates surface during ship work but anchor only after a second project instance shows the pattern (per §34 "no pre-sequencing" + §38 "filed-not-sequenced"). The candidates listed here have **one project instance**; they earn an anchored §-number when a second ship demonstrates the same shape.
@@ -696,4 +801,4 @@ Doctrine candidates surface during ship work but anchor only after a second proj
 
 ---
 
-*Order: §1-§75 are append-only. New doctrines get appended; existing numbers are stable for cross-reference from SESSIONS.md. Candidates promote to numbered §-entries when their second project instance ships.*
+*Order: §1-§78 are append-only. New doctrines get appended; existing numbers are stable for cross-reference from SESSIONS.md. Candidates promote to numbered §-entries when their second project instance ships.*

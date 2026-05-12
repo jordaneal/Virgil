@@ -1,0 +1,5064 @@
+{
+  "episode_combined": "C1E014",
+  "campaign": "C1",
+  "episode_int": 14,
+  "total_records": 52,
+  "per_source_counts": {
+    "TM": 30,
+    "CC": 3,
+    "LR": 19
+  },
+  "events": [
+    {
+      "source": "TM",
+      "turn_number": 35,
+      "category": "travel_duration",
+      "episode_position_pct": 0.017,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So we're getting this figured out. They'll stay in play as long as they can. They are three hours ahead of us. To be fair, we have friends across the coast that get up at 4am to watch this",
+        "preceding_context_chars": 525,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "three hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Welcome back guys! We have some interesting aspects of playing tonight Orion Acaba will be here shortly, he's currently stuck in traffic. Unfortunately we will not have a Sam Riegel tonight, due to his schedule.",
+            "turn_number": 26
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Scanlan?!",
+            "turn_number": 27
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No Scanlan.",
+            "turn_number": 28
+          },
+          {
+            "speaker": "MATT",
+            "text": "Laura Bailey and Travis Willingham, our loving Grog and Vex, are out of town in Florida but are Skyping in via modern technology.",
+            "turn_number": 29
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Technology? What's it all about?",
+            "turn_number": 30
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We can actually see you guys pretty good.",
+            "turn_number": 31
+          },
+          {
+            "speaker": "MATT",
+            "text": "We're going to try and make this work.",
+            "turn_number": 32
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's pretty cool.",
+            "turn_number": 33
+          },
+          {
+            "speaker": "ZAC",
+            "text": "We're getting audio set up right now.",
+            "turn_number": 34
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 52,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.0253,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "throughout the week",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "The episodes are available immediately afterward on Twitch if you're a subscriber. So the morning after the show, if you're a subscriber, you get to watch the episodes immediately afterward. Plus you're helping us keep this channel going. All the subscription money goes toward maintaining the channel, all the people that work here throughout the week, all the other amazing hosts and people that actually run the programs here. So you help make this channel function.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "MATT",
+            "text": "(sighs)",
+            "turn_number": 47
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Sorry.",
+            "turn_number": 48
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's alright. So --",
+            "turn_number": 49
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Thank you again to our friend Kai Norman at KommissarProps for making the horn, go follow him. It's awesome. KommisarProps on Instagram and Facebook",
+            "turn_number": 50
+          },
+          {
+            "speaker": "MATT",
+            "text": "Our next giveaway is at 3550. And we will give away the second and only other horn, as well as the rest of that package. And at 3600 we're going to do t-shirt signed, dice box, starter kit and we're going to be dancing for you afterwards. Let's see if we can get that by tonight. Also, want to give you guys a heads up, we've wanted to get some confirmation to you guys about the episode releases after the live show. Because we have a lot of people who watch the show who can't watch it live.",
+            "turn_number": 51
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 66,
+      "category": "scene_transition",
+      "episode_position_pct": 0.0321,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "They managed to convince to help them as well, fought their way through the tunnels, past the Duergar army, eventually to the underground Mindflayer colony of Yogg Voril where they found that this entity called K'varn. This was then eventually revealed to be a mad beholder, K'varn, who had been pseudo possessed and given additional power by the Horn of Orcus, a great and evil artifact long forgotten, which had been found by this entity. So they managed to make their way into the temple, kill K'varn, tear the horn from it's forehead, however found themselves swarmed immediately by an entire colony of mind flayers heading toward the top of this temple. They managed to battle and battle, nearly losing a few party members, and through some ingenuity, escape through the top, glide over the city of Yogg Voril through this underground chasm to a distant embankment along the beachside of this underground lake. And teleport their way back to their base city of Emon. So they've come back to Emon, they've come to their keep, Greyskull Keep, and they've had an evening of rest. Upon waking the next morning, they've managed to get some breakfast, they've freed Lady Kima from her stone entrapment as she was turned to stone during the battle with the beholder, and had a conversation based around what should or could be done about this Horn of Orcus evil artifact. So here we will pick up again from that point. So the rest of you guys have eaten your meal, Kima hungrily doing so. All of you guys both sore and exhausted having barely seen sunlight for a little over a week and being probably the first or second good meal you've had since leaving Kraghammer proper. You all finish your food, Grog hungrily so, double the size of his normal intake of delicious meats and starches. Tiberius has not seemed to have woken up or found his way down from his room as of yet. However, you guys did recently receive a rolled up piece of parchment. A notification from the council of Tal’Dorei, saying that you have been requested to the council chambers at some point this afternoon, around the mid-day sun, to discuss your return and the situation and conditions about it. And that was all it said.",
+        "preceding_context_chars": 786,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the next morning",
+        "granularity_bucket": "days",
+        "is_anchored": true,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "So you can look forward to episodes up on the Geek & Sundry website every Monday. That's the scenario.",
+            "turn_number": 58
+          },
+          {
+            "speaker": "MATT",
+            "text": "So, given that case, whenever Orion gets here he'll hop in, in the meantime, let's go ahead and start this game up.",
+            "turn_number": 59
+          },
+          {
+            "speaker": "MATT",
+            "text": "So.",
+            "turn_number": 60
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "All right here we go.",
+            "turn_number": 61
+          },
+          {
+            "speaker": "MATT",
+            "text": "So, for those of us who --",
+            "turn_number": 62
+          },
+          {
+            "speaker": "MATT",
+            "text": "Just a little heads up here, the party has just returned after a long arduous trek through The Underdark, beneath the Dwarven city of Kraghammer.",
+            "turn_number": 63
+          },
+          {
+            "speaker": "MATT",
+            "text": "They were sent to retrieve a paladin named Lady Kima of Vord, who was on a vision quest to stop some dark evil that her deity Bahamut told her was existing beneath this mountain range, and needed to be squelched.",
+            "turn_number": 64
+          },
+          {
+            "speaker": "MATT",
+            "text": "The party managed to salvage her from insidious torture, and through her aid as well as a Mind Flayer who had been outcast from the society and the colony nearby.",
+            "turn_number": 65
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 66,
+      "category": null,
+      "episode_position_pct": 0.0321,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "They managed to convince to help them as well, fought their way through the tunnels, past the Duergar army, eventually to the underground Mindflayer colony of Yogg Voril where they found that this entity called K'varn. This was then eventually revealed to be a mad beholder, K'varn, who had been pseudo possessed and given additional power by the Horn of Orcus, a great and evil artifact long forgotten, which had been found by this entity. So they managed to make their way into the temple, kill K'varn, tear the horn from it's forehead, however found themselves swarmed immediately by an entire colony of mind flayers heading toward the top of this temple. They managed to battle and battle, nearly losing a few party members, and through some ingenuity, escape through the top, glide over the city of Yogg Voril through this underground chasm to a distant embankment along the beachside of this underground lake. And teleport their way back to their base city of Emon. So they've come back to Emon, they've come to their keep, Greyskull Keep, and they've had an evening of rest. Upon waking the next morning, they've managed to get some breakfast, they've freed Lady Kima from her stone entrapment as she was turned to stone during the battle with the beholder, and had a conversation based around what should or could be done about this Horn of Orcus evil artifact. So here we will pick up again from that point. So the rest of you guys have eaten your meal, Kima hungrily doing so. All of you guys both sore and exhausted having barely seen sunlight for a little over a week and being probably the first or second good meal you've had since leaving Kraghammer proper. You all finish your food, Grog hungrily so, double the size of his normal intake of delicious meats and starches. Tiberius has not seemed to have woken up or found his way down from his room as of yet. However, you guys did recently receive a rolled up piece of parchment. A notification from the council of Tal’Dorei, saying that you have been requested to the council chambers at some point this afternoon, around the mid-day sun, to discuss your return and the situation and conditions about it. And that was all it said.",
+        "preceding_context_chars": 786,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a week",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "So you can look forward to episodes up on the Geek & Sundry website every Monday. That's the scenario.",
+            "turn_number": 58
+          },
+          {
+            "speaker": "MATT",
+            "text": "So, given that case, whenever Orion gets here he'll hop in, in the meantime, let's go ahead and start this game up.",
+            "turn_number": 59
+          },
+          {
+            "speaker": "MATT",
+            "text": "So.",
+            "turn_number": 60
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "All right here we go.",
+            "turn_number": 61
+          },
+          {
+            "speaker": "MATT",
+            "text": "So, for those of us who --",
+            "turn_number": 62
+          },
+          {
+            "speaker": "MATT",
+            "text": "Just a little heads up here, the party has just returned after a long arduous trek through The Underdark, beneath the Dwarven city of Kraghammer.",
+            "turn_number": 63
+          },
+          {
+            "speaker": "MATT",
+            "text": "They were sent to retrieve a paladin named Lady Kima of Vord, who was on a vision quest to stop some dark evil that her deity Bahamut told her was existing beneath this mountain range, and needed to be squelched.",
+            "turn_number": 64
+          },
+          {
+            "speaker": "MATT",
+            "text": "The party managed to salvage her from insidious torture, and through her aid as well as a Mind Flayer who had been outcast from the society and the colony nearby.",
+            "turn_number": 65
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 103,
+      "category": null,
+      "episode_position_pct": 0.0501,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As a couple hours have passed --",
+        "preceding_context_chars": 778,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a couple hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "But we haven't told her that it's in the bag of holding right?",
+            "turn_number": 73
+          },
+          {
+            "speaker": "MATT",
+            "text": "No you just said you have it somewhere safe.",
+            "turn_number": 74
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We just said we have it somewhere safe.",
+            "turn_number": 75
+          },
+          {
+            "speaker": "MATT",
+            "text": "Correct.",
+            "turn_number": 76
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay.",
+            "turn_number": 77
+          },
+          {
+            "speaker": "MATT",
+            "text": "Turn them up a little bit.",
+            "turn_number": 78
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I am highly entertained.",
+            "turn_number": 79
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I think we're getting feedback.",
+            "turn_number": 80
+          },
+          {
+            "speaker": "MATT",
+            "text": "Oh, I see.",
+            "turn_number": 81
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh yeah, that's us.",
+            "turn_number": 82
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Right! That would be us.",
+            "turn_number": 83
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes.",
+            "turn_number": 84
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Sorry about that.",
+            "turn_number": 85
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We'll figure this out guys.",
+            "turn_number": 86
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That wasn't too bad.",
+            "turn_number": 87
+          },
+          {
+            "speaker": "MATT",
+            "text": "This is the new attempt at technology with our out-of-towners.",
+            "turn_number": 88
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It's amazing.",
+            "turn_number": 89
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's working pretty well.",
+            "turn_number": 90
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It is working pretty well.",
+            "turn_number": 91
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm kind of impressed.",
+            "turn_number": 92
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Have we actually opened up the parchment and read it yet?",
+            "turn_number": 93
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, you have received it and you've inspected it.",
+            "turn_number": 94
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "It's Tiberius.",
+            "turn_number": 95
+          },
+          {
+            "speaker": "ORION",
+            "text": "Hey everybody.",
+            "turn_number": 96
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yes.",
+            "turn_number": 97
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Hey boo.",
+            "turn_number": 98
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't know what's going to happen.",
+            "turn_number": 99
+          },
+          {
+            "speaker": "MATT",
+            "text": "He's going to crawl under the table. There you have it.",
+            "turn_number": 100
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Good morning sleepyhead.",
+            "turn_number": 101
+          },
+          {
+            "speaker": "ORION",
+            "text": "Hi guys.",
+            "turn_number": 102
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 109,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0531,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You've just now come down after many hours of breakfast have passed. It's now pushing around 11:00 in the afternoon comparatively, and Tiberius comes storming into the main dining hall of your keep.",
+        "preceding_context_chars": 789,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "many hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "We just said we have it somewhere safe.",
+            "turn_number": 75
+          },
+          {
+            "speaker": "MATT",
+            "text": "Correct.",
+            "turn_number": 76
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay.",
+            "turn_number": 77
+          },
+          {
+            "speaker": "MATT",
+            "text": "Turn them up a little bit.",
+            "turn_number": 78
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I am highly entertained.",
+            "turn_number": 79
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I think we're getting feedback.",
+            "turn_number": 80
+          },
+          {
+            "speaker": "MATT",
+            "text": "Oh, I see.",
+            "turn_number": 81
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh yeah, that's us.",
+            "turn_number": 82
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Right! That would be us.",
+            "turn_number": 83
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes.",
+            "turn_number": 84
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Sorry about that.",
+            "turn_number": 85
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We'll figure this out guys.",
+            "turn_number": 86
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That wasn't too bad.",
+            "turn_number": 87
+          },
+          {
+            "speaker": "MATT",
+            "text": "This is the new attempt at technology with our out-of-towners.",
+            "turn_number": 88
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It's amazing.",
+            "turn_number": 89
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's working pretty well.",
+            "turn_number": 90
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It is working pretty well.",
+            "turn_number": 91
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'm kind of impressed.",
+            "turn_number": 92
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Have we actually opened up the parchment and read it yet?",
+            "turn_number": 93
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, you have received it and you've inspected it.",
+            "turn_number": 94
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "It's Tiberius.",
+            "turn_number": 95
+          },
+          {
+            "speaker": "ORION",
+            "text": "Hey everybody.",
+            "turn_number": 96
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yes.",
+            "turn_number": 97
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Hey boo.",
+            "turn_number": 98
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't know what's going to happen.",
+            "turn_number": 99
+          },
+          {
+            "speaker": "MATT",
+            "text": "He's going to crawl under the table. There you have it.",
+            "turn_number": 100
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Good morning sleepyhead.",
+            "turn_number": 101
+          },
+          {
+            "speaker": "ORION",
+            "text": "Hi guys.",
+            "turn_number": 102
+          },
+          {
+            "speaker": "MATT",
+            "text": "As a couple hours have passed --",
+            "turn_number": 103
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Good morning Tiberius.",
+            "turn_number": 104
+          },
+          {
+            "speaker": "ORION",
+            "text": "Hi. Right.",
+            "turn_number": 105
+          },
+          {
+            "speaker": "ORION",
+            "text": "Hello.",
+            "turn_number": 106
+          },
+          {
+            "speaker": "ORION",
+            "text": "Am I here?",
+            "turn_number": 107
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yes you've just come down the stairs.",
+            "turn_number": 108
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 235,
+      "category": null,
+      "episode_position_pct": 0.1144,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It said around the noon day sun. It's probably about 30 minutes give or take.",
+        "preceding_context_chars": 666,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "30 minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Another 500?",
+            "turn_number": 221
+          },
+          {
+            "speaker": "ORION",
+            "text": "Yes.",
+            "turn_number": 222
+          },
+          {
+            "speaker": "ORION",
+            "text": "That's all I do. That's all I want to do.",
+            "turn_number": 223
+          },
+          {
+            "speaker": "MATT",
+            "text": "Anything else?",
+            "turn_number": 224
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Have we had contact with Allura? Since returning?",
+            "turn_number": 225
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nuh uh.",
+            "turn_number": 226
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Not yet?",
+            "turn_number": 227
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I feel good about her being at this meeting.",
+            "turn_number": 228
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Someone just got really excited when we mentioned the name Allura.",
+            "turn_number": 229
+          },
+          {
+            "speaker": "ORION",
+            "text": "I cast prestidigitation on myself and make robes are all super clean and nice.",
+            "turn_number": 230
+          },
+          {
+            "speaker": "MATT",
+            "text": "Got you.",
+            "turn_number": 231
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you guys walk into the center of the Cloudtop District, you can see that her ivory tower, which once collapsed around you, is now standing in it's previous location, seemingly untouched and back to it's original esteemed visual.",
+            "turn_number": 232
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That is the question, do we stop in first or do we go straight to --",
+            "turn_number": 233
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Was there a time requested on there?",
+            "turn_number": 234
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 254,
+      "category": "scene_transition",
+      "episode_position_pct": 0.1237,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You can hear it echo throughout the interior of the tall standing tower. A few moments pass, you hear the movement of chain. A creaking of metal and then a -- some sort of large shifting of a wood platform or plank. The door then creaks open and there standing, a little bleary eyed, slept-in a bit, but in the process of getting ready, you see before you Arcanist Allura. Her long blonde hair is half braided. She's in her darkened blue robes. You're used to seeing her in and see -- She opens the door, the sunlight hitting her eye. She protects her vision for a second before they focus on the rest of the group and she goes,",
+        "preceding_context_chars": 630,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "moments pass",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "You come around the corner on the fine kind of yellowish cobblestone road, turn, and you get to the point where you can see to the left of you is the giant courtyard that surrounds the outskirts of the palace proper. With the giant steps that lead up to the darkened purple marble that the entire structure is made out of. To your right, there's a few buildings and the white ivory tower that Allura lives in. You approach, the front door is closed. It still remains that giant iron knocker on the front that hangs loosely, like a giant wishbone that you slam into the front of the wooden doorway.",
+            "turn_number": 252
+          },
+          {
+            "speaker": "MATT",
+            "text": "Give it a couple hits? (Vax nods)",
+            "turn_number": 253
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 269,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.131,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "over the evening",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "UNKNOWN",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "And as she turns around, she sees standing behind the rest of you, there's Kima. There in her now freshly cleaned golden armor that she polished over the evening so she doesn't smell of Duergar sweat and blood anymore.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "MATT",
+            "text": "She slowly pulls away. She acquiesces to your longer hug... And then... pushes away.",
+            "turn_number": 264
+          },
+          {
+            "speaker": "ORION",
+            "text": "It is nice to see you again.",
+            "turn_number": 265
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The pleasure is mine.\"",
+            "turn_number": 266
+          },
+          {
+            "speaker": "LAURA",
+            "text": "(sings) Awkward. Everyone: (laughs)",
+            "turn_number": 267
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The pleasure is mine, Tiberius.\"",
+            "turn_number": 268
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 319,
+      "category": null,
+      "episode_position_pct": 0.1553,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Things have been a bit crazy here, obviously. Now that the floodgates have opened as far as discussions with the council and people who have maintained a backlog for a while. It's been a bit busy. But, this is a wonderful moment to respite. I'm greatly enjoying the company to be honest. Come.\"",
+        "preceding_context_chars": 786,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Allie?",
+            "turn_number": 298
+          },
+          {
+            "speaker": "MATT",
+            "text": "And Allura starts heading back into her tower and says,",
+            "turn_number": 299
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well? Come. Enter. I have tea ready.\"",
+            "turn_number": 300
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I like it.",
+            "turn_number": 301
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well? Come. Enter. I have tea ready.\"",
+            "turn_number": 302
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well? Come. Enter. I have tea ready. You all look like you could use it to be honest.\"",
+            "turn_number": 303
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yeah.",
+            "turn_number": 304
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Come. Please.\"",
+            "turn_number": 305
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Well, all right.",
+            "turn_number": 306
+          },
+          {
+            "speaker": "ORION",
+            "text": "I love tea.",
+            "turn_number": 307
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We have a moment we can spend.",
+            "turn_number": 308
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Long story.",
+            "turn_number": 309
+          },
+          {
+            "speaker": "MATT",
+            "text": "So as you guys all walk into her tower, you remember it untouched from your previous entry here. It's a weird moment to step into a tower that you were once in as it crumbled and folded on itself, to see it as if nothing had ever happened.",
+            "turn_number": 310
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Is there a new rug?",
+            "turn_number": 311
+          },
+          {
+            "speaker": "MATT",
+            "text": "There is not.",
+            "turn_number": 312
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Ah-hah!",
+            "turn_number": 313
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Hmm..",
+            "turn_number": 314
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We're not giving it back.",
+            "turn_number": 315
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We shouldn't tell her about the rug.",
+            "turn_number": 316
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Don't tell her about the rug.",
+            "turn_number": 317
+          },
+          {
+            "speaker": "MATT",
+            "text": "You guys step into the center of the room and she's talking to herself for a moment, saying",
+            "turn_number": 318
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 328,
+      "category": null,
+      "episode_position_pct": 0.1597,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Best that you can gather, she looks like she's a bit groggy, having slept in recently. But she seems extremely excited you've all returned and seems eager to catch up as far as what has transpired since last you met her.",
+        "preceding_context_chars": 427,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since last",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "You've gotten into the idea that a lot of these powerful mage-built towers, the inner workings don't really match the outer exterior look. And there are rooms that shouldn't exist at certain points as you lift up.",
+            "turn_number": 321
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'd like to make a perfunctory insight check just to see if there's anything hinky.",
+            "turn_number": 322
+          },
+          {
+            "speaker": "ORION",
+            "text": "I'd like to google perfunctory real quick.",
+            "turn_number": 323
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can do that. Go for it.",
+            "turn_number": 324
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Okay.",
+            "turn_number": 325
+          },
+          {
+            "speaker": "MATT",
+            "text": "On Allura?",
+            "turn_number": 326
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, everything's probably fine. That's an 18.",
+            "turn_number": 327
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 335,
+      "category": null,
+      "episode_position_pct": 0.1631,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"It's been awhile since I've been here. Everything's as grandiose and unnecessarily dressed as it always is. I'm glad you got rid of that old rug though.\"",
+        "preceding_context_chars": 520,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "You do hear, as soon as you arrive, it sounds like the whistle of a tea kettle in the distance. At which point, she says,",
+            "turn_number": 330
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Ah! Allow me.\"",
+            "turn_number": 331
+          },
+          {
+            "speaker": "MATT",
+            "text": "And she begins to walk over. She lifts her hand and you see a small drift of arcane energy as her mage hand goes and lifts, takes the water off of it's burner, and begins to absent mindedly mage-hand various teacups out of a large cabinet above the little kitchenette area.",
+            "turn_number": 332
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That's awesome. (all laugh)",
+            "turn_number": 333
+          },
+          {
+            "speaker": "MATT",
+            "text": "At which point, everyone's looking around, Kima, amongst the rest of you guys, says,",
+            "turn_number": 334
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 389,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.1894,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Just a precaution, I like to keep my private things private. But, a deal is a deal and you've done as you've asked. So as we've discussed, 10,000 gold pieces, to the lot of you, and my greatest thanks.\"",
+        "preceding_context_chars": 634,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "10,000 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 10000.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Well, I guess this is in order.\"",
+            "turn_number": 378
+          },
+          {
+            "speaker": "MATT",
+            "text": "And she sits up for a second and walks over. And you can see she looks back at the rest of you and brushes her hand for a second. A sphere of darkness appears in the corner of the room where you can not see an entire part of the room. And she sits there and hovers. Just a little pocket of darkness.",
+            "turn_number": 379
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Aw, man.",
+            "turn_number": 380
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What's that?",
+            "turn_number": 381
+          },
+          {
+            "speaker": "MATT",
+            "text": "You hear some rustling.",
+            "turn_number": 382
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We've been in darkness so long.",
+            "turn_number": 383
+          },
+          {
+            "speaker": "MATT",
+            "text": "You hear some rustling.",
+            "turn_number": 384
+          },
+          {
+            "speaker": "MATT",
+            "text": "You hear some rustling.",
+            "turn_number": 385
+          },
+          {
+            "speaker": "MATT",
+            "text": "The sphere of darkness finishes and you see she's holding a sack of coins, that you don't know where she picked them up from.",
+            "turn_number": 386
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh!",
+            "turn_number": 387
+          },
+          {
+            "speaker": "MATT",
+            "text": "She steps back over to her chair, sits down, and says,",
+            "turn_number": 388
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 425,
+      "category": null,
+      "episode_position_pct": 0.2069,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Those who currently reside on the council are trustworthy, I assure you this. I've done my work with them for many years, and those that have passed have been replaced with equally trustworthy individuals. And, rest assured, I have my checks and balances in place as well.\"",
+        "preceding_context_chars": 708,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "many years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"I don't know much of this object you say, but if it was the source of the creature's power, and it carries with it the connotations of Orcus, then this is a very, very ill omen indeed.\"",
+            "turn_number": 410
+          },
+          {
+            "speaker": "ORION",
+            "text": "Yes.",
+            "turn_number": 411
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"This must be brought before the council immediately.\"",
+            "turn_number": 412
+          },
+          {
+            "speaker": "ORION",
+            "text": "Wait.",
+            "turn_number": 413
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "The council?",
+            "turn_number": 414
+          },
+          {
+            "speaker": "ORION",
+            "text": "The council?",
+            "turn_number": 415
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The council of Tal'Dorei, the council you are part of.\"",
+            "turn_number": 416
+          },
+          {
+            "speaker": "ORION",
+            "text": "That helps.",
+            "turn_number": 417
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Are you going there, right now, also?",
+            "turn_number": 418
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes, I was summoned to it.\"",
+            "turn_number": 419
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We were as well.",
+            "turn_number": 420
+          },
+          {
+            "speaker": "ORION",
+            "text": "Here's the thing.",
+            "turn_number": 421
+          },
+          {
+            "speaker": "ORION",
+            "text": "Sorry, Pike. The thing with this particular item is, the more people know about it, the more dangerous it actually becomes. The fact that we even share this information with Kima and with you is a very dangerous thing to begin with.",
+            "turn_number": 422
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I agree.\"",
+            "turn_number": 423
+          },
+          {
+            "speaker": "ORION",
+            "text": "Are the council trustworthy?",
+            "turn_number": 424
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 476,
+      "category": null,
+      "episode_position_pct": 0.2317,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"That is possible. Like I've said, these magics have not been tampered with in nearly 200 years.\"",
+        "preceding_context_chars": 667,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "200 years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ORION",
+            "text": "But the memory thing is crucial.",
+            "turn_number": 467
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What about those who might be uncomfortable with toying around with my memories and tramping along around in my head, I don't really want --",
+            "turn_number": 468
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Why don't you think about it for a while?",
+            "turn_number": 469
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "My head's pretty fragile as it is.",
+            "turn_number": 470
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We're talking about erasing the path back to this thing, we're not talking about removing your adolescent years from your memory. Just this one thing.",
+            "turn_number": 471
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "All right.",
+            "turn_number": 472
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "How many lessons have we learned in just the time. Wouldn't we have to erase all memories surrounding it? We wouldn't even remember our trip into the underdark?",
+            "turn_number": 473
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I think we could perhaps just erase the memory of where we put it.",
+            "turn_number": 474
+          },
+          {
+            "speaker": "ORION",
+            "text": "That is what I assume will happen.",
+            "turn_number": 475
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 528,
+      "category": null,
+      "episode_position_pct": 0.2571,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"I suppose I should introduce myself as well. I've heard much about you, Vox Machina. I am Arbiter Braum Goldhand. I have recently taken up as of three months ago the position that General Kreig once held within the city. Since he was unfortunately lost to us, there was a need for a new master of law. As since I've had a lot to keep up on. Unable to meet you personally until now, but it is a pleasure. I've heard nothing but great things.\"",
+        "preceding_context_chars": 683,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "three months",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"I'm terribly, sorry. I did not mean for there to be any sort of misunderstanding here.\"",
+            "turn_number": 522
+          },
+          {
+            "speaker": "MATT",
+            "text": "He gives a slight nudge to Tofor.",
+            "turn_number": 523
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I do not believe we've met at this time. My name is Seeker Asum Emring. I am the master of secrets here within the council.\"",
+            "turn_number": 524
+          },
+          {
+            "speaker": "MATT",
+            "text": "He extends his hand towards you, almost like alleviating the tension.",
+            "turn_number": 525
+          },
+          {
+            "speaker": "ORION",
+            "text": "Hi. Stormwind here. Seeker Asum: \"I assume you're the ones we're waiting for, please have a seat.\"",
+            "turn_number": 526
+          },
+          {
+            "speaker": "MATT",
+            "text": "At which the sovereign finishes discussion with another human which you have not met. He is a built and armored individual, stands probably the tallest of the entire group, thick square jaw, unshaven. At which point he puts his hand on the sovereign's shoulder and says,",
+            "turn_number": 527
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 535,
+      "category": null,
+      "episode_position_pct": 0.2605,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"All right. First of all, I want to welcome you all back. It's been a few weeks since we've seen each other. I've been recently given word that you unceremoniously appeared in the center of the Lyceum not but twelve hours ago, worse for wear. So I would like to know, first off, why you've returned in the center of our city. And I want to see how you've all been these past few weeks. I apologize if I'm a bit scattered I’ve had a few things on my mind as of late. But yes, how is Vox Machina.\"",
+        "preceding_context_chars": 785,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's been",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"I suppose I should introduce myself as well. I've heard much about you, Vox Machina. I am Arbiter Braum Goldhand. I have recently taken up as of three months ago the position that General Kreig once held within the city. Since he was unfortunately lost to us, there was a need for a new master of law. As since I've had a lot to keep up on. Unable to meet you personally until now, but it is a pleasure. I've heard nothing but great things.\"",
+            "turn_number": 528
+          },
+          {
+            "speaker": "MATT",
+            "text": "He sits down in his chair. Allura finds her side of the table and gestures the rest of you.",
+            "turn_number": 529
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Please, have a seat.\"",
+            "turn_number": 530
+          },
+          {
+            "speaker": "ORION",
+            "text": "I stand. I don't sit.",
+            "turn_number": 531
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right.",
+            "turn_number": 532
+          },
+          {
+            "speaker": "MATT",
+            "text": "The overeign finishes writing some papers, rolls them up, snaps twice, and a gentleman comes by. He hands him the papers and says,",
+            "turn_number": 533
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Get this to Lady and Lord Briarwood as soon as possible, thank you.\"",
+            "turn_number": 534
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 535,
+      "category": null,
+      "episode_position_pct": 0.2605,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"All right. First of all, I want to welcome you all back. It's been a few weeks since we've seen each other. I've been recently given word that you unceremoniously appeared in the center of the Lyceum not but twelve hours ago, worse for wear. So I would like to know, first off, why you've returned in the center of our city. And I want to see how you've all been these past few weeks. I apologize if I'm a bit scattered I’ve had a few things on my mind as of late. But yes, how is Vox Machina.\"",
+        "preceding_context_chars": 785,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "few weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"I suppose I should introduce myself as well. I've heard much about you, Vox Machina. I am Arbiter Braum Goldhand. I have recently taken up as of three months ago the position that General Kreig once held within the city. Since he was unfortunately lost to us, there was a need for a new master of law. As since I've had a lot to keep up on. Unable to meet you personally until now, but it is a pleasure. I've heard nothing but great things.\"",
+            "turn_number": 528
+          },
+          {
+            "speaker": "MATT",
+            "text": "He sits down in his chair. Allura finds her side of the table and gestures the rest of you.",
+            "turn_number": 529
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Please, have a seat.\"",
+            "turn_number": 530
+          },
+          {
+            "speaker": "ORION",
+            "text": "I stand. I don't sit.",
+            "turn_number": 531
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right.",
+            "turn_number": 532
+          },
+          {
+            "speaker": "MATT",
+            "text": "The overeign finishes writing some papers, rolls them up, snaps twice, and a gentleman comes by. He hands him the papers and says,",
+            "turn_number": 533
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Get this to Lady and Lord Briarwood as soon as possible, thank you.\"",
+            "turn_number": 534
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 676,
+      "category": null,
+      "episode_position_pct": 0.3291,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"By the fastest ships, especially if we're using some of your fancy sky dinghies. I can't imagine more than two weeks?\"",
+        "preceding_context_chars": 766,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ORION",
+            "text": "I look to the group and do this to Scanlan. (all laugh)",
+            "turn_number": 664
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Taking quite advantage of his current state of mind.",
+            "turn_number": 665
+          },
+          {
+            "speaker": "ORION",
+            "text": "You have no idea what I'm going to do for the rest of this game.",
+            "turn_number": 666
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You literally do that to Scanlan. Like you... to Scanlan?",
+            "turn_number": 667
+          },
+          {
+            "speaker": "ORION",
+            "text": "No, I was pointing at him.",
+            "turn_number": 668
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Right in the ear.",
+            "turn_number": 669
+          },
+          {
+            "speaker": "MATT",
+            "text": "Wet willy. To our little gnome bard.",
+            "turn_number": 670
+          },
+          {
+            "speaker": "ORION",
+            "text": "(laughs)",
+            "turn_number": 671
+          },
+          {
+            "speaker": "MATT",
+            "text": "We miss you Sam.",
+            "turn_number": 672
+          },
+          {
+            "speaker": "MATT",
+            "text": "Uriel looks around.",
+            "turn_number": 673
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well, given the circumstance I would say that our best bet now is to have Kima and Tofor reach out to the grand chambers of Bahamut. Have them bring a vessel and seal it somewhere that they find fit for an object of this dark presence. Is the council in agreement of this? Unless some other, better means arises. How long will it take for this vessel to arrive?\"",
+            "turn_number": 674
+          },
+          {
+            "speaker": "MATT",
+            "text": "At which point, Kima scratches her chin for a second.",
+            "turn_number": 675
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 705,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.3432,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Very well. Very well, I'll allow it. I may have some business for you coming soon so try not to be gone too long. Although this is much more important business, I do agree.\"",
+        "preceding_context_chars": 670,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "I'll allow it",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Thirteen.",
+            "turn_number": 698
+          },
+          {
+            "speaker": "MATT",
+            "text": "Thirteen? Best you can tell, Allura's really hard to read. She keeps up her smile but she definitely has her intense face on. She's deep in the moment. No real gives one way or the other. The rest of the group looks around and Arcanist in the silence goes,",
+            "turn_number": 699
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well then, I think that me and Kima and Tofor, if you'd like, we can designate a way of bringing this relic container as fast as possible so we can get this going. I wish not to keep this within our presence much longer. Do we agree to that?\"",
+            "turn_number": 700
+          },
+          {
+            "speaker": "ORION",
+            "text": "Yes.",
+            "turn_number": 701
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yes.",
+            "turn_number": 702
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I think we would feel comfortable going along for the ride and seeing this thing through to the end.",
+            "turn_number": 703
+          },
+          {
+            "speaker": "MATT",
+            "text": "She glances over to the sovereign. The sovereign nods.",
+            "turn_number": 704
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 721,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.351,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As he exits, Tofor stands up. You've only seen her sitting since you arrived. As Tofor stands in her female dragonborn form, she is probably a good solid foot taller than Tiberius. And is a thick musclebound dragonborn paladin of Bahamut. Her armor shifts as she stands, she begins to make her way towards the door, not even with a glance in your direction.",
+        "preceding_context_chars": 763,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since you",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Very well. It is settled. Reach out to your clergy. Bring the vessel. Allura, facilitate its arrival. We will get this artifact as far away from Emon as possible. This is adjourned. Thank you all very much for coming to this council meeting.\"",
+            "turn_number": 712
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay.",
+            "turn_number": 713
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to catch the sovereign on his way out.",
+            "turn_number": 714
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. At which point everyone gathers the rest of their papers, their parchments, they're rolling up scrolls. The Arbiter gets up and lumbers his way out of the room. The seeker, Asum, steps up to the rest of you with a final handshake.",
+            "turn_number": 715
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"A pleasure to meet you all, once again, I've heard so much. You're doing fine work.\"",
+            "turn_number": 716
+          },
+          {
+            "speaker": "MATT",
+            "text": "He seems strangely nervous. But in a weird way, he's a gentle hint of fanboy.",
+            "turn_number": 717
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh.",
+            "turn_number": 718
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I wink at him. (all laugh)",
+            "turn_number": 719
+          },
+          {
+            "speaker": "MATT",
+            "text": "He slyly winks back on his way out.",
+            "turn_number": 720
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 734,
+      "category": null,
+      "episode_position_pct": 0.3574,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"They were but a week ago.\"",
+        "preceding_context_chars": 496,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a week",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ORION",
+            "text": "That means she's as tall as you, Grog.",
+            "turn_number": 722
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "What?",
+            "turn_number": 723
+          },
+          {
+            "speaker": "ORION",
+            "text": "She's as tall as you.",
+            "turn_number": 724
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I just whisper to Tiberius and say,",
+            "turn_number": 725
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Are all the ladies that big in Draconia?",
+            "turn_number": 726
+          },
+          {
+            "speaker": "ORION",
+            "text": "It all depends. Not really.",
+            "turn_number": 727
+          },
+          {
+            "speaker": "MATT",
+            "text": "She's bigger than usual.",
+            "turn_number": 728
+          },
+          {
+            "speaker": "ORION",
+            "text": "She's a wretched peasant so I can not.",
+            "turn_number": 729
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That's so mean.",
+            "turn_number": 730
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That's a little harsh.",
+            "turn_number": 731
+          },
+          {
+            "speaker": "MATT",
+            "text": "Allura stands up and begins to leave. The sovereign stands up and as he stands up the guards come out and they come to his side.",
+            "turn_number": 732
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Good Sovereign, if I can have a moment? Did I hear correctly that Lord and Lady Briarwood were in town?",
+            "turn_number": 733
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 799,
+      "category": null,
+      "episode_position_pct": 0.389,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Whatever business you need to get done. It should take no more than two days to get this taken care of.\"",
+        "preceding_context_chars": 788,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "That's up to you.",
+            "turn_number": 782
+          },
+          {
+            "speaker": "MATT",
+            "text": "She looks to Allura, questioning Allura.",
+            "turn_number": 783
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"In the event of this blessed chamber arriving, you will be notified. We will request your presence to bring the artifact in question, seal it, and then we will begin our journey over to its place of hopeful destruction and/or proper banishment.\"",
+            "turn_number": 784
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Would you like anyone to go with you or you just want to go alone?",
+            "turn_number": 785
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"To?\"",
+            "turn_number": 786
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "To work out the details of all of this?",
+            "turn_number": 787
+          },
+          {
+            "speaker": "MATT",
+            "text": "Allura says,",
+            "turn_number": 788
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"For me, it's just preparation of the arcane transference ritual. I'm going to go meet with a friend of mine over in Ostania.\"",
+            "turn_number": 789
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I will say we haven't replenished our potions yet. And we could go --",
+            "turn_number": 790
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Should we go to visit our old friend?",
+            "turn_number": 791
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Gilmore?",
+            "turn_number": 792
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We could go to Gilmore's.",
+            "turn_number": 793
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Gilmore?",
+            "turn_number": 794
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Gilmore?",
+            "turn_number": 795
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We could go to Gilmore's.",
+            "turn_number": 796
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Gilmore's Glorious Goods?",
+            "turn_number": 797
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You essentially want us to wait?",
+            "turn_number": 798
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 855,
+      "category": null,
+      "episode_position_pct": 0.4163,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"So two days. We'll call for you when the item is to be transferred and properly brought to its destination. In the meantime, prepare as you see fit, enjoy this well-earned rest, and we'll take it from there. I have much travel to do myself. See you all very soon.\"",
+        "preceding_context_chars": 774,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "You did this.",
+            "turn_number": 839
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I really have to get to work on this.\"",
+            "turn_number": 840
+          },
+          {
+            "speaker": "MATT",
+            "text": "She leaves the group and continues down the hallway. Quick steps.",
+            "turn_number": 841
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Bye, Kima! Quick steps.",
+            "turn_number": 842
+          },
+          {
+            "speaker": "LIAM",
+            "text": "A lot of math involved in that equation.",
+            "turn_number": 843
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah...",
+            "turn_number": 844
+          },
+          {
+            "speaker": "MATT",
+            "text": "Allura chuckles to herself and steps into the place where she was and goes,",
+            "turn_number": 845
+          },
+          {
+            "speaker": "ORION",
+            "text": "I care not to solve the puzzle.",
+            "turn_number": 846
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Oh, as a note. Be careful who you ask those questions to, you may get an earful.\"",
+            "turn_number": 847
+          },
+          {
+            "speaker": "MATT",
+            "text": "And Allura smiles and motions towards Kima.",
+            "turn_number": 848
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Don't get me wrong, you're more than welcome to explore as you like, but that's a rabbit hole my friend.\"",
+            "turn_number": 849
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "A rabbit hole, is that what we're calling it these days?",
+            "turn_number": 850
+          },
+          {
+            "speaker": "MATT",
+            "text": "You feel a gentle slap from some unknown arcane force across your cheek Grog. And Allura gives you a stern glare.",
+            "turn_number": 851
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh, don't talk about her girl that way.",
+            "turn_number": 852
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Don't make me take my earrings off.",
+            "turn_number": 853
+          },
+          {
+            "speaker": "MATT",
+            "text": "Anyway.",
+            "turn_number": 854
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 950,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.4625,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So at this point now you’re pushing about two in the afternoon. It’s extremely busy, you can hear the clopping of horse hooves on the ground, people are walking past. You’d swear as you’re stepping through the city, maybe a handful of people tend to stop and watch you guys walk through, stunned. Almost like they’d seen a celebrity on the street, as the most recent makeup of the Winter’s Crest festival was a celebration of you being the heroes who saved the city of Emon and the sovereign and his family. Apparently you are now recognizable within the city of Emon.",
+        "preceding_context_chars": 434,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the afternoon",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Gilmore!",
+            "turn_number": 934
+          },
+          {
+            "speaker": "MATT",
+            "text": "Shaun Gilmore himself.",
+            "turn_number": 935
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Shaun Gilmore.",
+            "turn_number": 936
+          },
+          {
+            "speaker": "MATT",
+            "text": "So as you guys --",
+            "turn_number": 937
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Is that his first name?",
+            "turn_number": 938
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I didn’t know Shaun was his first name either.",
+            "turn_number": 939
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah.",
+            "turn_number": 940
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I didn’t know Shaun was his first name either.",
+            "turn_number": 941
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You’ve not been paying attention.",
+            "turn_number": 942
+          },
+          {
+            "speaker": "MATT",
+            "text": "Shaun Gilmore, but you’ve always called him Gilmore.",
+            "turn_number": 943
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We’re on a first-name basis now, guys.",
+            "turn_number": 944
+          },
+          {
+            "speaker": "MATT",
+            "text": "No one’s on a first-name basis with Gilmore.",
+            "turn_number": 945
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We are.",
+            "turn_number": 946
+          },
+          {
+            "speaker": "MATT",
+            "text": "Gilmore is Gilmore.",
+            "turn_number": 947
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Except for maybe Vax over there.",
+            "turn_number": 948
+          },
+          {
+            "speaker": "MATT",
+            "text": "Except for maybe, maybe Vax.",
+            "turn_number": 949
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 959,
+      "category": "LOCATION_DEPARTURE",
+      "episode_position_pct": 0.4669,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "you make your way to the wide",
+        "extracted_surface_form": "location_exit",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "Perfect. We’ve lined it up. As you walk across the main thoroughfare, you make your way to the wide but single-story building that is Gilmore’s Glorious Goods. Of all the various shades of brown and red and brick that makes up all these buildings, Gilmore’s Glorious Goods is presented in fine, deep blue and purple fabric and a paint scheme that would look like the worst funhouse to enter. Worst or best, depending on your opinion. The entranceway is not a door but a series of hanging beads and large cloth drapes that are gently falling to be brushed aside as you enter. It’s not as big as you remember, or recall, seemingly. But as you step through the front door you remember why. Much like the TARDIS, the interior of Gilmore’s Goods is bigger on the inside. There is a magical enchantment based within this building where the interior is actually a two-story and much larger place of business. Immediately the smells of incense and fine perfumes assault your nose --",
+        "preceding_turns_last5": [
+          {
+            "speaker": "LAURA",
+            "text": "I do.",
+            "turn_number": 954
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right.",
+            "turn_number": 955
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Other way.",
+            "turn_number": 956
+          },
+          {
+            "speaker": "MATT",
+            "text": "Perfect, there you go.",
+            "turn_number": 957
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Just a little more.",
+            "turn_number": 958
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1041,
+      "category": "ENVIRONMENTAL_DISCOVERY",
+      "episode_position_pct": 0.5068,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "But very charismatic. Open chest to his vest, with a number of gold chains and medallions that dangle around.",
+        "preceding_context_chars": 457,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "gold chains and",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Will you remind me because it's been a while. Gilmore's a good-looking man, though, isn't he?",
+            "turn_number": 1031
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah. He's handsome.",
+            "turn_number": 1032
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah.",
+            "turn_number": 1033
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is the braid new? Is that a new addition?",
+            "turn_number": 1034
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's so handsome, Vax.",
+            "turn_number": 1035
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "The braid's new. He decided to rock the braid. Go for it!",
+            "turn_number": 1036
+          },
+          {
+            "speaker": "MATT",
+            "text": "Gilmore's a very handsome gentleman. I would say he's not fit and muscular. He is a handsome, comfortably jovial gentleman.",
+            "turn_number": 1037
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm picturing Jeremy Irons in a wizard robe.",
+            "turn_number": 1038
+          },
+          {
+            "speaker": "MATT",
+            "text": "Kind of. Imagine him with a little more paunch.",
+            "turn_number": 1039
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Okay.",
+            "turn_number": 1040
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1154,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.5618,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"That will be 1500 gold pieces per superior.\"",
+        "preceding_context_chars": 698,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "1500 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 1500.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"All right, looking through here, it looks like we have about 12 regular potions of healing. We have six of greater healing. And it looks like three of superior healing.\"",
+            "turn_number": 1143
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What's the price on the superior healing, again?",
+            "turn_number": 1144
+          },
+          {
+            "speaker": "ORION",
+            "text": "We'll take the lot.",
+            "turn_number": 1145
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What's the price on the superior healing, again?",
+            "turn_number": 1146
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What's the price on the superior healing, again?",
+            "turn_number": 1147
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Superior healing? Let's see, currently those go for about --\"",
+            "turn_number": 1148
+          },
+          {
+            "speaker": "MATT",
+            "text": "She looks at the price book, going through.",
+            "turn_number": 1149
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Those will run you --\"",
+            "turn_number": 1150
+          },
+          {
+            "speaker": "MATT",
+            "text": "As I go through my price book.",
+            "turn_number": 1151
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We are sponsored.",
+            "turn_number": 1152
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We do keep getting turned to stone. This has been a problem, and it's been sticking around a bit. I feel like we should maybe take some precautions for the inevitable next time this happens.",
+            "turn_number": 1153
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1170,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.5696,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Very well. So 3600 gold pieces. Three superior are yours.\"",
+        "preceding_context_chars": 780,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "3600 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 3600.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"That will be 1500 gold pieces per superior.\"",
+            "turn_number": 1154
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is that with our sponsorship prices?",
+            "turn_number": 1155
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Right, you mentioned you're sponsored. That would be a 10% discount. That would bring it to about 1350, should you wish to purchase them individually.\"",
+            "turn_number": 1156
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay.",
+            "turn_number": 1157
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I definitely need one of those.",
+            "turn_number": 1158
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Wait. How much if we're purchasing them individually?",
+            "turn_number": 1159
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"1350 gold pieces per superior healing potion.\"",
+            "turn_number": 1160
+          },
+          {
+            "speaker": "ORION",
+            "text": "How much for the lot?",
+            "turn_number": 1161
+          },
+          {
+            "speaker": "LAURA",
+            "text": "And if we buy in bulk, what can you bring it down to?",
+            "turn_number": 1162
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"If you buy all three?\"",
+            "turn_number": 1163
+          },
+          {
+            "speaker": "LAURA",
+            "text": "A thousand each?",
+            "turn_number": 1164
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I'm sorry. You've already been given the discount via Gilmore. That price stands as it is. Let's say you buy the three remaining items, I'll give you 1200 apiece. And even that I'll probably get in trouble for, but he seems to like you.\"",
+            "turn_number": 1165
+          },
+          {
+            "speaker": "LAURA",
+            "text": "1200 apiece? Yes?",
+            "turn_number": 1166
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We'll take that.",
+            "turn_number": 1167
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Sounds good.",
+            "turn_number": 1168
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Three superior.",
+            "turn_number": 1169
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1200,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.5842,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Let's call it an even 425 gold pieces each.\"",
+        "preceding_context_chars": 796,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "425 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 425.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "(laughs)",
+            "turn_number": 1175
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Is that all you require?\"",
+            "turn_number": 1176
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Do you sell any love potions?",
+            "turn_number": 1177
+          },
+          {
+            "speaker": "MATT",
+            "text": "She gives you the blank stare and goes,",
+            "turn_number": 1178
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"No.\" (all laugh)",
+            "turn_number": 1179
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Right. Sorry for asking. Jeez.",
+            "turn_number": 1180
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I would also say we should take the six superior healing potions, as well.",
+            "turn_number": 1181
+          },
+          {
+            "speaker": "ORION",
+            "text": "Absolutely.",
+            "turn_number": 1182
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The greater ones.\"",
+            "turn_number": 1183
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Greater.",
+            "turn_number": 1184
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What did we just buy? We didn't buy superior?",
+            "turn_number": 1185
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We bought the three superior. We should also get the six greater.",
+            "turn_number": 1186
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Six greater. All right. How much is that?",
+            "turn_number": 1187
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Those are 500 apiece. With your discount, that would be 450 apiece.\"",
+            "turn_number": 1188
+          },
+          {
+            "speaker": "LAURA",
+            "text": "But if we're buying all six, 400 apiece is a very good price.",
+            "turn_number": 1189
+          },
+          {
+            "speaker": "ORION",
+            "text": "Now, this is the Vex I miss.",
+            "turn_number": 1190
+          },
+          {
+            "speaker": "MATT",
+            "text": "Roll a persuasion check.",
+            "turn_number": 1191
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Persuasion check, persuasion check!",
+            "turn_number": 1192
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Vex hasn't had a chance to haggle since the show started.",
+            "turn_number": 1193
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yep.",
+            "turn_number": 1194
+          },
+          {
+            "speaker": "LIAM",
+            "text": "All she used to do before this show was haggle.",
+            "turn_number": 1195
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We used to take food breaks.",
+            "turn_number": 1196
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No!",
+            "turn_number": 1197
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Fourteen.",
+            "turn_number": 1198
+          },
+          {
+            "speaker": "MATT",
+            "text": "Fourteen? She goes,",
+            "turn_number": 1199
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1206,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.5871,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"That’ll be 2550 gold pieces.\"",
+        "preceding_context_chars": 767,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "2550 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 2550.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ORION",
+            "text": "Absolutely.",
+            "turn_number": 1182
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The greater ones.\"",
+            "turn_number": 1183
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Greater.",
+            "turn_number": 1184
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What did we just buy? We didn't buy superior?",
+            "turn_number": 1185
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We bought the three superior. We should also get the six greater.",
+            "turn_number": 1186
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Six greater. All right. How much is that?",
+            "turn_number": 1187
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Those are 500 apiece. With your discount, that would be 450 apiece.\"",
+            "turn_number": 1188
+          },
+          {
+            "speaker": "LAURA",
+            "text": "But if we're buying all six, 400 apiece is a very good price.",
+            "turn_number": 1189
+          },
+          {
+            "speaker": "ORION",
+            "text": "Now, this is the Vex I miss.",
+            "turn_number": 1190
+          },
+          {
+            "speaker": "MATT",
+            "text": "Roll a persuasion check.",
+            "turn_number": 1191
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Persuasion check, persuasion check!",
+            "turn_number": 1192
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Vex hasn't had a chance to haggle since the show started.",
+            "turn_number": 1193
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yep.",
+            "turn_number": 1194
+          },
+          {
+            "speaker": "LIAM",
+            "text": "All she used to do before this show was haggle.",
+            "turn_number": 1195
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We used to take food breaks.",
+            "turn_number": 1196
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No!",
+            "turn_number": 1197
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Fourteen.",
+            "turn_number": 1198
+          },
+          {
+            "speaker": "MATT",
+            "text": "Fourteen? She goes,",
+            "turn_number": 1199
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Let's call it an even 425 gold pieces each.\"",
+            "turn_number": 1200
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I like this. I'm comfortable with that.",
+            "turn_number": 1201
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 1202
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "425 times 6...",
+            "turn_number": 1203
+          },
+          {
+            "speaker": "MATT",
+            "text": "She brings out her arcane calculator.",
+            "turn_number": 1204
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Her arcane calculator? Once again, our charity.",
+            "turn_number": 1205
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1221,
+      "category": null,
+      "episode_position_pct": 0.5944,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "And she goes in the back room, rummages around for a minute, comes out and she presents two of them. They have a clear liquid that looks almost like dirty water, and they’re like thin little vials, she goes,",
+        "preceding_context_chars": 762,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"That’ll be 2550 gold pieces.\"",
+            "turn_number": 1206
+          },
+          {
+            "speaker": "LAURA",
+            "text": "All right.",
+            "turn_number": 1207
+          },
+          {
+            "speaker": "MATT",
+            "text": "And she pulls out the six that are there and she kinda slides them over the counter to you. One tips over but she catches it, leaves it there at the far end.",
+            "turn_number": 1208
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Careful with those.",
+            "turn_number": 1209
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"They’re fine, they can take a beating, they’re designed that way.\"",
+            "turn_number": 1210
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "So can I.",
+            "turn_number": 1211
+          },
+          {
+            "speaker": "MATT",
+            "text": "She pushes her glasses up and looks vastly unimpressed at the presentation.",
+            "turn_number": 1212
+          },
+          {
+            "speaker": "LAURA",
+            "text": "How much were the superiors again?",
+            "turn_number": 1213
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The superiors were 1500 brought down to 1200 apiece, yes.\"",
+            "turn_number": 1214
+          },
+          {
+            "speaker": "LAURA",
+            "text": "1200. Which came to 36?",
+            "turn_number": 1215
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Thirty-six.",
+            "turn_number": 1216
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "So do you have anything, we keep getting turned into stone, it’s been sort of a running theme. We were hoping you might have something to help alleviate stone skin or any --",
+            "turn_number": 1217
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"We do have potions of petrification removal.\"",
+            "turn_number": 1218
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yes! Petrification removal.",
+            "turn_number": 1219
+          },
+          {
+            "speaker": "MATT",
+            "text": "I think. Let me check.",
+            "turn_number": 1220
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1275,
+      "category": null,
+      "episode_position_pct": 0.6207,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"No, I’m afraid those were all purchased. However, we may have more in a few weeks or so. They take some time to create and the ingredients are a little bit scarce. However, trade is opening, perhaps --\"",
+        "preceding_context_chars": 781,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a few weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "That was really good.",
+            "turn_number": 1255
+          },
+          {
+            "speaker": "MATT",
+            "text": "It’s awesome, thank you.",
+            "turn_number": 1256
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That would be 21.",
+            "turn_number": 1257
+          },
+          {
+            "speaker": "MATT",
+            "text": "It’s a good thing. She gives you a look and goes,",
+            "turn_number": 1258
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I don’t like you.\" (all laugh)",
+            "turn_number": 1259
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Thirteen hundred.\"",
+            "turn_number": 1260
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Thirteen hundred, lovely, thank you.",
+            "turn_number": 1261
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Sherri? It was Sherri, right?",
+            "turn_number": 1262
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes?\"",
+            "turn_number": 1263
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do you have any books on how to learn how to start making your own potions? Or do you know of any classes in town where maybe I could sign up for like a potion workshop?",
+            "turn_number": 1264
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Nothing here, but that’s not a bad idea, might run that past Gilmore.\"",
+            "turn_number": 1265
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You should offer a workshop.",
+            "turn_number": 1266
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You should absolutely offer a workshop.",
+            "turn_number": 1267
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"That’s a good idea,\"",
+            "turn_number": 1268
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You should absolutely offer a workshop. \"otherwise the Lyceum would be the place to look.\"",
+            "turn_number": 1269
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "The Lyceum?",
+            "turn_number": 1270
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes.\"",
+            "turn_number": 1271
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay.",
+            "turn_number": 1272
+          },
+          {
+            "speaker": "ORION",
+            "text": "Do you have any potions of strength or any ability potions?",
+            "turn_number": 1273
+          },
+          {
+            "speaker": "MATT",
+            "text": "She leaves for a second, then comes back and goes,",
+            "turn_number": 1274
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1298,
+      "category": null,
+      "episode_position_pct": 0.6319,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"That ring runs 6500 gold. We have a ring of psychic resistance that does protect yourself from various mental intrusions. We have a ring of evasion that can be utilized three times a day, or one to three times a day. Should one of you not be quite quick enough to avoid any sort of incoming danger. You could allow yourself a successful escape. That runs 4500. We also have a ring of water walking. This one has been popular in the past for some various traveling troupes that wish to do various performances that require defying the surface of water. It gets a bit shifty now that I think about it, but you know, whatever folks will enjoy. Peasantry is easily pleased. So those are our rings at the moment. Should any of those tickle your fancy, please do let me know. Here --\"",
+        "preceding_context_chars": 798,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a day",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Armaments, what kind of armaments you got?",
+            "turn_number": 1289
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well, if you’ll follow me.\"",
+            "turn_number": 1290
+          },
+          {
+            "speaker": "MATT",
+            "text": "She leads you up the stairway to the second floor. The second floor itself is just a series of glass cases that are leaned at an angle. In these cases you can see there are different items just laid out, small labels at the bottom with",
+            "turn_number": 1291
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh. a brief description of the enchantment.",
+            "turn_number": 1292
+          },
+          {
+            "speaker": "MATT",
+            "text": "She leads you across, she goes,",
+            "turn_number": 1293
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well, first we’ll start here with the ring section.\"",
+            "turn_number": 1294
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can see there’s a small case that has along this purplish velvet pillow, a bunch of different rings set out. She goes,",
+            "turn_number": 1295
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"We have varying degrees of rings of protection. These rings are designed to protect the individual who wears, we have one I believe with the basic enchantment, and one with one step higher above that.\"",
+            "turn_number": 1296
+          },
+          {
+            "speaker": "MATT",
+            "text": "The equivalent of a ring of protection +2.",
+            "turn_number": 1297
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1421,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.6918,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"It is 4500 gold pieces.\"",
+        "preceding_context_chars": 773,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "4500 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 4500.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "She takes it and shifts it for a second, you can see a little bit of smoke plumes off of it, smells sulfurish. She goes,",
+            "turn_number": 1416
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"While wearing it, you can use it to teleport yourself a short distance instantaneously, once per day. We have this --\"",
+            "turn_number": 1417
+          },
+          {
+            "speaker": "MATT",
+            "text": "She pulls another dark cloak off the wall. This one looks like it’s made of dark fur, but as she shakes it you can see these two little tendrils are on it. They like wiggle about, these little spiked edges to the tendrils.",
+            "turn_number": 1418
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"This is a cloak of displacement, enchanted and taken from the body of a displacer beast. While wearing it, it makes it so your body projects an illusion. Anyone attempting to cause you harm has difficulty actually finding purchase on your physical form, not knowing where you truly stand.\"",
+            "turn_number": 1419
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take that cape.",
+            "turn_number": 1420
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1430,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.6962,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"This is 550 gold pieces.\"",
+        "preceding_context_chars": 734,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "550 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 550.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ORION",
+            "text": "I will take that cape.",
+            "turn_number": 1420
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It is 4500 gold pieces.\"",
+            "turn_number": 1421
+          },
+          {
+            "speaker": "ORION",
+            "text": "Wonderful. Vex?",
+            "turn_number": 1422
+          },
+          {
+            "speaker": "ORION",
+            "text": "Oh, shit. She’s not here.",
+            "turn_number": 1423
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I’ll put this aside as a possibility. We have a pearl of power.\"",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "MATT",
+            "text": "She pulls up from this small box, she opens up the top lid.",
+            "turn_number": 1425
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"This enchanted pearl, you can use it to speak a command word and regain one expended spell slot, up to third level, that you’ve already used. Once you’ve used the pearl, it can’t be used until the next dawn, so once per day you can just return. It’s for your caster-types.\"",
+            "turn_number": 1426
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "A third-level spell?",
+            "turn_number": 1427
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes, up to third level, one spell slot, you can immediately restore it. It does require attunement, however, and you can’t have more than three items attuned to you, so be aware of your limitations.\"",
+            "turn_number": 1428
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What’s the price on that one?",
+            "turn_number": 1429
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1526,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.7429,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"The sword is 8500 gold pieces. The dagger is 7800 gold pieces. This is without your discount. The mithral chain shirt, it is medium armor, I lied. It is 5250 gold pieces.\"",
+        "preceding_context_chars": 743,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "8500 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 21550.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Maybe like a really heavy armor, that’s really quiet.",
+            "turn_number": 1510
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That oil from the Wizard of Oz.",
+            "turn_number": 1511
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"We don’t have anything for that, but we could have it commissioned for you if you’d like.\"",
+            "turn_number": 1512
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I would like to see about that.",
+            "turn_number": 1513
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right. I’ll have to talk to Gilmore. That’s more in his realm of enchantment, but that is a possibility.\"",
+            "turn_number": 1514
+          },
+          {
+            "speaker": "MATT",
+            "text": "She adjusts her glasses again.",
+            "turn_number": 1515
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"When he returns, whenever that is, we can discuss with him what you’d like, yes.\"",
+            "turn_number": 1516
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That would be great.",
+            "turn_number": 1517
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right, well.\"",
+            "turn_number": 1518
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Thank you.",
+            "turn_number": 1519
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt",
+            "turn_number": 1520
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt and the cape, thank you very much.",
+            "turn_number": 1521
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 1522
+          },
+          {
+            "speaker": "MATT",
+            "text": "And she grabs the --",
+            "turn_number": 1523
+          },
+          {
+            "speaker": "ORION",
+            "text": "But that’s not the total yet. Vex has to talk about the rest of what we want.",
+            "turn_number": 1524
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What’s the price on the dagger and the sword?",
+            "turn_number": 1525
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1526,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.7429,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"The sword is 8500 gold pieces. The dagger is 7800 gold pieces. This is without your discount. The mithral chain shirt, it is medium armor, I lied. It is 5250 gold pieces.\"",
+        "preceding_context_chars": 743,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "7800 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 21550.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Maybe like a really heavy armor, that’s really quiet.",
+            "turn_number": 1510
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That oil from the Wizard of Oz.",
+            "turn_number": 1511
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"We don’t have anything for that, but we could have it commissioned for you if you’d like.\"",
+            "turn_number": 1512
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I would like to see about that.",
+            "turn_number": 1513
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right. I’ll have to talk to Gilmore. That’s more in his realm of enchantment, but that is a possibility.\"",
+            "turn_number": 1514
+          },
+          {
+            "speaker": "MATT",
+            "text": "She adjusts her glasses again.",
+            "turn_number": 1515
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"When he returns, whenever that is, we can discuss with him what you’d like, yes.\"",
+            "turn_number": 1516
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That would be great.",
+            "turn_number": 1517
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right, well.\"",
+            "turn_number": 1518
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Thank you.",
+            "turn_number": 1519
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt",
+            "turn_number": 1520
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt and the cape, thank you very much.",
+            "turn_number": 1521
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 1522
+          },
+          {
+            "speaker": "MATT",
+            "text": "And she grabs the --",
+            "turn_number": 1523
+          },
+          {
+            "speaker": "ORION",
+            "text": "But that’s not the total yet. Vex has to talk about the rest of what we want.",
+            "turn_number": 1524
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What’s the price on the dagger and the sword?",
+            "turn_number": 1525
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1526,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.7429,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"The sword is 8500 gold pieces. The dagger is 7800 gold pieces. This is without your discount. The mithral chain shirt, it is medium armor, I lied. It is 5250 gold pieces.\"",
+        "preceding_context_chars": 743,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "5250 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 21550.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 2,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Maybe like a really heavy armor, that’s really quiet.",
+            "turn_number": 1510
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That oil from the Wizard of Oz.",
+            "turn_number": 1511
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"We don’t have anything for that, but we could have it commissioned for you if you’d like.\"",
+            "turn_number": 1512
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I would like to see about that.",
+            "turn_number": 1513
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right. I’ll have to talk to Gilmore. That’s more in his realm of enchantment, but that is a possibility.\"",
+            "turn_number": 1514
+          },
+          {
+            "speaker": "MATT",
+            "text": "She adjusts her glasses again.",
+            "turn_number": 1515
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"When he returns, whenever that is, we can discuss with him what you’d like, yes.\"",
+            "turn_number": 1516
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That would be great.",
+            "turn_number": 1517
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right, well.\"",
+            "turn_number": 1518
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Thank you.",
+            "turn_number": 1519
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt",
+            "turn_number": 1520
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt and the cape, thank you very much.",
+            "turn_number": 1521
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 1522
+          },
+          {
+            "speaker": "MATT",
+            "text": "And she grabs the --",
+            "turn_number": 1523
+          },
+          {
+            "speaker": "ORION",
+            "text": "But that’s not the total yet. Vex has to talk about the rest of what we want.",
+            "turn_number": 1524
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What’s the price on the dagger and the sword?",
+            "turn_number": 1525
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1529,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.7444,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"And you were looking at the pearl of power, which is 550 gold, and there is the cloak of displacement, which is 4500 gold pieces.\"",
+        "preceding_context_chars": 777,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "4500 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 5050.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "I would like to see about that.",
+            "turn_number": 1513
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right. I’ll have to talk to Gilmore. That’s more in his realm of enchantment, but that is a possibility.\"",
+            "turn_number": 1514
+          },
+          {
+            "speaker": "MATT",
+            "text": "She adjusts her glasses again.",
+            "turn_number": 1515
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"When he returns, whenever that is, we can discuss with him what you’d like, yes.\"",
+            "turn_number": 1516
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That would be great.",
+            "turn_number": 1517
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right, well.\"",
+            "turn_number": 1518
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Thank you.",
+            "turn_number": 1519
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt",
+            "turn_number": 1520
+          },
+          {
+            "speaker": "ORION",
+            "text": "I will take the enchanted mithral shirt and the cape, thank you very much.",
+            "turn_number": 1521
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 1522
+          },
+          {
+            "speaker": "MATT",
+            "text": "And she grabs the --",
+            "turn_number": 1523
+          },
+          {
+            "speaker": "ORION",
+            "text": "But that’s not the total yet. Vex has to talk about the rest of what we want.",
+            "turn_number": 1524
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "What’s the price on the dagger and the sword?",
+            "turn_number": 1525
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The sword is 8500 gold pieces. The dagger is 7800 gold pieces. This is without your discount. The mithral chain shirt, it is medium armor, I lied. It is 5250 gold pieces.\"",
+            "turn_number": 1526
+          },
+          {
+            "speaker": "ORION",
+            "text": "Wait, I can’t --",
+            "turn_number": 1527
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can’t wear armor.",
+            "turn_number": 1528
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1564,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.7614,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"With the discount, this entire haul would come to 49,815 gold pieces.\"",
+        "preceding_context_chars": 767,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "49,815 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 49815.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "We should get that too.",
+            "turn_number": 1542
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"--cold snap leather armor --\"",
+            "turn_number": 1543
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Get that manual.",
+            "turn_number": 1544
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"--cloak of displacement, ring of protection plus two --\"",
+            "turn_number": 1545
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Put the dagger and sword on the table also.",
+            "turn_number": 1546
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Just in case.",
+            "turn_number": 1547
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 1548
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Throwing it out there to see, I don’t know.",
+            "turn_number": 1549
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"They are there on the table.\"",
+            "turn_number": 1550
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We have nowhere near enough for all of this.",
+            "turn_number": 1551
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We have nowhere near enough for all of this.",
+            "turn_number": 1552
+          },
+          {
+            "speaker": "ORION",
+            "text": "Let’s see what the total is.",
+            "turn_number": 1553
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We could trade,",
+            "turn_number": 1554
+          },
+          {
+            "speaker": "ORION",
+            "text": "Let’s see what the total is.",
+            "turn_number": 1555
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Let’s see what we can trade around maybe.",
+            "turn_number": 1556
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"So the total for all of these items, including --\"",
+            "turn_number": 1557
+          },
+          {
+            "speaker": "MATT",
+            "text": "She starts going through her --",
+            "turn_number": 1558
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I want new stuff. I haven’t gotten new armor since we started.",
+            "turn_number": 1559
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I haven’t either.",
+            "turn_number": 1560
+          },
+          {
+            "speaker": "ORION",
+            "text": "You should get the mithral shirt, it adds something to your --",
+            "turn_number": 1561
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do you wear light armor or medium armor?",
+            "turn_number": 1562
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I would guess light armor, I imagine.",
+            "turn_number": 1563
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1640,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.7984,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Dragons’ teeth actually, strangely enough, are a little easier to find. I would put, each dragon’s tooth available would probably add about 250 gold pieces to the exchange.\"",
+        "preceding_context_chars": 795,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "250 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 250.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I’m gonna tell them. Oh my gosh.",
+            "turn_number": 1615
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Persuasion roll. Oh no!",
+            "turn_number": 1616
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You have to make a persuasion roll, quick.",
+            "turn_number": 1617
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "That’s hilarious.",
+            "turn_number": 1618
+          },
+          {
+            "speaker": "MATT",
+            "text": "Timing is everything, folks. Timing is everything.",
+            "turn_number": 1619
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Timing is everything.",
+            "turn_number": 1620
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I have one dragon fang around my neck.",
+            "turn_number": 1621
+          },
+          {
+            "speaker": "MATT",
+            "text": "That’s a keepsake for actually slaying a dragon. You’re welcome to trade that. It’s worth quite a bit.",
+            "turn_number": 1622
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No.",
+            "turn_number": 1623
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No.",
+            "turn_number": 1624
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That was the white dragon?",
+            "turn_number": 1625
+          },
+          {
+            "speaker": "MATT",
+            "text": "That was the white dragon.",
+            "turn_number": 1626
+          },
+          {
+            "speaker": "ORION",
+            "text": "Yeah, it was the white dragon you killed.",
+            "turn_number": 1627
+          },
+          {
+            "speaker": "MATT",
+            "text": "That’s the one that you got the final blow on.",
+            "turn_number": 1628
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What was your persuasion?",
+            "turn_number": 1629
+          },
+          {
+            "speaker": "MATT",
+            "text": "That’s the one that you got the final blow on.",
+            "turn_number": 1630
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not worth the memory of killing a white dragon.",
+            "turn_number": 1631
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What was your persuasion?",
+            "turn_number": 1632
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not worth the memory of killing a white dragon.",
+            "turn_number": 1633
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I know, I gotta keep it.",
+            "turn_number": 1634
+          },
+          {
+            "speaker": "MATT",
+            "text": "Anyway.",
+            "turn_number": 1635
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Gotta keep it.",
+            "turn_number": 1636
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Keepsake, can’t put a price on it.",
+            "turn_number": 1637
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Ten. Ten, they rolled a ten.",
+            "turn_number": 1638
+          },
+          {
+            "speaker": "MATT",
+            "text": "They rolled a ten. She says,",
+            "turn_number": 1639
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1646,
+      "category": null,
+      "episode_position_pct": 0.8014,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As you pull out the basilisk eggs, you pull it out and immediately there is a stench that is emanating from these eggs that have been in your bag of holding for probably close to eight or nine months.",
+        "preceding_context_chars": 775,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "nine months",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "That was the white dragon.",
+            "turn_number": 1626
+          },
+          {
+            "speaker": "ORION",
+            "text": "Yeah, it was the white dragon you killed.",
+            "turn_number": 1627
+          },
+          {
+            "speaker": "MATT",
+            "text": "That’s the one that you got the final blow on.",
+            "turn_number": 1628
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What was your persuasion?",
+            "turn_number": 1629
+          },
+          {
+            "speaker": "MATT",
+            "text": "That’s the one that you got the final blow on.",
+            "turn_number": 1630
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not worth the memory of killing a white dragon.",
+            "turn_number": 1631
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What was your persuasion?",
+            "turn_number": 1632
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not worth the memory of killing a white dragon.",
+            "turn_number": 1633
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I know, I gotta keep it.",
+            "turn_number": 1634
+          },
+          {
+            "speaker": "MATT",
+            "text": "Anyway.",
+            "turn_number": 1635
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Gotta keep it.",
+            "turn_number": 1636
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Keepsake, can’t put a price on it.",
+            "turn_number": 1637
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Ten. Ten, they rolled a ten.",
+            "turn_number": 1638
+          },
+          {
+            "speaker": "MATT",
+            "text": "They rolled a ten. She says,",
+            "turn_number": 1639
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Dragons’ teeth actually, strangely enough, are a little easier to find. I would put, each dragon’s tooth available would probably add about 250 gold pieces to the exchange.\"",
+            "turn_number": 1640
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We’ve got three.",
+            "turn_number": 1641
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "And how about the basilisk eggs? While we’re --",
+            "turn_number": 1642
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Get it out out.",
+            "turn_number": 1643
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "--cleaning our bag out, exactly.",
+            "turn_number": 1644
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We have two basilisk eggs we’re willing to part with.",
+            "turn_number": 1645
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1731,
+      "category": "scene_transition",
+      "episode_position_pct": 0.8427,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "About an hour and a half, time passes before eventually there’s a loud clattering at the front of Gilmore’s Glorious Goods, where a laughing Vax and Gilmore come stumbling in, flush of face, with emptied goblets, laughing to themselves. Is there anything specific before this moment that you wanted to ask --",
+        "preceding_context_chars": 790,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "And I want to thank you. I don’t know that I would be standing here if not for your help.",
+            "turn_number": 1717
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Had it not been for Gilmore’s Glorious Goods.\" (all laugh)",
+            "turn_number": 1718
+          },
+          {
+            "speaker": "MATT",
+            "text": "He looks you deep in the eyes, pats the top of your hand, and goes,",
+            "turn_number": 1719
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Vax. This, that moment, that is why I do what I do.\"",
+            "turn_number": 1720
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You’re a unique man, Gilmore. No question. Never met anyone quite like you.",
+            "turn_number": 1721
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well. Would you care to share a glass of wine with a man not quite like anyone else you’ve met?\"",
+            "turn_number": 1722
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Indeed. What do you recommend in the area?",
+            "turn_number": 1723
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Oh, please, come, there are casks that pour the finest of honeyed Syngoran wine. I know perhaps you’ve not been home for quite some time?\"",
+            "turn_number": 1724
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That’s a complicated thing for me, one that I’m not really quite ready to talk about yet.",
+            "turn_number": 1725
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Oh.\"",
+            "turn_number": 1726
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Maybe someday.",
+            "turn_number": 1727
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Maybe with enough wine.\"",
+            "turn_number": 1728
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You old so-and-so.",
+            "turn_number": 1729
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You old so-and-so.",
+            "turn_number": 1730
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1745,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.8496,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "He collects himself for a minute.",
+        "preceding_context_chars": 739,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I took the duergar, I was holding her right over the cliff, and I just cut, and she fell! She fell! I didn’t know what I was doing, I just did it!",
+            "turn_number": 1732
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You are ridiculous, Vax'ildan! Oh, it tickles me.\"",
+            "turn_number": 1733
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Hi! Hello!",
+            "turn_number": 1734
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Oh, good to see your friends.\"",
+            "turn_number": 1735
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Sounds like you had fun.",
+            "turn_number": 1736
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Family. Family, family. I’ve had a couple of drinks. I’m an adult, I can do that.",
+            "turn_number": 1737
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What have you found? Have you guys been shopping?",
+            "turn_number": 1738
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Well, we have!",
+            "turn_number": 1739
+          },
+          {
+            "speaker": "ORION",
+            "text": "Yes!",
+            "turn_number": 1740
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Well, we have!",
+            "turn_number": 1741
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We were hoping that you and Gilmore had a wonderful time and that, we just thought we’d wait for you. We didn’t want to make any final decisions without one of our main party members.",
+            "turn_number": 1742
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It was delightful. You travel with the finest companion. We told stories, we cried, we laughed. It was a delight.\"",
+            "turn_number": 1743
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I’ve had a few.\"",
+            "turn_number": 1744
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1814,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.8832,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Roughly 39,500 gold pieces.\"",
+        "preceding_context_chars": 780,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "39,500 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 39500.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "It’s true. She’s my sister, I know, Grog. But right now we need to put that aside and do what’s best for the party.",
+            "turn_number": 1797
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Well, we could buy a party with all that. (all laugh)",
+            "turn_number": 1798
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Not that kind of party, Grog.",
+            "turn_number": 1799
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I think we have enough to buy everything if you guys want.",
+            "turn_number": 1800
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Grog, money is meant to be spent.",
+            "turn_number": 1801
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I’m going to drink! (all laugh)",
+            "turn_number": 1802
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That solves everything.",
+            "turn_number": 1803
+          },
+          {
+            "speaker": "MATT",
+            "text": "Scanlan goes,",
+            "turn_number": 1804
+          },
+          {
+            "speaker": "SAM",
+            "text": "I agree. Drinks and whoring.",
+            "turn_number": 1805
+          },
+          {
+            "speaker": "MATT",
+            "text": "And smacks Grog in the side. The two of them leave off into the evening to go ahead and make use of their return to Emon properly.",
+            "turn_number": 1806
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Vax looks at Gilmore and just shakes his head.",
+            "turn_number": 1807
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"There is business to be had, but let’s get business out of the way so we can get to pleasure.\"",
+            "turn_number": 1808
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh, shit.",
+            "turn_number": 1809
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Cheers to that.",
+            "turn_number": 1810
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Cheers to that.",
+            "turn_number": 1811
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I have tinkering to do anyway.",
+            "turn_number": 1812
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What did we agree the total for everything we wanted was?",
+            "turn_number": 1813
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1834,
+      "category": null,
+      "episode_position_pct": 0.8929,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"How about we open a 25,000 gold piece line of credit here with Gilmore’s Glorious Goods that you only need to pay back within the next month.\"",
+        "preceding_context_chars": 696,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the next month",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Don’t you want us to advertise in Westruun for you? \"immortalized Gilmore’s Glorious Armor.\"",
+            "turn_number": 1818
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We would, Gilmore, we would be wearing that. Again, we nearly died. The armor that you gave me is gone, and I’m lucky to be alive today, and that armor helped me be where I am at the moment.",
+            "turn_number": 1819
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"How much credit do you wish to open?\"",
+            "turn_number": 1820
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Fifty gold.",
+            "turn_number": 1821
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Thousand? Fifty thousand?",
+            "turn_number": 1822
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Fifty, ah yes. Fifty thousand.",
+            "turn_number": 1823
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Because 50 gold I can definitely do.\"",
+            "turn_number": 1824
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We’ve been out drinking for two hours, man.",
+            "turn_number": 1825
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"This is true. I’m sorry.\"",
+            "turn_number": 1826
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "One million, please.",
+            "turn_number": 1827
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"That’s a tough order.\"",
+            "turn_number": 1828
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You mentioned you had money waiting for you in Kraghammer. How much was --\"",
+            "turn_number": 1829
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yes, we do.",
+            "turn_number": 1830
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"How much is waiting for you there?\"",
+            "turn_number": 1831
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Twenty-five, wasn’t it?",
+            "turn_number": 1832
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It was 25,000.",
+            "turn_number": 1833
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1861,
+      "category": null,
+      "episode_position_pct": 0.906,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"So. Twenty-five thousand gold line of credit, within a month or you’ll be hunted.\"",
+        "preceding_context_chars": 470,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a month",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Ah!",
+            "turn_number": 1847
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Easy enough to fix.\"",
+            "turn_number": 1848
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What a good idea.",
+            "turn_number": 1849
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I was going to put it on that leather.",
+            "turn_number": 1850
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yes.",
+            "turn_number": 1851
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I was going to put it on that leather.",
+            "turn_number": 1852
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I was going to put it on that leather. My mom gave this to me.",
+            "turn_number": 1853
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well, your mother has not provided for you the means of keeping the deal we already made.\"",
+            "turn_number": 1854
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Can you take this off when we pay you back and put it on that one?",
+            "turn_number": 1855
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh, come on.",
+            "turn_number": 1856
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I think it’ll transfer when you change.",
+            "turn_number": 1857
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Will it transfer when I change armor?",
+            "turn_number": 1858
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I don’t know.\" (all laugh)",
+            "turn_number": 1859
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We’ll find out.",
+            "turn_number": 1860
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1920,
+      "category": "MATERIAL_LOOT",
+      "episode_position_pct": 0.9348,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "A thousand platinum. One thousand six hundred platinum. Move the decimal point. That brings it to 16,000 gold pieces.",
+        "preceding_context_chars": 794,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "16,000 gold pieces",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 16000.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I thought it was a 100,000.",
+            "turn_number": 1888
+          },
+          {
+            "speaker": "MATT",
+            "text": "Oh, no.",
+            "turn_number": 1889
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No no no, 150 platinum.",
+            "turn_number": 1890
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Oh, 150.",
+            "turn_number": 1891
+          },
+          {
+            "speaker": "MATT",
+            "text": "Hundred thousand you’d be the richest man in the fucking world.",
+            "turn_number": 1892
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Okay. in the fucking world.",
+            "turn_number": 1893
+          },
+          {
+            "speaker": "MATT",
+            "text": "So 150 platinum --",
+            "turn_number": 1894
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What do you think, sis?",
+            "turn_number": 1895
+          },
+          {
+            "speaker": "MATT",
+            "text": "--based on memory is 11,500,",
+            "turn_number": 1896
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Vox Machina treasurer?",
+            "turn_number": 1897
+          },
+          {
+            "speaker": "MATT",
+            "text": "which is a little helpful.",
+            "turn_number": 1898
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Right.",
+            "turn_number": 1899
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What do you think?",
+            "turn_number": 1900
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That would put us at about 30,000 that we have to spend left, which the signal cut out so it doesn’t matter.",
+            "turn_number": 1901
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, we’ve got you.",
+            "turn_number": 1902
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No, we can hear you!",
+            "turn_number": 1903
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No, we’ve got you.",
+            "turn_number": 1904
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "No, we can hear you!",
+            "turn_number": 1905
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay.",
+            "turn_number": 1906
+          },
+          {
+            "speaker": "LIAM",
+            "text": "So the total tab is what again, Gilmore?",
+            "turn_number": 1907
+          },
+          {
+            "speaker": "LAURA",
+            "text": "How much do we have? He does have a picture of it. We have 1,620 platinum.",
+            "turn_number": 1908
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What!",
+            "turn_number": 1909
+          },
+          {
+            "speaker": "MATT",
+            "text": "Is that right? There you go.",
+            "turn_number": 1910
+          },
+          {
+            "speaker": "ORION",
+            "text": "So that’s like--",
+            "turn_number": 1911
+          },
+          {
+            "speaker": "MATT",
+            "text": "16,000 gold pieces.",
+            "turn_number": 1912
+          },
+          {
+            "speaker": "LIAM",
+            "text": "All right. Spend it.",
+            "turn_number": 1913
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Spend it.",
+            "turn_number": 1914
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "All right. No!",
+            "turn_number": 1915
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "So we don’t need to open up a line of credit?",
+            "turn_number": 1916
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No.",
+            "turn_number": 1917
+          },
+          {
+            "speaker": "MATT",
+            "text": "Ten gold per platinum.",
+            "turn_number": 1918
+          },
+          {
+            "speaker": "ORION",
+            "text": "We have 1,000.",
+            "turn_number": 1919
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1941,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.945,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"I can work on plate armor if you’d like, but an enchantment of that magnitude would be the only enchantment it would have. So it would be the equivalent of full plate armor and the entire enchantment would enable you to move a little more easily inside it, and that would cost, it would take about, I'd say, a month to enchant on my end and would cost about, not including the cost of the actual armor, materials and time required, I’d put it at about 8,000 gold pieces?\"",
+        "preceding_context_chars": 700,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "8,000 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 8000.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ORION",
+            "text": "Move two on that.",
+            "turn_number": 1921
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, it’s not 100 gold per platinum, ten gold per platinum.",
+            "turn_number": 1922
+          },
+          {
+            "speaker": "MATT",
+            "text": "I’ve been saying ten gold per platinum this whole time, guys.",
+            "turn_number": 1923
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No, I’m with you.",
+            "turn_number": 1924
+          },
+          {
+            "speaker": "ORION",
+            "text": "I get it.",
+            "turn_number": 1925
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We’re losing our audience. Ring it up.",
+            "turn_number": 1926
+          },
+          {
+            "speaker": "MATT",
+            "text": "We’re getting into math in this.",
+            "turn_number": 1927
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Our charity, 826LA, after-school tutoring.",
+            "turn_number": 1928
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It could’ve made this all go so much better.",
+            "turn_number": 1929
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Really good to have,",
+            "turn_number": 1930
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It could’ve made this all go so much better.",
+            "turn_number": 1931
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Your reading and your writing and your arithmetic.",
+            "turn_number": 1932
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "For players who can read good.",
+            "turn_number": 1933
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "For players who can read good.",
+            "turn_number": 1934
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Ring it up, we’ll take it.",
+            "turn_number": 1935
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We’ll take it all.",
+            "turn_number": 1936
+          },
+          {
+            "speaker": "LIAM",
+            "text": "The whole lot.",
+            "turn_number": 1937
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "And then, could I commission you, by the way, to maybe make some armor that’s really heavy armor but very quiet?",
+            "turn_number": 1938
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"How heavy?\"",
+            "turn_number": 1939
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "How heavy can you make it?",
+            "turn_number": 1940
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1941,
+      "category": null,
+      "episode_position_pct": 0.945,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"I can work on plate armor if you’d like, but an enchantment of that magnitude would be the only enchantment it would have. So it would be the equivalent of full plate armor and the entire enchantment would enable you to move a little more easily inside it, and that would cost, it would take about, I'd say, a month to enchant on my end and would cost about, not including the cost of the actual armor, materials and time required, I’d put it at about 8,000 gold pieces?\"",
+        "preceding_context_chars": 700,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a month",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ORION",
+            "text": "Move two on that.",
+            "turn_number": 1921
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, it’s not 100 gold per platinum, ten gold per platinum.",
+            "turn_number": 1922
+          },
+          {
+            "speaker": "MATT",
+            "text": "I’ve been saying ten gold per platinum this whole time, guys.",
+            "turn_number": 1923
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No, I’m with you.",
+            "turn_number": 1924
+          },
+          {
+            "speaker": "ORION",
+            "text": "I get it.",
+            "turn_number": 1925
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We’re losing our audience. Ring it up.",
+            "turn_number": 1926
+          },
+          {
+            "speaker": "MATT",
+            "text": "We’re getting into math in this.",
+            "turn_number": 1927
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Our charity, 826LA, after-school tutoring.",
+            "turn_number": 1928
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It could’ve made this all go so much better.",
+            "turn_number": 1929
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Really good to have,",
+            "turn_number": 1930
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It could’ve made this all go so much better.",
+            "turn_number": 1931
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Your reading and your writing and your arithmetic.",
+            "turn_number": 1932
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "For players who can read good.",
+            "turn_number": 1933
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "For players who can read good.",
+            "turn_number": 1934
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Ring it up, we’ll take it.",
+            "turn_number": 1935
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "We’ll take it all.",
+            "turn_number": 1936
+          },
+          {
+            "speaker": "LIAM",
+            "text": "The whole lot.",
+            "turn_number": 1937
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "And then, could I commission you, by the way, to maybe make some armor that’s really heavy armor but very quiet?",
+            "turn_number": 1938
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"How heavy?\"",
+            "turn_number": 1939
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "How heavy can you make it?",
+            "turn_number": 1940
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1962,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.9552,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"So minus the platinum, that’s 22,000 gold pieces after the platinum and dragon scales.\"",
+        "preceding_context_chars": 756,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "22,000 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 22000.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Worth it.",
+            "turn_number": 1942
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We’ll fund the money.",
+            "turn_number": 1943
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "And it’ll just be really quiet?",
+            "turn_number": 1944
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It will enable you to move freer within the armor.\"",
+            "turn_number": 1945
+          },
+          {
+            "speaker": "LIAM",
+            "text": "By a turn. Is 8,000 Vox Machina’s rate, or the general rate?",
+            "turn_number": 1946
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"That is through our friendship and our current arrangement.\"",
+            "turn_number": 1947
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Thank you. It’s appreciated.",
+            "turn_number": 1948
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Mm.\"",
+            "turn_number": 1949
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Business is business, but please don’t take this solemn,\"",
+            "turn_number": 1950
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Of course. \"but please don’t take this solemn, intense face to be anything other than friendship, this is just business and I run a business.\"",
+            "turn_number": 1951
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Understood.",
+            "turn_number": 1952
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Good.\"",
+            "turn_number": 1953
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I’m not taking advantage.",
+            "turn_number": 1954
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\"",
+            "turn_number": 1955
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"So. To take all of these items, with the dragon scales included, bringing it down to 39,000 gold. We’ll call it even, 39,000 gold.\"",
+            "turn_number": 1956
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Fair.",
+            "turn_number": 1957
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That wasn’t much of a discount, Gilmore.",
+            "turn_number": 1958
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Hush up, Vex’ahlia.",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Done, sold, thank you.",
+            "turn_number": 1960
+          },
+          {
+            "speaker": "LIAM",
+            "text": "With our thanks.",
+            "turn_number": 1961
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,2501 @@
+{
+  "episode_combined": "C1E019",
+  "campaign": "C1",
+  "episode_int": 19,
+  "total_records": 33,
+  "per_source_counts": {
+    "EC": 2,
+    "TM": 25,
+    "LR": 4,
+    "CC": 2
+  },
+  "events": [
+    {
+      "source": "EC",
+      "turn_number": 66,
+      "category": "interruption",
+      "episode_position_pct": 0.0308,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "30 points physical damage to the ranger, at which point two frost giants seemed to, one coming out of that cavern, another seemed to be stalking through the woods, approached the party and that is where we left off. So to begin this, I would like everyone to roll initiative.",
+        "preceding_context_chars": 1080,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": false,
+        "narration_buildup_chars": 1066,
+        "nearest_prior_trigger_turn_distance": null,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "Some majestic combat prowess you guys managed to completely eliminate. You interrogated one of the orcs before Grog decided to take his head off. It pushed you north, north-west direction within the forest itself. You managed to come upon what looked to be a perpetual blizzard that was blowing around this mountain range, and the dragon was sighted again taking its rest to the north part of this mountain. You pushed through the forest, managed to avoid a few possible dangerous situations, thanks to your ranger guiding you through her favored terrain, eventually coming upon the base of this mountain range. Now, you looked above and you saw what looked like the entrance to a cavern where at least the dragon seems to fly in and out of. It's a ways up the mountain, and there was a smaller cavern towards the base of the mountain. You went to inquire what was in there, at which point out of nowhere, a giant rock made of solid ice and stone was flung out of the forest, slamming into Vex, knocking her onto her ass and doing a decent amount of physical damage.",
+            "turn_number": 64
+          },
+          {
+            "speaker": "LAURA",
+            "text": "30. 30 points.",
+            "turn_number": 65
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 203,
+      "category": null,
+      "episode_position_pct": 0.0949,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You got to take all your turn at once. You can hold your initiative. Meaning you can wait to activate your turn later in the tier, but you can't piecemeal your actions.",
+        "preceding_context_chars": 769,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "later in",
+        "granularity_bucket": "unspecified",
+        "is_anchored": true,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Oh yeah.",
+            "turn_number": 199
+          },
+          {
+            "speaker": "MATT",
+            "text": "And Zahra, that is going to be a-- that's a 25. All right. (laughter)",
+            "turn_number": 200
+          },
+          {
+            "speaker": "MATT",
+            "text": "27 points of slashing damage to you, Scanlan. Ooh. All right. And that is 31 points of slashing damage to you, Zahra. As it just (whack), cleaves through the both of you. You are almost knocked off your feet from the sheer blow. Most of the armor takes the damage but you can feel a heavy bruise, and underneath your armor you can feel a little bit of the blood beginning to soak through from the severe impact. Part of the armor plating might have cut into part of your torso (grunts) but you right yourself there. That ends their turn. That brings us to Scanlan.",
+            "turn_number": 201
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay. Hey, question. If I hold a turn, do I hold the whole turn? Can I hold my action but do the bonus action? How does it work?",
+            "turn_number": 202
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 282,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.1318,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It is the most adorable barfing sound you guys have ever heard, though. The combination of the stress and the smell, it's been a harrowing experience for Lyra in these past few minutes. At this point in time, as it comes to the giants' turn. The one who is messed up looks over to the other and (sighs) puts the axe into his belt loop, and the other also one puts its axe in the belt loop, and they glare at the rest of the group, and say in Giant, (gibberish). And any of you speak Giant? Or just Grog.",
+        "preceding_context_chars": 768,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it's been",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "All right, they look at Grog, confused. Look at each other again. That's Grog's turn, Vex?",
+            "turn_number": 267
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Seriously? While everybody's having a conversation, I would like to take a healing potion.",
+            "turn_number": 268
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Go ahead and take one of those",
+            "turn_number": 269
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay. How much do I take for a superior?",
+            "turn_number": 270
+          },
+          {
+            "speaker": "MATT",
+            "text": "Superior? Superior is 8d4 plus eight. It's quite a bit.",
+            "turn_number": 271
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It is, so just regular healing potion for now. Which is what, 2d8?",
+            "turn_number": 272
+          },
+          {
+            "speaker": "MATT",
+            "text": "A regular is 2d4 plus two.",
+            "turn_number": 273
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yay! That's good.",
+            "turn_number": 274
+          },
+          {
+            "speaker": "MATT",
+            "text": "Lyra.",
+            "turn_number": 275
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "I'm confused. But I do not feel good; I might throw up. So I'm going to hold my turn to see what happens.",
+            "turn_number": 276
+          },
+          {
+            "speaker": "MATT",
+            "text": "Go ahead and make a constitution saving throw.",
+            "turn_number": 277
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh, good.",
+            "turn_number": 278
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, for the barf.",
+            "turn_number": 279
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh, it's a five! Constitution five. It's a ten.",
+            "turn_number": 280
+          },
+          {
+            "speaker": "MATT",
+            "text": "You covertly do your best to not reveal to the entire group that you make a little greenish-brown snow. (laughter)",
+            "turn_number": 281
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 312,
+      "category": "scene_transition",
+      "episode_position_pct": 0.1458,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So as you guys step inside the cavern. You guys are taking a short rest, currently?",
+        "preceding_context_chars": 635,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a short rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "(Grog voice) I think that's a no.",
+            "turn_number": 303
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Yeah. And I say (speaks gibberish). My cat is your friend!",
+            "turn_number": 304
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Bless you!",
+            "turn_number": 305
+          },
+          {
+            "speaker": "MATT",
+            "text": "(laughs) As you say that, one walks inside. The one that you partially disintegrated earlier steps out and goes, (spitting noise) and spits a-- what in midair looks like liquid and then (shattering) shatters into almost like crystalline ice as it hits the ground on a rock.",
+            "turn_number": 306
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "It is just rude. He smells so much like feet.",
+            "turn_number": 307
+          },
+          {
+            "speaker": "SAM",
+            "text": "We'll Mass Suggest that they take a bath later.",
+            "turn_number": 308
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Let's take a breather. For a moment, collect ourselves.",
+            "turn_number": 309
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I wish I wouldn't have wasted a healing potion just then because we can take some--",
+            "turn_number": 310
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "We can heal our 1d6 plus three.",
+            "turn_number": 311
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 322,
+      "category": "scene_transition",
+      "episode_position_pct": 0.1505,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That is true. You leveled up after the last one. So with this short rest I will say go ahead and roll an additional-- for a bard I think it is a d8, correct?",
+        "preceding_context_chars": 762,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "short rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "I wish I wouldn't have wasted a healing potion just then because we can take some--",
+            "turn_number": 310
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "We can heal our 1d6 plus three.",
+            "turn_number": 311
+          },
+          {
+            "speaker": "MATT",
+            "text": "So as you guys step inside the cavern. You guys are taking a short rest, currently?",
+            "turn_number": 312
+          },
+          {
+            "speaker": "SAM",
+            "text": "Short rest.",
+            "turn_number": 313
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, so the giants are just sitting there waiting, arms crossed against the wall, talking quietly to each other as the rest of you sit down and bandage your wounds. You tend to your adrenaline as it slowly wears off and suddenly the pain starts to set in from some of the wounds you've taken. So you guys can use as many hit dice as you want to heal yourselves.",
+            "turn_number": 314
+          },
+          {
+            "speaker": "MARY",
+            "text": "So what do I do?",
+            "turn_number": 315
+          },
+          {
+            "speaker": "LAURA",
+            "text": "You roll a d8. You can roll up to 11d8, plus two for each time.",
+            "turn_number": 316
+          },
+          {
+            "speaker": "SAM",
+            "text": "Hey, DM.",
+            "turn_number": 317
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes?",
+            "turn_number": 318
+          },
+          {
+            "speaker": "SAM",
+            "text": "How many hit points do I have?",
+            "turn_number": 319
+          },
+          {
+            "speaker": "MATT",
+            "text": "You haven't taken damage at this point.",
+            "turn_number": 320
+          },
+          {
+            "speaker": "SAM",
+            "text": "Have they increased at all?",
+            "turn_number": 321
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 335,
+      "category": null,
+      "episode_position_pct": 0.1565,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Good. Good choice. You take the next half an hour or so to rest up. You still used your Disintegrate. You need to do a whole night's rest to get that back.",
+        "preceding_context_chars": 778,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "an hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARY",
+            "text": "So what do I do?",
+            "turn_number": 315
+          },
+          {
+            "speaker": "LAURA",
+            "text": "You roll a d8. You can roll up to 11d8, plus two for each time.",
+            "turn_number": 316
+          },
+          {
+            "speaker": "SAM",
+            "text": "Hey, DM.",
+            "turn_number": 317
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes?",
+            "turn_number": 318
+          },
+          {
+            "speaker": "SAM",
+            "text": "How many hit points do I have?",
+            "turn_number": 319
+          },
+          {
+            "speaker": "MATT",
+            "text": "You haven't taken damage at this point.",
+            "turn_number": 320
+          },
+          {
+            "speaker": "SAM",
+            "text": "Have they increased at all?",
+            "turn_number": 321
+          },
+          {
+            "speaker": "MATT",
+            "text": "That is true. You leveled up after the last one. So with this short rest I will say go ahead and roll an additional-- for a bard I think it is a d8, correct?",
+            "turn_number": 322
+          },
+          {
+            "speaker": "SAM",
+            "text": "I don't know.",
+            "turn_number": 323
+          },
+          {
+            "speaker": "MATT",
+            "text": "What's your hit dice number?",
+            "turn_number": 324
+          },
+          {
+            "speaker": "SAM",
+            "text": "d8.",
+            "turn_number": 325
+          },
+          {
+            "speaker": "MATT",
+            "text": "And what's your constitution?",
+            "turn_number": 326
+          },
+          {
+            "speaker": "SAM",
+            "text": "15. Plus two.",
+            "turn_number": 327
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, so go ahead and roll a d8 plus two to it",
+            "turn_number": 328
+          },
+          {
+            "speaker": "SAM",
+            "text": "Four.",
+            "turn_number": 329
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, so you add four hit points to your total hit point maximum. Welcome to level 11, Scanlan. (cheering and singing Super Mario victory ditty)",
+            "turn_number": 330
+          },
+          {
+            "speaker": "MATT",
+            "text": "You also get access to your first 6th-level spell.",
+            "turn_number": 331
+          },
+          {
+            "speaker": "MARY",
+            "text": "What!?",
+            "turn_number": 332
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What? Get some stuff before we fight a dragon, yo.",
+            "turn_number": 333
+          },
+          {
+            "speaker": "SAM",
+            "text": "I got it already. I am ready to rock.",
+            "turn_number": 334
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 337,
+      "category": "scene_transition",
+      "episode_position_pct": 0.1575,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It is six spell levels you can get back on a short rest?",
+        "preceding_context_chars": 788,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a short rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "That is true. You leveled up after the last one. So with this short rest I will say go ahead and roll an additional-- for a bard I think it is a d8, correct?",
+            "turn_number": 322
+          },
+          {
+            "speaker": "SAM",
+            "text": "I don't know.",
+            "turn_number": 323
+          },
+          {
+            "speaker": "MATT",
+            "text": "What's your hit dice number?",
+            "turn_number": 324
+          },
+          {
+            "speaker": "SAM",
+            "text": "d8.",
+            "turn_number": 325
+          },
+          {
+            "speaker": "MATT",
+            "text": "And what's your constitution?",
+            "turn_number": 326
+          },
+          {
+            "speaker": "SAM",
+            "text": "15. Plus two.",
+            "turn_number": 327
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, so go ahead and roll a d8 plus two to it",
+            "turn_number": 328
+          },
+          {
+            "speaker": "SAM",
+            "text": "Four.",
+            "turn_number": 329
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, so you add four hit points to your total hit point maximum. Welcome to level 11, Scanlan. (cheering and singing Super Mario victory ditty)",
+            "turn_number": 330
+          },
+          {
+            "speaker": "MATT",
+            "text": "You also get access to your first 6th-level spell.",
+            "turn_number": 331
+          },
+          {
+            "speaker": "MARY",
+            "text": "What!?",
+            "turn_number": 332
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What? Get some stuff before we fight a dragon, yo.",
+            "turn_number": 333
+          },
+          {
+            "speaker": "SAM",
+            "text": "I got it already. I am ready to rock.",
+            "turn_number": 334
+          },
+          {
+            "speaker": "MATT",
+            "text": "Good. Good choice. You take the next half an hour or so to rest up. You still used your Disintegrate. You need to do a whole night's rest to get that back.",
+            "turn_number": 335
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh! I don't get it? It's six spell levels.",
+            "turn_number": 336
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 436,
+      "category": "travel_duration",
+      "episode_position_pct": 0.2037,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "This dragon took the name Rimefang. Because in a lot of dragons as they evolve and begin to really create a lair, they really make themselves known publicly and really draw the fear out once they feel they're in a comfortable position. You feel this dragon is just starting to get to that point where it's eager to drive fear into the local populace. From your history check, you do know that there is, somewhere in the books you've gone through, a similar contract, nothing Rimefang related, but there was a white dragon that was supposedly hunted about eight, nine months back, and the team never returned. And you begin to think, \"Wait, so if a team of really practiced people never returned from this contract, and we were sent on this as an entry level...\"",
+        "preceding_context_chars": 516,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "nine months",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Jeff. (laughter)",
+            "turn_number": 427
+          },
+          {
+            "speaker": "MATT",
+            "text": "Jeff the dragon. The name Rimefang rings through your mind.",
+            "turn_number": 428
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "His name is Rimefang.",
+            "turn_number": 429
+          },
+          {
+            "speaker": "MATT",
+            "text": "The two frost giants stop their walking and turn. \"Rimefang.\" They nod and look up to the giant structure they constructed.",
+            "turn_number": 430
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh wow! Can I make a history to sww if I know anyone in the guild who has been named Rimefang?",
+            "turn_number": 431
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a history check on this.",
+            "turn_number": 432
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "It's a 21.",
+            "turn_number": 433
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, Rimefang, you gather, is the name of the dragon proper. And there's another drink for you guys out there. They made fun of me for using the word proper.",
+            "turn_number": 434
+          },
+          {
+            "speaker": "SAM",
+            "text": "Drink!",
+            "turn_number": 435
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 522,
+      "category": "scene_transition",
+      "episode_position_pct": 0.2439,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Take another short rest?",
+        "preceding_context_chars": 177,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "short rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "FELICIA",
+            "text": "I'm not going to go to the front anymore, guys.",
+            "turn_number": 518
+          },
+          {
+            "speaker": "SAM",
+            "text": "Well, you're the leader, shouldn't you be--",
+            "turn_number": 519
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We should protect her. She should be towards the back.",
+            "turn_number": 520
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to heal really quickly.",
+            "turn_number": 521
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 539,
+      "category": "scene_transition",
+      "episode_position_pct": 0.2519,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So are you guys taking a short rest to heal up? Okay. If you haven't already rolled your dice-- You healed up now? Perfect. All right, so as you guys continue to trudge up this extremely cold-- let me see. I think it'll be a fun one to-- There we go. You guys continue to ascend up this pitch-black cavern here. It appears that both the giants and the dragon do not need light to make their way through this cavern structure. So you are the small beads of visual lightness in the entire structure. The floor itself is slick, and there are bits of rough rock that you can find foot purchase but there are a few moments where some of you slip and you lose about ten feet and then catch yourself and have to move upward with this slight 35-degree incline, slowly spiraling upward. You push forward for about 30 minutes or so in this long, seemingly-- for lack of a better term, there isn't a lot of changed variation to it; it's just a gradual spiral in itself.",
+        "preceding_context_chars": 503,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a short rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARY",
+            "text": "Got it. I thank him in my mind.",
+            "turn_number": 532
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Pressing forward, you can see one giant still dragging itself forward with a portion of its physical body essentially gutted.",
+            "turn_number": 533
+          },
+          {
+            "speaker": "MARY",
+            "text": "What if we gave him a half healing potion?",
+            "turn_number": 534
+          },
+          {
+            "speaker": "SAM",
+            "text": "Don't mess with the magic.",
+            "turn_number": 535
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Because, here's the thing. If they fight with us, it's great, but if they turn on us then we are going to have to fight them at full power again.",
+            "turn_number": 536
+          },
+          {
+            "speaker": "MARY",
+            "text": "Yeah, but we have 24 hours.",
+            "turn_number": 537
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yes, but the healing potion might do something. Let's just keep going. You are a very kind soul.",
+            "turn_number": 538
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 539,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.2519,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So are you guys taking a short rest to heal up? Okay. If you haven't already rolled your dice-- You healed up now? Perfect. All right, so as you guys continue to trudge up this extremely cold-- let me see. I think it'll be a fun one to-- There we go. You guys continue to ascend up this pitch-black cavern here. It appears that both the giants and the dragon do not need light to make their way through this cavern structure. So you are the small beads of visual lightness in the entire structure. The floor itself is slick, and there are bits of rough rock that you can find foot purchase but there are a few moments where some of you slip and you lose about ten feet and then catch yourself and have to move upward with this slight 35-degree incline, slowly spiraling upward. You push forward for about 30 minutes or so in this long, seemingly-- for lack of a better term, there isn't a lot of changed variation to it; it's just a gradual spiral in itself.",
+        "preceding_context_chars": 503,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "30 minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "MARY",
+            "text": "Got it. I thank him in my mind.",
+            "turn_number": 532
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. Pressing forward, you can see one giant still dragging itself forward with a portion of its physical body essentially gutted.",
+            "turn_number": 533
+          },
+          {
+            "speaker": "MARY",
+            "text": "What if we gave him a half healing potion?",
+            "turn_number": 534
+          },
+          {
+            "speaker": "SAM",
+            "text": "Don't mess with the magic.",
+            "turn_number": 535
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Because, here's the thing. If they fight with us, it's great, but if they turn on us then we are going to have to fight them at full power again.",
+            "turn_number": 536
+          },
+          {
+            "speaker": "MARY",
+            "text": "Yeah, but we have 24 hours.",
+            "turn_number": 537
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yes, but the healing potion might do something. Let's just keep going. You are a very kind soul.",
+            "turn_number": 538
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 838,
+      "category": null,
+      "episode_position_pct": 0.3916,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"You say you're from the Slayer's Take. I have not lived these hundred years or so to become the hunted. I am the hunter! I am the scourge of the Thorain Tundra! I am the stalker of this timberland. Well. Parts of you shall adorn my walls, glittering in pieces for times to come. Giants. To my side! Tonight, you choose whether I dine on you or just them.\"",
+        "preceding_context_chars": 759,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "hundred years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Are you to tell me I spared your insignificant lives so you could let this insulting, insufferable insect into the heart of my domain?\"",
+            "turn_number": 833
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm called Burt Reynolds, and I take great offense at that.",
+            "turn_number": 834
+          },
+          {
+            "speaker": "MATT",
+            "text": "The dragon's head turns to the side for a moment as a glance of confusion and almost amusement that you speak up to it with such a disrespectful manner. (evil laughter)",
+            "turn_number": 835
+          },
+          {
+            "speaker": "SAM",
+            "text": "You can call me Mr. Reynolds or simply Burt.",
+            "turn_number": 836
+          },
+          {
+            "speaker": "MATT",
+            "text": "(heavy impacts) Its claws dig in and tighten on the edges of this platform. You can see the stonework and the ice crack and shatter under its grip as pieces of stone tumble down the edges of the platform, scattering across the ground with a slight clattering. The wings (whoosh) unfurl outward. Its head looks down upon you directly. \"Burt.\" (laughter)",
+            "turn_number": 837
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 850,
+      "category": null,
+      "episode_position_pct": 0.3972,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "The giants look at each other, and they look down at the rest of you. They pull their axes out, shields at the ready, and look back up at Rimefang, and in Giant you hear, muttered under their breath, \"It's now or never.\" (cheering)",
+        "preceding_context_chars": 614,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARY",
+            "text": "I use-- fuck me. (laughter)",
+            "turn_number": 839
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't know if you have that spell.",
+            "turn_number": 840
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Really, what's the DC on that?",
+            "turn_number": 841
+          },
+          {
+            "speaker": "MARY",
+            "text": "It's very high! I use Awakened Mind to once more say, now we have seen what you have been through. We see the terror that you face every day from this awful beast. This is your chance. You may not have another. Fight him with us and destroy this beast forever.",
+            "turn_number": 842
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a persuasion check versus the dragon's intimidation check.",
+            "turn_number": 843
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, versus a dragon!",
+            "turn_number": 844
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Natural 20 all the way. Natural 20. I've had my bow notched, and I cast Hunter's Mark while all this is going on.",
+            "turn_number": 845
+          },
+          {
+            "speaker": "MARY",
+            "text": "18. 18 plus what?",
+            "turn_number": 846
+          },
+          {
+            "speaker": "SAM",
+            "text": "What is it, persuasion?",
+            "turn_number": 847
+          },
+          {
+            "speaker": "MATT",
+            "text": "Persuasion.",
+            "turn_number": 848
+          },
+          {
+            "speaker": "MARY",
+            "text": "Plus nine. 27.",
+            "turn_number": 849
+          }
+        ]
+      }
+    },
+    {
+      "source": "EC",
+      "turn_number": 851,
+      "category": "npc_turns_hostile",
+      "episode_position_pct": 0.3977,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "Roll initiative.",
+        "preceding_context_chars": 1201,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": false,
+        "narration_buildup_chars": 661,
+        "nearest_prior_trigger_turn_distance": 785,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"You say you're from the Slayer's Take. I have not lived these hundred years or so to become the hunted. I am the hunter! I am the scourge of the Thorain Tundra! I am the stalker of this timberland. Well. Parts of you shall adorn my walls, glittering in pieces for times to come. Giants. To my side! Tonight, you choose whether I dine on you or just them.\"",
+            "turn_number": 838
+          },
+          {
+            "speaker": "MARY",
+            "text": "I use-- fuck me. (laughter)",
+            "turn_number": 839
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't know if you have that spell.",
+            "turn_number": 840
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Really, what's the DC on that?",
+            "turn_number": 841
+          },
+          {
+            "speaker": "MARY",
+            "text": "It's very high! I use Awakened Mind to once more say, now we have seen what you have been through. We see the terror that you face every day from this awful beast. This is your chance. You may not have another. Fight him with us and destroy this beast forever.",
+            "turn_number": 842
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a persuasion check versus the dragon's intimidation check.",
+            "turn_number": 843
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, versus a dragon!",
+            "turn_number": 844
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Natural 20 all the way. Natural 20. I've had my bow notched, and I cast Hunter's Mark while all this is going on.",
+            "turn_number": 845
+          },
+          {
+            "speaker": "MARY",
+            "text": "18. 18 plus what?",
+            "turn_number": 846
+          },
+          {
+            "speaker": "SAM",
+            "text": "What is it, persuasion?",
+            "turn_number": 847
+          },
+          {
+            "speaker": "MATT",
+            "text": "Persuasion.",
+            "turn_number": 848
+          },
+          {
+            "speaker": "MARY",
+            "text": "Plus nine. 27.",
+            "turn_number": 849
+          },
+          {
+            "speaker": "MATT",
+            "text": "The giants look at each other, and they look down at the rest of you. They pull their axes out, shields at the ready, and look back up at Rimefang, and in Giant you hear, muttered under their breath, \"It's now or never.\" (cheering)",
+            "turn_number": 850
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 883,
+      "category": null,
+      "episode_position_pct": 0.4126,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "No, you'd have to hold your initiative, or you do all your actions in one round, unfortunately.",
+        "preceding_context_chars": 797,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "one round",
+        "granularity_bucket": "rounds",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't know! I don't know what happened.",
+            "turn_number": 859
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, all right. 25 to 20, anyone?",
+            "turn_number": 860
+          },
+          {
+            "speaker": "LAURA",
+            "text": "25.",
+            "turn_number": 861
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "28.",
+            "turn_number": 862
+          },
+          {
+            "speaker": "MARY",
+            "text": "What?!",
+            "turn_number": 863
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. We have Percy, we have Vex, leaving that up there. All right, we have 20 to 15?",
+            "turn_number": 864
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "19.",
+            "turn_number": 865
+          },
+          {
+            "speaker": "MATT",
+            "text": "19, nice. 15 to ten?",
+            "turn_number": 866
+          },
+          {
+            "speaker": "MARY",
+            "text": "12.",
+            "turn_number": 867
+          },
+          {
+            "speaker": "MATT",
+            "text": "12. Zahra, 12. Ten to five?",
+            "turn_number": 868
+          },
+          {
+            "speaker": "SAM",
+            "text": "Seven.",
+            "turn_number": 869
+          },
+          {
+            "speaker": "MATT",
+            "text": "Seven for Scanlan. (laughing) what did you roll?",
+            "turn_number": 870
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Negative one! (laughter)",
+            "turn_number": 871
+          },
+          {
+            "speaker": "MARY",
+            "text": "That's our leader!",
+            "turn_number": 872
+          },
+          {
+            "speaker": "MATT",
+            "text": "Did you roll a natural one?",
+            "turn_number": 873
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "I rolled a one, and I have a negative two.",
+            "turn_number": 874
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "On your initiative?!",
+            "turn_number": 875
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Yes! I'm never going. I'm going to just have a snack.",
+            "turn_number": 876
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You break out the trail mix.",
+            "turn_number": 877
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "The little gingers come back out.",
+            "turn_number": 878
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Is that a record?",
+            "turn_number": 879
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "That is a record. I don't think we've ever had a negative initiative.",
+            "turn_number": 880
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, so as the wings unfurl on top of this platform, the combat round begins with Percy.",
+            "turn_number": 881
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "If I take one shot, can I hold my second shot until an event? Can I time my second shot?",
+            "turn_number": 882
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 975,
+      "category": "travel_duration",
+      "episode_position_pct": 0.4556,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Rimefang then (whoosh) flies up into the air for a minute. And then swoops over and lands over on this side, and that's going to end its turn. That brings us to Grog.",
+        "preceding_context_chars": 599,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Is Trinket frightened?",
+            "turn_number": 964
+          },
+          {
+            "speaker": "MATT",
+            "text": "Roll for Trinket.",
+            "turn_number": 965
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay. Come on, Trinket. No! He's probably pretty frightened. Oh, does that count as intimidation?",
+            "turn_number": 966
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, it's a wisdom saving throw. So it's whatever his wisdom bonus is.",
+            "turn_number": 967
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He rolled an eight, so I'm guessing he's pretty scared.",
+            "turn_number": 968
+          },
+          {
+            "speaker": "MATT",
+            "text": "Probably scared. Trinket, all of a sudden also (scared bear noises) backs up a little bit and is looking equally frightened, especially seeing you scared. Trinket feels a moment of fear there.",
+            "turn_number": 969
+          },
+          {
+            "speaker": "LAURA",
+            "text": "You've still got a really big dick!",
+            "turn_number": 970
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "What?",
+            "turn_number": 971
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I'm just telling him to encourage him.",
+            "turn_number": 972
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I missed something.",
+            "turn_number": 973
+          },
+          {
+            "speaker": "SAM",
+            "text": "Not the dragon. Although, probably the dragon too.",
+            "turn_number": 974
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1004,
+      "category": null,
+      "episode_position_pct": 0.4692,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It is now Hexed, as well.",
+        "preceding_context_chars": 470,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Seriously?",
+            "turn_number": 997
+          },
+          {
+            "speaker": "MATT",
+            "text": "But you're fine. You get back up to your feet. That could've been really bad. It's about 15 feet down into these jagged shards of ice.",
+            "turn_number": 998
+          },
+          {
+            "speaker": "LAURA",
+            "text": "My passive perception is 21. Just for future reference.",
+            "turn_number": 999
+          },
+          {
+            "speaker": "MATT",
+            "text": "Good to know. You also have no light source. You're at the far back in the darkness. Actually, you have Grog around you right now.",
+            "turn_number": 1000
+          },
+          {
+            "speaker": "MARY",
+            "text": "And I still have Light cast.",
+            "turn_number": 1001
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, so you're fine. All right. That brings us to Zahra, once again.",
+            "turn_number": 1002
+          },
+          {
+            "speaker": "MARY",
+            "text": "I cast my bonus Hex on this beautiful beast.",
+            "turn_number": 1003
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1431,
+      "category": null,
+      "episode_position_pct": 0.6687,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "I'll let it. So it is now taking an ongoing ten points of bleeding damage? Now, you take three points of fire damage. Scanlan, you take six points of fire damage. You guys avoid the grenade, and then (arrow noises) a second explosion again.",
+        "preceding_context_chars": 664,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Oh shit. 16 and then 3d6?",
+            "turn_number": 1411
+          },
+          {
+            "speaker": "MATT",
+            "text": "3d8, sorry.",
+            "turn_number": 1412
+          },
+          {
+            "speaker": "LAURA",
+            "text": "3d8?!",
+            "turn_number": 1413
+          },
+          {
+            "speaker": "MATT",
+            "text": "Sorry. 3d8 was the grenade. 2d8 for the exploding arrow. 2d8.",
+            "turn_number": 1414
+          },
+          {
+            "speaker": "LAURA",
+            "text": "2d8.",
+            "turn_number": 1415
+          },
+          {
+            "speaker": "MATT",
+            "text": "Sorry. It's a lot of numbers.",
+            "turn_number": 1416
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's okay, I'm going to roll them both. Okay. Six additional. Did I say what my other damage was. Was I speaking out loud?",
+            "turn_number": 1417
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, no. I marked it down. I also need Scanlan and Grog to make dexterity saving throws.",
+            "turn_number": 1418
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh no, I'm sorry, I'm stupid!",
+            "turn_number": 1419
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wait, what did you just shoot at us?",
+            "turn_number": 1420
+          },
+          {
+            "speaker": "LAURA",
+            "text": "An exploding arrow!",
+            "turn_number": 1421
+          },
+          {
+            "speaker": "SAM",
+            "text": "Nice.",
+            "turn_number": 1422
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "18.",
+            "turn_number": 1423
+          },
+          {
+            "speaker": "SAM",
+            "text": "11.",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 1425
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I also meant to say I was shooting from my Blood-Seeker Bow. I pulled it out and said I was going to do it.",
+            "turn_number": 1426
+          },
+          {
+            "speaker": "MATT",
+            "text": "You pull out your Blood-Seeker Bow?",
+            "turn_number": 1427
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I was going to shoot from my Blood-Seeker Bow for that.",
+            "turn_number": 1428
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 1429
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Can I do that?",
+            "turn_number": 1430
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1446,
+      "category": null,
+      "episode_position_pct": 0.6757,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "13 extra damage as Trinket runs up, first strike hits the armor and just streaks across without damage, but as soon as the dragon turns around to see the giant brown bear that has gotten brave enough to strike it, its other claw goes and sinks into the side of one of its calves and tears a portion of the dragon's flesh. It (snarls) roars and Trinket, bringing its claw down, roars back at it. Dragon roar versus bear roar. All right. That ends your turn. It is now Rimefang's turn. Rimefang--",
+        "preceding_context_chars": 676,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm sorry. I'm a genius! I'm sorry! Sorry! Oh god, I'm clever.",
+            "turn_number": 1432
+          },
+          {
+            "speaker": "LAURA",
+            "text": "So for my second attack, I want to throw Trinket in and I want Trinket to go up and attack him.",
+            "turn_number": 1433
+          },
+          {
+            "speaker": "MATT",
+            "text": "Trinket rushes in and is going to make two attacks at it.",
+            "turn_number": 1434
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's going to do two claw attacks, so that's 2d4 each time.",
+            "turn_number": 1435
+          },
+          {
+            "speaker": "MATT",
+            "text": "Go for it. So go ahead and roll for the first strike. He's no longer scared, so Trinket does not have the disadvantage.",
+            "turn_number": 1436
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay, he doesn't hit on the first one. But the second one, he gets a 21!",
+            "turn_number": 1437
+          },
+          {
+            "speaker": "MATT",
+            "text": "21 hits. Go ahead and roll damage.",
+            "turn_number": 1438
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yes! Okay. Was I wrong?",
+            "turn_number": 1439
+          },
+          {
+            "speaker": "MARY",
+            "text": "That's 23.",
+            "turn_number": 1440
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, okay. Either way.",
+            "turn_number": 1441
+          },
+          {
+            "speaker": "MATT",
+            "text": "It hits even harder!",
+            "turn_number": 1442
+          },
+          {
+            "speaker": "MARY",
+            "text": "It hits harder?",
+            "turn_number": 1443
+          },
+          {
+            "speaker": "MATT",
+            "text": "(Irish accent) Exactly. What's that about? Rightly so.",
+            "turn_number": 1444
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's 13 extra damage for Trinket.",
+            "turn_number": 1445
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1658,
+      "category": null,
+      "episode_position_pct": 0.7748,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That's ten feet up. There are two platforms on opposite sides of this room now. That ends its turn. It is now Grog's turn.",
+        "preceding_context_chars": 730,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, so there's no disadvantage roll for him to make here, is there?",
+            "turn_number": 1642
+          },
+          {
+            "speaker": "MATT",
+            "text": "No.",
+            "turn_number": 1643
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "23.",
+            "turn_number": 1644
+          },
+          {
+            "speaker": "MATT",
+            "text": "23 on the constitution saving throw?",
+            "turn_number": 1645
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Yeah, I actually. I get five constitution, and I rolled an 18.",
+            "turn_number": 1646
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "15.",
+            "turn_number": 1647
+          },
+          {
+            "speaker": "MATT",
+            "text": "15? What did you roll, Vex?",
+            "turn_number": 1648
+          },
+          {
+            "speaker": "LAURA",
+            "text": "18.",
+            "turn_number": 1649
+          },
+          {
+            "speaker": "MATT",
+            "text": "18. All right. (chuckles) So as the ice breath (whoosh) passes across, it's like every center point of the worst ice storm or blizzard impacting you with a series of punches every single second as this breath caresses and beats your body left and right. Both of you guys take 54 points of cold damage.",
+            "turn_number": 1650
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "54?",
+            "turn_number": 1651
+          },
+          {
+            "speaker": "MATT",
+            "text": "54. Lyra, you take 27 points of cold damage.",
+            "turn_number": 1652
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "And the room gets quiet.",
+            "turn_number": 1653
+          },
+          {
+            "speaker": "MARY",
+            "text": "Really fast.",
+            "turn_number": 1654
+          },
+          {
+            "speaker": "MATT",
+            "text": "It continues its flight pattern (flapping, impacts) and lands on top of this upper platform.",
+            "turn_number": 1655
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, he's got another fucking platform?",
+            "turn_number": 1656
+          },
+          {
+            "speaker": "SAM",
+            "text": "How high up?",
+            "turn_number": 1657
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1799,
+      "category": null,
+      "episode_position_pct": 0.8407,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It is now Rimefang's turn. Rimefang turns. (heavy breaths, roars) and lets out a spray of icy damage out in this direction at an arc this way. I need to get a dexterity saving throw from Lyra, from Vex, and from Zahra.",
+        "preceding_context_chars": 550,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "For my second attack-- (cheering)",
+            "turn_number": 1787
+          },
+          {
+            "speaker": "LAURA",
+            "text": "For my second attack, I'm going to regular attack him. Oh my god. Just going to regular attack him.",
+            "turn_number": 1788
+          },
+          {
+            "speaker": "MATT",
+            "text": "Roll for attack.",
+            "turn_number": 1789
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Jesus. Please. Oh! It's 30.",
+            "turn_number": 1790
+          },
+          {
+            "speaker": "MATT",
+            "text": "30 hits. Go ahead and roll damage.",
+            "turn_number": 1791
+          },
+          {
+            "speaker": "LAURA",
+            "text": "13, 14, 15.",
+            "turn_number": 1792
+          },
+          {
+            "speaker": "MATT",
+            "text": "Including the Hunter's Mark?",
+            "turn_number": 1793
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No! Four.",
+            "turn_number": 1794
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, so 19 total? Okay. As the arrow (arrow flying, impacts) embeds itself in the side of the neck, the dragon reaches up and it's scratching at the pain. As it pulls the arrow out, blood begins to pour down its side.",
+            "turn_number": 1795
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Ugh, he's still alive!",
+            "turn_number": 1796
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's rough. That ends your turn.",
+            "turn_number": 1797
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Fuck! Is it his turn?",
+            "turn_number": 1798
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1881,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.879,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Between the two of you working together, that would give you advantage on the checks. Which one are you going for first? Are you going for the eyes? Choose which portion you're harvesting first.",
+        "preceding_context_chars": 773,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "give you advantage",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Wait, we have to harvest it special?",
+            "turn_number": 1864
+          },
+          {
+            "speaker": "MATT",
+            "text": "Part of harvesting the organs from the creature is a delicate process.",
+            "turn_number": 1865
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Is it nature? What is it a check for?",
+            "turn_number": 1866
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's a nature-based check, yes.",
+            "turn_number": 1867
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I have a low nature. What do you have?",
+            "turn_number": 1868
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Very low nature.",
+            "turn_number": 1869
+          },
+          {
+            "speaker": "MARY",
+            "text": "I have a six nature. Can I harvest him?",
+            "turn_number": 1870
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can.",
+            "turn_number": 1871
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can I go and loot the giant that's not frozen?",
+            "turn_number": 1872
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can. You can also help with this roll.",
+            "turn_number": 1873
+          },
+          {
+            "speaker": "SAM",
+            "text": "Inspiration? Okay. I inspire them.",
+            "turn_number": 1874
+          },
+          {
+            "speaker": "MATT",
+            "text": "How do you inspire Zahra as she goes to start carving into this dragon?",
+            "turn_number": 1875
+          },
+          {
+            "speaker": "SAM",
+            "text": "I will sing something. I don't know what. I'm so out of it. We just killed a dragon! (laughter)",
+            "turn_number": 1876
+          },
+          {
+            "speaker": "SAM",
+            "text": "I go over to her and I'm like, (incoherent, impressed stammering). And that's all I got.",
+            "turn_number": 1877
+          },
+          {
+            "speaker": "MATT",
+            "text": "And with that, you killed a dragon.",
+            "turn_number": 1878
+          },
+          {
+            "speaker": "MARY",
+            "text": "It was a group effort.",
+            "turn_number": 1879
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Can I help at all? Can I assist? Can I hold her utensils for her?",
+            "turn_number": 1880
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1963,
+      "category": "MATERIAL_LOOT",
+      "episode_position_pct": 0.9173,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "All right. So Grog. You go over to the giant that's not frozen. Looking at it, most of its armor itself is made for a giant's form, much larger than anything else, and a lot of it has been shredded by the dragon, or frozen and broken from the impact and you, cutting it apart with its axe. For the most part, all you're able to find off of its body are approximately 120 gold pieces, which isn't bad. Giants don't really carry a lot of money on them, usually what they carry on them is just trophies from battles they fought previously. At least, these ones here. What did you roll for perception?",
+        "preceding_context_chars": 527,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "120 gold pieces",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": true,
+        "nearest_prior_perception_check_turn_distance": 4,
+        "currency_total_gp_equivalent": 120.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "That's why we have so many pounds of dragon scales from the previous dragons! We could make three sets of armor right now.",
+            "turn_number": 1955
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "I'm going to look around and just see if there's a stash or a hoard that he was gathering.",
+            "turn_number": 1956
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, there are individual gold pieces embedded all through. It would take you weeks to chisel it all from the walls.",
+            "turn_number": 1957
+          },
+          {
+            "speaker": "MARY",
+            "text": "Are there any giant gems that we can see?",
+            "turn_number": 1958
+          },
+          {
+            "speaker": "MATT",
+            "text": "Everyone make a perception check.",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I want to get my diamond back, too, from earlier.",
+            "turn_number": 1960
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can I loot the bloody giant?",
+            "turn_number": 1961
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Natural 20 for perception! Ooh! Sparklies!",
+            "turn_number": 1962
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1963,
+      "category": null,
+      "episode_position_pct": 0.9173,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All right. So Grog. You go over to the giant that's not frozen. Looking at it, most of its armor itself is made for a giant's form, much larger than anything else, and a lot of it has been shredded by the dragon, or frozen and broken from the impact and you, cutting it apart with its axe. For the most part, all you're able to find off of its body are approximately 120 gold pieces, which isn't bad. Giants don't really carry a lot of money on them, usually what they carry on them is just trophies from battles they fought previously. At least, these ones here. What did you roll for perception?",
+        "preceding_context_chars": 527,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it has been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "That's why we have so many pounds of dragon scales from the previous dragons! We could make three sets of armor right now.",
+            "turn_number": 1955
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "I'm going to look around and just see if there's a stash or a hoard that he was gathering.",
+            "turn_number": 1956
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, there are individual gold pieces embedded all through. It would take you weeks to chisel it all from the walls.",
+            "turn_number": 1957
+          },
+          {
+            "speaker": "MARY",
+            "text": "Are there any giant gems that we can see?",
+            "turn_number": 1958
+          },
+          {
+            "speaker": "MATT",
+            "text": "Everyone make a perception check.",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I want to get my diamond back, too, from earlier.",
+            "turn_number": 1960
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can I loot the bloody giant?",
+            "turn_number": 1961
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Natural 20 for perception! Ooh! Sparklies!",
+            "turn_number": 1962
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1976,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.9234,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "over the next hour",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "in_scene",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "And so between the two of you guys, you take a dagger, you take your staff and you begin jamming into the ice. You manage to break it apart, and you do find beneath there, frozen, quite a hoard. You find over the next hour or so, 4,244 gold pieces--",
+        "preceding_turns_last5": [
+          {
+            "speaker": "MATT",
+            "text": "(laughs) You start carving, you're like, (yelps). Dodge out of the way just in time as firebolts begin blasting the ice.",
+            "turn_number": 1971
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "14. 14 points of damage.",
+            "turn_number": 1972
+          },
+          {
+            "speaker": "MATT",
+            "text": "(boom boom) A large chunk of the ice is blasted out from the Fire Bolt, and you catch your breath for a second. It's not enough to get all the way down, but it does manage to blast away a large portion of the ice.",
+            "turn_number": 1973
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I still have like two points of health, FYI.",
+            "turn_number": 1974
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh! I'm sorry! You do look so lovely, though.",
+            "turn_number": 1975
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1976,
+      "category": "MATERIAL_LOOT",
+      "episode_position_pct": 0.9234,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "And so between the two of you guys, you take a dagger, you take your staff and you begin jamming into the ice. You manage to break it apart, and you do find beneath there, frozen, quite a hoard. You find over the next hour or so, 4,244 gold pieces--",
+        "preceding_context_chars": 499,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "4,244 gold pieces",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 4244.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "FELICIA",
+            "text": "Oh I can help! (blasting sounds) I throw a Fire Bolt.",
+            "turn_number": 1970
+          },
+          {
+            "speaker": "MATT",
+            "text": "(laughs) You start carving, you're like, (yelps). Dodge out of the way just in time as firebolts begin blasting the ice.",
+            "turn_number": 1971
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "14. 14 points of damage.",
+            "turn_number": 1972
+          },
+          {
+            "speaker": "MATT",
+            "text": "(boom boom) A large chunk of the ice is blasted out from the Fire Bolt, and you catch your breath for a second. It's not enough to get all the way down, but it does manage to blast away a large portion of the ice.",
+            "turn_number": 1973
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I still have like two points of health, FYI.",
+            "turn_number": 1974
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh! I'm sorry! You do look so lovely, though.",
+            "turn_number": 1975
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1976,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.9234,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "And so between the two of you guys, you take a dagger, you take your staff and you begin jamming into the ice. You manage to break it apart, and you do find beneath there, frozen, quite a hoard. You find over the next hour or so, 4,244 gold pieces--",
+        "preceding_context_chars": 499,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "over the next",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "FELICIA",
+            "text": "Oh I can help! (blasting sounds) I throw a Fire Bolt.",
+            "turn_number": 1970
+          },
+          {
+            "speaker": "MATT",
+            "text": "(laughs) You start carving, you're like, (yelps). Dodge out of the way just in time as firebolts begin blasting the ice.",
+            "turn_number": 1971
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "14. 14 points of damage.",
+            "turn_number": 1972
+          },
+          {
+            "speaker": "MATT",
+            "text": "(boom boom) A large chunk of the ice is blasted out from the Fire Bolt, and you catch your breath for a second. It's not enough to get all the way down, but it does manage to blast away a large portion of the ice.",
+            "turn_number": 1973
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I still have like two points of health, FYI.",
+            "turn_number": 1974
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh! I'm sorry! You do look so lovely, though.",
+            "turn_number": 1975
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2004,
+      "category": "travel_duration",
+      "episode_position_pct": 0.9364,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "The potion is a Potion of Climbing. You can actually climb your walking speed for one hour.",
+        "preceding_context_chars": 637,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "one hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "That might be good for you, though.",
+            "turn_number": 1994
+          },
+          {
+            "speaker": "LAURA",
+            "text": "For anybody with ranged, probably.",
+            "turn_number": 1995
+          },
+          {
+            "speaker": "MATT",
+            "text": "Anybody who's hit by ranged.",
+            "turn_number": 1996
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I have a two-handed ranged weapon, though, which you do not.",
+            "turn_number": 1997
+          },
+          {
+            "speaker": "MATT",
+            "text": "Looking at the hat itself, while not a very impressive hat, the magical energy on it does give you the idea that it is used as an illusion-based magic. It is a Hat of Disguise. While wearing this hat you can use an action to cast the Disguise Self spell at will. It ends if the hat is removed.",
+            "turn_number": 1998
+          },
+          {
+            "speaker": "SAM",
+            "text": "May I have that one, please?",
+            "turn_number": 1999
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No, Scanlan.",
+            "turn_number": 2000
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "What? He can already disappear.",
+            "turn_number": 2001
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "You'll abuse it. You've already abused that privilege already.",
+            "turn_number": 2002
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm sorry. By the way, your lips taste like bubblegum.",
+            "turn_number": 2003
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2033,
+      "category": "travel_duration",
+      "episode_position_pct": 0.95,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "All right. You take that one gold piece, pocket it. Take a moment to remember your final death blow against the dragon. You guys trek back through the caverns you arose, back through the ruined frost giant village, back into the Vesper Timberland, find where your horses were currently tied up, make your way back towards the city of Vasselheim. About a day and a half's worth of travel later, you notice that the blizzard that encompassed the six-mile radius of this mountain range has faded into a soft fog, and the actual weather in this area seems to have been connected to the presence of the dragon and is slowly dissipating. You eventually take yourself to the base of Vasselheim's main wall. You shout at the top of the wall, and noticing the group arriving, they let the doors open. You can see the giant, dragon-headed ballistae that line the city walls are armed and ready, and upon approval, they move them away. You enter the city, make your way through the Braving Grounds to the Quadroads to the outside of the Slayer's Take guildhall. As you enter the main room, you see Mertin is standing there. Looks like he's playing a game of solitaire with a deck of cards. He looks up. \"Well, I'll be damned. Are you serious? You killed him?\"",
+        "preceding_context_chars": 736,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a day",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARY",
+            "text": "Yes, we've killed it, so let's go home.",
+            "turn_number": 2028
+          },
+          {
+            "speaker": "MATT",
+            "text": "Percy, you go and you pull out the contract real fast to inspect it, and you can see that the arcane sigils that were built into it are faded, and where it looks like each piece of the dragon that you harvested correctly, has seemingly had a strange, glimmering gold shimmer from the actual text on the contract.",
+            "turn_number": 2029
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Lyra, they're going to love you.",
+            "turn_number": 2030
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "It's so exciting. I can't wait to go to the mess hall and tell everybody, many times, over and over, how this happened together. And you guys, this has been an amazing journey. Thank you.",
+            "turn_number": 2031
+          },
+          {
+            "speaker": "MARY",
+            "text": "I would like to take just one gold coin right at the base of the head of what was formerly Rimefang for myself. I'll put it in a necklace when we all go back to town.",
+            "turn_number": 2032
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 2039,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.9528,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Okay. He hugs you. \"I appreciate it very much. You lost me 200 gold pieces, but well done. You've proven to be more than I expected. Let me get the Huntmistress. She will be very happy to see that you've arrived. Aye, my wife. Yes.\" And he gets up and leaves. A few moments later, the headmaster Vanessa Cyndrial comes in, her tiefling self with her horns curled behind her head. Walks in with this smooth glare. \"I must say. Some of these contracts we put out as a test of your power and will, and to be perfectly honest, I was pulling for you.\" She puts out her hand and her husband takes a pouch of coin and puts it in her hand. She takes it and puts it on the side of her belt. \"I'm impressed by all of you, and by this token, and by the completed contract. First off, you have definitely proven your worth to the Slayer's Take.\"",
+        "preceding_context_chars": 342,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "200 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 200.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "FELICIA",
+            "text": "Mertin, we did it.",
+            "turn_number": 2034
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Show me your contract. Show me this contract.\"",
+            "turn_number": 2035
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "I don't know why you'd doubt us. Really, it's right here.",
+            "turn_number": 2036
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well done.\" And he puts his hand out to shake your hand.",
+            "turn_number": 2037
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh my gosh. I start crying. This is the most proud moment of my life, Mertin. I've admired you for so long and the fact (cries) thank you. And then I just hug him.",
+            "turn_number": 2038
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2039,
+      "category": "scene_transition",
+      "episode_position_pct": 0.9528,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. He hugs you. \"I appreciate it very much. You lost me 200 gold pieces, but well done. You've proven to be more than I expected. Let me get the Huntmistress. She will be very happy to see that you've arrived. Aye, my wife. Yes.\" And he gets up and leaves. A few moments later, the headmaster Vanessa Cyndrial comes in, her tiefling self with her horns curled behind her head. Walks in with this smooth glare. \"I must say. Some of these contracts we put out as a test of your power and will, and to be perfectly honest, I was pulling for you.\" She puts out her hand and her husband takes a pouch of coin and puts it in her hand. She takes it and puts it on the side of her belt. \"I'm impressed by all of you, and by this token, and by the completed contract. First off, you have definitely proven your worth to the Slayer's Take.\"",
+        "preceding_context_chars": 342,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "moments later",
+        "granularity_bucket": "unspecified",
+        "is_anchored": true,
+        "time_anchor_turn_number": 2033,
+        "anchor_distance_turns": 6,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "FELICIA",
+            "text": "Mertin, we did it.",
+            "turn_number": 2034
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Show me your contract. Show me this contract.\"",
+            "turn_number": 2035
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "I don't know why you'd doubt us. Really, it's right here.",
+            "turn_number": 2036
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well done.\" And he puts his hand out to shake your hand.",
+            "turn_number": 2037
+          },
+          {
+            "speaker": "FELICIA",
+            "text": "Oh my gosh. I start crying. This is the most proud moment of my life, Mertin. I've admired you for so long and the fact (cries) thank you. And then I just hug him.",
+            "turn_number": 2038
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2090,
+      "category": null,
+      "episode_position_pct": 0.9766,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"9,000 gold pieces.\" She reaches beneath, pulls out a small chest. You see her do something beneath the table you don't recognize, and all of a sudden you hear a clicking sound and she pulls up three large sacks of gold (heavy impacts) on the table. \"Divide as you see fit. On top of this, as you have now been accepted to this, when your other team members arrive, which should be any moment now, in the next day or so, you'll be inducted, you'll be absolved of your breach of the laws of Vasselheim, and you will also acquire a small payment in conjunction with the hydra contract. So we will discuss this as soon as your friends arrive. Until then, feel free to rest, divide the gold, and be on your way.\"",
+        "preceding_context_chars": 760,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the next day",
+        "granularity_bucket": "days",
+        "is_anchored": true,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "This is most likely going to good use, at the very least.",
+            "turn_number": 2078
+          },
+          {
+            "speaker": "SAM",
+            "text": "So do we collect our money?",
+            "turn_number": 2079
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Indeed. What is the total on that contract, if you don't mind repeating?\"",
+            "turn_number": 2080
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I was just working that out.",
+            "turn_number": 2081
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Lots of gold.",
+            "turn_number": 2082
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Lots of gold. It's 1,800 for the dragon eyes, 1,200 for the dragon tongue. 3,500 for the heart. 1,500 for the claws, and then how much for the dragon teeth?",
+            "turn_number": 2083
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Per dragon's tooth? Or for all six dragon teeth?",
+            "turn_number": 2084
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "For all 20 dragon teeth.",
+            "turn_number": 2085
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah. Essentially, considering the dragon teeth that you had already stored, those are used in this transaction, as well as the claws. So you no longer have dragon's teeth and dragon claws stored in your bag. However, you've fulfilled the contract and get full payment for those.",
+            "turn_number": 2086
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We have 12 teeth left.",
+            "turn_number": 2087
+          },
+          {
+            "speaker": "SAM",
+            "text": "So it's 9,000 total?",
+            "turn_number": 2088
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "9,000 total.",
+            "turn_number": 2089
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 2120,
+      "category": "NPC_DEPARTURE",
+      "episode_position_pct": 0.9907,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "exits the room",
+        "extracted_surface_form": "npc_exit",
+        "extracted_compression_scope": "in_scene",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "\"Mertin!\" \"Yes, I know, my dear. I'm taking it.\" And he takes the heart and (grunts) lifts it over his back and the halfling, as thick as he is, (grunts) is bringing it to the back room. She turns around, gathers the rest of the materials into a sack, and exits the room. And with that, we will conclude tonight's session. Well done!",
+        "preceding_turns_last5": [
+          {
+            "speaker": "MARY",
+            "text": "Never. Although I'm not a part of it.",
+            "turn_number": 2115
+          },
+          {
+            "speaker": "SAM",
+            "text": "We'll make you an honorary member.",
+            "turn_number": 2116
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Anyway, I have business to attend to. Enjoy your night. Celebrate. And return here when you wish to see your friends hopefully return as successful as you were.\"",
+            "turn_number": 2117
+          },
+          {
+            "speaker": "SAM",
+            "text": "Thank you.",
+            "turn_number": 2118
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "We are sure they will.",
+            "turn_number": 2119
+          }
+        ]
+      }
+    }
+  ]
+}

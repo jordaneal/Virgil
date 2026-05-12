@@ -1,0 +1,867 @@
+[
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.0442,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "\"There I shall reward you for your assistance. Now, I'll go to free my partner.\"",
+    "preceding_context_chars": 798,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 116,
+    "trigger_phrase": "There I shall reward you",
+    "category": "QUEST_OFFER",
+    "is_in_npc_voice": true,
+    "direction": "offered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": false,
+    "nearest_prior_perception_check_turn_distance": null,
+    "currency_total_gp_equivalent": 0.0,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "SAM",
+        "text": "Guys need any help?",
+        "turn_number": 108
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Should we--",
+        "turn_number": 109
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "I'll tear off a sheet of ribbon off of my sleeve and I'll wrap it around his forearm like a tight tourniquet.",
+        "turn_number": 110
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make a medicine check.",
+        "turn_number": 111
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Do you want me to stabilize him? I can do that.",
+        "turn_number": 112
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "11.",
+        "turn_number": 113
+      },
+      {
+        "speaker": "MATT",
+        "text": "That's enough to stabilize, okay. You've prevented him from bleeding out. He looks pale and has lost a lot of blood and there is this dark pool that's still suffusing the space around him on the stone floor on the raised area of the hallway. So he's stable. Zsundie, as the rest of you came around the corner, you can see him standing there looking at the group. \"Well, I have things to take care of now.\" It looks to you. \"Ketiv Zsundie is my title. I've been held here for too long. Should you find yourself among the endless seas of my world, come to my Silversilt Palace.\"",
+        "turn_number": 114
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Silversilt?",
+        "turn_number": 115
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.0442,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "\"There I shall reward you for your assistance. Now, I'll go to free my partner.\"",
+    "preceding_context_chars": 798,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 116,
+    "trigger_phrase": "for your assistance",
+    "category": "NPC_FAVOR_GRATITUDE",
+    "is_in_npc_voice": true,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": false,
+    "nearest_prior_perception_check_turn_distance": null,
+    "currency_total_gp_equivalent": 0.0,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 1,
+    "preceding_turns": [
+      {
+        "speaker": "SAM",
+        "text": "Guys need any help?",
+        "turn_number": 108
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Should we--",
+        "turn_number": 109
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "I'll tear off a sheet of ribbon off of my sleeve and I'll wrap it around his forearm like a tight tourniquet.",
+        "turn_number": 110
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make a medicine check.",
+        "turn_number": 111
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Do you want me to stabilize him? I can do that.",
+        "turn_number": 112
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "11.",
+        "turn_number": 113
+      },
+      {
+        "speaker": "MATT",
+        "text": "That's enough to stabilize, okay. You've prevented him from bleeding out. He looks pale and has lost a lot of blood and there is this dark pool that's still suffusing the space around him on the stone floor on the raised area of the hallway. So he's stable. Zsundie, as the rest of you came around the corner, you can see him standing there looking at the group. \"Well, I have things to take care of now.\" It looks to you. \"Ketiv Zsundie is my title. I've been held here for too long. Should you find yourself among the endless seas of my world, come to my Silversilt Palace.\"",
+        "turn_number": 114
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Silversilt?",
+        "turn_number": 115
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.0946,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "12, okay. Rifling through his bits, you find 21 gold pieces, 45 silver pieces, two platinum pieces.",
+    "preceding_context_chars": 777,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 248,
+    "trigger_phrase": "Rifling through",
+    "category": "MATERIAL_LOOT",
+    "is_in_npc_voice": false,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": true,
+    "nearest_prior_perception_check_turn_distance": 2,
+    "currency_total_gp_equivalent": 25.5,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "MARISHA",
+        "text": "I do.",
+        "turn_number": 235
+      },
+      {
+        "speaker": "MATT",
+        "text": "Oh wait, no, let me see, I think he might be immune to it for the next 24 hours based on the ability.",
+        "turn_number": 236
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "What, to mine?",
+        "turn_number": 237
+      },
+      {
+        "speaker": "MATT",
+        "text": "If he succeeds on it, yeah. I think so.",
+        "turn_number": 238
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Well then, I go  I don't think you heard me. Whack-whack, and I'll try one more time.",
+        "turn_number": 239
+      },
+      {
+        "speaker": "MATT",
+        "text": "Well, I'm going to double check here, but I think if he succeeds in the save he's immune to it for 24 hours. I could be wrong. Let me double check here.",
+        "turn_number": 240
+      },
+      {
+        "speaker": "SAM",
+        "text": "Has it been 24 hours yet?",
+        "turn_number": 241
+      },
+      {
+        "speaker": "MATT",
+        "text": "Yeah, you can wait 24 hours and then come back to it.",
+        "turn_number": 242
+      },
+      {
+        "speaker": "LIAM",
+        "text": "Let's just sit here until it's Crash Pandas tomorrow.",
+        "turn_number": 243
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "I'll lean over to Nott and say  Nott, do me a favor and make sure he's not carrying anything fancy in his pockets.",
+        "turn_number": 244
+      },
+      {
+        "speaker": "SAM",
+        "text": "I'm going to rifle through all of his pockets with lightning speed agility of hand.",
+        "turn_number": 245
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make an investigation check, please.",
+        "turn_number": 246
+      },
+      {
+        "speaker": "SAM",
+        "text": "Mm, not good. 12.",
+        "turn_number": 247
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.0946,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "12, okay. Rifling through his bits, you find 21 gold pieces, 45 silver pieces, two platinum pieces.",
+    "preceding_context_chars": 777,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 248,
+    "trigger_phrase": "you find 21 gold pieces",
+    "category": "MATERIAL_LOOT",
+    "is_in_npc_voice": false,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": true,
+    "nearest_prior_perception_check_turn_distance": 2,
+    "currency_total_gp_equivalent": 25.5,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 1,
+    "preceding_turns": [
+      {
+        "speaker": "MARISHA",
+        "text": "I do.",
+        "turn_number": 235
+      },
+      {
+        "speaker": "MATT",
+        "text": "Oh wait, no, let me see, I think he might be immune to it for the next 24 hours based on the ability.",
+        "turn_number": 236
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "What, to mine?",
+        "turn_number": 237
+      },
+      {
+        "speaker": "MATT",
+        "text": "If he succeeds on it, yeah. I think so.",
+        "turn_number": 238
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Well then, I go  I don't think you heard me. Whack-whack, and I'll try one more time.",
+        "turn_number": 239
+      },
+      {
+        "speaker": "MATT",
+        "text": "Well, I'm going to double check here, but I think if he succeeds in the save he's immune to it for 24 hours. I could be wrong. Let me double check here.",
+        "turn_number": 240
+      },
+      {
+        "speaker": "SAM",
+        "text": "Has it been 24 hours yet?",
+        "turn_number": 241
+      },
+      {
+        "speaker": "MATT",
+        "text": "Yeah, you can wait 24 hours and then come back to it.",
+        "turn_number": 242
+      },
+      {
+        "speaker": "LIAM",
+        "text": "Let's just sit here until it's Crash Pandas tomorrow.",
+        "turn_number": 243
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "I'll lean over to Nott and say  Nott, do me a favor and make sure he's not carrying anything fancy in his pockets.",
+        "turn_number": 244
+      },
+      {
+        "speaker": "SAM",
+        "text": "I'm going to rifle through all of his pockets with lightning speed agility of hand.",
+        "turn_number": 245
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make an investigation check, please.",
+        "turn_number": 246
+      },
+      {
+        "speaker": "SAM",
+        "text": "Mm, not good. 12.",
+        "turn_number": 247
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.0946,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "12, okay. Rifling through his bits, you find 21 gold pieces, 45 silver pieces, two platinum pieces.",
+    "preceding_context_chars": 777,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 248,
+    "trigger_phrase": "45 silver pieces",
+    "category": "MATERIAL_LOOT",
+    "is_in_npc_voice": false,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": true,
+    "nearest_prior_perception_check_turn_distance": 2,
+    "currency_total_gp_equivalent": 25.5,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 2,
+    "preceding_turns": [
+      {
+        "speaker": "MARISHA",
+        "text": "I do.",
+        "turn_number": 235
+      },
+      {
+        "speaker": "MATT",
+        "text": "Oh wait, no, let me see, I think he might be immune to it for the next 24 hours based on the ability.",
+        "turn_number": 236
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "What, to mine?",
+        "turn_number": 237
+      },
+      {
+        "speaker": "MATT",
+        "text": "If he succeeds on it, yeah. I think so.",
+        "turn_number": 238
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Well then, I go  I don't think you heard me. Whack-whack, and I'll try one more time.",
+        "turn_number": 239
+      },
+      {
+        "speaker": "MATT",
+        "text": "Well, I'm going to double check here, but I think if he succeeds in the save he's immune to it for 24 hours. I could be wrong. Let me double check here.",
+        "turn_number": 240
+      },
+      {
+        "speaker": "SAM",
+        "text": "Has it been 24 hours yet?",
+        "turn_number": 241
+      },
+      {
+        "speaker": "MATT",
+        "text": "Yeah, you can wait 24 hours and then come back to it.",
+        "turn_number": 242
+      },
+      {
+        "speaker": "LIAM",
+        "text": "Let's just sit here until it's Crash Pandas tomorrow.",
+        "turn_number": 243
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "I'll lean over to Nott and say  Nott, do me a favor and make sure he's not carrying anything fancy in his pockets.",
+        "turn_number": 244
+      },
+      {
+        "speaker": "SAM",
+        "text": "I'm going to rifle through all of his pockets with lightning speed agility of hand.",
+        "turn_number": 245
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make an investigation check, please.",
+        "turn_number": 246
+      },
+      {
+        "speaker": "SAM",
+        "text": "Mm, not good. 12.",
+        "turn_number": 247
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.3005,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "\"Huh. Well, that may very well be a great turn of luck in my benefit, definitely. Thank you for looking into that.\"",
+    "preceding_context_chars": 273,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 788,
+    "trigger_phrase": "Thank you for",
+    "category": "NPC_FAVOR_GRATITUDE",
+    "is_in_npc_voice": true,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": false,
+    "nearest_prior_perception_check_turn_distance": null,
+    "currency_total_gp_equivalent": 0.0,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "LAURA",
+        "text": "So, you know that guy?",
+        "turn_number": 781
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"There are a number of guys that I know, yes.\"",
+        "turn_number": 782
+      },
+      {
+        "speaker": "LAURA",
+        "text": "The guy that was bugging you.",
+        "turn_number": 783
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"Algar, yes.\"",
+        "turn_number": 784
+      },
+      {
+        "speaker": "LAURA",
+        "text": "We went to go talk to him, but he had already left.",
+        "turn_number": 785
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"He left?\"",
+        "turn_number": 786
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Yes, he had fled the city, apparently. Things happened, they were real bad or something, I don't know.",
+        "turn_number": 787
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.3036,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "Yeah, go ahead and take a short rest. You guys manage to enjoy probably one of the better meals you've had in a while.",
+    "preceding_context_chars": 792,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 796,
+    "trigger_phrase": "take a short rest",
+    "category": "MECHANICAL_GRANT",
+    "is_in_npc_voice": false,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": false,
+    "nearest_prior_perception_check_turn_distance": null,
+    "currency_total_gp_equivalent": 0.0,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "MATT",
+        "text": "\"Algar, yes.\"",
+        "turn_number": 784
+      },
+      {
+        "speaker": "LAURA",
+        "text": "We went to go talk to him, but he had already left.",
+        "turn_number": 785
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"He left?\"",
+        "turn_number": 786
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Yes, he had fled the city, apparently. Things happened, they were real bad or something, I don't know.",
+        "turn_number": 787
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"Huh. Well, that may very well be a great turn of luck in my benefit, definitely. Thank you for looking into that.\"",
+        "turn_number": 788
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Of course! Yeah, we were going to talk to him and everything, but he is gone, so...",
+        "turn_number": 789
+      },
+      {
+        "speaker": "MATT",
+        "text": "\" Well... that makes me feel more comfortable, thank you very much.\"",
+        "turn_number": 790
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Of course.",
+        "turn_number": 791
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"I appreciate it.\"",
+        "turn_number": 792
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Do you guys want to eat anything? (sounds of agreement)",
+        "turn_number": 793
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"Very well! I will ensure that you are all properly taken care of this night.\" (clapping twice) She goes ahead and brings the servants back in. A meal is placed for the rest of you, and as the evening progresses, and you take a bit of time to rest--",
+        "turn_number": 794
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Like a short rest?",
+        "turn_number": 795
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.6423,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "I'll allow it.",
+    "preceding_context_chars": 735,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 1684,
+    "trigger_phrase": "I'll allow it",
+    "category": "MECHANICAL_GRANT",
+    "is_in_npc_voice": false,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": false,
+    "nearest_prior_perception_check_turn_distance": null,
+    "currency_total_gp_equivalent": 0.0,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "MATT",
+        "text": "Yeah, you're within range.",
+        "turn_number": 1673
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "That's nice; it's eight points.",
+        "turn_number": 1674
+      },
+      {
+        "speaker": "MATT",
+        "text": "There you go, eight points to Beau.",
+        "turn_number": 1675
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "Yeah, I'm going to start booking out of here.",
+        "turn_number": 1676
+      },
+      {
+        "speaker": "MATT",
+        "text": "Where're you going?",
+        "turn_number": 1677
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "I'm heading back around the way I assume everyone else is going. Yeah, that way.",
+        "turn_number": 1678
+      },
+      {
+        "speaker": "MATT",
+        "text": "Okay. There's Caduceus. Finishing your go. Yasha's up.",
+        "turn_number": 1679
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Yasha's going to rush up and aid Beau in trying to pull Marius towards the docks.",
+        "turn_number": 1680
+      },
+      {
+        "speaker": "MATT",
+        "text": "Okay. If she wants to, she can attempt to grapple and then pull him out of Beau's grip, or we can say she holds her action and then-- it gets a little weird, because it's-- movement is what you pull him out of the way.",
+        "turn_number": 1681
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Would it help make full speed when it comes back to Beau's turn if she's assisting? Can they double pull?",
+        "turn_number": 1682
+      },
+      {
+        "speaker": "MARISHA",
+        "text": "Can she go, and then I assist on my turn?",
+        "turn_number": 1683
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.9672,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "Okay, you find a pouch of 20 platinum pieces.",
+    "preceding_context_chars": 789,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 2536,
+    "trigger_phrase": "you find a pouch of 20 platinum pieces",
+    "category": "MATERIAL_LOOT",
+    "is_in_npc_voice": false,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": true,
+    "nearest_prior_perception_check_turn_distance": 3,
+    "currency_total_gp_equivalent": 200.0,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "LAURA",
+        "text": "She's a pirate!",
+        "turn_number": 2519
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"That's one word to say it. If you want to find her, your best bet is probably somewhere in the Swavain Islands. Don't know where directly. I'm just hired as the errand boy.\"",
+        "turn_number": 2520
+      },
+      {
+        "speaker": "SAM",
+        "text": "The Slavain Islands?",
+        "turn_number": 2521
+      },
+      {
+        "speaker": "MATT",
+        "text": "Swavain. S-W-A-V-A-I-N. \"I was just supposed to come back here. Supposed to meet up with the folks of the Mist, the ship that you've now commandeered. You've killed them all. What are you going to do with me?\"",
+        "turn_number": 2522
+      },
+      {
+        "speaker": "LIAM",
+        "text": "That is a good question.",
+        "turn_number": 2523
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"I'm useful. I'm helpful! I can swab the deck. I can cook.\"",
+        "turn_number": 2524
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Ooh!",
+        "turn_number": 2525
+      },
+      {
+        "speaker": "LIAM",
+        "text": "What can you cook? That's interesting.",
+        "turn_number": 2526
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"What you got?\"",
+        "turn_number": 2527
+      },
+      {
+        "speaker": "SAM",
+        "text": "We don't know what we got. We stole this ship.",
+        "turn_number": 2528
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"Yeah, yeah you did.\"",
+        "turn_number": 2529
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Have we patted him down?",
+        "turn_number": 2530
+      },
+      {
+        "speaker": "LIAM",
+        "text": "No.",
+        "turn_number": 2531
+      },
+      {
+        "speaker": "SAM",
+        "text": "I'll pat him down.",
+        "turn_number": 2532
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make an investigation check.",
+        "turn_number": 2533
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "By this point, by the way, everyone has 16 hit points added to their--",
+        "turn_number": 2534
+      },
+      {
+        "speaker": "SAM",
+        "text": "18 for investigation.",
+        "turn_number": 2535
+      }
+    ]
+  },
+  {
+    "campaign": "C2",
+    "episode": 35,
+    "episode_position_pct": 0.9687,
+    "speaker": "MATT",
+    "event_type": "loot_reward",
+    "raw_text": "You find another pouch that's hidden within his belt pouch that contains 62 gold pieces, three silver, 50 copper, and what looks to be a pouch of chewing tobacco.",
+    "preceding_context_chars": 722,
+    "extractor_version": "loot_reward_v1",
+    "extracted_at": "2026-05-12T22:28:18Z",
+    "trigger_turn_number": 2540,
+    "trigger_phrase": "62 gold pieces",
+    "category": "MATERIAL_LOOT",
+    "is_in_npc_voice": false,
+    "direction": "delivered",
+    "absence_marker": false,
+    "has_persistence_marker": false,
+    "has_perception_buildup": true,
+    "nearest_prior_perception_check_turn_distance": 7,
+    "currency_total_gp_equivalent": 62.5,
+    "is_combat_state": false,
+    "is_recap_state": false,
+    "same_turn_record_index": 0,
+    "preceding_turns": [
+      {
+        "speaker": "SAM",
+        "text": "The Slavain Islands?",
+        "turn_number": 2521
+      },
+      {
+        "speaker": "MATT",
+        "text": "Swavain. S-W-A-V-A-I-N. \"I was just supposed to come back here. Supposed to meet up with the folks of the Mist, the ship that you've now commandeered. You've killed them all. What are you going to do with me?\"",
+        "turn_number": 2522
+      },
+      {
+        "speaker": "LIAM",
+        "text": "That is a good question.",
+        "turn_number": 2523
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"I'm useful. I'm helpful! I can swab the deck. I can cook.\"",
+        "turn_number": 2524
+      },
+      {
+        "speaker": "LAURA",
+        "text": "Ooh!",
+        "turn_number": 2525
+      },
+      {
+        "speaker": "LIAM",
+        "text": "What can you cook? That's interesting.",
+        "turn_number": 2526
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"What you got?\"",
+        "turn_number": 2527
+      },
+      {
+        "speaker": "SAM",
+        "text": "We don't know what we got. We stole this ship.",
+        "turn_number": 2528
+      },
+      {
+        "speaker": "MATT",
+        "text": "\"Yeah, yeah you did.\"",
+        "turn_number": 2529
+      },
+      {
+        "speaker": "TRAVIS",
+        "text": "Have we patted him down?",
+        "turn_number": 2530
+      },
+      {
+        "speaker": "LIAM",
+        "text": "No.",
+        "turn_number": 2531
+      },
+      {
+        "speaker": "SAM",
+        "text": "I'll pat him down.",
+        "turn_number": 2532
+      },
+      {
+        "speaker": "MATT",
+        "text": "Make an investigation check.",
+        "turn_number": 2533
+      },
+      {
+        "speaker": "TALIESIN",
+        "text": "By this point, by the way, everyone has 16 hit points added to their--",
+        "turn_number": 2534
+      },
+      {
+        "speaker": "SAM",
+        "text": "18 for investigation.",
+        "turn_number": 2535
+      },
+      {
+        "speaker": "MATT",
+        "text": "Okay, you find a pouch of 20 platinum pieces.",
+        "turn_number": 2536
+      },
+      {
+        "speaker": "LAURA",
+        "text": "That's the money he was going to return.",
+        "turn_number": 2537
+      },
+      {
+        "speaker": "SAM",
+        "text": "That's a lot.",
+        "turn_number": 2538
+      },
+      {
+        "speaker": "LAURA",
+        "text": "That's what he got paid.",
+        "turn_number": 2539
+      }
+    ]
+  }
+]

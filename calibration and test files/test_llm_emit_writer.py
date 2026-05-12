@@ -120,7 +120,7 @@ def test_parse_skill_and_dc_multi_word_regression():
 # ─── End-to-end composition tests ────────────────────────────────────
 
 def test_end_to_end_parse_then_upsert_writes_row_with_dc():
-    init_scene_state(401, 'seed')
+    init_scene_state(401)
     _reset_logs()
     response = (
         "Donovan leans closer and squints at the runes.\n"
@@ -149,7 +149,7 @@ def test_disjoint_writers_share_pending_directive_upsert():
     # Two upserts simulating disjoint triggers (DM-typed + LLM-emitted)
     # both calling the same helper. Second upsert replaces the first per
     # pending_directive_replaced semantics; the row reflects the latest.
-    init_scene_state(402, 'seed')
+    init_scene_state(402)
     _reset_logs()
     # Surface A: simulated DM-typed directive
     pending_directive_upsert(

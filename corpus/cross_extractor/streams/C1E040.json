@@ -1,0 +1,1106 @@
+{
+  "episode_combined": "C1E040",
+  "campaign": "C1",
+  "episode_int": 40,
+  "total_records": 15,
+  "per_source_counts": {
+    "TM": 11,
+    "EC": 1,
+    "LR": 3
+  },
+  "events": [
+    {
+      "source": "TM",
+      "turn_number": 153,
+      "category": null,
+      "episode_position_pct": 0.0936,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You can see people that are fleeing from the town in little bits, two or three at a time, trails of individuals that are just now managing to make it outside of the city of Emon itself. Some of them are heading out into the distance, getting far away as possible. A few more are heading towards the keep, and you gather that this crowd has been gathering here for the last few minutes, at the very least.",
+        "preceding_context_chars": 542,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "few minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "How many people am I seeing down there?",
+            "turn_number": 150
+          },
+          {
+            "speaker": "MATT",
+            "text": "Well, as you get up to the top and crest over, you can see the three guards are all yelling at each other and yelling over, \"We can't, we can't do anything right now, we're waiting for th--\" They look over and see you come over the edge, and you can see there's probably close to 50 or so people that are all pressed up against the gates to the inside of your keep, that are all shouting to be let in.",
+            "turn_number": 151
+          },
+          {
+            "speaker": "LIAM",
+            "text": "If I look past, do I see anyone else coming towards the keep? Is it just a cluster and that's it, or--",
+            "turn_number": 152
+          }
+        ]
+      }
+    },
+    {
+      "source": "EC",
+      "turn_number": 179,
+      "category": "player_action_escalation",
+      "episode_position_pct": 0.1095,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "init_event",
+        "raw_text": "As you go running up, you guys see now it circles back around and its wings tilt to one side as it begins to make its way towards the keep for a second sweep. I would like everyone to roll initiative.",
+        "preceding_context_chars": 1500,
+        "extractor_version": "encounter_cadence_v1_3",
+        "extracted_at": "2026-05-06T05:38:33Z",
+        "is_fresh_encounter": true,
+        "wave_subtype": null,
+        "player_action_caused": true,
+        "narration_buildup_chars": 1326,
+        "nearest_prior_trigger_turn_distance": null,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "At this point, the skyship has passed overhead, missing the top of the keep and the highest walls by about 40 or so feet. For a few seconds of silence, and you hear impact, shaking the ground for a few seconds. Not far from here, you can see another blast of red fire and a couple of sparks of arcane energy that arc out, as another column of smoke south of you begins to pour up into the sky.",
+            "turn_number": 172
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Feeling that, I snap out of it and run to the south exit of the castle to look for the explosion.",
+            "turn_number": 173
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As you start rushing in that direction, to the south side of the castle, looking back to where the skyship came through, you can see the smoke parts once more, and you see unfurling from within two large white wings bearing down, and you can see as it swoops down, there are groups of people that are rushing 100, 200, 300 feet away, that are pulling themselves out of the ravine that sits between the south walls of Emon and the north walls of your keep. As they're pouring through the mud and the stream there, it's about four or five feet deep, it swoops down and unleashes a blast of freezing cold energy that freezes that whole section of the river solid and every person in that vicinity as well. Locked in place.",
+            "turn_number": 174
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Does Keyleth see all of this?",
+            "turn_number": 175
+          },
+          {
+            "speaker": "MATT",
+            "text": "You don't see this because you're inside the wall. You see it come down and swoop by. You see it circle around. You, however, have a good view of this, right as you're about to go down the wall on the ladder.",
+            "turn_number": 176
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Vex, I need you on the roof.",
+            "turn_number": 177
+          },
+          {
+            "speaker": "LAURA",
+            "text": "All right. I run up.",
+            "turn_number": 178
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 288,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.1761,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "It's when you're blocked by something, it gives you a bonus to--",
+        "preceding_context_chars": 772,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "gives you a bonus",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Okay. I want to use my movement to get under that tree.",
+            "turn_number": 276
+          },
+          {
+            "speaker": "MATT",
+            "text": "Under this tree or that tree?",
+            "turn_number": 277
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, let me-- No, towards the entrance-- heading for cover.",
+            "turn_number": 278
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah.",
+            "turn_number": 279
+          },
+          {
+            "speaker": "MATT",
+            "text": "Here.",
+            "turn_number": 280
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah.",
+            "turn_number": 281
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, so you're behind the tree.",
+            "turn_number": 282
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "And now I'm going to cast Fog Cloud at fourth level, which makes it a radius of 80 feet.",
+            "turn_number": 283
+          },
+          {
+            "speaker": "MATT",
+            "text": "80-foot radius?",
+            "turn_number": 284
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "If you cast it at higher levels, it goes up by 20 feet for each level higher you cast it. So I'm casting it at fourth level. Okay, so I go all Storm for a second, get all misty-eyed, and I want to create a nice low-level fog. Across the whole castle.",
+            "turn_number": 285
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Okay, so heavily obscured. Heavily obscured will give everyone a 3/4 cover bonus-- Let me see what heavily obscured would actually do specifically, to be sure real fast, pardon me.",
+            "turn_number": 286
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I don't even know what 3/4 cover bonus is.",
+            "turn_number": 287
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 342,
+      "category": null,
+      "episode_position_pct": 0.2092,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "So 42 points of damage. Still not shabby by any means. Gotcha, as you chuck both daggers in the direction where you can see as it's now at the very bottom of the fog cloud. You have enough visual to strike towards it without missing and both daggers sink into the bottom of the creature. One of them you know was a nice, impactful wounding for any other creature, but it doesn't seem to have taken much issue with the impact of the blade. Appear at your side again. That ends your reaction. Now Vorugal is going to go. Looking at the area of most density--",
+        "preceding_context_chars": 764,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "A surprise generally means that it has absolutely no idea that you are there or there's any sort of threat from you.",
+            "turn_number": 326
+          },
+          {
+            "speaker": "LIAM",
+            "text": "24.",
+            "turn_number": 327
+          },
+          {
+            "speaker": "MATT",
+            "text": "24 hits.",
+            "turn_number": 328
+          },
+          {
+            "speaker": "LIAM",
+            "text": "All right. And then the second dagger I throw-- I can only throw a second one-- is also a 24.",
+            "turn_number": 329
+          },
+          {
+            "speaker": "MATT",
+            "text": "Both hit.",
+            "turn_number": 330
+          },
+          {
+            "speaker": "LIAM",
+            "text": "So the first one is double dice, so eight plus-- 14, 15, 18, 23, 25. Double dice is 50 plus seven is-- Yeah, 57 for the first.",
+            "turn_number": 331
+          },
+          {
+            "speaker": "MATT",
+            "text": "Ooh, nice.",
+            "turn_number": 332
+          },
+          {
+            "speaker": "LIAM",
+            "text": "And the second one goes bink. That is a ten.",
+            "turn_number": 333
+          },
+          {
+            "speaker": "MATT",
+            "text": "Ten, all right. 57 points of damage, that's-- Is that straight-up dice rolls? That's crazy.",
+            "turn_number": 334
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That's Sneak Attack, I've gone up a level to 13--",
+            "turn_number": 335
+          },
+          {
+            "speaker": "MATT",
+            "text": "Right, so it's a d6 or 7d6.",
+            "turn_number": 336
+          },
+          {
+            "speaker": "LIAM",
+            "text": "7d6-- Oh, wait.",
+            "turn_number": 337
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's not doubled, though.",
+            "turn_number": 338
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Sorry, sorry, sorry. 25 plus seven is 32. Sorry, 32.",
+            "turn_number": 339
+          },
+          {
+            "speaker": "MATT",
+            "text": "32, there you go, I was like, that's really high for a non-crit.",
+            "turn_number": 340
+          },
+          {
+            "speaker": "LIAM",
+            "text": "The second one was ten. 32, ten.",
+            "turn_number": 341
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 451,
+      "category": null,
+      "episode_position_pct": 0.2758,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. So as you focus and look up, you can see now some of the fog cloud that surrounds it congeals into a darker color and clings to the dragon's form as it is now Hexed by you.",
+        "preceding_context_chars": 636,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "All right, I'm going to drop down-- Like a boss.",
+            "turn_number": 441
+          },
+          {
+            "speaker": "MATT",
+            "text": "Are you going to leap or climb down?",
+            "turn_number": 442
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to leap.",
+            "turn_number": 443
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, and roll.",
+            "turn_number": 444
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "29.",
+            "turn_number": 445
+          },
+          {
+            "speaker": "MATT",
+            "text": "29, success and managed to avoid one of your guards who was right below you. You weren't aware and managed to dodge off to the side this way and use the edge of the wall to kick off to change the trajectory, as you land, carrying Bad News in one hand, three-point landing in the other.",
+            "turn_number": 446
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Sick, Percy.",
+            "turn_number": 447
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Hold that gun up from the ground.",
+            "turn_number": 448
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yep. Just making sure it doesn't damage itself.",
+            "turn_number": 449
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Okay, the next thing I'm going to do is, I'm going to concentrate really hard and I'm going to try and conjure Hex to see if it works.",
+            "turn_number": 450
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 913,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.5584,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Hi, my name is Matthew Mercer, I'm a voice actor and the dungeon master for Geek and Sundry's Critical Role, and welcome to my short video series for my tips on how to dungeon master or game master your own roleplaying games. So today, our first topic is going to be Encounter Building. So when you are creating an encounter, a combat encounter specifically for your party of adventurers or space marines or whatever else you are running, you want to consider what kind of terrain or region is this going to have. That's going to go ahead and help you guide what creatures are going to be there, what type of challenges might be in that way. So consider, is it a icy tundra, is it a frozen mountaintop or is it like a hot, muggy swampland, is it a underground cave network? There are actually a lot of these resource books that you can find for these RPGs that will have listings of creatures and monsters and dangers by topography, and by weather, and that's a really cool way to see what indigenous creatures might live there, and that's a good resource to pull from if you're not having any creative juices helping you decide what to put in front of them. Secondly, you want to consider how challenging you want the encounter or encounters to be. Do you want it to be a really quick scuffle, do you want it to be a series of small battles, as to opposed to fighting in a long hallway, in a spaceship? Do you want it to be one giant climatic multi-leveled boss confrontation? Once you've made that decision, that'll help you figure out how dangerous, how extensive, and how powerful the villains may be for this encounter. There's a lot of great resource manuals for every RPG system out there that have breakdowns about what creatures are good for which player levels as far as power or challenge and danger is concerned. Like, for instance, the dungeon master's guide and monster manual have a challenge rating system. A creature of a certain challenge rating is a decent challenge for a group of four players of that level, and you can slide the scale from there. Also, the DMG, or the Dungeon Master's Guide, has a experience threshold table in there as well that helps you build encounters based on the total experience points the creatures are fighting. So those are really cool resources, if you're new to the system and you're still trying to figure out how to balance that properly. Over time, eventually you'll just get a feel for it. Experience helps you get a little more comfortable with balancing the battle, and you want to make sure you don't kill all your players way too quickly in the game, either. There's also a really good website called Kobold Fight Club, for those who are running Dungeons & Dragons 5th edition campaigns, that helps them build an entire encounter with the experience table stuff that helps you get an idea of what could and could not be considered too powerful. And don't forget, if you can't find a creature or monster in these realms or any sort of villain that suits your need for the storyline or this particular battle, you can create one. Make one up or take something that's there and customize it and alter it, make it more powerful, make it weaker, you know? If you really, really want to run a game that has a bunch of kobolds as the main villain, but all your players are level ten? Go ahead and make yourself some more powerful kobolds. You can customize 'em all you want. Everything in there is just a baseline suggestion of what they think, or they created initially to be, but you can always scale them, you can make them more powerful, you can add additional hit points, make them do more damage per attack. Increase their defenses, give it some hidden resistances or vulnerabilities. You can even create whole new abilities, I customize creatures all the time for my game. I think it, one, makes it more interesting and more customized to the specific encounter and world. Secondly, for players who have been playing for a long time and pretty much memorized the monster manual, it keeps them on their toes because they'll be encountering monsters that they have yet to memorize everything about. Also, make sure, though, if you do use these creatures and you want them to have interesting defenses and vulnerabilities and the like, make sure you highlight them or note them, it's very easy to rush into combat and forget some of these cool things. So I always use a highlighter and highlight the various notes and elements of these creatures or these combat scenarios that I want to make sure that I remember and recall in the heat of battle. The next note I want to bring up is battlefields. First and foremost, not every game needs a battlefield. In fact, I kind of prefer RPGs that don't have a battle map with miniatures, it's just a way to play. I prefer to keep things in my imagination, but that's generally more wieldy with smaller groups, if you have three, maybe four players. Larger than that, it gets a little unwieldy, and me running six to eight players, it has become very necessary for everyone to keep track of their spatial awareness. When you create a map, things to consider, creative terrain. You know, think of where it's are happening, but ways to make it different on occasion, too. You can have straight forward battles with just, here's an area where they fight, here's some hallways, here's some rooms, and that's cool, too, but if you're in an urban setting, have furniture they can use to their advantage, whether it be for height or for setting up blockades. Also, consider what other challenges and confrontations they might have with the terrain during the battlefield. Is there a giant chasm they have to get across to actually get to the villain while they're attacking them from a distance? Is there some sort of arcane field that's locked off a portion of the battlefield and they have to figure out some sort of puzzle during the battle to lock it down? Is invulnerable to all damage until they can find some sort of hidden aspect of their soul locked within a nearby battlefield, or is there a bunch of innocents in there as well that are in danger of being killed from the collateral damage? Find cool and unique ways to make it an interesting battle outside of a slug fest of HP being knocked away and whoever falls first. Mind you, those can be fun, too, on occasion, but you want to make sure to keep things interesting. For those who want to create battlefields, what I use for my battlefields, because it has been requested a few times. You can use easel pad paper, one-inch grid easel pad paper that you can find online, and that's a real cool way to draw on that using markers and create your own battlefields that way. There are great tutorials online too that show you how to make cool battles and interesting-looking terrain with simple hatch-mark shading and minor colors, so I highly recommend that. Also, when you're using intelligent creatures, especially monsters or individuals or villains that are understanding their own mortality, they may flee. When they hit about half or a quarter hit points, they maybe want to get the heck out of Dodge. So don't be afraid to let your villains or enemies do that on occasion. One, it ups the stakes immediately in a battle from a slog fest to, oh crap he's getting away, and the dynamic shifts to try and prevent them from doing so. And secondly, if they do manage to get away, you may have a juicy villain who can recur later on down the story with a need for vengeance. Vengeance! Another cool note, not all battles are meant to be won, either. Sometimes you want to introduce a really powerful enemy as a foreshadowing aspect, a creature that they can in no way, shape or form defeat, and they are meant to flee from, so that they can build towards down the road, maybe coming back and finally killing it as a means of vengeance. Just make sure you try and insinuate to the players that they shouldn't stick around for the whole fight or you might have a TPK on your hands, so be careful with that one. It's a fun tool, but be careful. No, seriously, be careful. Plus, it also leaves a cool story like, \"Man, you remember that one time we almost got killed by that thing?\" Not all fights are meant to end in bloodshed, as well. So don't be afraid to let the players diplomatically resolve an encounter. Sometimes battles happen because of misunderstandings or misinformation or the wrong thing was said and it ticks somebody off. That doesn't mean they have to fight to the bitter end and murder whoever's in front of them. You don't want the whole murderhobo syndrome to be consistent, unless that's the campaign you're running, in which case, fight on, my murderhobos. But let the players use their social skills to try and defuse an encounter before anyone gets killed. I've many games where halfway through a battle, they're like, \"Wait, they may have information we need,\" or, \"Maybe we were duped and have the wrong information,\" and they decide to diplomatically end it. It doesn't always work, but it's nice to give them that option. [break]",
+        "preceding_context_chars": 791,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "you remember that",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "I look about. Is there anything looking at me? Anybody throw anything at me? Pour anything on me?",
+            "turn_number": 897
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a stealth check, Vex.",
+            "turn_number": 898
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I'm choosing my dice. Okay, okay, okay. I get advantage on all stealth checks?",
+            "turn_number": 899
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yes. Because the cloak, yes",
+            "turn_number": 900
+          },
+          {
+            "speaker": "LAURA",
+            "text": "24.",
+            "turn_number": 901
+          },
+          {
+            "speaker": "MATT",
+            "text": "You look about, and in the chaos of the people, you have no idea what the source of this weird tingling was.",
+            "turn_number": 902
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "This keep is fucking drafty. I go downstairs.",
+            "turn_number": 903
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As you walk downstairs, you find your way to Percy's workshop, we're going to take a break. (cheering)",
+            "turn_number": 904
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Jeez Louise.",
+            "turn_number": 905
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Thank goodness.",
+            "turn_number": 906
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, make this one quick guys, get back into it while we still have the tension in the story going. So we'll see you guys here in a few minutes.",
+            "turn_number": 907
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Five minutes, five minutes.",
+            "turn_number": 908
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Five minutes. Pizza and five minutes.",
+            "turn_number": 909
+          },
+          {
+            "speaker": "MATT",
+            "text": "You good?",
+            "turn_number": 910
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Is the food here?",
+            "turn_number": 911
+          },
+          {
+            "speaker": "MATT",
+            "text": "It should be, I hope so. [break]",
+            "turn_number": 912
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 933,
+      "category": null,
+      "episode_position_pct": 0.5706,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"It's been too long, too long have I been here, I do not know who I am.\"",
+        "preceding_context_chars": 773,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Well, Freddie, I imagine I'm wondering the same thing you are, at least I hope, and that's: what's in it for the skull?",
+            "turn_number": 927
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "He wants to be freed. It. How would we free you?",
+            "turn_number": 928
+          },
+          {
+            "speaker": "MATT",
+            "text": "There's a slight pause before you can see the gem, the swirl coalesces into what looks like a spectral face. You can make out what looks to be eyes, a mouth and a nose. Though the nose itself is less of a pronounced human nose and--",
+            "turn_number": 929
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm looking at the floor, I'm not looking at it.",
+            "turn_number": 930
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. But you see where the nose is, instead there are two nasal passages. And you hear a voice slowly creak out from it and say, \"All that I require is for you to destroy this prison. Free my spirit from generations of torment, that is all I ask.\"",
+            "turn_number": 931
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Hey, quick question, who are you? Who were you before you were in this prison?",
+            "turn_number": 932
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1208,
+      "category": null,
+      "episode_position_pct": 0.7388,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. So you go and plant a protective position in front of her? It's now your turn. Grog, who rushes over and shoulder slams Percy out of the way, and he's fallen to the ground. His gun almost scatters to the floor of the workshop around you. As you're expecting, he turns towards you, instead he steps and his giant frame is now blocking you with the shoulder blades in front, his arms out in a defensive position, facing off with people as they begin to enter the room. What are you going to do?",
+        "preceding_context_chars": 652,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Why can't that be higher? 19.",
+            "turn_number": 1196
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Ah shit, 14.",
+            "turn_number": 1197
+          },
+          {
+            "speaker": "MATT",
+            "text": "14, I need you to go ahead and make a strength saving throw.",
+            "turn_number": 1198
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh shit. 17, oh, saving throw. 21.",
+            "turn_number": 1199
+          },
+          {
+            "speaker": "MATT",
+            "text": "21. You slam into him and you essentially shove him with the shoulder. You manage to knock him prone, but the skull doesn't come loose, he loses his grip on it, and currently Vex is still holding it front of you. You're prone on the ground.",
+            "turn_number": 1200
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm prone on the ground?",
+            "turn_number": 1201
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "So Vex still has it?",
+            "turn_number": 1202
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "But it's Vex's turn.",
+            "turn_number": 1203
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "But I knocked him off of her. But you've still got the skull.",
+            "turn_number": 1204
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I wasn't trying to wrestle it.",
+            "turn_number": 1205
+          },
+          {
+            "speaker": "MATT",
+            "text": "Anything else you want to try and accomplish?",
+            "turn_number": 1206
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, I would like to turn and put my back to Vex, because she has the skull.",
+            "turn_number": 1207
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1423,
+      "category": null,
+      "episode_position_pct": 0.8703,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "At this point she nods and goes, \"I know not the middle two, but Vorugal has been known to wander the wastes north in Othanzia. Some of the offspring have wandered further, in fact I believe the Skysunder that you destroyed naught but two years ago that was sealed in the Frostweald was one of its brethren. Its children. But Vorugal has not been seen wandering this far out. Chromatics do not work together, they are selfish and greedy and territorial.\"",
+        "preceding_context_chars": 739,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Yes, yes.\"",
+            "turn_number": 1412
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What do we do?",
+            "turn_number": 1413
+          },
+          {
+            "speaker": "MATT",
+            "text": "And at this point, she looks around for a chair. You can see her hands are shaking, and she goes and grabs a chair and pulls it up and sits down for a second, puts her hands on her knees, and quietly, \"Describe to me these dragons.\"",
+            "turn_number": 1414
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "There was one of each color.",
+            "turn_number": 1415
+          },
+          {
+            "speaker": "LAURA",
+            "text": "A green, a black, a white.",
+            "turn_number": 1416
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "And a big red piece of shit.",
+            "turn_number": 1417
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "All colors except for blue of the chromatic spectrum. I got a few of their names.",
+            "turn_number": 1418
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you go through each color, she nods, but when you say the big red, her body freezes.",
+            "turn_number": 1419
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Does this sound familiar to you?",
+            "turn_number": 1420
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The names, you said?\"",
+            "turn_number": 1421
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "There's a white dragon that called himself Vorugal. A green dragon, Raishan. Black dragon, Umbrasyl, and the red dragon, we haven't heard his name yet. He seems to be the leader.",
+            "turn_number": 1422
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1431,
+      "category": null,
+      "episode_position_pct": 0.8752,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Now for the first time, you have known Allura for quite some time, she's been a very stoic, strong, confident, and powerful person. At this moment, she has withered. She looks genuinely like she's hit a level of fear you have never seen in an individual like this, and it shakes you to see this upon her face, and she puts her hand up and says, \"This is not your fault. This burden is mine.\" And looks over to the dwarf and says, \"It is ours.\" And the dwarf, you can now see, he's nodding in understanding. \"This dragon... it's been called many names, but the one that it's taken is Thordak, The Cinder King.\"",
+        "preceding_context_chars": 507,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it's been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "They're definitely working together.",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"This red you say is the leader?\"",
+            "turn_number": 1425
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yes, most definitely.",
+            "turn_number": 1426
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "He had a message that he belted over the entire city. He said that we who live, he's showing mercy and that we can either fight or flee, and then--",
+            "turn_number": 1427
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He said if we fight or flee, we'll be denied the mercy.",
+            "turn_number": 1428
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay, something along those lines. And then he said that it was the guardians of this city that brought this upon Emon, and that he has control. He called it like a new order.",
+            "turn_number": 1429
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He said our new purpose is to serve him.",
+            "turn_number": 1430
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1433,
+      "category": null,
+      "episode_position_pct": 0.8765,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Thordak. This terrible beast lorded over half of Marquet for centuries, taking the scalding sands as its domain and its denizens as cattle, and just as the city of Ank'harel was becoming the jewel of the desert, Thordak struck. A battle, however, that it was unable to win. Sent away, mortally wounded, it was thought that the dragon had died soon after, having not been seen for many centuries since. That is, until about 15 years ago. The rumors of a powerful drake, storming the beaches and seas, had been whispered for a long time, while ships would be lost at sea. It had survived and secretly ruled the island of Viscan in the south of the Lucidian Ocean. I suppose after generations, the dragon, now self-crowned as the Cinder King, grew greedier with the island's limited resources and began razing the Mournset countryside south of the Verdant Expanse and the Stormcrest Mountains.\" And her eyes get even more distant as she is recalling all this. \"Reports of a dragon more massive than the records can compare hit Tal'Dorei. At the time, I wasn't part of the council. I traveled with a group of adventurers much like yourselves: Kima, Drake here, and a handful of other brave souls who are no longer with us. We traveled to investigate, but arrived to find this creature destroying everything surrounding the Glade Pools. Port Udall, gone, Byroden a smoldering ruin, and we gathered a small army of mercenaries and hunted it back to its new den in the Stormcrest, where a large number of lizardfolk had formed around him. But we were overpowered by the sheer might of the dragon. Many lives were lost. Knowing that we could not kill it, we turned to other means. I called upon the Arcana Pansophical, a circle of friends, arcane practitioners that agreed to work together across the land to keep them safe. They devised a trap, one that could, we believed, permanently seal Thordak within the elemental plane of fire, preventing him from ever returning to our world. At the sacrifice of many, including our companions Sirus, Dohla, Ghenn, we succeeded.\" And as the tears begin to roll down her face, she looks around. \"For naught now, it seems, and somehow he has broken our invocation. We bound his essence to the fountains of creation and thought he would stay there forever.\" And she goes quiet and looks around for a second. \"I'm sorry.\"",
+        "preceding_context_chars": 657,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "15 years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "He said our new purpose is to serve him.",
+            "turn_number": 1430
+          },
+          {
+            "speaker": "MATT",
+            "text": "Now for the first time, you have known Allura for quite some time, she's been a very stoic, strong, confident, and powerful person. At this moment, she has withered. She looks genuinely like she's hit a level of fear you have never seen in an individual like this, and it shakes you to see this upon her face, and she puts her hand up and says, \"This is not your fault. This burden is mine.\" And looks over to the dwarf and says, \"It is ours.\" And the dwarf, you can now see, he's nodding in understanding. \"This dragon... it's been called many names, but the one that it's taken is Thordak, The Cinder King.\"",
+            "turn_number": 1431
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Thordak?",
+            "turn_number": 1432
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1466,
+      "category": null,
+      "episode_position_pct": 0.8966,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Allura looks at you dead-on and says, \"The only guardians that Thordak would know of would be the ones that sent him away to that plane 15 years ago. This is my fault.\"",
+        "preceding_context_chars": 779,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "15 years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Chromatics are selfish beings, they do not care for each other, and the power of one is enough, but a conclave of dragons is both extraordinary and horrifying, but there is no-- There is no sense of vengeance for their kin unless it is against the greater plan. Now, if what you say is true and these other dragons are bound together in the service of Thordak, I imagine they would be the ones who had the power and the resources to find some way to bring him through.\"",
+            "turn_number": 1458
+          },
+          {
+            "speaker": "LAURA",
+            "text": "All right.",
+            "turn_number": 1459
+          },
+          {
+            "speaker": "MATT",
+            "text": "At which point, the dwarf steps up and still has his hand rubbing Allura's shoulder and says, \"We knew not what we were doing, other than trying to save it, don't blame yourself.\"",
+            "turn_number": 1460
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Allura.",
+            "turn_number": 1461
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes.\"",
+            "turn_number": 1462
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Would you consider us guardians of this city?",
+            "turn_number": 1463
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"One of many. I believe the guardians--\"",
+            "turn_number": 1464
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is this because of us?",
+            "turn_number": 1465
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1483,
+      "category": null,
+      "episode_position_pct": 0.907,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"It's been over a year at least. Well, if it's taken them that long at least to free Thordak, it means that this was probably in the works for quite some time. If we do share this responsibility, I assure you it weighs heavier on me than it does you. But right now we need all the allies we can gather. Now, you say Thordak is where right now?\"",
+        "preceding_context_chars": 764,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's been",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Is this because of us?",
+            "turn_number": 1465
+          },
+          {
+            "speaker": "MATT",
+            "text": "Allura looks at you dead-on and says, \"The only guardians that Thordak would know of would be the ones that sent him away to that plane 15 years ago. This is my fault.\"",
+            "turn_number": 1466
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That's not true. If we are to solve this situation we cannot hide the truth. I killed Krieg. We killed Krieg. I finished Krieg.",
+            "turn_number": 1467
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Krieg was a dragon, Allura.",
+            "turn_number": 1468
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "A blue dragon.",
+            "turn_number": 1469
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We stumbled upon his lair, reached through his home in Emon, through magical means. We found his lair.",
+            "turn_number": 1470
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He attacked us.",
+            "turn_number": 1471
+          },
+          {
+            "speaker": "LIAM",
+            "text": "And we-- I--",
+            "turn_number": 1472
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I reach out and I grab Vax's hand.",
+            "turn_number": 1473
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We survived.",
+            "turn_number": 1474
+          },
+          {
+            "speaker": "LIAM",
+            "text": "When it happened, he had four stones, four orbs in his lair. They saw us.",
+            "turn_number": 1475
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "They spoke out to us.",
+            "turn_number": 1476
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "They threatened us.",
+            "turn_number": 1477
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"When was this? Was this--\"",
+            "turn_number": 1478
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Many years ago.",
+            "turn_number": 1479
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Maybe two years ago.",
+            "turn_number": 1480
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Not all that long ago.",
+            "turn_number": 1481
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It was right after we got to Emon.",
+            "turn_number": 1482
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1527,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.9339,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Yeah, you guys can begin to take a short rest, if you want to heal up.",
+        "preceding_context_chars": 681,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "take a short rest",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Yes, yes, the best I can, yes.\"",
+            "turn_number": 1521
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I want to scry and first check in on the Fire Ashari.",
+            "turn_number": 1522
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. All right, at this point she pulls out her crystal ball from a little tiny satchel, which is in itself a smaller Bag of Holding. Pulls out a small mirror, takes some water and pours it on the mirror, places the sphere above it, and it floats for a second. And there's a makeshift scrying ritual site here before you. You guys take about ten minutes to concentrate, and if you guys want to do anything in that ten-minute period, you're welcome to, or if you just want to watch and wait, you can.",
+            "turn_number": 1523
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to just sit, it's been a long, long day.",
+            "turn_number": 1524
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. The spell completes.",
+            "turn_number": 1525
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can I roll hit dice?",
+            "turn_number": 1526
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1527,
+      "category": "scene_transition",
+      "episode_position_pct": 0.9339,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Yeah, you guys can begin to take a short rest, if you want to heal up.",
+        "preceding_context_chars": 681,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a short rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Yes, yes, the best I can, yes.\"",
+            "turn_number": 1521
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I want to scry and first check in on the Fire Ashari.",
+            "turn_number": 1522
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. All right, at this point she pulls out her crystal ball from a little tiny satchel, which is in itself a smaller Bag of Holding. Pulls out a small mirror, takes some water and pours it on the mirror, places the sphere above it, and it floats for a second. And there's a makeshift scrying ritual site here before you. You guys take about ten minutes to concentrate, and if you guys want to do anything in that ten-minute period, you're welcome to, or if you just want to watch and wait, you can.",
+            "turn_number": 1523
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to just sit, it's been a long, long day.",
+            "turn_number": 1524
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. The spell completes.",
+            "turn_number": 1525
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can I roll hit dice?",
+            "turn_number": 1526
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -114,7 +114,7 @@ def make_campaign(name='Test', tone=''):
     GUILD_COUNTER[0] += 1
     guild = f'guild-de-{GUILD_COUNTER[0]}'
     cid = create_campaign(guild, name, tone=tone)
-    init_scene_state(cid, 'A test scene.')
+    init_scene_state(cid)
     return guild, cid
 
 

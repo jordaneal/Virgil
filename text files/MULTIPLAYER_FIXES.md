@@ -49,8 +49,8 @@ Five ships post-Ship-1, with Ship A inserted as new primary. Sequencing axis: **
 |---|------|--------|----------|
 | 1 ✅ | Resolution Binding (DM-typed directive) | Finding L surface 1, F-45 regression on DM-typed path, Bug 1 Phase 2 | shipped S34 |
 | **A** (new) | **LLM-Emitted-Directive Resolution Binding** | **Finding L surface 2 (primary play loop), F-45 regression on LLM-emitted path** | **S35–S36 (spec + impl)** |
-| 2 | Scene State Canon Discipline | Finding A, anchors Doctrine §76 | S37–S39 |
-| 3 | NPC State-Sync Boundary | Finding H, files as F-55 cluster sibling #5.5 | S40–S41 |
+| 2 ✅ | Scene State Canon Discipline | Finding A, anchors Doctrine §76 | shipped S39 |
+| 3 ✅ | NPC State-Sync Boundary | Finding H, files as F-55 cluster sibling #5.5 | shipped S41 (via in-session pivot to §1b suggester) |
 | 4 | Scene-Scope-First Identity Resolution | Finding B, builds SceneComposition aggregator | S42 |
 | 4.5 | Multi-Actor Temporal State | (filed candidate, decision at Ship A verify checkpoint, not Ship 1's) | S42b if slotted |
 | 5 | Polish cluster | Findings J/G/I-template/§5.7, including J reconsidered against Ship A | S43 |
@@ -221,29 +221,75 @@ Two live-side gates softened against unit-test coverage if natural play doesn't 
 
 ---
 
-## §5. Ship 2 — Scene State Canon Discipline (carries from v2 §5)
+## §5. Ship 2 — Scene State Canon Discipline ✅ SHIPPED LIVE (S39, May 11, 2026)
 
-**Survives sequencing. Possibly higher priority post-Ship-A.**
+**Closes Finding A** (recursive hallucination memory loop). **Doctrine §76 anchored** (Recursive hallucination memory loop / four-property latent-canon test) — promoted from candidate to numbered DOCTRINE entry on Ship 2 ship-and-verify-clean.
 
-Finding A — recursive hallucination memory loop in `scene_state.location` writes — is independent of which actor emits directives. The fix shape (delete LLM-write authority on `location`, `established_details`; audit pass via four-property latent-canon test) closes a write-side seam upstream of any directive flow.
+**Status (S39):** Eight column drops on `dnd_scene_state` via idempotent ALTER TABLE DROP COLUMN block (SQLite 3.45.1 native support). Live DB migrated cleanly. Bot restarted clean.
 
-**Reasoning for "possibly higher priority":** Ship A's LLM-emit writer reads scene_state to compute stakes_tier. If `scene_state.location` is hallucination-contaminated, the stakes computation reads contaminated context. Ship 2 closes that loop, which in turn raises the floor on Ship A's stakes tier accuracy.
+Five §76 deletion targets:
+- `location` (freetext) — Path A taken (drop column). Reads migrate to `location_label` derived from `dnd_locations.canonical_name` via `current_location_id`. `set_current_location` is now the only writer surfacing location data to LLM context. NULL FK renders `(between locations)` deliberate ambiguity.
+- `established_details` — JSON list of LLM-summarized scene details. Render line removed.
+- `focus` — per-turn LLM scene-attention anchor.
+- `open_questions` — JSON list of LLM-emitted "what's still unknown" entries.
+- `last_scene_change` — "one short sentence" per legacy extraction prompt.
 
-**Confirm v2 work breakdown unchanged.** Three subships (2a delete LLM-write on `location`, 2b DELETE `established_details` default, 2c four-property audit pass). Anchors Doctrine §76.
+Three dead-column housekeeping drops bundled (per S38 D4 lock; pre-emptive grep confirmed zero active readers):
+- `active_npcs` (S3 superseded by `get_recently_active_npcs` render-time derivation)
+- `active_threats` (never read; threat model deferred)
+- `tension` (legacy string `low|medium|high`; superseded by `tension_int` numeric scale)
 
-**No new decisions surfaced by re-plan.** Ship 2 closes a different problem than Ship A; the surface they touch (write-time canon) doesn't interact.
+**Code-chain cleanup:**
+- `init_scene_state(campaign_id)` signature dropped seed parameter (vestigial post-`last_scene_change` deletion).
+- `extract_scene_updates` legacy structured-extraction LLM call entirely removed; function writes only `last_player_action` via update_scene_state.
+- `update_scene_state` shrank SCALAR_FIELDS to `{last_player_action}` only; new `DELETED_FIELDS` guard logs `update_scene_state: dropping LLM-write to deleted field '<X>' (Ship 2 §76 closure)` as defense-in-depth.
+- `build_dm_context` SCENE STATE block render-line cleanup (Focus / Established details / Open questions / Last scene change all removed; Location reads from `location_label`).
+- `discord_dnd_bot.py /play` stops capturing or passing seed string.
+- `dnd_orchestration.py` advisory state-reference block updated to read `location_label`.
+
+**Tests:** 105 new assertions across 2 new files — `test_scene_state_canon_deletion.py` (73) and `test_doctrine_76_four_property_audit.py` (32). Multiple existing-test fixture updates (init_scene_state signature batch sed + drop-deleted-columns from INSERTs/dicts).
+
+**Spec:** `specs/SCENE_STATE_CANON_SPEC.md` LOCKED v1 (649 lines). **Review:** `specs/SCENE_STATE_CANON_REVIEW.md`.
+
+**Memory:** `project_ship2_drift_evidence.md` retired post-anchor (evidence consumed by §76 instance roster).
 
 ---
 
-## §6. Ship 3 — NPC State-Sync Boundary (carries from v2 §6)
+## §6. Ship 3 — NPC State-Sync Boundary ✅ SHIPPED LIVE (S41, May 11, 2026, post-in-session-pivot)
 
-**Survives sequencing unchanged.**
+**Closes Finding H** (S32 §3.6) — hydrated NPCs have no Avrae sheet, combat against them resolves against `<None>` HP / wrong-target damage. Ship 3 closes the state-sync gap via the §1b validated-suggester pattern.
 
-Finding H — hydrated NPCs have no Avrae sheet, combat unplayable — is independent of directive-emit surface. The fix shape (auto-create Avrae sheet on hydrate, recommended candidate (a)) ships regardless of who emits the combat-trigger directive.
+**Architectural pivot in-session (S41):** The originally locked v3 §6 shape — fix candidate (a), bot-as-DM-proxy emitting `!init opt` commands under proposed §65a narrow exception — was HALTed by the Avrae bot-filter empirical finding (identical commands mutate state when human-typed, silently filtered when bot-typed; structural API boundary). Pivoted per operator decision in-session to fix candidate (a'): bot posts copy-paste sync block to `#dm-aside`; DM pastes; Avrae responds to human-typed input. §65 holds unchanged (no §65a amendment needed).
 
-**Coupling to Ship A:** none direct. The LLM may emit `!attack <target>` inside narration; if so, Avrae's attack resolution surface needs NPCs to have sheets — Ship 3's job. But the attack-directive binding (`!attack` parallel to `!check`) is a separate v1.x candidate, NOT in Ship A's scope. Ship A is check + save only.
+**Locked 3-line suggester sequence** (per S41 verify pass — `!init opt -h` is Avrae's hidden-toggle, NOT HP; `-hp` is the working flag at both `!init add` and `!init opt`; `!init opt` cannot set max-HP):
+```
+!init remove <name>
+!init add <init_mod> <name> -hp <hp>
+!init opt <name> -ac <ac>
+```
+Each pasted as a separate Discord message — Avrae filters back-to-back commands.
 
-**Confirm v2 work breakdown unchanged.** Files as F-55 cluster sibling #5.5. Doctrine §65 amendment proposed (bot-as-DM-proxy narrow exception).
+**Single helper** `_avrae_project_npc` in `discord_dnd_bot.py` called from two disjoint trigger surfaces:
+- `/hydrate` slash command — Case A (active operator trigger).
+- `_handle_init_list_event` hydration branch — Case B (passive trigger on `!init list` parse).
+
+**Case A/B idempotency split:** Case A posts the sync suggestion (with warning text when combatant has numeric HP — mid-combat re-hydrate would lose combat state via remove+re-add). Case B silently no-ops when combatant has numeric HP (Avrae's mid-combat state is authoritative).
+
+**`/hydrate` reframed** (operator clarification S41): emergency-fix surface for `!init madd` shortcut backfill, accidental wrong-stat correction, or parser-hit/skeleton-loaded NPCs that need Avrae sync. **NOT** the canonical NPC-stat-entry flow — the canonical path is the DM typing `!init add <init> <name> -hp <hp> -ac <ac>` directly with full stats inline.
+
+**Doctrine accounting at S41 verify-clean:**
+- **§1b second project instance proven** — Ship 3 joins Track 6 #5.1 SRD suggester. The pattern repeats: bot proposes via `#dm-aside`, deterministic gate validates the proposal is safe, DM approves by paste, Avrae executes.
+- **§12.5 composition observation lands** — §17 gated-write discipline preempts §76 four-property contamination surfaces (gated boundary fails property 1 "LLM-writable"). Empirically validated by Ship 3's 20-column dnd_npcs audit having zero 4/4 hits.
+- **§65a NOT anchored** — the §1b pivot dissolved the need; bot never emits `!`-commands to Avrae's channel.
+- **C3 NOT anchored** — second-instance claim withdrawn; the helper is a suggester, not a writer.
+
+**Tests:** 13 new assertions in `test_avrae_project_npc.py`. Coverage: every reason path (gate_engine_missing, gate_engine_stats_null, gate_not_in_init, noop_complete, suggested, suggested_with_warning, aside_post_failed), trigger-agnostic helper shape, telemetry one-outcome-per-path, narration-channel-untouched regression guard (post-pivot must NEVER emit to `#dm-narration`).
+
+**Live verify Scenario A (Case A path) GREEN:** end state `!init list` shows `<13/13 HP> (AC 13)`. Both max+current HP correct AND AC set. Avrae bot-filter bypassed via DM-paste discipline. Multi-player coverage deferred to `MULTIPLAYER_VERIFY_DEFERRED.md` (Captin0bvious unavailable at verify).
+
+**Spec:** `specs/NPC_STATE_SYNC_SPEC.md` LOCKED v1.1 (in-session pivot annotated; pre-pivot v1 language preserved in `[PRE-PIVOT]` callouts; §13.1 documents the Avrae bot-filter as structural API boundary). **Review:** `specs/NPC_STATE_SYNC_REVIEW.md`.
+
+**Future ship candidate filed:** Track 6 #5.1 SRD resolver reshape — the existing SRD suggester emits `!init madd <srd_name>` (creates fully-statted combatant from SRD). Reshape would emit a fully-statted `!init add <init> "<name>" -hp <hp> -ac <ac>` block instead, leveraging Ship 3's flag conventions. Filed post-Ship-3 in ROADMAP candidate-next-layers as #5.1.1.
 
 ---
 
@@ -312,11 +358,16 @@ The F-55 cluster ships (#5.4 Intent-to-Avrae Resolver, #5.2 NPC Turn Automation,
 
 Carries from v2 §9 plus two surfaced in S34:
 
-- **§76 Recursive hallucination memory loop** — anchored in Ship 2 spec (unchanged).
-- **§65 amendment (bot-as-DM-proxy narrow exception)** — anchored in Ship 3 spec (unchanged).
-- **Engine-bound binding > validator** (filed S34 as DOCTRINE.md candidate C1; two instances after Ship 1 = Track 7 #1 + Ship 1). Ship A is a third instance — anchors at end of Ship A. Promotes from candidate to §77 (or whatever the next number is).
-- **Reused vocabulary across sibling verifier classes** (filed S34 as DOCTRINE.md candidate C2; one instance). Ship A may or may not surface a second instance depending on whether the texture/crit clauses introduce a new vocabulary surface. Reassess at Ship A spec.
-- **Single-writer compatible with multiple trigger surfaces** (newly surfaced by §4.2 decision). When a §17 single-writer field has two disjoint trigger surfaces, consolidate via one writer-helper rather than fork the field. File as candidate at Ship A; anchor when second instance ships.
+- **§76 Recursive hallucination memory loop** — **ANCHORED S39** (Ship 2 verify clean; three project instances: S22 #2 chroma contamination, S32 location drift, S36 time-of-day drift).
+- **§65 amendment (bot-as-DM-proxy narrow exception)** — **NOT ANCHORED.** S41 in-session pivot to §1b suggester pattern dissolved the need; §65 holds in its original form (bot does NOT emit `!`-prefixed commands to Avrae's channel). The pivot was forced by the Avrae bot-filter empirical finding (identical commands mutate state when human-typed, silently filtered when bot-typed — structural API boundary documented in `NPC_STATE_SYNC_SPEC.md` §13.1).
+- **§1b validated-suggester pattern second instance** — **NEW filed S41** post-pivot. Ship 3's `_avrae_project_npc` suggester joins Track 6 #5.1 SRD suggester as §1b's second project instance. Pattern: bot proposes via `#dm-aside`, deterministic gate validates the proposal is safe, DM approves by paste, Avrae executes. Lands in DOCTRINE.md §1b's instances list.
+- **§77 Combat narration is atmospheric continuity, not adjudication** — **ANCHORED S43** (Dumb combat ship verify clean). The cliff-edge for any LLM-driven combat render layer: combat narration is allowed to describe scene state per listener-confirmed events; it is NOT allowed to infer tactical outcomes / hidden intent / optimal targeting / consequences beyond listener+engine. The S43 prompt-side enforcement (`_COMBAT_NARRATION_INVARIANTS` constant in `dnd_orchestration.py`) is the runtime guard; verified live across BLOODIED + DOWNED + mode-flip-cleanup. **S44 added information-side enforcement** (`suppress_for_combat_narration` flag suppressing 10 `build_dm_context` blocks during combat narration); the two layers compose. Future F-55 combat ships (#5.2 NPC Turn Automation, #5.3 Combat Cockpit, #5.4 Intent-to-Avrae Resolver) inherit the line — any that would cross requires re-spec.
+- **§77 two-layer enforcement composition** — **PROMOTED to §78 mode-transition state-reset surfaces, ANCHORED S45.** What was filed at S44 as a candidate two-layer composition pattern (instruction-side + information-side) gained its third structural instance at S45 (COMBAT_END dispatch carries both layers, AND the surrounding boundary infrastructure of mechanical cleanup + narrative buffer reset + transitional-window silence). The broader pattern surfaces: mode transitions are state-reset surfaces requiring four coordinated layers — mechanical cleanup, narrative-buffer reset, transitional-window structural silence, boundary atmospheric closeout (with both-layer enforcement). §77 governs WHAT can be narrated; §78 governs WHEN narration is structurally appropriate.
+- **§78 Mode-transition state-reset surfaces** — **NEW ANCHORED S45** (Combat-Boundary Hardening Bundle verify clean). Three project instances of the two-layer enforcement pattern (S43 instruction-side + S44 information-side + S45 boundary closeout carrying both) provide the structural backbone. Operational discipline: any handler that flips `dnd_scene_state.mode` MUST reset narrative buffers at the boundary, MUST gate the transitional window where mechanical state isn't fully populated, and SHOULD dispatch a boundary atmospheric closeout for the prior mode. Future mode-transition handlers (rest-event !lr/!sr parallel surface, exploration→travel, downtime transitions) inherit the four-layer audit at design time.
+- **§17+§76 composition observation** — **FILED S41 per Ship 3 audit** (lands in DOCTRINE.md as §76 sibling note): §17 gated-write discipline preempts §76 four-property surfaces (gated boundary fails property 1). Operational consequence: route new persisted scalar columns through single-writer helpers with appropriate gates at design time, and the four-property audit becomes a regression guard rather than a deletion-finding tool.
+- **Engine-bound binding > validator** (filed S34 as DOCTRINE.md candidate C1; three instances now after Ship A = Track 7 #1 + Ship 1 + Ship A). Anchoring deferred to a future doc-update pass per locked decision 11 + S41 review; promotion to numbered §-entry when operator and planner agree it's time. Fourth instance candidate: cast resolution binding (v1.x).
+- **Reused vocabulary across sibling verifier classes** (filed S34 as DOCTRINE.md candidate C2; one instance — Ship 1's `ROLL_OUTCOME_DRIFT` reuses `VERDICT_CONTRADICTION`'s phrase tables). Anchor when second sibling class reuses the same vocabulary tables.
+- **Single-writer compatible with multiple disjoint trigger surfaces** (filed S36 as DOCTRINE.md candidate C3; one instance — Ship A's `dnd_pending_roll_directives.dc` column). **NOT promoted by Ship 3** — the §1b pivot dissolved Ship 3's second-instance candidacy (helper is a suggester, not a writer). C3 stays at one project instance pending genuine future second instance.
 
 ---
 
@@ -330,11 +381,12 @@ Best case 11 days / slow case 15. v2 was 9/13; +2 from Ship A insertion.
 | S34 (Ship 1 implementation) | day 2 | day 3 | ✅ DONE |
 | S35 (Ship A spec + review) | day 3 | day 4-5 | ✅ DONE (May 11, 2026 — spec LOCKED v1 + review applied) |
 | S36 (Ship A implementation) | day 4 | day 6 | ✅ DONE (May 11, 2026 — Ship A ✅ SHIPPED LIVE; 9 patches; ~120 test assertions; live verify clean) |
-| **S37 (Ship 2 recon + spec + review)** | **day 5** | **day 7-8** | **next** |
-| S38 (Ship 2a + 2c implementation) | day 6 | day 9 | pending |
-| S39 (Ship 2b implementation if needed) | day 7 | day 10 | pending |
-| S40 (Ship 3 recon + spec + review) | day 8 | day 11-12 | pending |
-| S41 (Ship 3 implementation) | day 9 | day 13 | pending |
+| S37b (Ship 2 spec draft) | day 5 | day 7 | ✅ DONE (May 11, 2026) |
+| S38 (Ship 2 spec review) | day 5 | day 7 | ✅ DONE (May 11, 2026) |
+| **S39 (Ship 2 implementation + §76 anchored)** | **day 5** | **day 7-8** | **✅ DONE (May 11, 2026)** |
+| S40 (Ship 3 spec draft) | day 5 | day 7 | ✅ DONE (May 11, 2026) |
+| S40b (Ship 3 spec review) | day 5 | day 7 | ✅ DONE (May 11, 2026) |
+| **S41 (Ship 3 implementation + in-session pivot to §1b suggester)** | **day 5** | **day 7-8** | **✅ DONE (May 11, 2026)** |
 | S42 (Ship 4 spec + review + implementation) | day 10 | day 14-15 | pending |
 | S42b (Ship 4.5 if slotted at Ship A verify) | day 10.5 | day 15.5 | conditional |
 | S43 (Ship 5 polish) | day 11 | day 15 | pending |

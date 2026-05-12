@@ -1698,3 +1698,553 @@ Promotion criteria per spec §15.9: ≥3 resolutions with mixed pass/fail, zero 
 ### Solo-operator caveat for Ship A verify
 
 Operator on a campaign where their Avrae binding matches the Virgil-side bound PC in `dnd_characters` (e.g., campaign 17 with Donovan Ruby in both). If Avrae rolls for Character X but Virgil's footer-actor is Character Y, the matcher's actor-mismatch path fires `_wrong_actor_aside` and the resolution doesn't fire. Operational fix: align Avrae binding via `!bindchar` OR switch to a campaign where the bindings agree.
+
+---
+
+## Ship 2 — Scene State Canon Discipline (S39, May 11 2026)
+
+**Status:** SHIPPED LIVE. Live-verify scenarios A-D walk Doctrine §76 closure on the primary surface — `dnd_scene_state` LLM-write authority deleted on five §76 four-property fields + three dead-column housekeeping drops.
+
+**Setup:** Run in any active campaign. Campaign 17 (Donovan Ruby) is the working solo campaign.
+
+**Pre-walk discipline (per S38 review §4.3):** test against a **fresh campaign** (no pre-Ship-2 narration). Long-running campaigns may surface false-positive drift via residual chroma contamination from pre-Ship-2 LLM writes; that's an F-40-pattern artifact, closed only by a future chroma-layer audit ship.
+
+### Scenario A — Location LLM-write attempt no-ops (Ship 2a, Path A)
+
+**Discord prompt:**
+```
+I look around the merchant market carefully, taking in the stalls and faces.
+```
+
+**Expected:** bot narrates rich scene detail. No `scene_state.location` write fires (the column is gone). Next turn's prompt SCENE STATE block renders `Location: merchant market` (derived from `dnd_locations.canonical_name` via `current_location_id` FK). Cave-imagery drift is structurally impossible — there is no LLM-writable freetext location surface to recurse on.
+
+**Failure signal:** location label flips to something invented or unrelated; or any subsequent narration introduces a location not in `dnd_locations`.
+
+**Grep:**
+```bash
+grep -E "schema_migration: dropped dnd_scene_state\.|dropping LLM-write to deleted field 'location'" /mnt/virgil_storage/digest/dnd_engine.log | tail -10
+```
+
+### Scenario B — established_details / focus / open_questions / last_scene_change LLM-write no-ops (Ship 2b, 2c)
+
+**Discord prompt:**
+```
+I scan the market for anyone watching, and note who's selling weapons versus food.
+```
+
+**Expected:** bot narrates observed details freely (whatever it wants — texture is fine). Subsequent turn's SCENE STATE block contains NO render lines for `Focus:`, `Established details:`, `Open questions:`, or `Last scene change:`. The LLM's memory of the scene flows from `last_dm_response` (verbatim prior narration) and skeleton-loaded canon, not laundered per-turn self-summary.
+
+**Failure signal:** any of those four line prefixes appearing in the rendered SCENE STATE block.
+
+**Grep:**
+```bash
+grep -E "dropping LLM-write to deleted field '(focus|established_details|open_questions|last_scene_change)'" /mnt/virgil_storage/digest/dnd_engine.log | head -10
+```
+
+### Scenario C — Cross-turn drift resistance (combined 2a+2b)
+
+**Discord prompts (run 3 more freeform turns after A+B):**
+```
+I approach the weapons stall and ask about prices.
+```
+```
+I check the alley between the stalls for shadows.
+```
+```
+I weave back into the crowd, keeping my head down.
+```
+
+**Expected:** every turn renders SCENE STATE block with identical authored canon (`Location: merchant market`; no laundered-detail lines). LLM does not recursively elaborate on prior-turn fabrications because no scene_state field stores LLM-summarized prior fabrications.
+
+**Failure signal:** in journal scroll-back across the 5 turns (A+B+3), any cave-imagery or contradictory-location phrase appears; OR any prior-narration detail elevates to "established canon" tone.
+
+**Grep (post-walk):**
+```bash
+grep -E "Location: merchant market|Location: \(between locations\)" /mnt/virgil_storage/digest/dnd_engine.log | tail -10
+```
+
+### Scenario D — /travel-only authority on location (Ship 2a)
+
+**Discord prompt:**
+```
+/travel
+```
+
+Pick a different known canonical location (e.g., one of `/locations list` entries).
+
+**Expected:** `set_current_location` writes the new FK. Next turn's narration renders `Location: <new_location_label>`. LLM cannot bleed old location into new narration as "established" canon. The /travel command is the operator-driven write path.
+
+**Failure signal:** old location name appears in new narration as canonical, OR location_label derive fails (renders `(between locations)` when FK is set).
+
+**Grep:**
+```bash
+grep -E "set_current_location: campaign=" /mnt/virgil_storage/digest/dnd_engine.log | tail -5
+```
+
+### Scenario E — Schema migration idempotency (S38 D4 sanity, post-restart)
+
+**Verify locally (no Discord needed):**
+```bash
+python3 -c "
+import sqlite3
+conn = sqlite3.connect('/mnt/virgil_storage/virgil.db')
+cols = sorted(row[1] for row in conn.execute('PRAGMA table_info(dnd_scene_state)'))
+print('cols:', cols)
+deleted = ['location', 'established_details', 'focus', 'open_questions', 'last_scene_change', 'active_npcs', 'active_threats', 'tension']
+for c in deleted:
+    assert c not in cols, f'{c} still present'
+print('post-Ship-2 schema clean')
+conn.close()
+"
+```
+
+**Expected:** clean output listing the 12 post-Ship-2 columns; no AssertionError.
+
+### Scenario F — Doctrine §76 four-property regression test (S38 D5 default)
+
+**Verify locally:**
+```bash
+cd /home/jordaneal/scripts && python3 test_doctrine_76_four_property_audit.py
+```
+
+**Expected:** `32 passed, 0 failed`. Asserts (a) every `dnd_scene_state` column is classified in the test's `EXPECTED_CLASSIFICATION` table, (b) no column hits 4/4 properties post-Ship-2, (c) all 8 deleted columns are absent. If a future ALTER ADD introduces a 4/4 column, this test fails loud at commit time.
+
+---
+
+## Ship 3 — NPC State-Sync Boundary (S41, May 11 2026, post-in-session pivot to §1b suggester)
+
+**Status:** SHIPPED LIVE post-pivot. Live-verify Scenario A walked clean (Case A path). Walking these post-session validates the projection helper's gates + telemetry + suggestion text format.
+
+**Architectural context (S41 in-session pivot):** The originally-locked fix shape (bot-emit `!init opt` under proposed §65a narrow exception) was empirically blocked by Avrae's bot-filter — identical commands mutate state when human-typed and are silently filtered when bot-typed. Pivoted to §1b validated-suggester pattern: bot posts copy-paste block to `#dm-aside`; DM pastes; Avrae executes. The locked 3-line sequence is `!init remove <name>` + `!init add <init_mod> <name> -hp <hp>` + `!init opt <name> -ac <ac>` — `!init opt` cannot set max-HP, so the rebuild path is the only mechanically-complete fix.
+
+**Setup:** Run in any active campaign with combat started (`!init begin`). Pick a fresh test NPC name with no prior history.
+
+### Scenario A — Happy path (combatant added via `!init add` without stats, then `/hydrate` to suggest sync)
+
+**Discord prompts:**
+```
+!init remove Test3A
+!init add 5 Test3A
+/hydrate npc:Test3A cr:1/4
+```
+
+**Expected:**
+- Slash ephemeral: `"Hydrated Test3A at CR 1/4: HP 13, AC 13, Atk +3, Dmg 1d8. See #dm-aside for the Avrae sync paste."` (OR "Mid-combat re-hydrate — see #dm-aside for HP-reset warning + paste." if Test3A had numeric HP at the time).
+- `#dm-aside` posts 3-line code block with `!init remove Test3A`, `!init add 1 Test3A -hp 13`, `!init opt Test3A -ac 13`.
+- DM pastes each line separately in `#dm-narration`.
+- Avrae responds: "removed", "added with initiative 1d20 + 1 = N", "AC set to 13".
+- `!init list` shows `Test3A <13/13 HP> (AC 13)`.
+
+**Failure signal:** `<None>` or `<N/0 HP>` (max-HP not set); AC shows 0; bot emits commands to `#dm-narration` instead of `#dm-aside`.
+
+**Grep:**
+```bash
+grep -E "avrae_projection_(attempted|succeeded|skipped|failed)" /mnt/virgil_storage/digest/dnd_engine.log | tail -20
+```
+
+### Scenario B — Multi-player (deferred to `MULTIPLAYER_VERIFY_DEFERRED.md` if Captin0bvious unavailable)
+
+Same flow as A, but Captin0bvious attacks the hydrated Test3A from their PC. Verify Avrae resolves both PCs' attacks against the same combatant with full HP tracking.
+
+### Scenario C — Idempotency (re-/hydrate already-synced NPC)
+
+After Scenario A with Test3A at `<13/13>`:
+```
+/hydrate npc:Test3A cr:1/4
+```
+
+**Expected:** Ephemeral confirms "Mid-combat re-hydrate — see #dm-aside for HP-reset warning + paste." `#dm-aside` posts the WARNING variant with combat-state-loss explicit + 3-line rebuild + partial-fix alternative. DM can choose to paste or ignore.
+
+**Failure signal:** Bot silently re-projects without warning; Avrae state changes without DM consent.
+
+### Scenario D — Case B passive trigger preserves mid-combat HP
+
+With Test3A at `<13/13>`, damage:
+```
+!init hp Test3A -3
+```
+Triggers Avrae `!init list` event implicitly (or run `!init list` explicitly). `_handle_init_list_event` parses; finds Test3A at numeric HP; trigger='init_list' (passive). 
+
+**Expected:** NO `#dm-aside` suggestion posted. Avrae's `<10/13 HP>` mid-combat state preserved. Journal log: `avrae_projection_skipped: ... reason=noop_complete`.
+
+**Failure signal:** Bot posts re-projection suggestion despite Avrae having authoritative mid-combat state.
+
+**Grep:**
+```bash
+grep "reason=noop_complete" /mnt/virgil_storage/digest/dnd_engine.log | tail -5
+```
+
+### Scenario E — Engineer-only failure path (optional)
+
+Disable `#dm-aside` (rename or permissions) and run `/hydrate`. Bot should log `avrae_projection_failed: ... reason=aside_post_failed`. Engine row stays canonical. Re-enable channel; next trigger retries.
+
+### Scenario F — Schema regression (no Ship 3 schema changes, but verify dnd_npcs audit clean)
+
+```bash
+cd /home/jordaneal/scripts && python3 test_avrae_project_npc.py
+```
+**Expected:** `13 tests passed.`
+
+### Cleanup
+
+```
+!init remove Test3A
+!init end
+```
+
+---
+
+## S42 — Listener Edge-Case Verification (May 11, 2026)
+
+**Status:** SHIPPED LIVE. Pre-playtest infrastructure ship; `avrae_listener.py` audited and two structural parsing gaps patched. Walking these post-session validates the listener still parses Avrae's combat embed vocabulary correctly.
+
+### Unit-test coverage
+
+```bash
+cd /home/jordaneal/scripts && python3 test_avrae_listener_edge_cases.py
+```
+
+**Expected:** `7 tests passed.` Covers plain attack baseline + advantage (`2d20kh1`) + disadvantage (`2d20kl1`) + resistance damage (`(N [type]) / 2 = K` shape) + multi-target attack (per-target `attacks` list surfacing) + single-target back-compat guard + crit keyword detection.
+
+### Listener-adjacent regression sweep
+
+```bash
+for t in test_avrae_sweep test_init_list_parser test_avrae_project_npc test_hydration_hook test_pending_roll_directives test_llm_emit_writer; do
+  python3 "$t.py" 2>&1 | grep -E "passed|failed" | tail -1
+done
+```
+
+**Expected:** all green (11 + 29 + 13 + 20 + 27 + 23 = 123 assertions across 6 files).
+
+### Live verify (optional) — exercise the patched paths against live Avrae
+
+Run in any campaign with combat active (`!init begin`). Add two NPCs for multi-attack target diversity:
+
+```
+!init add 5 TestA -hp 13
+!init opt TestA -ac 13
+!init add 8 TestB -hp 13
+!init opt TestB -ac 11
+```
+
+Then walk:
+
+```
+!attack unarmed strike -t TestA adv
+```
+**Expected log:** `listener_parsed: kind=attack ... nat=<kept-high> result=<final> ... subattacks=1`
+
+```
+!attack unarmed strike -t TestA dis
+```
+**Expected log:** `listener_parsed: ... nat=<kept-low>` (lower of the two dice).
+
+```
+!attack unarmed strike -t TestA -t TestB
+```
+**Expected log:** `listener_parsed: ... subattacks=2` — confirms both target fields captured.
+
+**Grep:**
+```bash
+grep "listener_parsed:" /mnt/virgil_storage/digest/dnd_engine.log | tail -10
+```
+
+### Deferred edge cases (filed for future ship)
+
+These require fixtures S42 didn't have available:
+- **Forced critical hit:** Avrae's `-crit` flag did NOT force a crit in S42 verify (rolled nat 1, missed). Needs alt trigger path investigation OR natural-20-from-many-rolls approach.
+- **Save with halved damage** (fireball-style): requires a spellcaster PC fixture (Donovan Ruby has no spells in test campaign).
+- **Death save outcome state** (success/fail/stabilize/death): `!init dsa` syntax + Avrae's PC-required gate blocked single-player verification. Requires throwaway PC at 0 HP.
+
+Crit keyword detection (`_CRIT_RE`) itself is verified clean via the unit test; only the forced-crit-trigger path is unverified. When fixtures become available, file a small follow-up ship to close these.
+
+### Cleanup
+
+```
+!init remove TestA
+!init remove TestB
+!init end
+```
+
+---
+
+## S43 — Dumb Combat Narration (May 11, 2026)
+
+**Status:** SHIPPED LIVE. Auto-narration on three combat-mode state transitions (ROUND_START + BLOODIED_THRESHOLD_CROSSED + COMBATANT_DOWNED) via `_dm_respond_and_post`'s `transition_context`. Atmospheric-vs-adjudication doctrine (§77) anchored. Walking these post-session re-verifies the cliff-edge holds + telemetry fires.
+
+### Unit-test coverage
+
+```bash
+cd /home/jordaneal/scripts && python3 test_combat_narration.py
+```
+
+**Expected:** `39 tests passed.` Covers `_hp_state` boundaries, `compute_combat_state_transitions` edges, `compute_combat_narration_directive` mode-gate + sentinel action + categorical labels + MUST/MUST-NOT invariants verbatim + trigger-specific framing, `combat_narration_log_summary` telemetry shape.
+
+### Combat-adjacent regression sweep
+
+```bash
+for t in test_avrae_listener_edge_cases test_avrae_project_npc test_avrae_sweep test_init_list_parser test_hydration_hook test_pending_roll_directives test_llm_emit_writer test_compute_stakes_tier test_resolve_directive test_state_footer test_combat_redirect_directive test_render_state_footer_time; do
+  python3 "$t.py" 2>&1 | grep -E "passed|failed" | tail -1
+done
+```
+
+**Expected:** all green (~238 assertions across 12 files).
+
+### Live verify (in any campaign)
+
+Setup:
+```
+!init begin
+!init add 3 TestS43 -hp 13
+!init opt TestS43 -ac 11
+!init join
+!init next
+```
+
+**Watch for:** auto-narration in `#dm-narration` after `!init next` triggers round 1. Look for environmental atmosphere (lighting/sound/tension), NOT specific PC actions. Journal: `combat_narration_fired: kind=ROUND_START fired=1`.
+
+Then bloodied:
+```
+!init hp TestS43 -7
+```
+**Watch for:** auto-narration with combatant faltering / staggering framing. NO phantom NPCs from `recent_npcs`. NO "about-to-fall" language. Journal: `combat_narration_fired: kind=BLOODIED_THRESHOLD_CROSSED name='TestS43' fired=1`.
+
+Then downed:
+```
+!init hp TestS43 -10
+```
+**Watch for:** auto-narration with "out of the fight" / "unconscious" framing. NO death declaration. Journal: `combat_narration_fired: kind=COMBATANT_DOWNED name='TestS43' fired=1`.
+
+Cleanup:
+```
+!init end
+```
+
+**Critical cliff-edge check (the doctrine line):** scrutinize all three narrations for ANY of:
+- Speculative outcomes ("about to fall", "near death", "doomed")
+- Invented damage numbers / attack outcomes
+- Inferred enemy morale ("the goblin's resolve breaks")
+- Tactical commentary ("a clear opening", "the best target")
+- Declaring death without listener confirmation
+- Narrating action that didn't happen this round
+- Future-round projection ("next round will be brutal")
+
+If ANY surface, the §77 doctrine line is failing — file as priority bug.
+
+### Known v1.x candidate: ROUND_START prompt purity
+
+ROUND_START narrations may surface phantom NPCs (from `recent_npcs` block) and stale-narrative bleed (from `last_dm_response` block). These are storytelling-quality drift, NOT doctrine drift (§77 holds — no mechanical-state-mutation inference). Filed as worktree task chip; three fix options under evaluation.
+
+**Grep for combat-narration telemetry:**
+```bash
+grep "combat_narration_fired:" /mnt/virgil_storage/digest/dnd_engine.log | tail -10
+```
+
+### Deferred trigger: DEATH_SAVE_EVENT_START
+
+Filed as small follow-up ship; v1 ships with three active triggers. S42 fixture blocker (`!init dsa` syntax + Avrae's PC-required gate) prevents single-player verification. When a throwaway PC at 0 HP fixture becomes available, follow-up ship adds the trigger via the parse path S42's deferred work would have established.
+
+---
+
+## S44 — Combat Narration Prompt Purity v1.x (May 11, 2026)
+
+**Status:** SHIPPED LIVE. S43 filed-follow-up. Information-side suppression of 10 prompt blocks during combat narration. Walking these post-session re-verifies the suppression set holds + telemetry fires.
+
+### Unit-test coverage
+
+```bash
+cd /home/jordaneal/scripts && python3 test_combat_narration_prompt_purity.py
+```
+
+**Expected:** `17 tests passed.` Covers each of the 10 suppressed blocks (drops under True, preserves under default False) + scene-state-preserved + combat-directive-blocks-preserved + two-layer enforcement composition.
+
+### Live verify (in any campaign)
+
+Setup:
+```
+!init begin
+!init add 3 TestS44Goblin -hp 13
+!init opt TestS44Goblin -ac 11
+!init join
+!init next
+```
+
+**Watch for:** auto-narration after `!init next` triggers round 1. Expected output shape:
+- Atmospheric round-top beat (environment / lighting / sound / tension)
+- Two-figure roster focus (PC + the single test goblin)
+- NO phantom NPCs (Lira / Borin / Eldrin / etc. — even if they exist in the campaign companions table, they MUST NOT appear)
+- NO stale narrative bleed (no references to prior combats; no carry-over prose from `campaign.current_scene` rolling buffer)
+- Turn handback per init order
+
+**Critical regression checks (failure signals):**
+- ANY phantom NPC name in the narration → companions / recent_npcs suppression failed
+- ANY mention of prior turn's narrative content → current_scene rolling buffer suppression failed
+- ANY combat-style language from FIREBALL/CRD3 corpus (specific monsters not in this game's roster) → chroma blocks suppression failed
+- ANY quest title or campaign-arc reference → quests / central_thread suppression failed
+
+**Journalctl signals:**
+```bash
+grep "reason=combat_narration_suppressed" /mnt/virgil_storage/digest/dnd_engine.log | tail -5
+```
+
+This `npcs_in_context: ... reason=combat_narration_suppressed` log line fires once per dispatch when the suppression branch is taken. If absent, the dispatch isn't passing True (wiring bug).
+
+### Default-path regression sweep
+
+Non-combat callers (exploration narration, /travel, resolution-binding narration, etc.) must continue to receive ALL 10 blocks. Walk:
+
+```
+/travel
+```
+
+Pick any location. Then any non-combat narration turn (player narrates an action in `#dm-narration`):
+
+```
+I look around the tavern.
+```
+
+**Expected:** standard non-combat narration with full context — recent NPCs may appear, prior narrative context flows naturally, quests/inventory/etc. all present. If non-combat narration also drops these blocks, the S44 wiring is over-suppressing.
+
+### Doctrine candidate observation
+
+S44 filed `§77 two-layer enforcement composition` as a doctrine candidate (instruction-side MUST/MUST-NOT + information-side context-block suppression). Anchors on second instance. **S45 promoted this to §78 mode-transition state-reset surfaces** (third project instance: S43 + S44 + S45). The pattern is now anchored; future ships in the F-55 cluster (#5.2 NPC Turn Automation, #5.4 Intent-to-Avrae Resolver) and any other mode-transition handler inherit the four-layer audit at design time.
+
+---
+
+## S45 — Combat-Boundary Hardening Bundle (post-`!init end` buffer reset + init-setup silence gate + COMBAT_END auto-closeout) ✅
+
+**Scope:** Three-surface boundary closure shipped May 11, 2026.
+
+### Test files added (33 new assertions across 3 files)
+
+```bash
+cd /home/jordaneal/scripts
+python3 test_init_end_buffer_reset.py          # 10 assertions (Surface C)
+python3 test_init_setup_suppression.py         # 13 assertions (Surface D v1 + v2)
+python3 test_combat_narration_combat_end.py    # 10 assertions (Surface F)
+```
+
+All must report `All N assertions pass.`
+
+### Full S43/S44/S45 regression sweep
+
+```bash
+cd /home/jordaneal/scripts
+for f in test_combat_narration.py test_combat_narration_prompt_purity.py \
+         test_init_end_buffer_reset.py test_combat_narration_combat_end.py \
+         test_init_setup_suppression.py test_combatant_state.py \
+         test_avrae_listener_edge_cases.py; do
+  echo "=== $f ==="
+  python3 "$f" 2>&1 | tail -2
+done
+```
+
+Expected totals: 39 + 17 + 10 + 10 + 13 + 15 + 7 = **111 assertions green**.
+
+### Surface C verify (post-!init end exploration)
+
+In a clean test campaign with combat active:
+
+```
+!init end
+```
+
+After Avrae confirms, send any RP message:
+
+```
+Donovan looks around the room.
+```
+
+**Expected:** atmospheric exploration narration starting from clean slate. No combat framing, no phantom combatants from prior init list, no continued tension. Journal: `init_end_buffer_reset: campaign=N`.
+
+### Surface D v2 verify (init-setup silence)
+
+Start combat with a monster-add that triggers Avrae's disambiguation prompt:
+
+```
+!init begin
+```
+
+```
+!init madd SomeAmbiguousMonsterName -hp 12 -ac 13
+```
+
+When Avrae's "Multiple Matches Found" prompt appears (in DM), reply in #dm-narration with the disambiguation number:
+
+```
+2
+```
+
+**Expected:** ⏳ reaction on the `2` message, NO Virgil DM narration during init setup, journal log `init_setup_gate: dropped msg from <user_id> (mode=combat, no active_turn — Avrae setup phase)`.
+
+### Surface F verify (COMBAT_END auto-closeout)
+
+After running at least one round of combat, end:
+
+```
+!init end
+```
+
+**Expected within 1-3 seconds:** Virgil auto-fires a 2-3 sentence atmospheric closeout. Journal: `combat_narration_fired: kind=COMBAT_END fired=1`. Closeout must NOT introduce new combatants/NPCs not on the closing roster, must NOT narrate post-combat decisions, must NOT preview next moves.
+
+### Integration verify (C+D+F arc)
+
+Full combat lifecycle:
+
+```
+!init begin
+```
+
+```
+!init join
+```
+
+```
+!init next
+```
+
+(ROUND_START should fire — clean atmospheric hush)
+
+```
+!init end
+```
+
+(COMBAT_END should auto-fire — clean closeout)
+
+```
+Donovan takes a long pull from his ale.
+```
+
+(Clean exploration response — no combat framing, atmospheric exploration tone)
+
+All three narrations atmospheric, no phantoms, no continued combat.
+
+### Drift signals to grep
+
+```bash
+journalctl --user -u virgil-discord --since "5 minutes ago" -o cat | \
+  grep -E "init_end_buffer_reset|init_setup_gate|init_setup_suppression|combat_narration_fired"
+```
+
+Expected log sequence on a full combat cycle:
+```
+combat_narration_fired: kind=ROUND_START fired=1
+init_end_buffer_reset: campaign=N
+init: combat ended (guild=...) → mode='exploration', combat state cleared
+combat_narration_fired: kind=COMBAT_END fired=1
+```
+
+### Failure modes from S45 verify history
+
+- **v1 fix only (suppress context but stay responsive)** — phantom companions absent but bot still generates premature combat narrative from bare disambiguation reply. Requires v2 top-level gate.
+- **No buffer reset** — next exploration message reads polluted `current_scene` rolling buffer, model generates locally-coherent combat continuation ("the thug snarls" appearing in an exploration scene).
+- **No COMBAT_END dispatch** — bot stays silent on !init end; play flow breaks because player must seed next narration before any DM voice surfaces.
+- **Mode-gate failure on COMBAT_END** — without `scene_override={'mode': 'combat'}`, dispatch fires AFTER mechanical mode flip to 'exploration', mode gate in `compute_combat_narration_directive` rejects with empty action+context.
+
+### Filed follow-ups (not S45 scope — surface for future ships)
+
+- **COMBAT_END framing on 0-action combats** — LLM speculated "clash of steel / blows died away" on a verify with no actual combat actions. Creative-writing tuning, not structural drift.
+- **`(1 roll in play)` footer post-!init end** — Donovan's initiative roll persists in RollBuffer after `!init end` clears mechanical state. Orthogonal buffer-drain.
+- **Phantom companions in `dnd_companions` DB rows** — Lira/Borin/Eldrin are real rows from past `npc_extract` LLM writes. Database-hygiene issue, surfaces in any exploration-mode prompt that renders the companions block.
+- **`_handle_rest_event` !lr/!sr parallel surface** — also flips combat→exploration but via a different listener path; doesn't currently call `reset_narrative_buffers_on_combat_exit`. Per §78 layer audit, this surface is structurally incomplete.
+- **Avrae end-of-combat report routing to DM instead of channel** — Avrae config (`!cvar` or `personal` flag), not Virgil bot code.

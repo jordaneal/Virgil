@@ -105,7 +105,7 @@ def make_campaign(name='Init Test', mode='exploration'):
     GUILD_COUNTER[0] += 1
     guild = f'guild-init-{GUILD_COUNTER[0]}'
     cid = create_campaign(guild, name)
-    init_scene_state(cid, 'A test scene.')
+    init_scene_state(cid)
     if mode != 'exploration':
         set_scene_mode(cid, mode)
     return guild, cid

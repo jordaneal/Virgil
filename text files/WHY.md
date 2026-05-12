@@ -940,3 +940,25 @@ The combined-session ship still hit one restart total: 4b's restart was Code's d
 
 **General rule:** when a verify-walk surfaces a fix that's small, well-scoped, and blocks the feature's full correctness claim, the combined-session ship is preferred over file-and-defer. The forcing function is whether the deferred fix would leave the feature claiming ✅ SHIPPED LIVE while a known correctness gap exists — if yes, ship combined; if no (e.g. the surfaced bug is in adjacent territory and doesn't affect the feature's contract), file and defer.
 
+## Sx — NPC token-prefix collapse (post-S46 cleanup queue)
+
+### Why the fix lives at the write path, not the resolver
+
+The bare-firstname rot loop was structural. Strict-equality lookup at `npc_upsert` missed short-form LLM emissions ("Eldrin" missed "Eldrin Stormbow"); each miss inserted or bumped a bare-firstname row's `mention_count` and `last_mentioned`; the recency-ordered resolver (`get_recently_active_npcs`, `ORDER BY last_mentioned DESC`) re-injected the bare row into the prompt; the LLM kept emitting the short form. S46 recon measured ~9× concentration on the bare row over ~12 days of play in campaign 17. The loop was self-reinforcing and unbounded.
+
+Three fix surfaces were on the table at S46 review: DB cleanup only, upstream write-path collapse, downstream resolver dedup. External review (ChatGPT + Gemini, S46 brief) independently converged on the write-path fix with a skeleton-anchor safety boundary. The reasoning held under both reviewers: DB cleanup alone doesn't stick — the next narration emits "Eldrin" again, fresh bare row inserts within minutes, loop resumes. Resolver-side dedup is dead code under upstream collapse — if the bare row never accumulates, the resolver has nothing to dedup, and adding dedup creates a split-brain hydration risk where `/hydrate Eldrin` hits a different row than the prompt renderer.
+
+The write-path fix is single-write-path-doctrine-aligned (§17 preserved — `npc_upsert` remains the only writer for `dnd_npcs`) and creates correct read-side behavior for free. The resolver doesn't need to know about token-prefix relationships; it just reads rows, and the rows that exist are the ones that should be rendered.
+
+### Why the four-constraint lock
+
+The amendment loosens strict-literal matching (§14), which is a doctrine-touching call. The four constraints — unique anchor, `skeleton_origin=1`, same `campaign_id`, whole-token — are the safety boundary, each preventing a specific failure mode. **Unique anchor** stops the wrong-anchor guess (multi-anchor ambiguity falls through to strict-equality default + `npc_anchor_ambiguous:` log). **`skeleton_origin=1`** keeps emergent canon from acting as a magnet for short forms (an emergent "Eldrin Stormbow" introduced through play does not start collapsing future "Eldrin" mentions — only the authored canonical anchors do). **Same `campaign_id`** preserves the existing campaign-isolation invariant (no cross-campaign collapse). **Whole-token** blocks character-substring collapses ("Mir" is not a token-prefix of "Mira Wells" because `Mir != Mira` at the token level — only "Mira" or longer would qualify).
+
+Loosening any of the four reopens the §14 strict-literal-beats-fuzzy decision from Phase 12. The boundary is the lock; the language is locked verbatim in DOCTRINE.md §14.1 and is operator-protected against drift.
+
+### Why convergent external review increased confidence
+
+The doctrine amendment was the kind of call that single-reviewer judgment is least good at: it touches a load-bearing invariant (§14 strict-literal), the failure modes are subtle (false merges silently corrupt canon), and the safety boundary needs to be traced exhaustively (one missed constraint = silent slope). ChatGPT and Gemini, working from the same S46 brief but reasoning independently, both landed on the write-path fix with the same skeleton-anchor constraint set. Convergence across two reviewers, two contexts, raised the operator's confidence that the safety surface was traced — if both reviewers had missed the same edge case, the amendment would have stayed in spec-only until a third reviewer surfaced it.
+
+The lesson generalizes: doctrine-touching amendments warrant convergent external review before lock. The cost is one round-trip per reviewer; the benefit is the safety boundary being argued out twice before the rule changes.
+

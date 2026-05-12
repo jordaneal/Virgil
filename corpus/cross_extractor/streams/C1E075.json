@@ -1,0 +1,2124 @@
+{
+  "episode_combined": "C1E075",
+  "campaign": "C1",
+  "episode_int": 75,
+  "total_records": 27,
+  "per_source_counts": {
+    "TM": 20,
+    "CC": 3,
+    "LR": 4
+  },
+  "events": [
+    {
+      "source": "TM",
+      "turn_number": 115,
+      "category": null,
+      "episode_position_pct": 0.058,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Zenith Forge. Now come. Follow me.\" And he tugs the chains with a sudden burst and pulls you along. As you begin walking, he begins to talk about how: \"Whaska is one of the few giants that still maintains the privilege of freedom. There was a coup within their people a few years ago, seemingly orchestrated by some of their own. As such most of the fire giants in the city either were cast out or were placed in chains. And the few that remain, one of which you'll speak with on this day, is one of the ones that sold them out. So. I hope you have your questions ready.\"",
+        "preceding_context_chars": 116,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a few years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "(whispering) Whaska. (louder) Mm-hmm.",
+            "turn_number": 112
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Let us find our way to the Zenith Forge where he does most of his work.\"",
+            "turn_number": 113
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Forge?",
+            "turn_number": 114
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 140,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0706,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's been about an hour now, so that's past.",
+        "preceding_context_chars": 752,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's been",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "The Chuckle Palace?",
+            "turn_number": 128
+          },
+          {
+            "speaker": "SAM",
+            "text": "The Chocolate Palace.",
+            "turn_number": 129
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The Charcoal Palace. You are listening; you are not supposed to speak.\"",
+            "turn_number": 130
+          },
+          {
+            "speaker": "LAURA",
+            "text": "(whispers) I'm sorry.",
+            "turn_number": 131
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Like charcoal.",
+            "turn_number": 132
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Charcoal Palace.\" The air itself here, as you're spending more time outside-- and the interior of these buildings aren't meant to detract heat or cool either. Most if not all of the denizens here are well-tempered against the heat. As you guys are being dragged along, I need all of you who do not have fire resistance to go ahead and make another constitution saving throw.",
+            "turn_number": 133
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Damn it.",
+            "turn_number": 134
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm a master of a good burn. Does that give me fire resistance?",
+            "turn_number": 135
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nope! So I think that you don't have to worry about it.",
+            "turn_number": 136
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I had cast fire resistance on me.",
+            "turn_number": 137
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes, and how long does that last?",
+            "turn_number": 138
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It lasts an hour. Has it been an hour?",
+            "turn_number": 139
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 168,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.0847,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You do. You see as the sun which--and you've been here for two hours now so you have some time. It's still very busy in the city. And as you pass by, you see many efreet on their own business. Some coasting at different levels of height, some just traversing through. Occasionally you come across strange, horned devil-like entities that work, walk in clusters.",
+        "preceding_context_chars": 493,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "as the sun",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "In the ground or raised or--?",
+            "turn_number": 165
+          },
+          {
+            "speaker": "MATT",
+            "text": "In the ground. Similar to how you see most city aqueducts constructed, except for the Sea of Fire spills into it. Anything going over there is uncomfortable as the heat grows astronomically as you pass over each bridge and the air itself becomes more sulfurous. And you find yourselves coughing autonomically as the fumes reach your lungs. You begin to pass by--",
+            "turn_number": 166
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We're walking out in public at this point, right? And there's people about? We see other beings about?",
+            "turn_number": 167
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 212,
+      "category": null,
+      "episode_position_pct": 0.1069,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Apparently!\" Motions over and Senokir, other hand out, is like, \"And around this way, you can see the Fenstral Spire, which is a wonderful craft fair that happens once every two weeks!\" Uten goes back to you.",
+        "preceding_context_chars": 601,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "As I trail backwards behind her you hear twins, motherfucker! (laughter)",
+            "turn_number": 204
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you begin to approach a large black and gray building built from heavy, heavy stones--",
+            "turn_number": 205
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Can I talk to Uten a little bit while we're walking?",
+            "turn_number": 206
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Is she picking your nose?",
+            "turn_number": 207
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I thought the same thing! It's a scratch, no pick!",
+            "turn_number": 208
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "So, do you play tour guide often to newcomers in this town?",
+            "turn_number": 209
+          },
+          {
+            "speaker": "MATT",
+            "text": "Uten says, \"It is not often that we take newcomers under our wing like this. Usually they are either customers or, well, to be arrested shortly. So, no, this is probably the first tour we've given. Senokir seems to strangely enjoy it.\"",
+            "turn_number": 210
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Playing tour guide?",
+            "turn_number": 211
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 215,
+      "category": null,
+      "episode_position_pct": 0.1084,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"We've been in business together for about the better part of ten years. I've only been here about 12. It was a very dangerous scavenge to begin, but at least the laws of the normal world do not apply here. I have no idea how long Senokir's been here. He keeps a lot to himself, that one, but I trust him.\"",
+        "preceding_context_chars": 776,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Can I talk to Uten a little bit while we're walking?",
+            "turn_number": 206
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Is she picking your nose?",
+            "turn_number": 207
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I thought the same thing! It's a scratch, no pick!",
+            "turn_number": 208
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "So, do you play tour guide often to newcomers in this town?",
+            "turn_number": 209
+          },
+          {
+            "speaker": "MATT",
+            "text": "Uten says, \"It is not often that we take newcomers under our wing like this. Usually they are either customers or, well, to be arrested shortly. So, no, this is probably the first tour we've given. Senokir seems to strangely enjoy it.\"",
+            "turn_number": 210
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Playing tour guide?",
+            "turn_number": 211
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Apparently!\" Motions over and Senokir, other hand out, is like, \"And around this way, you can see the Fenstral Spire, which is a wonderful craft fair that happens once every two weeks!\" Uten goes back to you.",
+            "turn_number": 212
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's making shit up as he's walking.",
+            "turn_number": 213
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Seems he has quite a love for the City of Brass. How long have you all been residents here?",
+            "turn_number": 214
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 236,
+      "category": null,
+      "episode_position_pct": 0.119,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"It's been a while. Since the upset socially, I found it best to not deal with them outside of a customer-patron relationship.\"",
+        "preceding_context_chars": 558,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It's been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Where are we, Master?",
+            "turn_number": 230
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Welcome to the Zenith Forge. So, once we enter, I would have to be the one to ask all the questions, but that would be difficult for us to do. So the choice is yours. Either we try and find a careful way to funnel questions, or we put our cards on the table and you do the talking.\"",
+            "turn_number": 231
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Well, I can alter myself to look like you, if you can hang back.",
+            "turn_number": 232
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You already look like Uten and other compatriots. You can still speak, I just want to make sure that, well, our slaves don't talk out of turn.\"",
+            "turn_number": 233
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Sure.",
+            "turn_number": 234
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Have you spoken with a fire giant before?",
+            "turn_number": 235
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 282,
+      "category": null,
+      "episode_position_pct": 0.1421,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It lasts for up to ten minutes, yeah.",
+        "preceding_context_chars": 678,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Oh, do I have to stop? I can't do it as we're walking?",
+            "turn_number": 268
+          },
+          {
+            "speaker": "MATT",
+            "text": "I mean you can do it, it's a visual thing.",
+            "turn_number": 269
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We can hold him.",
+            "turn_number": 270
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Senokir, hold?",
+            "turn_number": 271
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "One moment!",
+            "turn_number": 272
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Senokir?",
+            "turn_number": 273
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes?\"",
+            "turn_number": 274
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We're going to--",
+            "turn_number": 275
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Hang on, a little bit of preparation on our end, if you don't mind.",
+            "turn_number": 276
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right. Then decide. I mean, if you wish to progress--\"",
+            "turn_number": 277
+          },
+          {
+            "speaker": "LAURA",
+            "text": "As he's talking I start doing it. (laughter)",
+            "turn_number": 278
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, it's really quick. And you basically have to pull out your component from the side there, it's a little twig and you snap it. And you continue the ritual. All right. You concentrate for a second as he's talking, and currently no. You do not sense it.",
+            "turn_number": 279
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Okay. And that lasts for ten minutes?",
+            "turn_number": 280
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "But it can point us in the right direction.",
+            "turn_number": 281
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 490,
+      "category": null,
+      "episode_position_pct": 0.247,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Between the two of you, given about five minutes, you guys could eventually carry it.",
+        "preceding_context_chars": 640,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "five minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Thank you. I go over and I start trying to (grunts) pick it up.",
+            "turn_number": 468
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a strength check. (laughter)",
+            "turn_number": 469
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Use your legs. Bend the knees.",
+            "turn_number": 470
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, no!",
+            "turn_number": 471
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Pull a hammie?",
+            "turn_number": 472
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Eight total.",
+            "turn_number": 473
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can get it a few inches off the ground--",
+            "turn_number": 474
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Or just a check, right? Just a straight check?",
+            "turn_number": 475
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, just with your modifier.",
+            "turn_number": 476
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay, then five.",
+            "turn_number": 477
+          },
+          {
+            "speaker": "MATT",
+            "text": "You get it a few inches off the ground before it (crashing sound) hits the ground with a resounding clang.",
+            "turn_number": 478
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(hisses in pain)",
+            "turn_number": 479
+          },
+          {
+            "speaker": "MATT",
+            "text": "Almost got your finger, but you're fine.",
+            "turn_number": 480
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay.",
+            "turn_number": 481
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Do you want me to?",
+            "turn_number": 482
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah.",
+            "turn_number": 483
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "C'mon, Beast Mode!",
+            "turn_number": 484
+          },
+          {
+            "speaker": "LAURA",
+            "text": "You're so strong, Pike.",
+            "turn_number": 485
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll give it a try.",
+            "turn_number": 486
+          },
+          {
+            "speaker": "SAM",
+            "text": "C'mon, Pike! Lift that thing!",
+            "turn_number": 487
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Get it!",
+            "turn_number": 488
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh, definitely not. Just doesn't even move. That's a seven.",
+            "turn_number": 489
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 538,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.2712,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "for the next hour",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "in_scene",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "An extended period of time to make it towards where the mines and the pits are for the next hour or so, walking through the streets. As you're heading in this northward direction, you pass by a series of intersections where a lot of these lava rivers merge and splinter off. You can see there are individuals that are taking elements of it and carrying off large metallic buckets. You also notice in the distance one very terrifying-looking structure. All the rest have this beautiful, grandiose design to them. There is one that looks like it is made of curved obsidian spikes, like a series of giant, clawed hands climbing up over themselves. It forms a bastion in the center of the city. This is on the outskirts of the furnace that you walked past or saw in the distance when you first left Senokir's establishment. Pressing beyond that, you notice that there is a heavy number of nasty-looking devilish entities that seem to be running patrol around the outside of that building. You get the essence that there's a heavy devil presence in the City of Brass. Devils of multiple kinds, you gather. Many you've never seen before. But they seem to be gathering around and have that same terrifying essence to them. You see some that are humanoid, but covered in long chains with hooks at the end, dragging on the ground behind them. You see some that are these nasty little impish looking creatures that leap from section to section and usually travel in packs. But they all have business; they carry small satchels at their side. They mingle with the rest of the efreet and the other denizens of the city unmolested, unbothered, unprovoked.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "TRAVIS",
+            "text": "(whispers) Weird.",
+            "turn_number": 533
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Are you mocking me?\"",
+            "turn_number": 534
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What? What are you talking about?",
+            "turn_number": 535
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Right. Continue, please.\" Pulls the chains a little bit.",
+            "turn_number": 536
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(choking noise)",
+            "turn_number": 537
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 538,
+      "category": null,
+      "episode_position_pct": 0.2712,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "An extended period of time to make it towards where the mines and the pits are for the next hour or so, walking through the streets. As you're heading in this northward direction, you pass by a series of intersections where a lot of these lava rivers merge and splinter off. You can see there are individuals that are taking elements of it and carrying off large metallic buckets. You also notice in the distance one very terrifying-looking structure. All the rest have this beautiful, grandiose design to them. There is one that looks like it is made of curved obsidian spikes, like a series of giant, clawed hands climbing up over themselves. It forms a bastion in the center of the city. This is on the outskirts of the furnace that you walked past or saw in the distance when you first left Senokir's establishment. Pressing beyond that, you notice that there is a heavy number of nasty-looking devilish entities that seem to be running patrol around the outside of that building. You get the essence that there's a heavy devil presence in the City of Brass. Devils of multiple kinds, you gather. Many you've never seen before. But they seem to be gathering around and have that same terrifying essence to them. You see some that are humanoid, but covered in long chains with hooks at the end, dragging on the ground behind them. You see some that are these nasty little impish looking creatures that leap from section to section and usually travel in packs. But they all have business; they carry small satchels at their side. They mingle with the rest of the efreet and the other denizens of the city unmolested, unbothered, unprovoked.",
+        "preceding_context_chars": 751,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the next hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Got to take a second to switch hands.",
+            "turn_number": 520
+          },
+          {
+            "speaker": "MATT",
+            "text": "Wait, wait, oh oh oh!",
+            "turn_number": 521
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You walk backwards.",
+            "turn_number": 522
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We bought the new bed frame. It's called the \"Nupe.\"",
+            "turn_number": 523
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "No you go first, you go first.",
+            "turn_number": 524
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll go backwards, I'll go backwards.",
+            "turn_number": 525
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Turn it over!",
+            "turn_number": 526
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Are you okay going down the stairs? Okay, okay.",
+            "turn_number": 527
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay. (clanging sound effects)",
+            "turn_number": 528
+          },
+          {
+            "speaker": "LIAM",
+            "text": "As we leave, I give the saddest puppy stare to that wallet on the side of his belt and wish upon a star. And then I leave.",
+            "turn_number": 529
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. You guys make your way out into the main thoroughfare. Senokir turns back. \"Very well. I know where this shrine is, so follow me.\"",
+            "turn_number": 530
+          },
+          {
+            "speaker": "LAURA",
+            "text": "(imitates Senokir) Great. We will.",
+            "turn_number": 531
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "(imitates Senokir) Great.",
+            "turn_number": 532
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(whispers) Weird.",
+            "turn_number": 533
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Are you mocking me?\"",
+            "turn_number": 534
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What? What are you talking about?",
+            "turn_number": 535
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Right. Continue, please.\" Pulls the chains a little bit.",
+            "turn_number": 536
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(choking noise)",
+            "turn_number": 537
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 552,
+      "category": null,
+      "episode_position_pct": 0.2782,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As you continue, eventually you come upon the outside of this beautiful temple that is made of hundreds of heavy, dark iron and metal hammers that are all molded together in this mish-mash that forms this giant archway. As you walk past it, Senokir pipes up again, \"And that is the Smoking Hammer Shrine that was spoken of. Which means--\" And he points over to the right. There you can see-- it resembles a home that is conical in its advancement. It's thick at the base, and it spirals upward, made of black metallic substance. Rough around the edges, like it's been pushed together, similar to the shrine you saw. But it's this spiral that continues upward. This very thick spiral that quickly tapers off into a point. You see there are levels to it, and there appear to be openings and windows. This is an abode of some kind. A very massive abode, and to a certain extent one of the more impressive buildings you've seen in this immediate vicinity.",
+        "preceding_context_chars": 454,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it's been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I wave at a couple. Quietly.",
+            "turn_number": 539
+          },
+          {
+            "speaker": "MATT",
+            "text": "From a distance, you're not getting too close. No one seems to pay mind.",
+            "turn_number": 540
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Senokir, what is that place?",
+            "turn_number": 541
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"That is the embassy. We shouldn't go by there.\"",
+            "turn_number": 542
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Why? What's in the embassy?",
+            "turn_number": 543
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well, that's where the ambassadors to the Nine Hells reside.\"",
+            "turn_number": 544
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Right. Nine. That's a lot.",
+            "turn_number": 545
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Is it like a cityscape?",
+            "turn_number": 546
+          },
+          {
+            "speaker": "SAM",
+            "text": "We have diplomatic immunity.",
+            "turn_number": 547
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Senokir, did that exchange go about the way you thought it would?",
+            "turn_number": 548
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Sure.\" (laughter)",
+            "turn_number": 549
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Good.",
+            "turn_number": 550
+          },
+          {
+            "speaker": "LIAM",
+            "text": "This guy likes to party.",
+            "turn_number": 551
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 562,
+      "category": "KNOWLEDGE_GRANT",
+      "episode_position_pct": 0.2833,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Other giants. Well, they have, depending on the type of giant, many natural enemies, usually that exist within the topography they're used to. You only really know about stone giants in the Cliffkeep. And maybe hill giants. There is no specific, sworn, vengeful enemies to the stone giants that you're aware of.",
+        "preceding_context_chars": 549,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "you're aware of",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Yes, we know. Sorry.",
+            "turn_number": 555
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"So? What is your intent here?\"",
+            "turn_number": 556
+          },
+          {
+            "speaker": "SAM",
+            "text": "Well, gang. I don't feel like we should say the name of the thing that we want, in case she doesn't know what it is?",
+            "turn_number": 557
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Maybe describe it? I feel like the more we make it seem like it's valuable to us, the more they're going to ask in return. So maybe make it seem less valuable?",
+            "turn_number": 558
+          },
+          {
+            "speaker": "LIAM",
+            "text": "She won it in a card game and hung it on the wall as a decoration.",
+            "turn_number": 559
+          },
+          {
+            "speaker": "LAURA",
+            "text": "She could think it's a fucking trinket. It could be like nothing. It could be like a candlestick.",
+            "turn_number": 560
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Do I know if giants have any natural enemies that they hate?",
+            "turn_number": 561
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 607,
+      "category": null,
+      "episode_position_pct": 0.3059,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Dang it, Bobby! All right. Thanks to the rough construction of this building, it isn't too difficult to find handholds, though there are certain moments where you have to leap and catch to get there. It takes you probably the better part of 15 minutes to eventually get up to that area. The first opening you see, even though it's a window, is an oval porthole in the side of that structure. As you glance inside, getting your arm up in there, you are inside a servants' quarters, but even the servants' quarters are very large. It's simple. You see two beds in there, but the beds are 30 feet long, 20 feet wide with various hides and furs that have been patched together in this quilt-like fashion, but haphazard in their stitching. Other than that, it's not very pretty.",
+        "preceding_context_chars": 734,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "15 minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "It's going to be right on the inside, hanging on the wall.",
+            "turn_number": 591
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can't Vax do some Spider-Man shit and check out the windows? He's all invisible.",
+            "turn_number": 592
+          },
+          {
+            "speaker": "SAM",
+            "text": "It's risky.",
+            "turn_number": 593
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Why? If he falls, nobody will see it. We'll just hear it.",
+            "turn_number": 594
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah! And then you pretend like you tripped!",
+            "turn_number": 595
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Are there really high windows?",
+            "turn_number": 596
+          },
+          {
+            "speaker": "MATT",
+            "text": "There are no windows on the bottom floor. On the second floor up, there are, yes. Which is about 40 feet up.",
+            "turn_number": 597
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No, it's definitely on the first floor.",
+            "turn_number": 598
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "They're 20 feet high, so, high up.",
+            "turn_number": 599
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's what it is. It's on the first floor, up high.",
+            "turn_number": 600
+          },
+          {
+            "speaker": "LIAM",
+            "text": "So let me go.",
+            "turn_number": 601
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, dude! This is what you do!",
+            "turn_number": 602
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He just said there were windows on the second floor.",
+            "turn_number": 603
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm already climbing. Would this be acrobatics?",
+            "turn_number": 604
+          },
+          {
+            "speaker": "MATT",
+            "text": "For climbing, this would be athletics.",
+            "turn_number": 605
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Athletics. Dang it, Bobby. That's a 16.",
+            "turn_number": 606
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 685,
+      "category": "KNOWLEDGE_GRANT",
+      "episode_position_pct": 0.3453,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "You recognize it's Giant. You cannot read.",
+        "preceding_context_chars": 758,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "You recognize it",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, so that's a 15.",
+            "turn_number": 674
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. So that's your strength bonus and your proficiency modifier?",
+            "turn_number": 675
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Not my proficiency modifier.",
+            "turn_number": 676
+          },
+          {
+            "speaker": "MATT",
+            "text": "So that would be 20. You reach back (heavy impact) and you watch as his hand hits the section where the engraved metal door is, dents inward, and leaves this big heavy dent in the front and the impact is like a dull thunderous clap of lightning. You hear it echo on the inside.",
+            "turn_number": 677
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "It's engraved with something?",
+            "turn_number": 678
+          },
+          {
+            "speaker": "MATT",
+            "text": "There was some very faint texture or pattern to it. Yeah, a design that was built into it.",
+            "turn_number": 679
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Knuckles. By the way, can I see that manhole cover you guys have been carrying around this whole time?",
+            "turn_number": 680
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, sure.",
+            "turn_number": 681
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's got Giant runes on it. Runes of Giant.",
+            "turn_number": 682
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Help me. Hey, Pike, can you help prop it up on that side?",
+            "turn_number": 683
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Do I recognize any of these runes?",
+            "turn_number": 684
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 946,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.4768,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Then perhaps there is a favor you can do for me. In exchange for this favor, I will nullify our contract, and you will be free to go. Does this sound viable?\"",
+        "preceding_context_chars": 684,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "In exchange for this",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "She turns her head to the side, \"You do not want to walk this path, do you? Because if you truly cherish the lives that you and your friends here have, based on your current change in tone, this tells me that they now belong to me. Perhaps you would wish to continue to make this agreement you came to make. Show me your card.\"",
+            "turn_number": 941
+          },
+          {
+            "speaker": "SAM",
+            "text": "I drew a three, and a three, and a three.",
+            "turn_number": 942
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, that sucks!",
+            "turn_number": 943
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"By one each time. Perhaps it was time for you to lose cards after all. Based on our agreement, you and your friends are now property of Juuraiel. However, I see that you are traveled. You seem capable. You are bold. You walk in here after acquiring the will of Whaska. So, you want freedom, yes?\"",
+            "turn_number": 944
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yes?",
+            "turn_number": 945
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 984,
+      "category": null,
+      "episode_position_pct": 0.496,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Oh, you should never go to the embassy. But this Ghurrix is tied up with a lot of politics in this city. As much as I would love to squeeze what infernal life he has, I fear it would cause the execution of me and mine. So, I sit and fester with the need of vengeance. I need you, if you're as capable as you promise, to go and find Ghurrix, in whatever way you see fit, and carve the life from his body. Now, Ghurrix frequents the Arches, which is the slave market of the city, where he finds rare and unique servants for the Nine Hells and his masters there. Goes about once a week and is probably due there in a day or two. Go, slay Ghurrix, and return to me with no mention and no trace that can be brought back to my home. Then the armor is yours, as is your freedom. There is no agreement. You've already agreed. So go.\"",
+        "preceding_context_chars": 767,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a week",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "God! Matt! You!",
+            "turn_number": 969
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Wow.",
+            "turn_number": 970
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm really just bad at everything.",
+            "turn_number": 971
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Did you roll an 11?",
+            "turn_number": 972
+          },
+          {
+            "speaker": "SAM",
+            "text": "I rolled an 11.",
+            "turn_number": 973
+          },
+          {
+            "speaker": "MATT",
+            "text": "Oh my God!",
+            "turn_number": 974
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You are a deity.",
+            "turn_number": 975
+          },
+          {
+            "speaker": "MATT",
+            "text": "I wish I had this luck in Vegas! Like, literal gambling.",
+            "turn_number": 976
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's just four hours.",
+            "turn_number": 977
+          },
+          {
+            "speaker": "SAM",
+            "text": "Best seven out of 13! (laughter)",
+            "turn_number": 978
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You have agreed to our accord as per the agreement.\"",
+            "turn_number": 979
+          },
+          {
+            "speaker": "SAM",
+            "text": "I have agreed. I'm already your slave, so I couldn't really say no. So yes, I agree to our accord. What favor can I grant you?",
+            "turn_number": 980
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You will have your freedom and the armor you seek. My lover does not live because of an altercation with one who frequents the city. My partner, Drogat, died needlessly in the streets of an innocent altercation with Ghurrix, a pit fiend that lives at the embassy.\"",
+            "turn_number": 981
+          },
+          {
+            "speaker": "LAURA",
+            "text": "(groaning) Ah jeez.",
+            "turn_number": 982
+          },
+          {
+            "speaker": "SAM",
+            "text": "Sorry, we're not supposed to go to the embassy. We were told so by our tour guide.",
+            "turn_number": 983
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 997,
+      "category": null,
+      "episode_position_pct": 0.5025,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Two days. Go!\"",
+        "preceding_context_chars": 788,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Two days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Yes, we accept. Thank you, my master, we will go do so right away. Two days, you say?",
+            "turn_number": 985
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Two days, yes.\"",
+            "turn_number": 986
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Does that mean we don't have to answer to you anymore? You're equal to us?",
+            "turn_number": 987
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yes.",
+            "turn_number": 988
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "High five, yeah!",
+            "turn_number": 989
+          },
+          {
+            "speaker": "SAM",
+            "text": "I release you from your slavery.",
+            "turn_number": 990
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "And into another one.",
+            "turn_number": 991
+          },
+          {
+            "speaker": "SAM",
+            "text": "What does he look like?",
+            "turn_number": 992
+          },
+          {
+            "speaker": "MATT",
+            "text": "She reaches down to the side of the desk, and pulls out a very small book, relative size, and flips through, and opens a page to turn towards you. \"This is what I seek to see destroyed. You can tell, Ghurrix wears a symbol of his station. It is a thick, black chain. And at the bottom, it has the symbol of two manacles intertwined within a red symbol that pulses with anger. That is your mark.\"",
+            "turn_number": 993
+          },
+          {
+            "speaker": "SAM",
+            "text": "Are you sure you don't want just a game of Pinochle instead?",
+            "turn_number": 994
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You try my patience, small one.\"",
+            "turn_number": 995
+          },
+          {
+            "speaker": "SAM",
+            "text": "Please, call me Kenny Rogers.",
+            "turn_number": 996
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1012,
+      "category": "scene_transition",
+      "episode_position_pct": 0.5101,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It would fit a human. A minute passes. You hear the footfalls return. As she comes down the stairs, with her hand in a fist, she throws her hand open. Hitting the ground, and scattering across the stonework, some of them stopping at your feet or beyond, a series of black, metal rings that match the ones that the two giants wear around their neck.",
+        "preceding_context_chars": 791,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "A minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Let's go, slaves! I'm sorry, equals, peers, let's go!",
+            "turn_number": 998
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you guys step down, the two giant guards step back and begin to walk towards the door to let you out.",
+            "turn_number": 999
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Actually, madam, master. Do you have any symbols that you can give us, like something we could show people so they don't try to claim us for themselves? Because we're a lot smaller than everyone else here. Something that shows that we're your slaves?",
+            "turn_number": 1000
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Hmm.\" She gets up from behind the desk, and walks up the stairs for a moment.",
+            "turn_number": 1001
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Is she out of the room?",
+            "turn_number": 1002
+          },
+          {
+            "speaker": "MATT",
+            "text": "She's out of the room, currently.",
+            "turn_number": 1003
+          },
+          {
+            "speaker": "LAURA",
+            "text": "And two other giants are behind us?",
+            "turn_number": 1004
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yes.",
+            "turn_number": 1005
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What are they doing?",
+            "turn_number": 1006
+          },
+          {
+            "speaker": "MATT",
+            "text": "They're standing watching all of you.",
+            "turn_number": 1007
+          },
+          {
+            "speaker": "LAURA",
+            "text": "All of us except for--",
+            "turn_number": 1008
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm standing there, but I'm not--",
+            "turn_number": 1009
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Jump up and fucking see how it's attached to the wall!",
+            "turn_number": 1010
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "How big is the suit of armor, the Dawnmartyr?",
+            "turn_number": 1011
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1071,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.5398,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "over the next day",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "That's okay. So. You guys have returned to Senokir and Uten's establishment to rest until you feel is necessary to undertake this endeavor. But it is your guys' prerogative as to if you want to wait over the next day, day and a half to jump to it or is there anything you want to do to prepare for this circumstance? What do you want to do?",
+        "preceding_turns_last5": [
+          {
+            "speaker": "TRAVIS",
+            "text": "The timing. Well, she's been gone.",
+            "turn_number": 1066
+          },
+          {
+            "speaker": "MATT",
+            "text": "She's been gone a while. It's okay, welcome back.",
+            "turn_number": 1067
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'm sorry.",
+            "turn_number": 1068
+          },
+          {
+            "speaker": "MATT",
+            "text": "Ashley, you're amazing.",
+            "turn_number": 1069
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'm just not working right now.",
+            "turn_number": 1070
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1071,
+      "category": "scene_transition",
+      "episode_position_pct": 0.5398,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "That's okay. So. You guys have returned to Senokir and Uten's establishment to rest until you feel is necessary to undertake this endeavor. But it is your guys' prerogative as to if you want to wait over the next day, day and a half to jump to it or is there anything you want to do to prepare for this circumstance? What do you want to do?",
+        "preceding_context_chars": 789,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "over the next",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Grog, pick her up, she looks like she needs some water.",
+            "turn_number": 1055
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Grog, I'm just so tired.",
+            "turn_number": 1056
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You look so mopey.",
+            "turn_number": 1057
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I feel very mopey.",
+            "turn_number": 1058
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Did you want a piggyback ride?",
+            "turn_number": 1059
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yeah.",
+            "turn_number": 1060
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "All right, I pick her up and I put her on my shoulder.",
+            "turn_number": 1061
+          },
+          {
+            "speaker": "MATT",
+            "text": "You guys eventually make your way back, being led by Senokir back to his establishment. Let's go ahead and take a little break for now. Go ahead and use the restroom--",
+            "turn_number": 1062
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "You looked like the creepy guy was saying we should take a break for just a second.",
+            "turn_number": 1063
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"That would be frightening, wouldn't it?\" All right, guys, we'll be back in just a few minutes, we'll see you in a second. [break]",
+            "turn_number": 1064
+          },
+          {
+            "speaker": "MATT",
+            "text": "Welcome back everyone to Critical Role. That was terrible.",
+            "turn_number": 1065
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "The timing. Well, she's been gone.",
+            "turn_number": 1066
+          },
+          {
+            "speaker": "MATT",
+            "text": "She's been gone a while. It's okay, welcome back.",
+            "turn_number": 1067
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'm sorry.",
+            "turn_number": 1068
+          },
+          {
+            "speaker": "MATT",
+            "text": "Ashley, you're amazing.",
+            "turn_number": 1069
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'm just not working right now.",
+            "turn_number": 1070
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1153,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.5811,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You're not entirely certain, comparatively the time. You feel like you've been here for, I mean, a while. By the cycle of the sun-like light source in the sky here on the plane, it seems like you've been here for about a day.",
+        "preceding_context_chars": 713,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a day",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "In case it's magically locked down?",
+            "turn_number": 1142
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "In case it's magically locked down.",
+            "turn_number": 1143
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, that's pretty smart.",
+            "turn_number": 1144
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "In which the phrase, \"I have many enchantments upon my home,\" led me to believe there's probably--",
+            "turn_number": 1145
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I mean, I really don't see what the problem is, right? Hellfiend goes, \"Oh, time to go shopping for slaves.\" He walks up to the Arches, we set a trap, Vax goes stabby-stab-stab, Percy goes (gunshot), Pike goes, (high-pitched) \"Hi\", and like, donesky!",
+            "turn_number": 1146
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You're writing the best children's book ever.",
+            "turn_number": 1147
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I mean, I'm down, I think that's a great plan, Grog.",
+            "turn_number": 1148
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "He also said that the pit fiend could be there in one to two days.",
+            "turn_number": 1149
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yes.",
+            "turn_number": 1150
+          },
+          {
+            "speaker": "SAM",
+            "text": "Could be there tomorrow?",
+            "turn_number": 1151
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Also, do we know how much time passes in the fire plane versus the real world?",
+            "turn_number": 1152
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1437,
+      "category": "scene_transition",
+      "episode_position_pct": 0.7243,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay, for the purposes of the narrative, you spend the next few hours with Pike in your room, beginning to learn elements of the alphabet of Common. You go through enough of it where you pick up some of it and as the potion fades, so does the memory of the last three hours. (yelling)",
+        "preceding_context_chars": 788,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "few hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Just Common letters? Yes, I can show you the alphabet. I'll write it out. Okay? Do you know how to spell your name? Okay. It's very easy. You have four letters in your name, but there are two of the same letter. So you really only have three letters in your name.",
+            "turn_number": 1422
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "How many-- I'm not so hot on the numbers, either.",
+            "turn_number": 1423
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay, well, we won't talk about numbers. Okay, what's the first letter of the alphabet? This you know.",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "G.",
+            "turn_number": 1425
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That's the first letter of your name.",
+            "turn_number": 1426
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, it is!",
+            "turn_number": 1427
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yes, but that's not the first letter of the alphabet. You've said it before. Ah--",
+            "turn_number": 1428
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Ah-- I. Hey!",
+            "turn_number": 1429
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh! It's the first letter, well, you wouldn't know that, because you don't know how to spell.",
+            "turn_number": 1430
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Fucking A, this is tough.",
+            "turn_number": 1431
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh! You said it!",
+            "turn_number": 1432
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Fucking? A?",
+            "turn_number": 1433
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "A! A is the first letter of the alphabet.",
+            "turn_number": 1434
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "A. Ay. A. A.",
+            "turn_number": 1435
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "And we can keep going-- (laughter)",
+            "turn_number": 1436
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1437,
+      "category": null,
+      "episode_position_pct": 0.7243,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay, for the purposes of the narrative, you spend the next few hours with Pike in your room, beginning to learn elements of the alphabet of Common. You go through enough of it where you pick up some of it and as the potion fades, so does the memory of the last three hours. (yelling)",
+        "preceding_context_chars": 788,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "three hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "Just Common letters? Yes, I can show you the alphabet. I'll write it out. Okay? Do you know how to spell your name? Okay. It's very easy. You have four letters in your name, but there are two of the same letter. So you really only have three letters in your name.",
+            "turn_number": 1422
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "How many-- I'm not so hot on the numbers, either.",
+            "turn_number": 1423
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Okay, well, we won't talk about numbers. Okay, what's the first letter of the alphabet? This you know.",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "G.",
+            "turn_number": 1425
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "That's the first letter of your name.",
+            "turn_number": 1426
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh, it is!",
+            "turn_number": 1427
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Yes, but that's not the first letter of the alphabet. You've said it before. Ah--",
+            "turn_number": 1428
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Ah-- I. Hey!",
+            "turn_number": 1429
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh! It's the first letter, well, you wouldn't know that, because you don't know how to spell.",
+            "turn_number": 1430
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Fucking A, this is tough.",
+            "turn_number": 1431
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "Oh! You said it!",
+            "turn_number": 1432
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Fucking? A?",
+            "turn_number": 1433
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "A! A is the first letter of the alphabet.",
+            "turn_number": 1434
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "A. Ay. A. A.",
+            "turn_number": 1435
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "And we can keep going-- (laughter)",
+            "turn_number": 1436
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1468,
+      "category": "OVERNIGHT_REST",
+      "episode_position_pct": 0.7399,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "come to consciousness",
+        "extracted_surface_form": "diurnal_transition",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": true,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "Great. All right. So, as you guys all come to consciousness the next day, you gather your things and you step out of the mansion into the center of Senokir's shop.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll cast Greater Restoration before bed.",
+            "turn_number": 1463
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. So you reduce a level of exhaustion.",
+            "turn_number": 1464
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I am going to send a little time working on a couple things for the fort when we get back. Netting ammo for the trebuchet, just a sketch. To start to design a very simple bolo for the trebuchet.",
+            "turn_number": 1465
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Just designing?",
+            "turn_number": 1466
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Just penciling and then penciling-- I've got a notion for a watch tower that's super super simple. Platform for two people, tops, with a rope that connects to a bell so when you start heading down it, it goes (high voice) Fuck!",
+            "turn_number": 1467
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1468,
+      "category": "scene_transition",
+      "episode_position_pct": 0.7399,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Great. All right. So, as you guys all come to consciousness the next day, you gather your things and you step out of the mansion into the center of Senokir's shop.",
+        "preceding_context_chars": 738,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the next day",
+        "granularity_bucket": "days",
+        "is_anchored": true,
+        "time_anchor_turn_number": 1455,
+        "anchor_distance_turns": 13,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "That'd the Greater Restoration, technically, to try and--",
+            "turn_number": 1458
+          },
+          {
+            "speaker": "LIAM",
+            "text": "There's AC in here, isn't there?",
+            "turn_number": 1459
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There's AC.",
+            "turn_number": 1460
+          },
+          {
+            "speaker": "LAURA",
+            "text": "In the mansion. Not in the studio. (laughter)",
+            "turn_number": 1461
+          },
+          {
+            "speaker": "MATT",
+            "text": "Greater Restoration reduces exhaustion. But you can do that as well.",
+            "turn_number": 1462
+          },
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll cast Greater Restoration before bed.",
+            "turn_number": 1463
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. So you reduce a level of exhaustion.",
+            "turn_number": 1464
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I am going to send a little time working on a couple things for the fort when we get back. Netting ammo for the trebuchet, just a sketch. To start to design a very simple bolo for the trebuchet.",
+            "turn_number": 1465
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Just designing?",
+            "turn_number": 1466
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Just penciling and then penciling-- I've got a notion for a watch tower that's super super simple. Platform for two people, tops, with a rope that connects to a bell so when you start heading down it, it goes (high voice) Fuck!",
+            "turn_number": 1467
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1470,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.7409,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "With the long rest, you recover a point of exhaustion, so you'll all back to baseline, including you, Pike, because your Greater Restoration. Your spells are recovered, HP is recovered, if there was any loss of it. So, the day is yours, what do you wish to do?",
+        "preceding_context_chars": 740,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "the long rest, you recover",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll cast Greater Restoration before bed.",
+            "turn_number": 1463
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. So you reduce a level of exhaustion.",
+            "turn_number": 1464
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I am going to send a little time working on a couple things for the fort when we get back. Netting ammo for the trebuchet, just a sketch. To start to design a very simple bolo for the trebuchet.",
+            "turn_number": 1465
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Just designing?",
+            "turn_number": 1466
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Just penciling and then penciling-- I've got a notion for a watch tower that's super super simple. Platform for two people, tops, with a rope that connects to a bell so when you start heading down it, it goes (high voice) Fuck!",
+            "turn_number": 1467
+          },
+          {
+            "speaker": "MATT",
+            "text": "Great. All right. So, as you guys all come to consciousness the next day, you gather your things and you step out of the mansion into the center of Senokir's shop.",
+            "turn_number": 1468
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do we recover our point of exhaustion when we sleep?",
+            "turn_number": 1469
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1470,
+      "category": "scene_transition",
+      "episode_position_pct": 0.7409,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "With the long rest, you recover a point of exhaustion, so you'll all back to baseline, including you, Pike, because your Greater Restoration. Your spells are recovered, HP is recovered, if there was any loss of it. So, the day is yours, what do you wish to do?",
+        "preceding_context_chars": 740,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "long rest",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ASHLEY",
+            "text": "I'll cast Greater Restoration before bed.",
+            "turn_number": 1463
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. So you reduce a level of exhaustion.",
+            "turn_number": 1464
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I am going to send a little time working on a couple things for the fort when we get back. Netting ammo for the trebuchet, just a sketch. To start to design a very simple bolo for the trebuchet.",
+            "turn_number": 1465
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Just designing?",
+            "turn_number": 1466
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Just penciling and then penciling-- I've got a notion for a watch tower that's super super simple. Platform for two people, tops, with a rope that connects to a bell so when you start heading down it, it goes (high voice) Fuck!",
+            "turn_number": 1467
+          },
+          {
+            "speaker": "MATT",
+            "text": "Great. All right. So, as you guys all come to consciousness the next day, you gather your things and you step out of the mansion into the center of Senokir's shop.",
+            "turn_number": 1468
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do we recover our point of exhaustion when we sleep?",
+            "turn_number": 1469
+          }
+        ]
+      }
+    }
+  ]
+}

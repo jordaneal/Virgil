@@ -95,19 +95,18 @@ def prompt_size_lines():
 
 GUILD = 'guild-prompt-size-test'
 camp_id = create_campaign(GUILD, 'Prompt Size Test Campaign')
-init_scene_state(camp_id, 'A dimly lit tavern on the edge of town.')
+init_scene_state(camp_id)
 
-# Update scene with real values so scene_chars > 0
+# Update scene with real values so scene_chars > 0. Ship 2 (S39) shrank the
+# LLM-writable scene_state surface to last_player_action only (the other
+# four-property fields were §76 deletions). Setting last_player_action is
+# sufficient to drive scene_chars > 0 for the assertion below.
 import sqlite3
-import json
 
 conn = sqlite3.connect(TEST_DB)
 conn.execute(
-    "UPDATE dnd_scene_state SET location=?, focus=?, last_player_action=?, "
-    "established_details=? WHERE campaign_id=?",
-    ('Rusty Anchor Tavern', 'The barkeep eyes you warily.',
-     'I look around the room.', json.dumps(['Dim torchlight', 'Sawdust floor']),
-     camp_id)
+    "UPDATE dnd_scene_state SET last_player_action=? WHERE campaign_id=?",
+    ('I look around the room.', camp_id)
 )
 conn.commit()
 conn.close()
@@ -168,7 +167,8 @@ check_truthy('prompt_size: total >= system',
 # ── Assertion 5: total > 0 ──
 check_truthy('prompt_size: total > 0', vals.get('total', 0) > 0)
 
-# ── Assertion 6: scene > 0 (we set location + focus + last_player_action) ──
+# ── Assertion 6: scene > 0 (last_player_action populated; Ship 2 S39
+#    eliminated the other LLM-writable scene scalars via §76 deletion) ──
 check_truthy('prompt_size: scene > 0 when scene state populated',
              vals.get('scene', 0) > 0)
 

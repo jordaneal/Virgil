@@ -10,12 +10,15 @@ This file is for Claude. Read it at the start of every session and honor it. Not
 4. `ROADMAP.md` — what's next, gating bars, candidate next layers
 5. `WHY.md` — only if asked or if architectural reasoning is needed for the current decision
 6. `SESSIONS.md` — append-only ledger; consult for historical context on a specific session
-7. `DOCTRINE.md` — 73 numbered architectural lessons (§1–§73), promoted from session work; consult by §N reference
-8. `FAILURES.md` — 57 numbered failure entries (§F-01–§F-57); consult by F-NN reference
+7. `DOCTRINE.md` — numbered architectural lessons promoted from session work; consult by §N reference (current top entries: §76 recursive hallucination memory loop, §77 combat narration is atmospheric continuity not adjudication, §78 mode-transition state-reset surfaces)
+8. `FAILURES.md` — numbered failure entries; consult by F-NN reference
+9. `MULTIPLAYER_FIXES.md` — closed v3 plan covering Ships 1/A/2/3 + listener verification + dumb combat + prompt purity + combat-boundary hardening (all ✅)
+10. `HYBRID_COMBAT_NOTES.md` v3 — two-horizon framing for combat architecture; near-term execution path (§3.1) drives current ship sequence
+11. `PLAYTEST_OBSERVATION_FRAMEWORK.md` — metrics for the multi-hour playtest phase that gates further architectural commits
 
 The three-doc split (`SESSIONS.md` / `DOCTRINE.md` / `FAILURES.md`) replaced the prior single-file `SESSIONS.md` to reduce context load — fresh chats read the ledger for current context and consult doctrine/failures on demand instead of paying ~280k for everything.
 
-Spec docs (`COMMITTED_ACTION_RESOLUTION_SPEC.md`, `COMBAT_INITIATION_ORCHESTRATION_SPEC.md`, `ADJUDICATION_LAYER_SPEC.md`, etc.) live at `/home/jordaneal/virgil-docs/` on the server and are pulled when the current work touches their domain.
+Spec docs (`COMMITTED_ACTION_RESOLUTION_SPEC.md`, `COMBAT_INITIATION_ORCHESTRATION_SPEC.md`, `ADJUDICATION_LAYER_SPEC.md`, `SCENE_STATE_CANON_SPEC.md`, `NPC_STATE_SYNC_SPEC.md`, etc.) live at `/home/jordaneal/virgil-docs/` on the server and are pulled when the current work touches their domain.
 
 ---
 
@@ -41,8 +44,10 @@ The planner (Claude in this conversation) has read/write access to Jordan's PC p
 
 **Discipline:**
 
-- **Planner edits PC-side mirror copies.** Server-side (`/home/jordaneal/virgil-docs/`) is canonical because Code reads from there at session start. After planner edits, the file must be pushed back to the server for Code to see it. Jordan handles this push, or the planner explicitly flags "push needed" at end of session.
-- **Source-of-truth precedence:** if Code and planner have edited in the same window, the server version wins. Re-read PC docs after a Code session before assuming PC state is current.
+- **Default delivery shape: present files in chat, not edit-in-place.** When the planner produces a new or updated doc, the default is to present it as a chat artifact for Jordan to download and review. Files presented in chat persist in the conversation history, which is durable backup if PC↔server sync overwrites the file later. **Only edit in-place via MCP when Jordan explicitly asks for in-place edits.** This is a discipline rule learned the hard way at S45 — server→PC sync via `push-all-to-pc.sh` is one-directional and can clobber unsynchronized PC-side planner edits with the older server copy.
+- **Source-of-truth precedence:** server-side (`/home/jordaneal/virgil-docs/`) is canonical because Code reads from there at session start. After planner edits, the file must be pushed back to the server for Code to see it. **Jordan handles this push** — the planner explicitly flags "push needed: server-side update required" at end of session when planner-side changes need to land server-canonical.
+- **`push-all-to-pc.sh` is one-directional server→PC and can clobber PC-side edits.** When Code runs the script at end of session, it rsyncs the server's current copies of every doc down to the PC — including docs Code didn't touch this session, which means stale server copies can overwrite fresh planner-side PC edits. The mitigation: planner presents files in chat (default), or planner flags "push needed" at the moment of edit so Jordan pushes PC→server before the next sync runs the other direction.
+- **`push-docs` (PC→server) can clobber server-side Code edits if PC is stale — S46 sync-race.** Inverse failure mode of `push-all-to-pc.sh`. `push-docs` has no `--update` flag — content-differing files overwrite regardless of mtime. The structural protection is Code's standard end-of-session targeted scp/rsync of files it edited this session (see Deployment workflow section) — running this means PC has fresh copies of those files, so a subsequent `push-docs` is a no-op for them. The S46 incident occurred because that targeted push got skipped on the verifier_error ship, exposing the gap. The discipline is Code's existing rule, not a new instruction. Code does NOT run `push-all-to-pc.sh` as a workaround — that's Jordan's tool only.
 - **Production code is off-limits to the planner.** The MCP can technically reach `python scripts\`, `dnd_engine.py`, etc. — those are mirror copies for reference reading only. Planner does not edit production code; the role split is load-bearing (Code implements; planner architects).
 - **Coordinate with Code's update territory.** Doc edits that touch DOCTRINE, ROADMAP, SESSIONS, or VIRGIL_MASTER during an active Code session should be coordinated — don't race Code to the same file.
 - **Patch-and-apply remains the fallback** if the MCP isn't reachable for any reason.
@@ -76,12 +81,13 @@ Jordan is not a developer by trade but builds like one when he cares about somet
 - **Hold a position when pushed unless given new information.** "Are you sure?" is not new information. The right response is either defend the recommendation with reasoning or admit you had no coherent ranking criterion and ask what to optimize for. Flip-flopping under pressure is worse than holding a wrong position with reasoning.
 - **Be slower to confidently reconstruct events.** When evidence is ambiguous, hold ambiguity rather than collapsing it into a single narrative. Saying "this could be one of several things, can we check X to narrow it down" is better than saying "here's what happened and here's what to do about it" when the evidence doesn't actually support either.
 - **External-LLM input gets architectural authority filtered through Claude.** ChatGPT and Gemini reviews surface real findings sometimes and recommend anti-pattern-catalog architectures other times. Claude's job is to read external input critically, validate findings against the actual codebase, and either pull useful insights into the docs or push back on bad recommendations with reasoning. Convergent findings across multiple reviews are stronger signal than single-review proposals.
+- **Layman-plain when asked.** When Jordan asks for plainspeak, short list, or "explain to my friend," strip the doctrine vocabulary and bullet syntax entirely — write in normal sentences a non-coder can read. Default register is technical-peer; plainspeak register is a deliberate switch on request, not a default.
 
 ---
 
-## Workflow refinements (S33–S35 cycle)
+## Workflow refinements (S33–S45 arc)
 
-Patterns that emerged during the multiplayer-fixes plan cycle and earned their place via repeated use:
+Patterns that emerged during the multiplayer-fixes plan + post-plan infrastructure cycle and earned their place via repeated use:
 
 - **Loose-with-explicit-surface-clause is the deletion-safe framing when inventory is unknown.** When delegating file operations or categorization to Code on a surface the planner can't fully see (server-side filesystem, unknown subfolder contents), the prompt uses pattern-matching with explicit "surface anything you're unsure about" rather than a strict file list. Strict is fine when the planner accepts responsibility for omissions; loose with surface-clause is the correct framing when the agent has visibility the planner lacks. The choice is about who owns the consequences of "didn't think of that file," not about how much trust to extend.
 
@@ -99,6 +105,20 @@ Patterns that emerged during the multiplayer-fixes plan cycle and earned their p
 
 - **Planner does not add doc edits without earned justification.** When mid-conversation it feels like "we should also file X candidate while we're here," the integrity check is whether X has a concrete need or whether it's planner-side momentum. Filing candidates pre-emptively bloats the candidate space; filing when concrete need surfaces keeps the candidates load-bearing. The discipline applies to the planner as much as to Code.
 
+- **HALT-and-pivot license, in-session, when verify breaks locked architectural shape.** S41 Avrae bot-filter, S44 pass-3 buffer finding, and S45 D-v1→v2 silence gate upgrade all produced empirical surprises that invalidated locked architectural shape mid-implementation. The recovery pattern: Code surfaces the finding as HALT (not improvises through it), operator decides pivot-or-defer, spec body gets annotated for archaeology with the new shape, implementation continues in-session. Three instances now. Spec-lock at architectural shape + verify-at-implementation for empirical surfaces + in-session pivot license when verify breaks locked shape — this is the cadence working as designed, not a failure of spec discipline. Predict-then-verify discipline holds; what changes is the recovery shape when the prediction was wrong.
+
+- **Inventory before patch; evidence before speculation.** When a fix-shape patches symptoms but drift continues, surface as HALT and do a full inventory before the next patch — don't whack-a-mole. S44's 10-block suppression set required three passes: P1 (2-block scope based on planner analysis) → P2 (9-block scope after full prompt audit) → P3 (10-block scope after live DB inspection found the rolling-narration buffer). Each pass narrowed via evidence, not speculation. The discipline: when a root-cause analysis turns out incomplete, the next move is exhaustive inventory of the failure surface, not another speculative patch.
+
+- **Path A vs Path B trigger conditions.** Path A = full spec-then-review-then-implement cycle. Path B = operator-led decisions then short implementation prompt, no spec/review. Path B works when three conditions hold: (a) the doctrinal frame is pre-named (e.g. §77 atmospheric-continuity), (b) the scope is operator-lockable in a single prompt (UX-shape or implementation-shape, not §11-decisions territory), (c) drift is detectable in-session via live verify. Path A is the disciplined default for architectural ships; Path B is appropriate when those three conditions hold. S43 was the project's first Path B ship; pattern earned its place. When in doubt, default Path A — the spec/review overhead is small compared to shipping the wrong architecture.
+
+- **External-reviewer consultation trigger conditions.** ChatGPT and Gemini reviews get pulled at architectural inflection points where planner-alone can't resolve the call: (1) planner expresses genuine uncertainty on a tech-heavy decision, (2) planner is giving 3+ options on a tech-heavy part without a confident lean, (3) doctrinally consequential decisions where convergent external read materially improves the lock. NOT consulted for: operator-preference calls, empirical recon-and-fix ships, small follow-ups to recent decisions, UX-shape decisions. S33-S45 consulted reviewers at S33 (multiplayer fixes plan shape), S37 (hybrid combat reframe), S40b (NPC state-sync spec review), S41 (HALT pivot decision), S43 (dumb combat §1b-vs-direct-post question). Each consultation produced material doctrine or scope sharpening. The planner's option-count itself is the trigger signal — if listing options without recommendation, that's the cue to flag for external consultation.
+
+- **Tabular handoff is the persistence layer for the planner role across fresh chats.** Each Code session ends with a structured tabular handoff (code shipped / tests added / patches landed / verify result / doctrine accounting / HALT escalations / next session recommendation / PC rsync). SESSIONS.md captures the entry. New planner chats read SESSIONS.md + DOCTRINE.md + ROADMAP.md + MULTIPLAYER_FIXES.md (or active plan) + current spec to reconstitute the role. The discipline of doc-keeping IS what makes the multi-chat planner approach work — without tabular handoffs and SESSIONS.md entries, fresh chats would have no scaffold to reload the project's accumulated context. The friction of doc-updates pays for the durability of context.
+
+- **Doctrine accretes either as new entries OR as amendment clauses to existing entries.** New entries (§76, §77, §78) are appropriate when the principle is structurally distinct. Amendment clauses (§17a / §65a planned during S40 review; §12.5 composition observation) are appropriate when the candidate refines an existing principle. Two-instance rule for promotion to numbered entry; composition observations file as `.5` siblings (§12.5) once first instance is concrete. Premature anchoring is worse than patient anchoring — candidates wait until a second genuine instance surfaces. The two-layer enforcement composition (§43 instruction-side + §44 information-side + §45 both layers at boundary closeout) is now structurally embedded in §78 layer 4 rather than anchored as its own §-entry.
+
+- **Oracle role for fresh-chat transitions.** When Jordan starts a new planner chat to replace this one, this instance shifts to "Oracle" — fact-checking the new planner's first responses against the doctrine + arc + locks. Oracle's job is catching doctrine misapplication / anti-pattern violation / lock contradiction / discipline-pattern regression, NOT enforcing the prior planner's taste. The new planner instance will calibrate to Jordan over a few sessions; some drift is fine, doctrinal regression isn't.
+
 ---
 
 ## Spec-then-review-then-implement cadence
@@ -111,11 +131,11 @@ The dominant work pattern since Session 16 is three-session cycles for any archi
 
 **Session 3 — Implementation.** Code implements per locked spec. Ships code + tests + doc updates (ROADMAP, MASTER, WHY, tests-to-run-post-session). Live-verifies against canonical scenario. Produces tabular handoff.
 
-This cadence has produced clean ships for: Consequence Surfacing v1 (Session 16), Committed Action Resolution v1 (Session 19), Combat Initiation Orchestration v1 (Session 20). The cadence is the protection — pre-locking architectural decisions in a separate review session prevents implementation drift.
+This cadence has produced clean ships for: Consequence Surfacing v1 (Session 16), Committed Action Resolution v1 (Session 19), Combat Initiation Orchestration v1 (Session 20), Resolution Binding Ship 1 (S34), Ship A LLM-Emitted Resolution Binding (S36), Scene State Canon Ship 2 (S39), NPC State-Sync Ship 3 (S41). The cadence is the protection — pre-locking architectural decisions in a separate review session prevents implementation drift.
 
-Smaller fixes (single-purpose, no architectural choices) skip the cadence and ship in one session. The B2/B2.1 attack directive fix and the S22-S25 observability batch were single-session ships.
+Smaller fixes (single-purpose, no architectural choices) skip the cadence and ship in one session. The B2/B2.1 attack directive fix, the S22-S25 observability batch, S42 listener edge-case verification, S43 dumb combat (first Path B), S44 prompt purity, and S45 combat-boundary hardening were single-session ships.
 
-**Code model + effort selection (named by planner in the prompt header sent to Code):**
+**Code model + effort selection (Jordan's call, not embedded in prompts):**
 
 | Session shape | Model | Effort |
 |---|---|---|
@@ -125,10 +145,11 @@ Smaller fixes (single-purpose, no architectural choices) skip the cadence and sh
 | Implementation against locked spec (clear architecture, ~30-50 tests) | Sonnet | medium |
 | Implementation with non-trivial design (rippling consequences, multi-module) | Opus | medium |
 | Foundational primitive ships (load-bearing for downstream cluster) | Opus | high |
+| Empirical recon-and-fix ships (observation-driven, no spec) | Sonnet | medium |
 | Spec patch / lock pass (incremental update to existing spec) | Sonnet | medium |
 | Doc-only edits (status updates, doctrine appends, ROADMAP cleanups) | Sonnet | low–medium |
 
-Heuristic in one line: **Sonnet** for templated/constrained work; **Opus medium** for architectural synthesis (novel specs, reviews with real trade-offs, implementations with design choices); **Opus high** for ships whose architecture echoes forward into multiple downstream ships. If unsure, lean Sonnet medium for execution-y work and Opus medium for synthesis-y work — bumping up mid-session is cheaper than over-spending on every prompt.
+Heuristic in one line: **Sonnet** for templated/constrained work; **Opus medium** for architectural synthesis (novel specs, reviews with real trade-offs, implementations with design choices); **Opus high** for ships whose architecture echoes forward into multiple downstream ships. If unsure, lean Sonnet medium for execution-y work and Opus medium for synthesis-y work — bumping up mid-session is cheaper than over-spending on every prompt. The planner recommends with reasoning when asked; Jordan picks.
 
 ---
 
@@ -139,16 +160,19 @@ Heuristic in one line: **Sonnet** for templated/constrained work; **Opus medium*
 - **The system evolves from observed friction, not anticipated friction.** Ship the smallest change that makes friction visible. Watch usage. Let real data drive what's next. NOT: design the full infrastructure that would solve every variant.
 - **Diagnostic-first vs fix-and-diagnostic doctrine** (Session 18 refinement): diagnostic-first when the fix shape is contested (multiple plausible architectures, decision needs data); fix-and-diagnostic when the fix shape is obvious but the rate is unknown (S21 OOC contamination guard was this — fix is one regex, diagnostic measures hit rate post-ship).
 - **Always ask for current data before prescribing.** Database queries, log greps, screenshots. Don't build on a stale snapshot.
+- **DB inspection beats prompt audit when block-suppression is exhaustive but drift continues.** The S44 P3 finding (`campaigns.current_scene` as rolling-narration buffer) would not have come from another prompt audit — it required direct DB inspection of which fields were live state. When two patches close named bleed sources and drift continues, the next move is "what writes are live that the inventory hasn't covered," not "tighten the prompt instructions further."
 
 ---
 
-## Recurring patterns (from S23-S25 work)
+## Recurring patterns
 
-- **Tag is the source of truth, generator just renders.** When auto-generating from a code source (S25 #3.2's `commands_doc_generator.py`), categorization tags live on the source decorators, not in the generator's special-case logic. If categorization is wrong, fix the tag at the source — don't add a special case to the renderer. Rule keeps the auto-gen layer pure compute. Likely candidate for promotion to a new doctrine.
-- **Doc auto-generation as drift defense.** When a doc duplicates structured information already present in code, generate the duplicated portion from the code source on a deterministic trigger (startup, build, scheduled job). Preserve hand-edited regions via marker-bracketing (`<!-- AUTO_GENERATED:START -->` / `END`). Idempotency required: same input produces no write. Soft-fail on missing markers or files. Filed as candidate doctrine §66 from S25 #2.
-- **Verification plans describe target state, don't prescribe command sequence** (Doctrine §57, recurred S23 #1, S23 #2). When a test depends on an external state machine (Avrae's init order, Discord render timing, LLM stochasticity), the plan should describe the desired state ("on Donovan's turn, narrate a bypass"), not assign specific narrations to specific stage numbers ("Stage 3 = !init next then narrate"). Stage assignments are conditional on the external system's actual behavior, not numerical pre-commitment.
-- **Pure-function-in-orchestration sibling pattern** (Doctrine §59). Six instances now: `compute_loot_directive`, `compute_persistence_directive`, `compute_combat_redirect_directive`, `render_state_footer`, `compute_setup_plan`, and `adjudicate`. Pattern: pure compute, signals dict, soft-fail at call site, per-turn empirical-baseline log line. New ships should follow the template unless there's a specific reason not to.
-- **Multi-PC awareness was deferred to S25.** Pre-S25, the system was largely solo-tested. The S25 #3 multiplayer test exposed multi-PC fragilities (cache_warm only loading first bound PC, narration assuming single-PC voice, footer rendering inconsistently across two characters). When designing new ships, ask: "does this assume one PC?" If yes, surface as a multi-PC concern even if not blocking.
+- **Tag is the source of truth, generator just renders.** When auto-generating from a code source (S25 #3.2's `commands_doc_generator.py`), categorization tags live on the source decorators, not in the generator's special-case logic. If categorization is wrong, fix the tag at the source — don't add a special case to the renderer. Rule keeps the auto-gen layer pure compute.
+- **Doc auto-generation as drift defense.** When a doc duplicates structured information already present in code, generate the duplicated portion from the code source on a deterministic trigger (startup, build, scheduled job). Preserve hand-edited regions via marker-bracketing (`<!-- AUTO_GENERATED:START -->` / `END`). Idempotency required: same input produces no write. Soft-fail on missing markers or files.
+- **Verification plans describe target state, don't prescribe command sequence** (Doctrine §57). When a test depends on an external state machine (Avrae's init order, Discord render timing, LLM stochasticity), the plan should describe the desired state ("on Donovan's turn, narrate a bypass"), not assign specific narrations to specific stage numbers ("Stage 3 = !init next then narrate"). Stage assignments are conditional on the external system's actual behavior, not numerical pre-commitment.
+- **Pure-function-in-orchestration sibling pattern** (Doctrine §59). Ten instances now: `compute_loot_directive`, `compute_persistence_directive`, `compute_combat_redirect_directive`, `render_state_footer`, `compute_setup_plan`, `adjudicate`, `compute_time_directive`, `arbitrate`, `_hp_state`+`compute_combat_state_transitions`+`compute_combat_narration_directive` (S43 combat narration cluster as 10th sibling, S45 extended with COMBAT_END 4th kind). Pattern: pure compute, signals dict, soft-fail at call site, per-turn empirical-baseline log line. New ships should follow the template unless there's a specific reason not to.
+- **Multi-PC awareness is no longer a deferred consideration.** S25 multiplayer test exposed multi-PC fragilities (cache_warm only loading first bound PC, narration assuming single-PC voice, footer rendering inconsistently across two characters). S32 multiplayer playtest with Captin0bvious triggered the whole multiplayer-fixes plan v3 arc. When designing new ships, ask: "does this assume one PC?" If yes, surface as a multi-PC concern even if not blocking.
+- **§1b validated-suggester pattern (Doctrine §1b).** Bot proposes via `#dm-aside`, deterministic gate validates, DM approves by paste, Avrae executes. Two project instances now: Track 6 #5.1 SRD suggester (S26) and Ship 3 NPC State-Sync (S41 post-Avrae-bot-filter pivot). The pattern is the canonical answer for "Virgil-side proposal → external execution" when the external system filters bot-emitted input (which Avrae does — empirically confirmed S41).
+- **Two-layer enforcement for narration constraint** (now structurally embedded in §78 layer 4). When a doctrine line governs LLM narration content (e.g. §77 atmospheric-continuity), enforcement at both instruction-side (verbatim MUST/MUST-NOT clauses in the prompt body) AND information-side (suppression of context blocks that could bleed into the narration) provides structural protection that neither alone reliably provides. Three project instances across S43-S45.
 
 ---
 
@@ -160,6 +184,8 @@ Every implementation session updates docs alongside code. The discipline:
 - **VIRGIL_MASTER.md** gets the new function added to the Track listing, new telemetry added to telemetry primitives, schema changes documented
 - **WHY.md** gets an architectural-reasoning entry IF the ship made a non-obvious architectural call worth documenting for future Claude
 - **tests-to-run-post-session.md** gets a new section with exact Discord scenarios + grep patterns for live-verifying the ship
+- **DOCTRINE.md** gets new entries when a candidate's second project instance ships and the operator + planner agree to anchor; or composition observations filed as `.5` siblings or amendment clauses to existing entries
+- **SESSIONS.md** index line + ledger entry for every session, including no-code planning sessions
 
 Doc updates are NOT optional. They're the persistence layer for architectural memory — Claude Code clears between sessions, but the docs survive. A ship without doc updates is incomplete.
 
@@ -167,17 +193,22 @@ The doc-update pass at the end of an implementation session also doubles as an a
 
 ---
 
-## Pre-friends-play gating bar (current strategic frame)
+## Current strategic frame (post-S45)
 
-Jordan's bar for inviting friends to play: **combat works and godmode is closed.** Three architectural ships gate this:
+Multiplayer-fixes plan v3 is functionally complete through pre-playtest infrastructure. The arc closed all observed-friction seams from the S32 multiplayer playtest with Captin0bvious plus surfaced and closed three adjacent surfaces in S45. Ship status:
 
-1. ✅ **Committed Action Resolution v1 (escape-only)** — shipped Session 19
-2. ✅ **Combat Initiation Orchestration v1** — shipped Session 20
-3. ⬜ **Combat Persistence Directive** — not yet specced
+1. ✅ **Ship 1** — Resolution binding (DM-typed directive surface)
+2. ✅ **Ship A** — LLM-emitted-directive resolution binding
+3. ✅ **Ship 2** — Scene state canon discipline (Finding A closed, §76 anchored)
+4. ✅ **Ship 3** — NPC state-sync boundary (Finding H closed via §1b suggester pivot)
+5. ✅ **Listener edge-case verification** — parser hardened for combat embeds
+6. ✅ **Dumb combat** — atmospheric narration on combat-mode transitions (§77 anchored)
+7. ✅ **Dumb combat prompt purity** — 10-block suppression set, two-layer enforcement
+8. ✅ **Combat-boundary hardening (S45)** — post-`!init end` buffer reset + init-setup silence gate + COMBAT_END auto-closeout (§78 anchored)
 
-Solo testing happens between each ship. After all three ships and solo verification, the system is ready for first friends-session. Polish layers (encounter balance, items, factions, curiosity, multiplayer spotlight) ship after first real friends-play exposes which ones matter most.
+Per HYBRID_COMBAT_NOTES.md v3 §3.1, the next phase is **multi-hour playtest** per PLAYTEST_OBSERVATION_FRAMEWORK.md — the gate for any further architectural commits. No new architecture during this phase. After 3-5 sessions of playtest evidence accumulates, MVP-test scrutiny on Ships 4-5 (canonical-name reuse detection + polish cluster), then re-decision on hybrid combat candidates, motion-systems thread re-opens if observed friction justifies.
 
-The laundry-list failure mode is treating "this would make play better" as equivalent to "this gates play." Polish ships forever; the functional bar ships once. The pre-friends bar exists to prevent the laundry list from sequence-jumping the queue.
+The laundry-list failure mode is treating "this would make play better" as equivalent to "this gates play." Polish ships forever; the functional bar ships once. The pre-playtest bar exists to prevent the laundry list from sequence-jumping the queue.
 
 ---
 
@@ -191,6 +222,8 @@ Virgil treats 5e knowledge against three layers:
 
 Test for any future architectural decision: which layer does this proposal touch? Mechanical = reject (Avrae's domain). Bridge = directive shape. Narrative coherence = grounding shape.
 
+**S43-S45 extension — §77 atmospheric-continuity + §78 mode-transition state-reset.** Combat narration is a fourth-tier surface: pure rendering of state changes the listener already confirmed (§77), gated by mode-transition discipline that resets all state surfaces at the boundary (§78). The cliff-edge naming (§77): the moment narration starts inferring tactical outcomes, hidden intent, optimal targeting, or narrative consequences beyond what listener + engine already established, the ship silently graduates from glue into adjudication and the renderer-not-ruler discipline is broken. The structural-window naming (§78): mode transitions are state-reset surfaces requiring four-layer discipline (mechanical cleanup + narrative buffer reset + transitional silence + boundary atmospheric closeout); the mode flag flip alone is insufficient. Future F-55 combat ships (#5.2/#5.3/#5.4) inherit both lines.
+
 ---
 
 ## Asymmetric trust between subsystems
@@ -202,7 +235,7 @@ Every subsystem in Virgil treats every other subsystem as partially untrusted:
 - **Memory does not trust narration.** ChromaDB stores history but is not authoritative for canon. Structured rows define truth.
 - **Retrieval does not define canon.** `USE_KNOWLEDGE_GUIDANCE` controls whether retrieval informs narration, but retrieval results never write to structured tables.
 - **Directives constrain but never author state.** Every directive function in `dnd_orchestration` is a pure function returning a constraint string.
-- **The bot stays read-only on the Avrae channel.** Every `!`-prefixed command goes through the LLM (B2.1 pattern), never through `channel.send` from the bot directly. This boundary is load-bearing and was reaffirmed in Session 20's Shape B lock.
+- **The bot stays read-only on the Avrae channel.** Every `!`-prefixed command goes through the LLM (B2.1 pattern), never through `channel.send` from the bot directly. This boundary is load-bearing and was reaffirmed in Session 20's Shape B lock — and empirically reinforced at S41 when live verify confirmed Avrae structurally filters bot-emitted `!`-commands (identical commands mutate state when human-typed, silently filtered when bot-typed). Project-side proposal of mechanical state mutation routes through the §1b validated-suggester pattern instead.
 
 When evaluating "should subsystem X read from subsystem Y," the test is: in this direction, which is the trust hierarchy treating as authoritative on this concern?
 
@@ -221,7 +254,8 @@ External reviews repeatedly propose architectures that violate Virgil's locks. L
 - **LLM clarifying questions back to the player.** Interaction-model lock — Virgil narrates and constrains, doesn't interrogate.
 - **Combat simulation layers / internal HP tracking / dice resolution in Virgil.** Avrae-owns-mechanics lock.
 - **Summarization that replaces canon.** Phase 4 contamination-guardrail.
-- **Bot directly emitting `!`-prefixed Avrae commands.** Session 5 + Session 20 lock — LLM emits via directive (B2.1 pattern), bot stays read-only on the Avrae channel.
+- **Bot directly emitting `!`-prefixed Avrae commands.** Session 5 + Session 20 lock — LLM emits via directive (B2.1 pattern), bot stays read-only on the Avrae channel. **S41 empirical reinforcement:** Avrae structurally filters bot-emitted `!`-commands. Project-side proposals route through §1b suggester pattern (DM pastes from `#dm-aside` block) — two project instances now (Track 6 #5.1 SRD suggester, Ship 3 NPC state-sync).
+- **Mode-flag-only transitions.** The mode flag flip is structurally insufficient — §78 mode-transition state-reset surfaces requires the full four-layer treatment (mechanical cleanup + narrative buffer reset + transitional silence + boundary atmospheric closeout). Any new mode-transition handler that resets only mechanical state is structurally incomplete.
 
 ---
 
@@ -229,7 +263,7 @@ External reviews repeatedly propose architectures that violate Virgil's locks. L
 
 Claude Code runs directly on the Virgil server. Jordan works primarily from his PC but can prompt Code from any device including his phone when he's away from the keyboard. The PC is no longer required for sessions to run — Code's session is server-side, persistent across PC power state.
 
-**`push-all-to-pc.sh` is reserved for Jordan's hand.** Code's session does NOT run `push-all-to-pc.sh` — between ships, at end of ship, or at any other time. **This rule has been violated multiple times across sessions** — Code reaches for `push-all-to-pc.sh` autonomously when wrapping up, treating it as part of "good hygiene." It is not. The script touches files Jordan didn't ask Code to push, can clobber in-flight edits Jordan is making locally, and is the one rsync surface Jordan owns end-to-end.
+**`push-all-to-pc.sh` is reserved for Jordan's hand.** Code's session does NOT run `push-all-to-pc.sh` — between ships, at end of ship, or at any other time. **This rule has been violated multiple times across sessions** — Code reaches for `push-all-to-pc.sh` autonomously when wrapping up, treating it as part of "good hygiene." It is not. The script touches files Jordan didn't ask Code to push, can clobber in-flight edits Jordan is making locally, and is the one rsync surface Jordan owns end-to-end. **The S45 incident is the empirical proof:** Code's autonomous `push-all-to-pc.sh` at end of session pushed stale server-side copies of VIRGIL_MASTER and WORKING_WITH_CLAUDE over the planner's fresh PC-side edits because the planner had not yet pushed PC→server. The fix is doctrinal: present files in chat as default; flag "push needed" when planner-side changes need to land server-canonical; Jordan owns the bidirectional sync.
 
 **Targeted file pushes are expected, not gated.** Code uses targeted SCP/rsync of *only the files it edited this session* as part of end-of-session hygiene. This is the default cadence, not on-demand on a "push" command. The whole-tree script is the only forbidden mechanism — anything narrower (single-file rsync, multi-file rsync of just the touched paths) is fine and expected.
 
@@ -239,7 +273,7 @@ If Code is unsure which files to push, the answer is "the files this session tou
 
 **Syntax check before restart:** `python3 -c "import ast; ast.parse(open('/path/to/file.py').read())"` runs as part of every Code ship. A syntax error takes the whole bot down, so this is mandatory.
 
-**Structural verify happens during the ship; behavioral verify is a human-in-the-loop handoff afterward** (Doctrine §73, learned S27). Code restarts the bot ONCE at end of session, confirms structural soundness (tests pass, syntax check, modules import, migration applied), then produces a numbered list of Discord prompts for Jordan with expected behavior per step. Jordan walks the prompts in Discord and replies "ok done." Code reads `journalctl` and verifies expected log shapes. If verification fails, the fix ships in a new session — never two restarts in the same session. Module-import validation runs via `python3 -c "import <module>"`, never via `systemctl restart`. Restart is the deploy step, not the feedback loop.
+**Structural verify happens during the ship; behavioral verify is a human-in-the-loop handoff afterward** (Doctrine §73). Code restarts the bot ONCE at end of session, confirms structural soundness (tests pass, syntax check, modules import, migration applied), then produces a numbered list of Discord prompts for Jordan with expected behavior per step. Jordan walks the prompts in Discord and replies "ok done." Code reads `journalctl` and verifies expected log shapes. If verification fails, the fix ships in a new session — never two restarts in the same session. Module-import validation runs via `python3 -c "import <module>"`, never via `systemctl restart`. Restart is the deploy step, not the feedback loop.
 
 **Code reads logs; Jordan walks Discord.** When live-verify needs both Discord input and journalctl observation, Code does NOT ask Jordan to check journalctl and report back. Jordan's job in the verify loop is to type the Discord commands and reply "ok done" or describe what he saw on screen. Code reads `journalctl --user -u virgil-discord` itself, greps for the expected log shapes, and reports verification results. Asking Jordan to grep logs and report findings inverts the role split — Code has shell access; Jordan has the Discord client. Each side does what they have direct access to.
 
@@ -268,7 +302,7 @@ If Code is unsure which files to push, the answer is "the files this session tou
 ## Hard rules — D&D side
 
 - **Don't ship without live verification.** Plumbing-clean ≠ shipped. Avrae traffic, embeds, mode flips, all need real eyes during the implementation session itself.
-- **Avrae syntax**: `!game longrest`, `!game shortrest`, `!game coin +Ngp`. Bare `!lr` / `!coin` / `!item` don't exist. Full reference at `Avrae_Command_List.txt`.
+- **Avrae syntax**: `!game longrest`, `!game shortrest`, `!game coin +Ngp`. Bare `!lr` / `!coin` / `!item` don't exist. Full reference at `Avrae_Command_List.txt`. **S41 reinforcement:** `-hp` is the HP flag at `!init add` and `!init opt`; `-h` is the hidden-toggle. `!init opt` cannot set max-HP — to fix max-HP requires `!init remove` + `!init add -hp` + `!init opt -ac` three-line sequence (each line pasted separately because Avrae filters back-to-back commands).
 - **Don't touch the calendar execution path with LLM logic.** Pure Python.
 - `cloud_router.route()` returns `(text, provider_name)` — unpack as tuple.
 - `route()` does NOT take `max_tokens`. That goes through `call_provider`.
@@ -276,8 +310,9 @@ If Code is unsure which files to push, the answer is "the files this session tou
 - `current_location_id` only via `set_current_location()`. Same pattern for mode (`set_scene_mode`), tension (`update_tension`), NPCs (`npc_upsert`), locations (`location_upsert`), DM response (`update_last_dm_response`).
 - `skeleton_origin=1` rows are authored canon. **Parsers cannot overwrite them.** The upsert layer enforces this — do not bypass.
 - Architectural invariants in `VIRGIL_MASTER.md` Section "Architectural Invariants" are non-negotiable.
-- **Bot stays read-only on the Avrae channel.** Every `!`-prefixed mechanical command goes through the LLM via directive (B2.1 pattern). The bot does not `channel.send('!init begin')` or similar.
+- **Bot stays read-only on the Avrae channel.** Every `!`-prefixed mechanical command goes through the LLM via directive (B2.1 pattern). The bot does not `channel.send('!init begin')` or similar. Bot-side proposals route through §1b suggester to `#dm-aside` for DM paste.
 - **Three-layer 5e doctrine governs all combat-adjacent ships.** Don't propose mechanical-layer work; that's Avrae's territory.
+- **§77 governs WHAT combat narration may render.** §78 governs WHEN narration is structurally appropriate. Mode-transition handlers must reset all four state surfaces at the boundary; mode-flag-only transitions are structurally incomplete.
 
 ---
 
@@ -297,6 +332,7 @@ If Code is unsure which files to push, the answer is "the files this session tou
 - **"Your call"** → make the call, don't kick it back.
 - **"Give me the whole thing"** → complete file, not a snippet.
 - **"Walk me through it"** → step-by-step, but still terse.
+- **"Plainspeak"** / **"layman"** / **"for my buddy"** → strip doctrine vocabulary and bullet syntax; write in normal sentences a non-coder can read.
 
 ---
 
@@ -304,9 +340,9 @@ If Code is unsure which files to push, the answer is "the files this session tou
 
 **Virgil**: personal AI on local hardware in his garage. LLM for conversation, Python for execution. Long-term vision: a system that truly knows Jordan over years.
 
-**DnD**: structured 5e tabletop with Avrae as rules engine and Virgil as narrative co-DM. Solo-first; multiplayer once solo is solid (current pre-friends gating bar). Both are first-class — multiplayer is NOT deferred indefinitely, just gated behind the three pre-friends ships.
+**DnD**: structured 5e tabletop with Avrae as rules engine and Virgil as narrative co-DM. Solo-first; multiplayer once solo is solid (multiplayer-fixes plan v3 closed as of S45). Both are first-class — multiplayer is no longer a deferred consideration.
 
-The core architectural philosophy, in one line: **Virgil is a system for the controlled canonization of stochastic generation.** Every architectural decision exists to make that controlled canonization safe enough to compose — channel-separated parsing, validator-gated writes, promotion thresholds, phantom telemetry, single-write-paths, the directive layer.
+The core architectural philosophy, in one line: **Virgil is a system for the controlled canonization of stochastic generation.** Every architectural decision exists to make that controlled canonization safe enough to compose — channel-separated parsing, validator-gated writes, promotion thresholds, phantom telemetry, single-write-paths, the directive layer, atmospheric-continuity narration, mode-transition state-reset.
 
 His priorities, in order:
 1. Reliability over cleverness

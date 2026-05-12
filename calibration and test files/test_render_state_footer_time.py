@@ -15,14 +15,11 @@ import dnd_orchestration as orch
 
 
 def _scene(mode='exploration', day=None, phase=None):
-    s = {
-        'mode': mode,
-        'location': '',
-        'focus': '',
-        'tension': 'low',
-        'active_npcs': [],
-        'active_threats': [],
-    }
+    # Ship 2 (S39): fixture trimmed — render_state_footer reads only mode,
+    # tension_int, progress_clocks, campaign_day, day_phase. The legacy
+    # `location` / `focus` / `tension` / `active_npcs` / `active_threats`
+    # keys were §76 / dead-column deletions.
+    s = {'mode': mode}
     if day is not None:
         s['campaign_day'] = day
     if phase is not None:

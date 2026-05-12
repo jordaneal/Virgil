@@ -104,6 +104,10 @@ Virgil Project/
 │   │                                 #   project doc describing the site)
 ├── media/                            # assets — don't touch unless asked
 ├── patches/                          # legacy patch scripts (archived; don't touch)
+├── planner-scratch/                  # planner working artifacts — drafts, review tables,
+│                                     #   transient review docs. PC-only; never pushed.
+│                                     #   Promoted to text files/ or specs/ via chat artifact
+│                                     #   when content earns canonical status.
 └── _trash/                           # soft-delete bin (SHIP_1_SPEC_PROMPT.md,
                                       #   SHIP_1_IMPLEMENTATION_PROMPT.md, Testing.txt)
 ```
@@ -112,6 +116,7 @@ Virgil Project/
 - PC `specs/` holds two file populations: server-mirrored `*_SPEC.md` / `*_REVIEW.md` (kept in sync via `push-all-to-pc.sh`'s suffix-based rule from `~/virgil-docs/` ROOT) and PC-only historical files (`PHASE_NN_SPEC.md`, `skeleton_NN.md`). `push-all-to-pc.sh` is additive — never deletes PC-side files that aren't on the server.
 - `_REVIEW.md` files route to `specs/` alongside their paired `_SPEC.md` — review docs and spec docs live together.
 - `corpus/specs/` is PC-only; corpus-scoped SPECs don't flow back up.
+- **`planner-scratch/` is PC-only** by convention. Holds planner working artifacts (drafts, review tables, transient review docs) that aren't yet canonical. Never touched by any push alias. When content earns canonical status, planner produces a clean version as a chat artifact and Jordan places it in `text files/` or `specs/` as appropriate before pushing.
 - **PC vs server `research/` superset:** PC `research/` is a superset of server `research/`. Server holds `CORPUS_BUILDER.md`, `track5_findings_loot_reward.md`, `website.md`; PC mirrors those (via step 3d) AND keeps the PC-authored `deep-research-report.md`. The downward rsync is additive (no `--delete`), so PC-authored files in `research/` are preserved across syncs but don't flow upward. If you want a PC-authored research doc to live on the server too, use `push-docs` from PC or copy it manually.
 - **PC vs server `_trash/` superset:** same pattern. PC `_trash/` holds server-synced trashed items (via step 3e) plus any PC-side trash (e.g., `Testing.txt`). Additive; no upward sync.
 - **PC vs server `text files/` // `~/virgil-docs/` root divergence:** `RESOLUTION_BINDING_SPEC.md` lives at server `~/virgil-docs/` root (active cycle, current ship) but at PC `specs/` (because `push-all-to-pc.sh` step 3b routes everything matching `*_SPEC.md` from the server root to PC `specs/`). This is a known asymmetry: while the spec is active, it sits in the canon-active bucket on server but flows into the archival specs bucket on PC. When the ship completes, the server-side file should be moved to `~/virgil-docs/specs/` to match.

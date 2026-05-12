@@ -17,13 +17,12 @@ import dnd_orchestration as orch
 # ─── Fixture builders ───────────────────────────────────────────────
 
 def _scene(mode='exploration'):
+    # Ship 2 (S39): fixture trimmed to keys render_state_footer actually
+    # reads. The legacy `location` / `focus` / `tension` / `active_npcs` /
+    # `active_threats` keys were §76 / dead-column deletions on
+    # dnd_scene_state and the function does not consume them.
     return {
-        'mode':           mode,
-        'location':       'Stumbling Stag',
-        'focus':          '',
-        'tension':        'low',
-        'active_npcs':    [],
-        'active_threats': [],
+        'mode': mode,
     }
 
 

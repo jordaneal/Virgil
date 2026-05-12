@@ -1,0 +1,4884 @@
+{
+  "episode_combined": "C1E065",
+  "campaign": "C1",
+  "episode_int": 65,
+  "total_records": 62,
+  "per_source_counts": {
+    "TM": 48,
+    "LR": 9,
+    "CC": 5
+  },
+  "events": [
+    {
+      "source": "TM",
+      "turn_number": 27,
+      "category": null,
+      "episode_position_pct": 0.011,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It is now decided by whatever the Illuminati Streamy committee is.",
+        "preceding_context_chars": 777,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It is now",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Soundbiting it up in that.",
+            "turn_number": 16
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, man! They chose my soundbite for the end of it. I was like (explosion). Felt cool about that.",
+            "turn_number": 17
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's like you're an actor.",
+            "turn_number": 18
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's like I played a bunch of them. Also, Deus Ex came out. Mankind Divided. I am scattered throughout the game with a very harsh Russian, Eastern European dialect, as many characters, probably yelling at you or being shot in the face. So enjoy that, as well.",
+            "turn_number": 19
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I love shooting you in the face.",
+            "turn_number": 20
+          },
+          {
+            "speaker": "MATT",
+            "text": "Hey, you know? Everyone's got a skillset. Anybody else have anything they want to announce?",
+            "turn_number": 21
+          },
+          {
+            "speaker": "SAM",
+            "text": "We're nominated for an award, Matt.",
+            "turn_number": 22
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's right! We just got nominated for a Streamy. A Streamy award under gaming. Games. It's awesome!",
+            "turn_number": 23
+          },
+          {
+            "speaker": "SAM",
+            "text": "It's our first nomination.",
+            "turn_number": 24
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It's like the Kids' Choice Awards for adults.",
+            "turn_number": 25
+          },
+          {
+            "speaker": "LAURA",
+            "text": "But it's not. Fans don't get to vote.",
+            "turn_number": 26
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 44,
+      "category": "MECHANICAL_GRANT",
+      "episode_position_pct": 0.018,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "Hello, and welcome back. So to get you guys caught up: our band of adventurers, Vox Machina, in raising an army, hopefully, of allies and powerful artifacts to face the Chroma Conclave, a gathering of powerful, dangerous chromatic dragons that have been tearing through the countryside of Tal'Dorei and distant Wildemount. They have recently found some information, had a close call with the Frigid Doom known as Vorugal. The white dragon flyover did not pierce through the illusionary barrier that was placed with the help of Allura, Gilmore, and Pike, there in Whitestone. You then decided to go ahead and using that cue, before the dragon returned to its current roost that it has created over the ruins of the city of Draconia, you traveled across to the continent of Wildemount. You had a meeting with the Ravenites, a rather subverted, long-enslaved offshoot species of dragonborn kin, tailless and now surviving amongst a recent winter that seems to have come with the ruin the dragon brought. You also discovered that most of Draconia and its royal elite have been slaughtered as a means of the dragon establishing its dominance and the worship of the Ravenites that survived the fall of Draconia. You made a deal with Tooma, the current clan leader of the remaining Ravenites, that you would aid in destroying this dragon, basically the master that they replaced the Draconians with when it came. However, to ensure your help there was a two-week time limit, and if you do not return before then they would see you as not keeping your end of the deal, and they would then, instead, direct the dragon towards what was going to be Whitestone until you altered her memory, which she recalls now as Emon. Anyway, before you could be finding your way home, one of the corpses upon one of the ice spire spikes outside of the dragon's new nest, Percy saw to be the remains of your long-traveled friend, Tiberius Stormwind. The party had a fateful farewell; set him to rest within the ruins of the nearby library, fallen from the islands of Draconia; said your goodbyes; and then, upon prepping a bit, plotting, and planning, found your way back to Whitestone to continue the next leg of your adventure. And that is where we begin. You have now taken some time in your own respective rooms. It's still late afternoon, going into dusk. You all took some time to yourselves within Castle Whitestone to take a short rest and ruminate over these recent events and reveals. The evening sun draws close to dusk. It is your choice which you wish to do. If you wish to spend the evening resting here and then leaving first thing in the morning, that is up to you.",
+        "preceding_context_chars": 617,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "take a short rest",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I have never cared so much about football in my entire life as I do right now. Which is saying, I don't necessarily care a lot. But definitely--",
+            "turn_number": 36
+          },
+          {
+            "speaker": "LAURA",
+            "text": "More than it was.",
+            "turn_number": 37
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Everybody send Sam a tweet. He's going to be crying at the outset of his team. Sam, a moment of silence.",
+            "turn_number": 38
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I think he's lighting the set on fire.",
+            "turn_number": 39
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Sam walked away so he wouldn't be on the same set as you were saying that.",
+            "turn_number": 40
+          },
+          {
+            "speaker": "MATT",
+            "text": "Anyone else have anything they want to talk about before we jump into the game?",
+            "turn_number": 41
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No announcements until I get back, I think.",
+            "turn_number": 42
+          },
+          {
+            "speaker": "MATT",
+            "text": "All righty. That being the case, then let's go ahead and hop into tonight's episode of Critical Role. [dramatic music]",
+            "turn_number": 43
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 65,
+      "category": "scene_transition",
+      "episode_position_pct": 0.0266,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Okay. So you've all spent the majority of it in your respective rooms-- most of you in your respective rooms-- figuring out where you are as a person and where this story leads you. After an evening's rest, the next morning comes around, breakfast is already prepared by the servants in the castle, though maybe not the amount of bacon you were hoping, and easily rectified upon request. It's at your disposal. There is a tension in the city; the barrier remains up. As you're having breakfast, you can see Zahra wander in at the smell of bacon, glances over the rest of you, still holding a book at her side that she slams closed. \"Oh. I'm glad to see you're all right, and you're safe. Please tell me there's more bacon.\"",
+        "preceding_context_chars": 668,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "the next morning",
+        "granularity_bucket": "days",
+        "is_anchored": true,
+        "time_anchor_turn_number": 64,
+        "anchor_distance_turns": 1,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Maybe so.",
+            "turn_number": 49
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "But you're ultimately right. We have nothing to lose. I love you, Vax. And I'm sorry for being me, that it took me this long to say it.",
+            "turn_number": 50
+          },
+          {
+            "speaker": "LIAM",
+            "text": "(sniffles) I'm sorry.",
+            "turn_number": 51
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah. Me, too.",
+            "turn_number": 52
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I love you. That's pretty fucking great.",
+            "turn_number": 53
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That is pretty great, yeah. High five. Yeah!",
+            "turn_number": 54
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I tackle her into a bit of a hug into the bed.",
+            "turn_number": 55
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh!",
+            "turn_number": 56
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We're already on the bed.",
+            "turn_number": 57
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "And that's it for now.",
+            "turn_number": 58
+          },
+          {
+            "speaker": "SAM",
+            "text": "Pan to the fireplace.",
+            "turn_number": 59
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(laughing) Pan to the fireplace!",
+            "turn_number": 60
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right, so. Vox Machina. Taking your time to mourn in your own interesting ways. What is your path of action? What is your course, going forward?",
+            "turn_number": 61
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Sleeping in.",
+            "turn_number": 62
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Bacon.",
+            "turn_number": 63
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, I think we need to spend at least the night in Whitestone and get up in the morning.",
+            "turn_number": 64
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 75,
+      "category": null,
+      "episode_position_pct": 0.0307,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"It's all right. I'm going to continue with my research, since the rest of the ziggurat clan are now scattered about or maintaining that barrier. Guess who has to do the research in the meantime?\" And she rolls her sleeves up; you can see the slightly smudged dirt across her reddish skin. She's been hard at work digging around trying to figure out what the basis of this enchantment beneath the city still is.",
+        "preceding_context_chars": 526,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since the",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Not for long.",
+            "turn_number": 66
+          },
+          {
+            "speaker": "LAURA",
+            "text": "There's more coming, dear.",
+            "turn_number": 67
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "What she said.",
+            "turn_number": 68
+          },
+          {
+            "speaker": "MATT",
+            "text": "She comes and sits down and spends breakfast with you guys, catching up on what has transpired and what your current plan of action is.",
+            "turn_number": 69
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Zahra, it occurs to me, you come from a family with power, connections.",
+            "turn_number": 70
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Kind of. Let's just say we're estranged at the moment.\"",
+            "turn_number": 71
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Well, we're looking for any ally we could, and we were curious if--",
+            "turn_number": 72
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You will find no allies where you're asking. Believe me, I'd be happy to offer if we could, but no.\"",
+            "turn_number": 73
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I had a feeling. It just felt worth asking.",
+            "turn_number": 74
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 81,
+      "category": null,
+      "episode_position_pct": 0.0331,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"I haven't seen him for a couple days. I've been underground most of the time.\"",
+        "preceding_context_chars": 733,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a couple days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": true,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I had a feeling. It just felt worth asking.",
+            "turn_number": 74
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It's all right. I'm going to continue with my research, since the rest of the ziggurat clan are now scattered about or maintaining that barrier. Guess who has to do the research in the meantime?\" And she rolls her sleeves up; you can see the slightly smudged dirt across her reddish skin. She's been hard at work digging around trying to figure out what the basis of this enchantment beneath the city still is.",
+            "turn_number": 75
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Sorry you can't be out having your fun, dear.",
+            "turn_number": 76
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I'm certain time will allow me at some point. It better. I'm going a little stir-crazy.\" She grabs the bacon from the table and walks out of the room.",
+            "turn_number": 77
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Is Kashaw around by any chance, as well?",
+            "turn_number": 78
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I'm sorry, what?\"",
+            "turn_number": 79
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Kashaw. Is Kashaw around?",
+            "turn_number": 80
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 283,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.1157,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You watch as roughly 45 armored soldiers all turn towards you with their shields and spears... and freeze. They all slowly look towards Scanlan and whisper among themselves, then look back at Grog and stay frozen and two creep forward for a minute. Get a little closer.",
+        "preceding_context_chars": 773,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "What am I missing here?",
+            "turn_number": 270
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm seeing this going down. I've walked away.",
+            "turn_number": 271
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I see a gauntlet on a table, and I throw it at his face.",
+            "turn_number": 272
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay, roll an attack roll.",
+            "turn_number": 273
+          },
+          {
+            "speaker": "LIAM",
+            "text": "It's a one! (laughter)",
+            "turn_number": 274
+          },
+          {
+            "speaker": "SAM",
+            "text": "I see this going on, and I stand up on something, and I yell to the students--",
+            "turn_number": 275
+          },
+          {
+            "speaker": "MATT",
+            "text": "Before this happens, as you're getting up, you watch as Vax rears back, and as he throws it, (yelps) he pulls a muscle in his shoulder and it drops to the ground, and you're like (pained noises).",
+            "turn_number": 276
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Seriously?",
+            "turn_number": 277
+          },
+          {
+            "speaker": "SAM",
+            "text": "I jump up on a chair and I yell to the students: Instructor Kashaw has instructed us that this is a drill! You are to attack that man right there, that large man, as a test of your strength and training. Now!",
+            "turn_number": 278
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Don't kill them, Grog!",
+            "turn_number": 279
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a persuasion check.",
+            "turn_number": 280
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, this is going to be awful. Wow. That is cruel.",
+            "turn_number": 281
+          },
+          {
+            "speaker": "SAM",
+            "text": "34. (laughter)",
+            "turn_number": 282
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 287,
+      "category": null,
+      "episode_position_pct": 0.1173,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Don't get the people killed. I've been working on them for four days.\"",
+        "preceding_context_chars": 769,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "four days",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "34. (laughter)",
+            "turn_number": 282
+          },
+          {
+            "speaker": "MATT",
+            "text": "You watch as roughly 45 armored soldiers all turn towards you with their shields and spears... and freeze. They all slowly look towards Scanlan and whisper among themselves, then look back at Grog and stay frozen and two creep forward for a minute. Get a little closer.",
+            "turn_number": 283
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I take the Gauntlets and I smash them together, and I grow in size. (laughter)",
+            "turn_number": 284
+          },
+          {
+            "speaker": "MATT",
+            "text": "As your form swells into your now enlarged goliath battle-ready form, you notice a few of them start giving off this rattling metal sound as their armored knees (clanging) together. Many of them step back about ten feet, and Kashaw, who hasn't left entirely, spins around and goes: \"The gnome's fucking with you. It's fine!\" He walks up to you, Scanlan, pats your arm and goes, \"That was pretty funny.\"",
+            "turn_number": 285
+          },
+          {
+            "speaker": "SAM",
+            "text": "I try.",
+            "turn_number": 286
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 310,
+      "category": "KNOWLEDGE_GRANT",
+      "episode_position_pct": 0.1267,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "I know and we'll get to that. Instinctually, you turn to dodge out of something Grog-sized, not giant-sized. And in that brief minute that you remember that he grew, you pause just long enough to (whack) feel the force of what feels like a giant battering ram slam into your side, sending you off your feet and arcing a good 30 feet before you (impact) tumble and skid to the ground. What's your strength modifier?",
+        "preceding_context_chars": 769,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "you remember that",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yes.",
+            "turn_number": 289
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh shit.",
+            "turn_number": 290
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I look at Vax and I go, you were just playing around, right?",
+            "turn_number": 291
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yes.",
+            "turn_number": 292
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "And in my giant state, I'm going to kick him like a soccer ball.",
+            "turn_number": 293
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm going to dodge. Uncanny Dodge, man.",
+            "turn_number": 294
+          },
+          {
+            "speaker": "MATT",
+            "text": "Well, we'll see. Go ahead and roll an attack roll.",
+            "turn_number": 295
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "That's good. 32.",
+            "turn_number": 296
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Ooh. No, I didn't miss that.",
+            "turn_number": 297
+          },
+          {
+            "speaker": "MATT",
+            "text": "Roll a strength check.",
+            "turn_number": 298
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Wait, I'm going to use another Luck and make him roll again and pick the lower of the two.",
+            "turn_number": 299
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay.",
+            "turn_number": 300
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "15 on the strength check. 25.",
+            "turn_number": 301
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Got to roll again for the hit.",
+            "turn_number": 302
+          },
+          {
+            "speaker": "MATT",
+            "text": "Roll again because he used a Luck point to force you to reroll your attack roll.",
+            "turn_number": 303
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "24.",
+            "turn_number": 304
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That hits.",
+            "turn_number": 305
+          },
+          {
+            "speaker": "MATT",
+            "text": "What was the strength roll again?",
+            "turn_number": 306
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "The strength was 24.",
+            "turn_number": 307
+          },
+          {
+            "speaker": "MATT",
+            "text": "Strength check was 24. So as you peek out of the corner of your eye you hear this (heavy steps) and as you try and spin and dodge out of the way instinctually--",
+            "turn_number": 308
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Uncanny Dodge!",
+            "turn_number": 309
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 373,
+      "category": null,
+      "episode_position_pct": 0.1525,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Are you going to do your tree thing for me? Otherwise, I can walk, but it'll be a month and a half before I get to shore.\"",
+        "preceding_context_chars": 800,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a month",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "It's in the letter.",
+            "turn_number": 356
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's part of that listening thing, Scanlan.",
+            "turn_number": 357
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm sorry.",
+            "turn_number": 358
+          },
+          {
+            "speaker": "LIAM",
+            "text": "He did talk for quite a while.",
+            "turn_number": 359
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Is there a way to enchant me so that I have his voice? And then he'll listen more closely?",
+            "turn_number": 360
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, actually.",
+            "turn_number": 361
+          },
+          {
+            "speaker": "MATT",
+            "text": "He has a spell for that. (laughter)",
+            "turn_number": 362
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Don't answer that.",
+            "turn_number": 363
+          },
+          {
+            "speaker": "MATT",
+            "text": "As you finish penning the letter, you read over it once, twice, make sure all the information is contained. You go ahead and grab the little bit of your offering of dragon scales and teeth. Present them to Kashaw. He takes the letter and reads it over. \"Sure.\"",
+            "turn_number": 364
+          },
+          {
+            "speaker": "SAM",
+            "text": "Should we add an NDA?",
+            "turn_number": 365
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There's a rider at the end of everything I send.",
+            "turn_number": 366
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Kashaw. No mention of Whitestone at all. Anywhere you go. Very important.",
+            "turn_number": 367
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Good addendum. Whatever that word is.",
+            "turn_number": 368
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Again, please?",
+            "turn_number": 369
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No mention of Whitestone.",
+            "turn_number": 370
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Do we have a way to get him there very quickly?",
+            "turn_number": 371
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "What? Kashaw?",
+            "turn_number": 372
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 395,
+      "category": "travel_duration",
+      "episode_position_pct": 0.1615,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As he walks with you down the pathway, having this conversation. It's that awkward, quiet about three, four minutes of walking before he goes. (sniffs) \"Ugh. So when all this is over--\"",
+        "preceding_context_chars": 794,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "four minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Wait! We got those rocks.",
+            "turn_number": 377
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's a really smart man.",
+            "turn_number": 378
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, the rock. That's a really good idea.",
+            "turn_number": 379
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, but then he'll pop where we are.",
+            "turn_number": 380
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No, we'll leave the rock here.",
+            "turn_number": 381
+          },
+          {
+            "speaker": "SAM",
+            "text": "We're going to stay here at least a day.",
+            "turn_number": 382
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Well, you've got friends, don't you?",
+            "turn_number": 383
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I'm can figure something out.\"",
+            "turn_number": 384
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Don't worry about it.",
+            "turn_number": 385
+          },
+          {
+            "speaker": "SAM",
+            "text": "Steal an airship on your way back.",
+            "turn_number": 386
+          },
+          {
+            "speaker": "MATT",
+            "text": "(chuckles) \"No.\"",
+            "turn_number": 387
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "All right. Let's go to the Sun Tree.",
+            "turn_number": 388
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right.\" Gets his shield and his spear and walks down with Keyleth towards the Sun Tree. As he's walking down, at your side.",
+            "turn_number": 389
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Don't you want to walk with them?",
+            "turn_number": 390
+          },
+          {
+            "speaker": "LIAM",
+            "text": "No. Where is that coming from?",
+            "turn_number": 391
+          },
+          {
+            "speaker": "SAM",
+            "text": "No, he definitely has a thing for you, Vax. I have a keen eye for these things.",
+            "turn_number": 392
+          },
+          {
+            "speaker": "LIAM",
+            "text": "But you can't address it. You just have to let it be. I'm not going to encourage it. I'm not interested in him.",
+            "turn_number": 393
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I see it every time. He does. He smolders.",
+            "turn_number": 394
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 439,
+      "category": "scene_transition",
+      "episode_position_pct": 0.1795,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "A moment passes before the door opens again and you see Gilmore there, beads of sweat down the front of his face. He's got his fuzzy purple-blue robe wrapped around him. \"My sincerest apologies, I had to take care of the now morning ritual.\"",
+        "preceding_context_chars": 575,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "moment passes",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "Shaun? Shaun! It's us. Are you home?",
+            "turn_number": 429
+          },
+          {
+            "speaker": "MATT",
+            "text": "You hear a muffled voice in the distance within the building go, \"Yeah, hold on.\"",
+            "turn_number": 430
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Did it sound like anyone we knew?",
+            "turn_number": 431
+          },
+          {
+            "speaker": "MATT",
+            "text": "It sounded like Gilmore. He's under some sort of duress.",
+            "turn_number": 432
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Sounded like he was under duress?",
+            "turn_number": 433
+          },
+          {
+            "speaker": "MATT",
+            "text": "Slightly.",
+            "turn_number": 434
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Is everything okay?",
+            "turn_number": 435
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes. Hold on, please.\" And you watch as the barrier flickers for a second and restores itself, almost like a wave of energy brought what was a slowly dwindling bit of the blue energy, now restored to its full strength.",
+            "turn_number": 436
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "He's got to use the privy at some point.",
+            "turn_number": 437
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, he's probably squeezing one out. It's okay.",
+            "turn_number": 438
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 464,
+      "category": null,
+      "episode_position_pct": 0.1897,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It looks a little disheveled, but also it hasn't been too long since the assassination attempt on him and he threw his attacker into the far wall, but it looks like the furniture has been placed up. There are still some bits and pieces of broken things here and there, but for the most part it doesn't look like he's had lot of time to clean up other than just making it functional. It seems livable; it's not too bad. He goes into the kitchen. He comes back out a moment later with a fresh pot of hot tea and sets it down. \"All right. So this isn't going to send you to where you're going--\"",
+        "preceding_context_chars": 676,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since the",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Well, at the very least, that gives us a series of days to make the best of the time we have. So Marquet it is. All right. Come in.\" He closes his robe a little bit and walks in, and you enter. You can see there's a half-drunken tea set, and he begins to walk past. \"Tea, anyone?\"",
+            "turn_number": 458
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'd like a loose-leaf oolong, please.",
+            "turn_number": 459
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I'll do what I can.\"",
+            "turn_number": 460
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "How many cups are currently sitting with the teapot?",
+            "turn_number": 461
+          },
+          {
+            "speaker": "MATT",
+            "text": "Currently, there is one cup, but as he walks by, he does this with his fingers and you watch as multiple cups drift off the shelf and find their way (cups landing) on the table.",
+            "turn_number": 462
+          },
+          {
+            "speaker": "LAURA",
+            "text": "How does his house look? Does it look together like it would normally be, or does it look disheveled at all?",
+            "turn_number": 463
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 464,
+      "category": "scene_transition",
+      "episode_position_pct": 0.1897,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It looks a little disheveled, but also it hasn't been too long since the assassination attempt on him and he threw his attacker into the far wall, but it looks like the furniture has been placed up. There are still some bits and pieces of broken things here and there, but for the most part it doesn't look like he's had lot of time to clean up other than just making it functional. It seems livable; it's not too bad. He goes into the kitchen. He comes back out a moment later with a fresh pot of hot tea and sets it down. \"All right. So this isn't going to send you to where you're going--\"",
+        "preceding_context_chars": 676,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "moment later",
+        "granularity_bucket": "unspecified",
+        "is_anchored": true,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Well, at the very least, that gives us a series of days to make the best of the time we have. So Marquet it is. All right. Come in.\" He closes his robe a little bit and walks in, and you enter. You can see there's a half-drunken tea set, and he begins to walk past. \"Tea, anyone?\"",
+            "turn_number": 458
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'd like a loose-leaf oolong, please.",
+            "turn_number": 459
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I'll do what I can.\"",
+            "turn_number": 460
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "How many cups are currently sitting with the teapot?",
+            "turn_number": 461
+          },
+          {
+            "speaker": "MATT",
+            "text": "Currently, there is one cup, but as he walks by, he does this with his fingers and you watch as multiple cups drift off the shelf and find their way (cups landing) on the table.",
+            "turn_number": 462
+          },
+          {
+            "speaker": "LAURA",
+            "text": "How does his house look? Does it look together like it would normally be, or does it look disheveled at all?",
+            "turn_number": 463
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 475,
+      "category": null,
+      "episode_position_pct": 0.1942,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"I will say that it has been about 15 years, so I don't quite know what to expect there. I apologize in advance for any ensuing chaos, but it's a nice town. It's small, it's sleepy. It's not my speed. Hence why I came here. However, in Marquet, it's mostly music, culture, fun people, good food. Don't break the laws. Don't drink the water freely from the various channels you may stumble across. Water there is a commodity. It is controlled and sold throughout the city.\"",
+        "preceding_context_chars": 780,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it has been",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "We literally know nothing about Marquet.",
+            "turn_number": 465
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It's hot. It's dry. Bring some water if you can.\"",
+            "turn_number": 466
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You're not able to leave, are you?",
+            "turn_number": 467
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I should not. Got to keep this going until Allura comes back.\"",
+            "turn_number": 468
+          },
+          {
+            "speaker": "SAM",
+            "text": "Is there anyone that we can say maybe vouches for us or someone who we are against so that we can win favor with the locals? Something like a no-tail, long-tail binary.",
+            "turn_number": 469
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We walked into a sort of political snafu because we didn't know the lay of the land, so is there anything we should know in advance?",
+            "turn_number": 470
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Best I can tell you, because I haven't been there since I was very young, one: this going to send you not to Ank'Harel itself, it's going to send you to Shandal, which is a small oasis village a little ways south of Ank'Harel. It's where I grew up.\"",
+            "turn_number": 471
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What was that name again?",
+            "turn_number": 472
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Shandal.\"",
+            "turn_number": 473
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Shandal.",
+            "turn_number": 474
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 541,
+      "category": null,
+      "episode_position_pct": 0.2212,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"It was maybe ten, nine years ago, and it was not under the best terms. Probably would be in jail had I not got away.\"",
+        "preceding_context_chars": 791,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "nine years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, eight gallons.",
+            "turn_number": 534
+          },
+          {
+            "speaker": "SAM",
+            "text": "But if we had an extra skin or something, we could trade it. We could give it away, so we should go get one, yeah?",
+            "turn_number": 535
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, we could give it away, give it away, give it away now.",
+            "turn_number": 536
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Wow. I walk off and look for Jarett.",
+            "turn_number": 537
+          },
+          {
+            "speaker": "LIAM",
+            "text": "A rift just opened in the universe.",
+            "turn_number": 538
+          },
+          {
+            "speaker": "MATT",
+            "text": "It doesn't take you long. He is still stationed as one of the central figures guarding the actual castle of Whitestone itself. Similar to the place you saw him last time you guys had a conversation walking up to the castle. He stands there with his crossbow at the ready, giving a long view over the surrounding valley before he watches you approach. \"Friends, you have returned. I hope all is well on your end. Can I be of service?\"",
+            "turn_number": 539
+          },
+          {
+            "speaker": "LAURA",
+            "text": "You can tell us all about where you're from, actually. Did you leave Marquet a long time ago?",
+            "turn_number": 540
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 562,
+      "category": null,
+      "episode_position_pct": 0.2298,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Not any merchant I know, but this Den you speak of, they were a rather serious gang running rather violent activities in the city maybe 70, 80 years ago.\"",
+        "preceding_context_chars": 286,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "80 years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I haven't stolen anything in years.",
+            "turn_number": 554
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(coughing) Bullshit.",
+            "turn_number": 555
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Me neither. (laughs nervously)",
+            "turn_number": 556
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I've never stolen anything!",
+            "turn_number": 557
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Have you heard about the Den of Drujah. Drujah.",
+            "turn_number": 558
+          },
+          {
+            "speaker": "MATT",
+            "text": "He closes his eyes a second. \"That was... a very, very--\"",
+            "turn_number": 559
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's unscrupulous.",
+            "turn_number": 560
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It would have been in a tale of a one-eyed merchant.",
+            "turn_number": 561
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 564,
+      "category": null,
+      "episode_position_pct": 0.2306,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"In the outer walls? The outer walls are solid. They are thick; they are meant for defense only. I did not run with them. I do not know anything. It was before my time, but they have not been around for at the very least 50 years.\"",
+        "preceding_context_chars": 523,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "50 years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LIAM",
+            "text": "I haven't stolen anything in years.",
+            "turn_number": 554
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(coughing) Bullshit.",
+            "turn_number": 555
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Me neither. (laughs nervously)",
+            "turn_number": 556
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I've never stolen anything!",
+            "turn_number": 557
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Have you heard about the Den of Drujah. Drujah.",
+            "turn_number": 558
+          },
+          {
+            "speaker": "MATT",
+            "text": "He closes his eyes a second. \"That was... a very, very--\"",
+            "turn_number": 559
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's unscrupulous.",
+            "turn_number": 560
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It would have been in a tale of a one-eyed merchant.",
+            "turn_number": 561
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Not any merchant I know, but this Den you speak of, they were a rather serious gang running rather violent activities in the city maybe 70, 80 years ago.\"",
+            "turn_number": 562
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Would they have been in the walls? Is it possible to be in the walls of Ank'Harel?",
+            "turn_number": 563
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 569,
+      "category": null,
+      "episode_position_pct": 0.2326,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"J'mon? I have not seen J'mon, though I have heard the stories. J'mon brought the city together 400 years before. When it began to grow, expand, when it became this great oasis, long ago, it went into chaos, and there were many who wished to utilize those who lived within the center desert to be abused, to be swindled, to be enslaved. J'mon started the Hand of Ord, which was the peacekeepers, and really brought the town of Ank'Harel into the grand city it is today. Not known to appear in public very often; there are many rumors that circulate. Some say that perhaps J'mon is some godling, an entity that has existed long before Ank'Harel and will exist long after. There is also-- and this is my personal belief-- I think J'mon Sa Ord is many people. I think J'mon is more of an office, a station, a title that's passed on from person to person, because I've heard referenced as a girl, I've heard referenced as a boy.\"",
+        "preceding_context_chars": 782,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "400 years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "I've never stolen anything!",
+            "turn_number": 557
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Have you heard about the Den of Drujah. Drujah.",
+            "turn_number": 558
+          },
+          {
+            "speaker": "MATT",
+            "text": "He closes his eyes a second. \"That was... a very, very--\"",
+            "turn_number": 559
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's unscrupulous.",
+            "turn_number": 560
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It would have been in a tale of a one-eyed merchant.",
+            "turn_number": 561
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Not any merchant I know, but this Den you speak of, they were a rather serious gang running rather violent activities in the city maybe 70, 80 years ago.\"",
+            "turn_number": 562
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Would they have been in the walls? Is it possible to be in the walls of Ank'Harel?",
+            "turn_number": 563
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"In the outer walls? The outer walls are solid. They are thick; they are meant for defense only. I did not run with them. I do not know anything. It was before my time, but they have not been around for at the very least 50 years.\"",
+            "turn_number": 564
+          },
+          {
+            "speaker": "LAURA",
+            "text": "All right.",
+            "turn_number": 565
+          },
+          {
+            "speaker": "SAM",
+            "text": "Do you know who rules Ank'Harel now?",
+            "turn_number": 566
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It is J'mon Sa Ord.\"",
+            "turn_number": 567
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What can you tell us about him? Or her, or it?",
+            "turn_number": 568
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 621,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.2539,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"It's a bit pricey. I can give you some--\"",
+        "preceding_context_chars": 747,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "I can give you",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Be pleased.",
+            "turn_number": 609
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Beep-bleep.",
+            "turn_number": 610
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Bleep-bleep, yes. No stealing. Got it.",
+            "turn_number": 611
+          },
+          {
+            "speaker": "SAM",
+            "text": "Water is valuable.",
+            "turn_number": 612
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Don't drink the water.",
+            "turn_number": 613
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Is there anything that's offensive? We don't want to offend anyone by accident.",
+            "turn_number": 614
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"To be honest, anything you do will offend somebody in the right place, right time, but people are pretty laid back in Ank'Harel, as long as you follow the rules. It's a beautiful city. I'm actually excited for you to see it. I'm very proud of it, had I not made some mistakes.\"",
+            "turn_number": 615
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Can we bring you anything back?",
+            "turn_number": 616
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You know what? If you can, there is a special spice that is harvested not far from the city. If you could find me some fusaka spice? Bring me a small-- not a lot, just a bit.\"",
+            "turn_number": 617
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Is it for food?",
+            "turn_number": 618
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It's for food, yes.\"",
+            "turn_number": 619
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I would love to do that. We'll keep an eye out.",
+            "turn_number": 620
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 704,
+      "category": "KNOWLEDGE_GRANT",
+      "episode_position_pct": 0.2878,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Where are you going? Are you a coward or something?\" Shouting this in the distance, as apparently the previous people she card sharked walk off, frustrated and growling. You see one of them comes up to the edge of the table and goes, \"Best be giving that money back, little girl or you're--\" Before that happens, you see a large, meaty hand grab the back of his neck and pick up him by the scruff. You see appear into view the very edge of Dr. Dranzel's chin and hat and he goes, \"I'm sorry, were you talking to my lady friend that way? That's poor manners.\" And drops him there at the table. The guy adjusts himself. \"Better not see you guys in the street.\" He walks off. She reaches her hand up, watching the guy leave, and fist-bumps Dranzel. Your vision fades back and your consciousness comes back to you.",
+        "preceding_context_chars": 23,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "comes back to you",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Yeah! She's doing good!",
+            "turn_number": 703
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 718,
+      "category": "KNOWLEDGE_GRANT",
+      "episode_position_pct": 0.2935,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "You guys shift it, move it to the side, leaving an open space on the ground. He kneels down and places one hand in the center of the floor. The other hand he reaches back into a small pouch on his side and pulls out a small amount of shimmering, glassy sand material you recognize as a hint of residuum processed into its dust crystallized form. He scatters it around while he's muttering under his breath. As he does, with his hand in the center, you see the dust pull together into these small symbols on their own, almost like magnets to iron filings. They're forming into these rigid structures. As they do, they begin to flare up and glow, and he takes a step back, his eyes still closed, brings his fist together into a grip. As he does, they light up, and you recognize this as a teleportation circle. He goes, \"All right, it won't last long. In you go!\"",
+        "preceding_context_chars": 773,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "you recognize this",
+        "is_in_npc_voice": false,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "She's okay! Okay, good! All right! I feel good. Let's go!",
+            "turn_number": 705
+          },
+          {
+            "speaker": "LIAM",
+            "text": "What were you doing?",
+            "turn_number": 706
+          },
+          {
+            "speaker": "SAM",
+            "text": "I had some bad tikka masala earlier.",
+            "turn_number": 707
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We haven't even gone to Marquet!",
+            "turn_number": 708
+          },
+          {
+            "speaker": "SAM",
+            "text": "They don't have Middle Eastern food there, I hope!",
+            "turn_number": 709
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Well...",
+            "turn_number": 710
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Not going to touch that one.",
+            "turn_number": 711
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Are we going?",
+            "turn_number": 712
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Let's go.",
+            "turn_number": 713
+          },
+          {
+            "speaker": "MATT",
+            "text": "All right. You guys make your way back towards Gilmore's home. At this point in time, you come in and find there are a couple of plates, crumbs to the side. Gilmore's sitting in the chair with his tea, eyes closed in a meditative stance. As soon as you enter the room, he jolts back to momentary awareness. \"All right! Gathered your things? Are you ready to go?\"",
+            "turn_number": 714
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Pretty much.",
+            "turn_number": 715
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"If you don't mind.\" He grabs the edge of the central table in the center of the room with the tea on it. He looks towards you.",
+            "turn_number": 716
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh yeah, no problem.",
+            "turn_number": 717
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 738,
+      "category": "scene_transition",
+      "episode_position_pct": 0.3017,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Moments pass, no effect.",
+        "preceding_context_chars": 760,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Moments pass",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Drink!",
+            "turn_number": 730
+          },
+          {
+            "speaker": "MATT",
+            "text": "Marked as the symbol he put.",
+            "turn_number": 731
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Good thing no one destroyed this thing while he was gone.",
+            "turn_number": 732
+          },
+          {
+            "speaker": "MATT",
+            "text": "Glancing around, you can see a small dark wood room atop a wine-red circular carpet in the center. Empty shelves and cobwebs fill the corners. There's a bit of dust and sand coating over where the bed rests against the wall. A closed window hides behind a drawn curtain, with a little bit of peeking sunlight making its way through. There is one single door that sees you out, though it is currently closed.",
+            "turn_number": 733
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to stand on the carpet and will it to fly. Seems worth a shot.",
+            "turn_number": 734
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Every carpet here.",
+            "turn_number": 735
+          },
+          {
+            "speaker": "MATT",
+            "text": "Step onto the carpet, close your eyes. How do you will it?",
+            "turn_number": 736
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I do believe in fairies. I do believe in fairies. I know it; I've killed several of them. They're definitely real.",
+            "turn_number": 737
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 811,
+      "category": null,
+      "episode_position_pct": 0.3316,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Opesa. Opesa, come.\" And the woman gets up from the table. \"Yes, I'm sorry. It has been a while since we've had guests from so strange and sudden arrivals!\" She walks up and pulls these small glasses out from her pocket and puts them on. You can see her eyes open up wide behind them, and she comes, leans to the side and puts her arm around him. They both hold each other. He goes, \"I am sorry. Let me introduce. I am Soren Geddmore. This is Opesa Geddmore. You know our son?\"",
+        "preceding_context_chars": 740,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "It has been",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "ALL",
+            "text": "Yes.",
+            "turn_number": 804
+          },
+          {
+            "speaker": "MATT",
+            "text": "The man himself stands up and begins to walk over, wiping the edge of his mouth with a small piece of cloth, finishing chewing and swallowing the food he has currently. As he walks up, the man has thinning white hair that grows long, straight down towards his back, simple long robe-like dress with simple cloth pants that go round these slipper-like shoes on his feet. He approaches. Which one said Shaun?",
+            "turn_number": 805
+          },
+          {
+            "speaker": "SAM",
+            "text": "You said Gilmore.",
+            "turn_number": 806
+          },
+          {
+            "speaker": "MATT",
+            "text": "Gilmore and Shaun. Approaches you, as you, stepping forward as one of the more, you know, assertive members of the party, and goes, \"How is he? If you could please tell me?\"",
+            "turn_number": 807
+          },
+          {
+            "speaker": "LAURA",
+            "text": "He's quite well. He's very powerful, actually, and has wonderful businesses, all through--",
+            "turn_number": 808
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Tal'Dorei?",
+            "turn_number": 809
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No, I know. It's just not there anymore.",
+            "turn_number": 810
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 832,
+      "category": null,
+      "episode_position_pct": 0.3401,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"I haven't been in many years. As far as I know, there are signs. There are not roads. There are guides you could hire to bring you there.\"",
+        "preceding_context_chars": 756,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "many years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Actually, we need to head out pretty quickly.",
+            "turn_number": 822
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We're sadly on a mission.",
+            "turn_number": 823
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Can you tell us the direction to Ank'Harel?",
+            "turn_number": 824
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"You are going to Ank'Harel?\"",
+            "turn_number": 825
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yes.",
+            "turn_number": 826
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes. Follow me.\" He takes her by the arm, and they both walk arm-in-arm, leading you guys to what looks to be a front door of this abode. As he pushes it open, revealing more of the street of this small oasis town, he goes, \"Let's see, if you follow-- that is the sun.\" He looks up, and you see his eyes adjust to the brighter sky. \"The sun is there. It will be setting... that direction. Continue... what is the word you speak?\"",
+            "turn_number": 827
+          },
+          {
+            "speaker": "SAM",
+            "text": "North, northwest. No, northeast.",
+            "turn_number": 828
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"That is west. You want to north, so go that way. Yes. That is where you want to go.\"",
+            "turn_number": 829
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Thank you.",
+            "turn_number": 830
+          },
+          {
+            "speaker": "SAM",
+            "text": "Is there a road to follow, or is it just a direction?",
+            "turn_number": 831
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 880,
+      "category": "NPC_FAVOR_GRATITUDE",
+      "episode_position_pct": 0.3598,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Well, thank you so much for coming.\"",
+        "preceding_context_chars": 782,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "thank you so much for",
+        "is_in_npc_voice": true,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "And I say  Now, give it a listen. And I shake it. What do you hear?",
+            "turn_number": 867
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Nothing. You are a strange man.\" (laughter)",
+            "turn_number": 868
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Forgot they're old. Right, well, it sounds-- fuck it. Water. And I start pouring. (laughter)",
+            "turn_number": 869
+          },
+          {
+            "speaker": "MATT",
+            "text": "How much water does it create?",
+            "turn_number": 870
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It creates eight gallons of fresh water.",
+            "turn_number": 871
+          },
+          {
+            "speaker": "MATT",
+            "text": "Oh wow. \"You are still a very strange man, but I'm very happy and appreciative.\"",
+            "turn_number": 872
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I am a great sorcerer.",
+            "turn_number": 873
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right. I can see, now. Gilmore has his work cut out for him.\"",
+            "turn_number": 874
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Gedd-e-mo-ray.",
+            "turn_number": 875
+          },
+          {
+            "speaker": "MATT",
+            "text": "He pats your shoulder. \"Geddmore, indeed.\" As you finish pouring the water out, they lead you guys back to the front.",
+            "turn_number": 876
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What time is it here?",
+            "turn_number": 877
+          },
+          {
+            "speaker": "MATT",
+            "text": "He pulls out a small sundial from his pocket, holds it up. \"It would be closer to late afternoon.\"",
+            "turn_number": 878
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No, we aren't going to make it to Ank'Harel by dark. Yes, of course. That's all. Thank you!",
+            "turn_number": 879
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 940,
+      "category": "scene_transition",
+      "episode_position_pct": 0.3843,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You are terrible people. You guys rise into the air as the sun begins to bring itself to set in the west. You shift up over the city. You look down. Probably maybe 150, 200 buildings make up the entirety of Shandal. It's not a very large town, but you can see little dots of moving caravans both to and from the city. It is a fairly lively stop for people traveling to and from Ank'Harel.",
+        "preceding_context_chars": 693,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "as the sun",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Before I go, I say  stay in school, kids. And then I mist.",
+            "turn_number": 923
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm going to Slimer the kid.",
+            "turn_number": 924
+          },
+          {
+            "speaker": "LAURA",
+            "text": "As I turn into mist, I go  I'm melting! Melting! Oh, what a world!",
+            "turn_number": 925
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a deception check.",
+            "turn_number": 926
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I was trying to inspire them!",
+            "turn_number": 927
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "You're a terrible person!",
+            "turn_number": 928
+          },
+          {
+            "speaker": "LAURA",
+            "text": "20.",
+            "turn_number": 929
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Do they speak Common?",
+            "turn_number": 930
+          },
+          {
+            "speaker": "MATT",
+            "text": "After you give your presentation, they, \"Whoa!\" As you begin transforming, you do that and they go, (terrified screaming) and go running indoors.",
+            "turn_number": 931
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm still going to slime them on their way out.",
+            "turn_number": 932
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Sliming them!",
+            "turn_number": 933
+          },
+          {
+            "speaker": "SAM",
+            "text": "We're tormenting children.",
+            "turn_number": 934
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Hey, that's a step up for us!",
+            "turn_number": 935
+          },
+          {
+            "speaker": "MATT",
+            "text": "That's what Vox Machina is all about.",
+            "turn_number": 936
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Scarring children for life.",
+            "turn_number": 937
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "If you can't kill the old, terrify the young.",
+            "turn_number": 938
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We're leaving them with a promise that we'll be back to finish the job.",
+            "turn_number": 939
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 946,
+      "category": null,
+      "episode_position_pct": 0.3868,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You're like, \"oh this is uncomfortable.\" You continue to press forward as the sun slowly begins to set. The temperature begins to get colder and colder, and the sky grows darker.",
+        "preceding_context_chars": 763,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "as the sun",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "You are terrible people. You guys rise into the air as the sun begins to bring itself to set in the west. You shift up over the city. You look down. Probably maybe 150, 200 buildings make up the entirety of Shandal. It's not a very large town, but you can see little dots of moving caravans both to and from the city. It is a fairly lively stop for people traveling to and from Ank'Harel.",
+            "turn_number": 940
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We can follow traffic.",
+            "turn_number": 941
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Follow traffic.",
+            "turn_number": 942
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There's a traffic line, then.",
+            "turn_number": 943
+          },
+          {
+            "speaker": "MATT",
+            "text": "Every now and then. As you follow the direction they're going, you're traveling much faster than they are. The hot air does feel a little uncomfortable against your cloud-based misty forms, but you do not feel like it's responsible for evaporating any of your form.",
+            "turn_number": 944
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, we're just sweating a little bit more.",
+            "turn_number": 945
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 950,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.3884,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "throughout the night",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "UNKNOWN",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "You continue to travel throughout the night?",
+        "preceding_turns_last5": [
+          {
+            "speaker": "MARISHA",
+            "text": "Yeah, we're just sweating a little bit more.",
+            "turn_number": 945
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're like, \"oh this is uncomfortable.\" You continue to press forward as the sun slowly begins to set. The temperature begins to get colder and colder, and the sky grows darker.",
+            "turn_number": 946
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Do we condense a little bit? Turn into a low-lying fog? Never mind.",
+            "turn_number": 947
+          },
+          {
+            "speaker": "MATT",
+            "text": "If you'd like to. It's up to you entirely. The form is your choice.",
+            "turn_number": 948
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Could we turn into a marine layer?",
+            "turn_number": 949
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 964,
+      "category": null,
+      "episode_position_pct": 0.3941,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Yes, you guys cruise. You guys push forward for another four to five hours post-dusk. You're now hitting the early hours of the morning before you begin to see in the distance hundreds of sparking lights begin to appear up above a distant sand dune. You can see the lit lights, lanterns, and general glowing night life of a massive city over the high walls that surround its exterior. This is a pretty amazing sight for those of you who have not been to such a large desert atmosphere, and it is pitch black below you, and at the height you're traveling-- How high are you traveling versus the ground? I guess I should ask.",
+        "preceding_context_chars": 796,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "five hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Do we condense a little bit? Turn into a low-lying fog? Never mind.",
+            "turn_number": 947
+          },
+          {
+            "speaker": "MATT",
+            "text": "If you'd like to. It's up to you entirely. The form is your choice.",
+            "turn_number": 948
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Could we turn into a marine layer?",
+            "turn_number": 949
+          },
+          {
+            "speaker": "MATT",
+            "text": "You continue to travel throughout the night?",
+            "turn_number": 950
+          },
+          {
+            "speaker": "SAM",
+            "text": "How long does this thing last?",
+            "turn_number": 951
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Eight hours, right? It lasts eight hours?",
+            "turn_number": 952
+          },
+          {
+            "speaker": "SAM",
+            "text": "We'll travel eight hours.",
+            "turn_number": 953
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We'll take a late night. Once it wears off, then we'll camp.",
+            "turn_number": 954
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Can we get the whole way there?",
+            "turn_number": 955
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Wind Walk, you said it was a day's journey, and we can travel faster by Wind Walking.",
+            "turn_number": 956
+          },
+          {
+            "speaker": "SAM",
+            "text": "At night, will we know where northeast is?",
+            "turn_number": 957
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, I've got an excellent sense of direction.",
+            "turn_number": 958
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "If it's only a day's travel, at some point we're going to see the city.",
+            "turn_number": 959
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I think we should be able to get there, right?",
+            "turn_number": 960
+          },
+          {
+            "speaker": "LAURA",
+            "text": "And we can camp just outside the city, maybe?",
+            "turn_number": 961
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay. Let's do it.",
+            "turn_number": 962
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Because we have a flying speed of 300 feet.",
+            "turn_number": 963
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 980,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.4007,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's two in the morning, at this point.",
+        "preceding_context_chars": 233,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the morning",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I say we camp outside.",
+            "turn_number": 970
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Are we still clouds, though?",
+            "turn_number": 971
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We're still clouds.",
+            "turn_number": 972
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Can't talk at all.",
+            "turn_number": 973
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Should we mist down?",
+            "turn_number": 974
+          },
+          {
+            "speaker": "SAM",
+            "text": "Are we getting to the end of our eight hours anyway?",
+            "turn_number": 975
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's been five or six.",
+            "turn_number": 976
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's still night?",
+            "turn_number": 977
+          },
+          {
+            "speaker": "MATT",
+            "text": "Still night, yes.",
+            "turn_number": 978
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's good to camp.",
+            "turn_number": 979
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 984,
+      "category": null,
+      "episode_position_pct": 0.4023,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You scoot down around the outside of the city walls. The landscape here near the town appears to be more packed and hardened badland dust and sand. You can see where lots of it, from a recent rain, have caked and hardened and then broken in places. It leaves this soft, shale-type texture to it that breaks into sand upon crumbling underfoot. From what you can see, there are a number of various heights of dunes in the distance. This city is thrown right in the center of what appears to be hundreds of miles of desert from the view that you had as the sun was setting.",
+        "preceding_context_chars": 423,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "as the sun",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "I say we camp outside.",
+            "turn_number": 970
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Are we still clouds, though?",
+            "turn_number": 971
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We're still clouds.",
+            "turn_number": 972
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Can't talk at all.",
+            "turn_number": 973
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Should we mist down?",
+            "turn_number": 974
+          },
+          {
+            "speaker": "SAM",
+            "text": "Are we getting to the end of our eight hours anyway?",
+            "turn_number": 975
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "It's been five or six.",
+            "turn_number": 976
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's still night?",
+            "turn_number": 977
+          },
+          {
+            "speaker": "MATT",
+            "text": "Still night, yes.",
+            "turn_number": 978
+          },
+          {
+            "speaker": "LAURA",
+            "text": "It's good to camp.",
+            "turn_number": 979
+          },
+          {
+            "speaker": "MATT",
+            "text": "It's two in the morning, at this point.",
+            "turn_number": 980
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Does there look like any patch of shrubs or a low point in the terrain? Cover.",
+            "turn_number": 981
+          },
+          {
+            "speaker": "MATT",
+            "text": "You can't tell from this height, unfortunately.",
+            "turn_number": 982
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We mist down a little bit.",
+            "turn_number": 983
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1034,
+      "category": "TEMPORAL_MONTAGE",
+      "episode_position_pct": 0.4227,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "throughout the evening",
+        "extracted_surface_form": "montage",
+        "extracted_compression_scope": "UNKNOWN",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "At a safe distance, you can make out some detail, and there is some lantern light on top of some of these carts. It appears that a number of the folks have set up small tents, and most appear to be sleeping. There are a few guards that are set on top of the carts with crossbows resting over their lap, keeping an eye in case anyone decides to get too close to their wares throughout the evening.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "LIAM",
+            "text": "In this world, on the ground? I love it. We haven't done it that much lately.",
+            "turn_number": 1029
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We've been too used to being careful.",
+            "turn_number": 1030
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "In the mansion.",
+            "turn_number": 1031
+          },
+          {
+            "speaker": "LAURA",
+            "text": "22.",
+            "turn_number": 1032
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "So not really camping. We're glamping.",
+            "turn_number": 1033
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1074,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.4391,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "At this hour? No. You get the sense, looking at the surroundings of the campfires, it looks like some sort of party or gathering may have transpired earlier in the evening, but most everyone have passed out at this time.",
+        "preceding_context_chars": 749,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the evening",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "All right. We'll do that.",
+            "turn_number": 1069
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay, the people who are camping, what do they look like? Pretty common folk, I'm assuming?",
+            "turn_number": 1070
+          },
+          {
+            "speaker": "MATT",
+            "text": "Best you tell at this distance, the few that you can see-- because a lot of them appear to be in small tents encamped-- the few that you do make out appear to be dressed in a little more wealthy attire than the people you encountered in Shandal. You can see the gentlemen and ladies that are guarding the encampment are dressed in functional leathers with hints of hide and metal plates incorporated in the defense, but nothing that shows overt wealth or overt destitution. General mercenary guardians for a traveling caravan.",
+            "turn_number": 1071
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Okay. Are we going to talk to any of them?",
+            "turn_number": 1072
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Unless there's a brazenly loud group around one of the campfires.",
+            "turn_number": 1073
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1125,
+      "category": "OVERNIGHT_REST",
+      "episode_position_pct": 0.4599,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "You come to consciousness",
+        "extracted_surface_form": "diurnal_transition",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "player_intent",
+        "extracted_buildup_window_turns": 5,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "Welcome back, everyone! Returning from the break, Vox Machina has an evening of rest in Scanlan's magnificent mansion. You come to consciousness the following morning, stationed within the beautiful confines of this magical mansion, unaware directly of what awaits you on the other side of the doorway. However, the morning is yours. What do you wish to do?",
+        "preceding_turns_last5": [
+          {
+            "speaker": "LAURA",
+            "text": "No, I want to go to sleep, and I'm holding on to Fenthras and thinking about everything.",
+            "turn_number": 1120
+          },
+          {
+            "speaker": "MATT",
+            "text": "Mulling over the events that recently transpired and digesting all the questions you still have.",
+            "turn_number": 1121
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I gave you a lot to think about, didn't I? Sorry. (laughs)",
+            "turn_number": 1122
+          },
+          {
+            "speaker": "SAM",
+            "text": "I play a card game by myself.",
+            "turn_number": 1123
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. As you guys have a restful night, we're going to take a break. We'll be back here in a few minutes, and we'll pick this up in the following morning as they enter the city itself. See you in a minute! [break]",
+            "turn_number": 1124
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1138,
+      "category": "OVERNIGHT_REST",
+      "episode_position_pct": 0.4652,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "as the morning comes",
+        "extracted_surface_form": "diurnal_transition",
+        "extracted_compression_scope": "scene_exit",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "So as the morning comes about, Vex, you go stretch out of your room, scratching the side of your head, messed up from sleeping wrong on the pillow, and as you walk out you hear (clicking) and look to your right and see your brother slowly slinking away from Keyleth's room.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "LIAM",
+            "text": "Two ones!",
+            "turn_number": 1133
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Two ones!",
+            "turn_number": 1134
+          },
+          {
+            "speaker": "ALL",
+            "text": "(yelling) Yes!",
+            "turn_number": 1135
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There is a god, and he hates you!",
+            "turn_number": 1136
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You are so walk of shaming right now. (laughter)",
+            "turn_number": 1137
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1240,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.507,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "The servants vanish for about ten minutes and return with a robust meal of bowls and bowls of chicken ravioli.",
+        "preceding_context_chars": 719,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "\"Should you need me.\"",
+            "turn_number": 1218
+          },
+          {
+            "speaker": "LIAM",
+            "text": "All right. Sorry to babble.",
+            "turn_number": 1219
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, yeah, no. Maybe go take a shower.",
+            "turn_number": 1220
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm not going to answer that. I'll see you at breakfast. And I walk away.",
+            "turn_number": 1221
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah, you do. All right, as you all find breakfast, a fair prepared chicken feast, as they've been given no other instruction. (laughter)",
+            "turn_number": 1222
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can't we change it up?",
+            "turn_number": 1223
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I'm afraid not.",
+            "turn_number": 1224
+          },
+          {
+            "speaker": "SAM",
+            "text": "Change up the food?",
+            "turn_number": 1225
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Yeah, maybe something other than chicken.",
+            "turn_number": 1226
+          },
+          {
+            "speaker": "SAM",
+            "text": "Why? It's nutritious. It's delicious.",
+            "turn_number": 1227
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Ravioli!",
+            "turn_number": 1228
+          },
+          {
+            "speaker": "SAM",
+            "text": "Ravioli for breakfast? All right.",
+            "turn_number": 1229
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Something with veggies?",
+            "turn_number": 1230
+          },
+          {
+            "speaker": "SAM",
+            "text": "Let's do ravioli. Staff?",
+            "turn_number": 1231
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes, Scanlan?\"",
+            "turn_number": 1232
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, they speak?",
+            "turn_number": 1233
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Shit, they do talk!",
+            "turn_number": 1234
+          },
+          {
+            "speaker": "SAM",
+            "text": "Could you make us some chicken ravioli?",
+            "turn_number": 1235
+          },
+          {
+            "speaker": "LIAM",
+            "text": "You unlocked \"Ravioli in Marquet!\"",
+            "turn_number": 1236
+          },
+          {
+            "speaker": "LAURA",
+            "text": "They're learning.",
+            "turn_number": 1237
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "They're smart. We have to kill them all!",
+            "turn_number": 1238
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "They're going to learn.",
+            "turn_number": 1239
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1275,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.5213,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As you guys approach the outside of the gate, you can see seven of the guards stay behind while three, seemingly the same three that had been keeping a close eye upon your initial approach in the evening, walk up. The same man walks up, now looking a little tired; his day is probably finishing out the rest of his station here at the gate. Approaches, hand still on the side of his sheathed weapon. \"So you awaken. You have rested. What is your business here in Ank'Harel?\"",
+        "preceding_context_chars": 767,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the evening",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "This is the ploy.",
+            "turn_number": 1260
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "This is a radical shift.",
+            "turn_number": 1261
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We're not honest, so let's try it for once.",
+            "turn_number": 1262
+          },
+          {
+            "speaker": "SAM",
+            "text": "All right, let's do it. We're from Emon, we need help fighting dragons.",
+            "turn_number": 1263
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I feel like that's pretty compelling.",
+            "turn_number": 1264
+          },
+          {
+            "speaker": "MATT",
+            "text": "Grog, make an intelligence check.",
+            "turn_number": 1265
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(laughs) Yeah, thank you. Travis needs to make an intelligence check. Oh Jesus, it's a 12. Minus two.",
+            "turn_number": 1266
+          },
+          {
+            "speaker": "MATT",
+            "text": "You have no idea what they're talking about. You find yourself instinctually nodding.",
+            "turn_number": 1267
+          },
+          {
+            "speaker": "SAM",
+            "text": "We'll just go in, big guy. We'll be fine.",
+            "turn_number": 1268
+          },
+          {
+            "speaker": "LIAM",
+            "text": "First chance for violence is all yours. You're the first one in.",
+            "turn_number": 1269
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm all in. Violence. That's what I came away with.",
+            "turn_number": 1270
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(sighs) We have to be careful with our word choices with him.",
+            "turn_number": 1271
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We head towards the gate.",
+            "turn_number": 1272
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(garbled) This ravioli is delicious, by the way. My compliments to the little purple men.",
+            "turn_number": 1273
+          },
+          {
+            "speaker": "SAM",
+            "text": "They're not men, but yes.",
+            "turn_number": 1274
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1401,
+      "category": null,
+      "episode_position_pct": 0.5728,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Most people you come around here, it seems a largely human population. Beyond that, you've not seen a single dwarf as you've walked through the city, but you have seen a number of dark-skinned halflings, a few half-elves. Not an elf has caught your eye since you've wandered through. You've seen a couple of tieflings that walk openly in this city, which is a rare thing from Emon. Even there, most tieflings generally are met with mistrust and prejudice in the street. Here, no one seems to pay mind or bother. You do see a few half-orcs, this team of half-orcs that are shouting out in a language that none of you understand. Some sort of sales pitch they're giving, and there's a few people gathered around them. This is a very wide variety of people that live in this city, and everyone seems to mesh together without issue or prejudice, but not one goliath has caught your eye, and you've caught the eyes of many. And wherever you walk, you can see the townspeople stop, and they don't gawk. They don't stare intently. They're more curious, but no one appears to be following you.",
+        "preceding_context_chars": 255,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since you",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "I need a new reed for that.",
+            "turn_number": 1393
+          },
+          {
+            "speaker": "MATT",
+            "text": "And here you are, amongst the Suncut Bazaar.",
+            "turn_number": 1394
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Can I whip around and see if anyone's following us?",
+            "turn_number": 1395
+          },
+          {
+            "speaker": "SAM",
+            "text": "Ooh, Dust of Tracelessness.",
+            "turn_number": 1396
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a perception check.",
+            "turn_number": 1397
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Hammer down! 14.",
+            "turn_number": 1398
+          },
+          {
+            "speaker": "MATT",
+            "text": "14. No matter where you walk, eyes are on you.",
+            "turn_number": 1399
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I am a gorgeous man.",
+            "turn_number": 1400
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1426,
+      "category": "NPC_FAVOR_GRATITUDE",
+      "episode_position_pct": 0.583,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Thank you so much for your patronage. Anything else you would like?\"",
+        "preceding_context_chars": 777,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "Thank you so much for",
+        "is_in_npc_voice": true,
+        "direction": "delivered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 0.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Apples? Oh wow. I was looking for something a little bit more exotic. Something native to this land.",
+            "turn_number": 1417
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Ah, well--\" She takes the apples back. \"What you'd prefer, then, would be the kurrak fruit.\" And she pulls out what looks like a mango, but the exterior of it is very rough, with these little spines all around it. \"While it is difficult to hold, crack open for a delightful flavor. It is gentle. It is like a sweet water experience.\"",
+            "turn_number": 1418
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "That was very descriptive. Thank you.",
+            "turn_number": 1419
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Of course.\"",
+            "turn_number": 1420
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "How much do I owe you for this?",
+            "turn_number": 1421
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"For this, that would be two silver pieces.\"",
+            "turn_number": 1422
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Two silver. And how much, just for future reference, are the apples?",
+            "turn_number": 1423
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The apples would go for one silver piece apiece.\"",
+            "turn_number": 1424
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "One silver apiece. That's pretty steep. Don't worry about it. Here you go. I give her a little extra.",
+            "turn_number": 1425
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1613,
+      "category": null,
+      "episode_position_pct": 0.6594,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"An hour past sundown.\"",
+        "preceding_context_chars": 702,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "An hour",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Where would you need to meet?\"",
+            "turn_number": 1597
+          },
+          {
+            "speaker": "SAM",
+            "text": "How about where we first met, at that same intersection, or is that too busy?",
+            "turn_number": 1598
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"That is far too busy. It needs to be private, away.\"",
+            "turn_number": 1599
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm sort of a visitor here.",
+            "turn_number": 1600
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"If you want a place to stay, there is Luck's Run, the casino. There are back rooms there.\"",
+            "turn_number": 1601
+          },
+          {
+            "speaker": "SAM",
+            "text": "There's a casino?",
+            "turn_number": 1602
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Yes.\"",
+            "turn_number": 1603
+          },
+          {
+            "speaker": "SAM",
+            "text": "Hells yes.",
+            "turn_number": 1604
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"There is the Debt's Respite Inn, which has its own grasp of lowlifes. Those are probably the best bets.\"",
+            "turn_number": 1605
+          },
+          {
+            "speaker": "SAM",
+            "text": "Let's meet in a room at the casino.",
+            "turn_number": 1606
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The casino it is. Which room?\"",
+            "turn_number": 1607
+          },
+          {
+            "speaker": "SAM",
+            "text": "The red room? I'm not familiar with this casino. I'll need some guidance.",
+            "turn_number": 1608
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Wear a red shirt. He will find you in the casino.\"",
+            "turn_number": 1609
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay. That sounds good.",
+            "turn_number": 1610
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"All right. Hour past sundown, we'll find you there.\"",
+            "turn_number": 1611
+          },
+          {
+            "speaker": "SAM",
+            "text": "Tonight? What time?",
+            "turn_number": 1612
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 1628,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.6656,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "He backs off, hands up. He goes, \"Very well. The amount you ask, I have no specific amount. I'd have to inquire, but I would say, to be safe, bring about 200 gold pieces with you. Just in case.\"",
+        "preceding_context_chars": 762,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "200 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 200.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "Tonight? What time?",
+            "turn_number": 1612
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"An hour past sundown.\"",
+            "turn_number": 1613
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh, sorry. I was thinking about the casino. Sorry.",
+            "turn_number": 1614
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"How much do you want?\"",
+            "turn_number": 1615
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh my god. I'm not prepared for this!",
+            "turn_number": 1616
+          },
+          {
+            "speaker": "MATT",
+            "text": "He starts looking a little untrusting.",
+            "turn_number": 1617
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Be cool, man. Be cool.",
+            "turn_number": 1618
+          },
+          {
+            "speaker": "SAM",
+            "text": "Enough to get me through a week of heavy use. I want to go on a bender.",
+            "turn_number": 1619
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a deception check.",
+            "turn_number": 1620
+          },
+          {
+            "speaker": "SAM",
+            "text": "A billion. More than before. 35.",
+            "turn_number": 1621
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "How are you rolling that?",
+            "turn_number": 1622
+          },
+          {
+            "speaker": "MATT",
+            "text": "He gives you a look and bends down.",
+            "turn_number": 1623
+          },
+          {
+            "speaker": "SAM",
+            "text": "I've had a rough few weeks, and I need to get away from it all and go to that place--",
+            "turn_number": 1624
+          },
+          {
+            "speaker": "MATT",
+            "text": "He gets close to your face, interrupts you, and goes, \"I mean this with all due respect: Being as small a man as you are, you have to be careful.\"",
+            "turn_number": 1625
+          },
+          {
+            "speaker": "SAM",
+            "text": "Don't tell me what to do. I can take it, all right? (laughter)",
+            "turn_number": 1626
+          },
+          {
+            "speaker": "SAM",
+            "text": "Let's just say that when I started using, I was your height. (laughter)",
+            "turn_number": 1627
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1663,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.6799,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Scanlan takes about five minutes or so, but eventually catches up to you guys.",
+        "preceding_context_chars": 284,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "five minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "There's hookah.",
+            "turn_number": 1654
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "There's hookah!",
+            "turn_number": 1655
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I've never tried hookah before.",
+            "turn_number": 1656
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "You've never tried hookah?",
+            "turn_number": 1657
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No.",
+            "turn_number": 1658
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "The Earth Ashari are super into the hookah. It's really nice, yeah.",
+            "turn_number": 1659
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "This is the only thing I actually know about this continent, is that there's tobacco.",
+            "turn_number": 1660
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We should try it!",
+            "turn_number": 1661
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Did Scanlan get here yet?",
+            "turn_number": 1662
+          }
+        ]
+      }
+    },
+    {
+      "source": "CC",
+      "turn_number": 1846,
+      "category": "NPC_DEPARTURE",
+      "episode_position_pct": 0.7547,
+      "payload": {
+        "same_turn_record_index": 0,
+        "trigger_phrase": "exits the room",
+        "extracted_surface_form": "npc_exit",
+        "extracted_compression_scope": "in_scene",
+        "extracted_buildup_signal": "matt_initiated",
+        "extracted_buildup_window_turns": null,
+        "extracted_time_mention_overlap": false,
+        "extracted_stale_signal_count_preceding": 0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "raw_text": "And he exits the room.",
+        "preceding_turns_last5": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Oh! May I start a tab? No? Fine. Then I give, shit. (mutters) How much do I owe?",
+            "turn_number": 1841
+          },
+          {
+            "speaker": "LAURA",
+            "text": "700. TRAVIS 700. Here's 800 gold.",
+            "turn_number": 1842
+          },
+          {
+            "speaker": "SAM",
+            "text": "Oh my god.",
+            "turn_number": 1843
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Thank you very much, and please, do let me know if you require anything else.\"",
+            "turn_number": 1844
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "No problems.",
+            "turn_number": 1845
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1928,
+      "category": null,
+      "episode_position_pct": 0.7882,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "He thinks a minute, then goes, \"I don't know which part of the sandkheg it is, but it is taken from the usually venomous bile or spittle of the creature.\"",
+        "preceding_context_chars": 751,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a minute",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Back in the mansion, maybe.",
+            "turn_number": 1907
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah.",
+            "turn_number": 1908
+          },
+          {
+            "speaker": "LAURA",
+            "text": "But not when we have to do something tonight.",
+            "turn_number": 1909
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "(slurring) What do we have to do?",
+            "turn_number": 1910
+          },
+          {
+            "speaker": "LAURA",
+            "text": "As charming as you two are right now.",
+            "turn_number": 1911
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "I'm going to stopper it and then I'm going to put the extra bottle in the Bag of Holding.",
+            "turn_number": 1912
+          },
+          {
+            "speaker": "SAM",
+            "text": "You didn't have any?",
+            "turn_number": 1913
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Nope.",
+            "turn_number": 1914
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Just these two?",
+            "turn_number": 1915
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "(laughing) Money well spent!",
+            "turn_number": 1916
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Can I step out and find that waiter that we paid for?",
+            "turn_number": 1917
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, you're both really cute right now, but you're useless.",
+            "turn_number": 1918
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I lean on Vax a little bit.",
+            "turn_number": 1919
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Wonderful beverages you just served us. How long does that last?",
+            "turn_number": 1920
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Depends on how much you're drinking.\"",
+            "turn_number": 1921
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Just a tiny bit.",
+            "turn_number": 1922
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Hour, maybe.\"",
+            "turn_number": 1923
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Fabulous. They came with quite a price tag, didn't they?",
+            "turn_number": 1924
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"'It's very dangerous to harvest and create, yes.\"",
+            "turn_number": 1925
+          },
+          {
+            "speaker": "LAURA",
+            "text": "I could assume. What exactly is in?",
+            "turn_number": 1926
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yes, what are they harvested from?",
+            "turn_number": 1927
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1965,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.8034,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "26 investigation check. Within ten minutes you've asked the right questions between a number of various street urchins and street salespersons, to be directed straight towards the Debt's Respite.",
+        "preceding_context_chars": 760,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "ten minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "SAM",
+            "text": "What time is it? Has the sun gone down?",
+            "turn_number": 1947
+          },
+          {
+            "speaker": "MATT",
+            "text": "No, you guys woke up maybe two and a half hours ago.",
+            "turn_number": 1948
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Day drinking! Yes!",
+            "turn_number": 1949
+          },
+          {
+            "speaker": "MATT",
+            "text": "You're maybe getting close to noon. The sun, last you saw before you got here, was close to the center of the sky.",
+            "turn_number": 1950
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Well, we've got time to kill, right?",
+            "turn_number": 1951
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We need to go find the Debt's Respite and maybe get a room.",
+            "turn_number": 1952
+          },
+          {
+            "speaker": "SAM",
+            "text": "Is that where we're going to sleep tonight?",
+            "turn_number": 1953
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's where the Scarbearers are. We can get a room here.",
+            "turn_number": 1954
+          },
+          {
+            "speaker": "LIAM",
+            "text": "And your deal is this evening, yes?",
+            "turn_number": 1955
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, we've got some time for that.",
+            "turn_number": 1956
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "So we take off for the Debt's Respite.",
+            "turn_number": 1957
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Who's leading the charge for that?",
+            "turn_number": 1958
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "No, you're not. I will.",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Go ahead and make an investigation check, if you don't mind.",
+            "turn_number": 1960
+          },
+          {
+            "speaker": "SAM",
+            "text": "Investigation. You're terrible at those.",
+            "turn_number": 1961
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(laughing) This is everything I wanted.",
+            "turn_number": 1962
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm so happy right now.",
+            "turn_number": 1963
+          },
+          {
+            "speaker": "LAURA",
+            "text": "26.",
+            "turn_number": 1964
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1967,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.8042,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "In following the direction, you end up walking up to what looks like a rather rundown-looking establishment. The broken glass windows and missing front door lead you to think that perhaps it's been abandoned for months. Looks a little rough and ramshackle.",
+        "preceding_context_chars": 764,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "it's been",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TRAVIS",
+            "text": "Well, we've got time to kill, right?",
+            "turn_number": 1951
+          },
+          {
+            "speaker": "LAURA",
+            "text": "We need to go find the Debt's Respite and maybe get a room.",
+            "turn_number": 1952
+          },
+          {
+            "speaker": "SAM",
+            "text": "Is that where we're going to sleep tonight?",
+            "turn_number": 1953
+          },
+          {
+            "speaker": "LAURA",
+            "text": "That's where the Scarbearers are. We can get a room here.",
+            "turn_number": 1954
+          },
+          {
+            "speaker": "LIAM",
+            "text": "And your deal is this evening, yes?",
+            "turn_number": 1955
+          },
+          {
+            "speaker": "SAM",
+            "text": "Yeah, we've got some time for that.",
+            "turn_number": 1956
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "So we take off for the Debt's Respite.",
+            "turn_number": 1957
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Who's leading the charge for that?",
+            "turn_number": 1958
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "No, you're not. I will.",
+            "turn_number": 1959
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Go ahead and make an investigation check, if you don't mind.",
+            "turn_number": 1960
+          },
+          {
+            "speaker": "SAM",
+            "text": "Investigation. You're terrible at those.",
+            "turn_number": 1961
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "(laughing) This is everything I wanted.",
+            "turn_number": 1962
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm so happy right now.",
+            "turn_number": 1963
+          },
+          {
+            "speaker": "LAURA",
+            "text": "26.",
+            "turn_number": 1964
+          },
+          {
+            "speaker": "MATT",
+            "text": "26 investigation check. Within ten minutes you've asked the right questions between a number of various street urchins and street salespersons, to be directed straight towards the Debt's Respite.",
+            "turn_number": 1965
+          },
+          {
+            "speaker": "SAM",
+            "text": "I wrote it down correctly, Matt.",
+            "turn_number": 1966
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 1974,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.807,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "As you approach the front door, it's partially ajar and as you push it open, you can see the inside is a whole different story. As your eyes adjust to the interior you find actually a bustling business of barhands slinging tankards across seven stained wood tables, some of the folk look rather day-drunk, similar to these individuals, though it has worn a bit off since the original sip. And most look to be various miscreants or post-work farmers taking a break. The interior is familiar and probably closer to the taverns you're used to in more of the poorer districts of Emon and surrounding cities than some of the more luxurious areas you've recently found yourselves in. Vax, Vex, and Keyleth-- actually, Keyleth, make a perception check with disadvantage.",
+        "preceding_context_chars": 796,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since the",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "In following the direction, you end up walking up to what looks like a rather rundown-looking establishment. The broken glass windows and missing front door lead you to think that perhaps it's been abandoned for months. Looks a little rough and ramshackle.",
+            "turn_number": 1967
+          },
+          {
+            "speaker": "LAURA",
+            "text": "But they said this was being guarded by the Hand of Ord. Interesting.",
+            "turn_number": 1968
+          },
+          {
+            "speaker": "SAM",
+            "text": "My contact in the underworld said that this was a place that is a known hangout for seedy types. Right? Am I remembering that correctly?",
+            "turn_number": 1969
+          },
+          {
+            "speaker": "LAURA",
+            "text": "No, the guard at the front of the city told us this was one of the places that you could stay, and it was guarded.",
+            "turn_number": 1970
+          },
+          {
+            "speaker": "MATT",
+            "text": "He said it was a place you could stay, because you were asking for taverns and inns.",
+            "turn_number": 1971
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We have accounts from two different people, and they're two different opinions.",
+            "turn_number": 1972
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "It's like Yelp. But better. I'm going to knock. (knocking)",
+            "turn_number": 1973
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2069,
+      "category": null,
+      "episode_position_pct": 0.8459,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"She's one of our finest, and expensive because of it. But friend, she's been off for a week since her last job, so mayhaps her schedule is open. Would have to inquire. Write me a summary of your job you have for her. I'll have it delivered. Her answer may take a week or so.\"",
+        "preceding_context_chars": 552,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a week",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"Well look, if you're looking to hire, you've got to explain the task then. We do have a code. Fuck what the rumors say.\"",
+            "turn_number": 2062
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I've never found anyone who doesn't have a code who lived very long to tell about it.",
+            "turn_number": 2063
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Aye. Long enough. What's the point in living without one? That's how you end up shivved in the stomach and left to bleed in the street. What you looking to hire for?\"",
+            "turn_number": 2064
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We are looking for the one-eyed merchant warrior who wears the coat of Cabal's Ruin.",
+            "turn_number": 2065
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"I know who you're seeking, aye. Mistress Asharru.\"",
+            "turn_number": 2066
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Mistress Asharru?",
+            "turn_number": 2067
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "We have a name! Goddamn it.",
+            "turn_number": 2068
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2091,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.8549,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "30 perception? The figure is watching all of you intensely but has not moved an inch. All you've seen are the eyes move, but they've been trained on your entire group since you arrived.",
+        "preceding_context_chars": 776,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since you",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "Sadly, but true. We at the very least need her blessing.",
+            "turn_number": 2080
+          },
+          {
+            "speaker": "LAURA",
+            "text": "While he's talking, can I keep an eye on the figure in the corner?",
+            "turn_number": 2081
+          },
+          {
+            "speaker": "MATT",
+            "text": "Yeah. Make a perception check.",
+            "turn_number": 2082
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "There are things that have been released upon this earth that will burn everything. And they will make their way here. Draconia is gone. Tal'Dorei is gone. All swaths of civilization have been wiped off the earth.",
+            "turn_number": 2083
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"We've weathered beasts. We've weathered dragons here in Emon.\"",
+            "turn_number": 2084
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not like we've seen.",
+            "turn_number": 2085
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"So be it. But nevertheless, you want to hire her, you've got to write her a proposal.\" And he slides across a piece of parchment with a small quill about it. \"I'll deliver it, and she'll get back to you when she sees fit.\"",
+            "turn_number": 2086
+          },
+          {
+            "speaker": "SAM",
+            "text": "Does she have a normal price?",
+            "turn_number": 2087
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Depends on the job you're asking. She'll set her price.\"",
+            "turn_number": 2088
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay.",
+            "turn_number": 2089
+          },
+          {
+            "speaker": "LAURA",
+            "text": "30 perception.",
+            "turn_number": 2090
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2095,
+      "category": null,
+      "episode_position_pct": 0.8565,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"All sorts of entertainment. There's various singers, musicians, dancers, performers. If you're looking for company there's all sorts of entertainment in that regard, of all the spectrums. If you're looking for games, probably a few months out before we get to any sort of the gladiatorial events.\"",
+        "preceding_context_chars": 716,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a few months",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"We've weathered beasts. We've weathered dragons here in Emon.\"",
+            "turn_number": 2084
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not like we've seen.",
+            "turn_number": 2085
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"So be it. But nevertheless, you want to hire her, you've got to write her a proposal.\" And he slides across a piece of parchment with a small quill about it. \"I'll deliver it, and she'll get back to you when she sees fit.\"",
+            "turn_number": 2086
+          },
+          {
+            "speaker": "SAM",
+            "text": "Does she have a normal price?",
+            "turn_number": 2087
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Depends on the job you're asking. She'll set her price.\"",
+            "turn_number": 2088
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay.",
+            "turn_number": 2089
+          },
+          {
+            "speaker": "LAURA",
+            "text": "30 perception.",
+            "turn_number": 2090
+          },
+          {
+            "speaker": "MATT",
+            "text": "30 perception? The figure is watching all of you intensely but has not moved an inch. All you've seen are the eyes move, but they've been trained on your entire group since you arrived.",
+            "turn_number": 2091
+          },
+          {
+            "speaker": "LIAM",
+            "text": "I've been watching.",
+            "turn_number": 2092
+          },
+          {
+            "speaker": "SAM",
+            "text": "Okay.",
+            "turn_number": 2093
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Could I ask, (coughs) other than gambling, what sort of entertainment can you find in this city?",
+            "turn_number": 2094
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2126,
+      "category": null,
+      "episode_position_pct": 0.8692,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"A few months until the games begin, but until then, that's about the only way you'll find bloodshed here. At least that won't lend you up in prison.\"",
+        "preceding_context_chars": 786,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "A few months",
+        "granularity_bucket": "months",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Are any items allowed in the bowl, or do you have to go in bare-handed?",
+            "turn_number": 2112
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"It depends on the sanctions of the Ord and the agreement you come to, but fisticuffs are great for the gladiatorial events, but if you're fighting to the death, sometimes it's nice to bring a blade in.\"",
+            "turn_number": 2113
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "So what type of people like to participate in these duels?",
+            "turn_number": 2114
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"The kind that got nothing to lose. The kind that got a point worth proving with their life. Those kind. Doesn't happen often. When it does happen, it's a spectacle.\"",
+            "turn_number": 2115
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Is there like a lighter fight that can be found?",
+            "turn_number": 2116
+          },
+          {
+            "speaker": "SAM",
+            "text": "Arm wrestling match.",
+            "turn_number": 2117
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Arm wrestling or-- I don't know, what would be worse less than--",
+            "turn_number": 2118
+          },
+          {
+            "speaker": "LAURA",
+            "text": "UFC.",
+            "turn_number": 2119
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Less than a Bowl of Judgment?",
+            "turn_number": 2120
+          },
+          {
+            "speaker": "SAM",
+            "text": "Cup of Truth? (laughter)",
+            "turn_number": 2121
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "A Wok of Truth, maybe.",
+            "turn_number": 2122
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Bowl of Wheaties.",
+            "turn_number": 2123
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Tablespoon of Wrath. (laughter)",
+            "turn_number": 2124
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "This is really uncomfortable.",
+            "turn_number": 2125
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2154,
+      "category": null,
+      "episode_position_pct": 0.8806,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Takes a keyring out and starts fudging through the keys, pulls a few off and tosses them to you across the table. \"All right, you've got it for a night.\"",
+        "preceding_context_chars": 720,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "a night",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Just to meet with her?",
+            "turn_number": 2145
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Just to meet with her.",
+            "turn_number": 2146
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "As an offer of a meeting.",
+            "turn_number": 2147
+          },
+          {
+            "speaker": "LIAM",
+            "text": "That's not bad.",
+            "turn_number": 2148
+          },
+          {
+            "speaker": "MATT",
+            "text": "He takes it. He packages in in a small container, a leather container.",
+            "turn_number": 2149
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Did you put in there that it had to be prompt? That it had to be prompt?",
+            "turn_number": 2150
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "And that time is of the essence.",
+            "turn_number": 2151
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Oh, don't worry.\" (whistles) Whistles through his fingers and the figure in the wall that you'd been watching steps forward and slowly walks towards the table. Holds up the scroll, and the figure leans in. Covers his mouth and he whispers into the ear of the figure. The figure takes the scroll, gives a nod to all of you, and walks out of the tavern. \"He'll deliver that to her promptly, now be on your way. 15 gold.\"",
+            "turn_number": 2152
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh yes, of course! Thank you for the rooms.",
+            "turn_number": 2153
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2237,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.9146,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "It's also about 3 00 in the afternoon.",
+        "preceding_context_chars": 797,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "in the afternoon",
+        "granularity_bucket": "days",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MARISHA",
+            "text": "Does he still have some drink in front of him?",
+            "turn_number": 2215
+          },
+          {
+            "speaker": "MATT",
+            "text": "It hasn't been filled since, no.",
+            "turn_number": 2216
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh, never mind.",
+            "turn_number": 2217
+          },
+          {
+            "speaker": "MATT",
+            "text": "Do you guys head to your rooms? Okay. You make your way up to the rooms. They're all clean, serviceable, nothing too fancy, but functional rooms. Each with two beds.",
+            "turn_number": 2218
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I want to check for anything unusual, if there's anything iffy about the rooms.",
+            "turn_number": 2219
+          },
+          {
+            "speaker": "MATT",
+            "text": "Investigation check.",
+            "turn_number": 2220
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Oh, I would follow suit.",
+            "turn_number": 2221
+          },
+          {
+            "speaker": "MATT",
+            "text": "Investigation check.",
+            "turn_number": 2222
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Oh, for the love of fucking--",
+            "turn_number": 2223
+          },
+          {
+            "speaker": "MATT",
+            "text": "Natural one?",
+            "turn_number": 2224
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "No. Nine.",
+            "turn_number": 2225
+          },
+          {
+            "speaker": "MATT",
+            "text": "Nine. Nothing seems to be out of place or out of the ordinary.",
+            "turn_number": 2226
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Obviously.",
+            "turn_number": 2227
+          },
+          {
+            "speaker": "LAURA",
+            "text": "13.",
+            "turn_number": 2228
+          },
+          {
+            "speaker": "MATT",
+            "text": "13? Seems to be a room.",
+            "turn_number": 2229
+          },
+          {
+            "speaker": "SAM",
+            "text": "I'm just going to check under the beds, that's it.",
+            "turn_number": 2230
+          },
+          {
+            "speaker": "MATT",
+            "text": "Okay. Make an investigation check.",
+            "turn_number": 2231
+          },
+          {
+            "speaker": "SAM",
+            "text": "29!",
+            "turn_number": 2232
+          },
+          {
+            "speaker": "MATT",
+            "text": "29. You find dust, dead insects, a dried-out rodent husk, and that's it.",
+            "turn_number": 2233
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Grog, you want to bunk up?",
+            "turn_number": 2234
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah, sure. Are we going two to a room?",
+            "turn_number": 2235
+          },
+          {
+            "speaker": "LIAM",
+            "text": "Yeah, there's six of us.",
+            "turn_number": 2236
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2301,
+      "category": "in_scene_compression",
+      "episode_position_pct": 0.9407,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"Well, let me show you.\" Over the next five minutes, she brings out all sorts of strange knickknacks. It's essentially a display from the most awkward of vintage Salvation Armies you've ever come across.",
+        "preceding_context_chars": 784,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Over the next",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "Punch and Judy box, yeah.",
+            "turn_number": 2289
+          },
+          {
+            "speaker": "MATT",
+            "text": "Except it just has this one frazzled-looking young woman standing there with long strands of curly dark brown hair. Red lips, dark eyeshadow. She's eagerly looking out with a sign in the front that reads, \"Oddities and Eccentricities.\"",
+            "turn_number": 2290
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Good day.",
+            "turn_number": 2291
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Be pleased.",
+            "turn_number": 2292
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Good day.\"",
+            "turn_number": 2293
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Be pleased.",
+            "turn_number": 2294
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Be pleased to you as well.\"",
+            "turn_number": 2295
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm stocked up on eccentricities, but if you have any oddities for sale, I'd be very interested.",
+            "turn_number": 2296
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"There are many oddities at my disposal. I'm Nisaba.\"",
+            "turn_number": 2297
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Percival. Hello.",
+            "turn_number": 2298
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"What kind of oddities are you looking for?\"",
+            "turn_number": 2299
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Honestly, this is my first time in the city, and I'm trying to get a sense of what's available for sale and what sorts of things one would find in the city, so really, I'm interested in touring your stock, especially if you have anything exotic.",
+            "turn_number": 2300
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2305,
+      "category": null,
+      "episode_position_pct": 0.9424,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "\"This is for, well, a gentleman who passed through many years ago, who claimed to be a great alchemist, sold this off when he had come into a lot of debt within the city, so I made a good price. No one has really showed much interest in it.\"",
+        "preceding_context_chars": 784,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "many years",
+        "granularity_bucket": "years",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "MATT",
+            "text": "\"There are many oddities at my disposal. I'm Nisaba.\"",
+            "turn_number": 2297
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Percival. Hello.",
+            "turn_number": 2298
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"What kind of oddities are you looking for?\"",
+            "turn_number": 2299
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Honestly, this is my first time in the city, and I'm trying to get a sense of what's available for sale and what sorts of things one would find in the city, so really, I'm interested in touring your stock, especially if you have anything exotic.",
+            "turn_number": 2300
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Well, let me show you.\" Over the next five minutes, she brings out all sorts of strange knickknacks. It's essentially a display from the most awkward of vintage Salvation Armies you've ever come across.",
+            "turn_number": 2301
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "God, we've found a hipster.",
+            "turn_number": 2302
+          },
+          {
+            "speaker": "MATT",
+            "text": "However, you do catch a quick flash of what appears to be some small crystalline vials that appear to be strapped to some sort of leather bandolier.",
+            "turn_number": 2303
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Well, that's interesting. What do you call that?",
+            "turn_number": 2304
+          }
+        ]
+      }
+    },
+    {
+      "source": "LR",
+      "turn_number": 2322,
+      "category": "QUEST_OFFER",
+      "episode_position_pct": 0.9493,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "loot_reward",
+        "raw_text": "\"Well, knowing that is now a magic potion of healing and two other magical potions, that is a very valuable belt with its contents. I would sell you just the belt for five silver pieces. To include the vials, and they do come as a set, unfortunately, that would run you 275 gold pieces.\"",
+        "preceding_context_chars": 705,
+        "extractor_version": "loot_reward_v1",
+        "extracted_at": "2026-05-08T04:08:22Z",
+        "trigger_phrase": "275 gold pieces",
+        "is_in_npc_voice": true,
+        "direction": "offered",
+        "absence_marker": false,
+        "has_persistence_marker": false,
+        "has_perception_buildup": false,
+        "nearest_prior_perception_check_turn_distance": null,
+        "currency_total_gp_equivalent": 275.0,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "Interesting.",
+            "turn_number": 2310
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Percy, what's that?",
+            "turn_number": 2311
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I don't know. It's quite nice, though, isn't it?",
+            "turn_number": 2312
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Well. Can I do a check on the other two potions to see with my potion knowledge? My potion sense?",
+            "turn_number": 2313
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make an intelligence check.",
+            "turn_number": 2314
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Not bad. Just straight intelligence? 15.",
+            "turn_number": 2315
+          },
+          {
+            "speaker": "MATT",
+            "text": "15. They do appear to have been prepared in the way that you prepare magically enchanted vials for potions themselves, but you're not really able to make out just at a glance. You'd have to spend quite a time to make out what their nature is.",
+            "turn_number": 2316
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "I'd have to look at it. Not familiar, sorry. That looks like a health potion, though.",
+            "turn_number": 2317
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Yeah. It does look a bit--",
+            "turn_number": 2318
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Healthy.",
+            "turn_number": 2319
+          },
+          {
+            "speaker": "SAM",
+            "text": "It's like Storage Wars. Just buy it. Who knows what's in there?",
+            "turn_number": 2320
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "What were you hoping to unload for it?",
+            "turn_number": 2321
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2365,
+      "category": null,
+      "episode_position_pct": 0.9669,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "You ask around. It looks to probably be about four hours from sunset.",
+        "preceding_context_chars": 794,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "four hours",
+        "granularity_bucket": "hours",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "Keyleth?",
+            "turn_number": 2350
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yes?",
+            "turn_number": 2351
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I feel like I should have learned some sort of lesson here. I'm just not entirely sure what it was.",
+            "turn_number": 2352
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Oh, you know--",
+            "turn_number": 2353
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Hardly matters, I suppose.",
+            "turn_number": 2354
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Maybe you'll come to it at the end of being in Ank'Harel.",
+            "turn_number": 2355
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Hey, guys. I had a thought. You know we were all supposed to have a meeting with the king? And I haven't been paying attention if anyone's watching, and we got time to kill. Should we go have a talk with the big man?",
+            "turn_number": 2356
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Or at least put in for an audience.",
+            "turn_number": 2357
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "Yeah. Who knows if they'll even get to us today?",
+            "turn_number": 2358
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "I'm sobering up a bit. Which we should probably do that.",
+            "turn_number": 2359
+          },
+          {
+            "speaker": "LAURA",
+            "text": "Does it seem like a long walk towards the Cerulean Palace?",
+            "turn_number": 2360
+          },
+          {
+            "speaker": "MATT",
+            "text": "Maybe a 45-minute to an hour walk.",
+            "turn_number": 2361
+          },
+          {
+            "speaker": "LIAM",
+            "text": "We've got hours and hours before we have to do anything.",
+            "turn_number": 2362
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We do. It's 4 00 in the afternoon.",
+            "turn_number": 2363
+          },
+          {
+            "speaker": "LAURA",
+            "text": "What time's the sun set here? Can I ask somebody?",
+            "turn_number": 2364
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2379,
+      "category": "scene_transition",
+      "episode_position_pct": 0.9726,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "24. \"Let me inquire with the Grand Maven.\" She turns around, her armor clinking, and walks back to the palace, leaving you guys there amongst these courtyard grounds. A few moments pass before she returns, the doors opening. As she descends, next to her you see an older woman with these long, ceremonial robes that drag behind her, spilling across the stairs as she descends, seemingly dozens of gemmed bracelets that jingle as she walks with each step. She wears a tall headdress with what looks like brass quills that press behind her head and down her back. As she approaches you all, the woman earlier that you spoke to, the Hand that approached you, stays behind quietly and watches, weapon at the ready. The woman steps forward with a smile, and unlike the abrasive appearance that most of the Hand have given, she seems to be more welcoming, and gives, for the first time since you've been here, a very formal welcoming bow with her hand before her, the other hand out. Says, \"Be pleased, everyone.\"",
+        "preceding_context_chars": 433,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "moments pass",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Forgive us for our intrusion. We come seeking an audience of J'mon Sa Ord.",
+            "turn_number": 2371
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Our emperor does not take meetings. My apologies, but I must ask you to leave.\"",
+            "turn_number": 2372
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We are, in fact, a group of ambassadors from the continent of Emon, from the cities of--",
+            "turn_number": 2373
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Continent of Tal'Dorei, city of Emon. It concerns the fate of the world.",
+            "turn_number": 2374
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a persuasion check.",
+            "turn_number": 2375
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Which one?",
+            "turn_number": 2376
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not that one. That one. See? Listen to me. I'm not taking credit for that.",
+            "turn_number": 2377
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "23. No, 24.",
+            "turn_number": 2378
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2379,
+      "category": "cumulative_anchor",
+      "episode_position_pct": 0.9726,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "24. \"Let me inquire with the Grand Maven.\" She turns around, her armor clinking, and walks back to the palace, leaving you guys there amongst these courtyard grounds. A few moments pass before she returns, the doors opening. As she descends, next to her you see an older woman with these long, ceremonial robes that drag behind her, spilling across the stairs as she descends, seemingly dozens of gemmed bracelets that jingle as she walks with each step. She wears a tall headdress with what looks like brass quills that press behind her head and down her back. As she approaches you all, the woman earlier that you spoke to, the Hand that approached you, stays behind quietly and watches, weapon at the ready. The woman steps forward with a smile, and unlike the abrasive appearance that most of the Hand have given, she seems to be more welcoming, and gives, for the first time since you've been here, a very formal welcoming bow with her hand before her, the other hand out. Says, \"Be pleased, everyone.\"",
+        "preceding_context_chars": 433,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "since you",
+        "granularity_bucket": "unspecified",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": true,
+        "unknown_shape": false,
+        "same_turn_record_index": 1,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Forgive us for our intrusion. We come seeking an audience of J'mon Sa Ord.",
+            "turn_number": 2371
+          },
+          {
+            "speaker": "MATT",
+            "text": "\"Our emperor does not take meetings. My apologies, but I must ask you to leave.\"",
+            "turn_number": 2372
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "We are, in fact, a group of ambassadors from the continent of Emon, from the cities of--",
+            "turn_number": 2373
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Continent of Tal'Dorei, city of Emon. It concerns the fate of the world.",
+            "turn_number": 2374
+          },
+          {
+            "speaker": "MATT",
+            "text": "Make a persuasion check.",
+            "turn_number": 2375
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Which one?",
+            "turn_number": 2376
+          },
+          {
+            "speaker": "TALIESIN",
+            "text": "Not that one. That one. See? Listen to me. I'm not taking credit for that.",
+            "turn_number": 2377
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "23. No, 24.",
+            "turn_number": 2378
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2391,
+      "category": "scene_transition",
+      "episode_position_pct": 0.9775,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "She walks into a nearby doorway. It looks like a single door that leads into a small-looking room, from the brief moment you have to see it. The door closes and you hear a (magic sound). Two minutes pass. Five minutes pass. Ten eerie, quiet minutes pass.",
+        "preceding_context_chars": 21,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Two minutes",
+        "granularity_bucket": "minutes",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "TALIESIN",
+            "text": "Of course.",
+            "turn_number": 2389
+          },
+          {
+            "speaker": "SAM",
+            "text": "Sure, yeah.",
+            "turn_number": 2390
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2429,
+      "category": null,
+      "episode_position_pct": 0.993,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Two weeks.",
+        "preceding_context_chars": 19,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "Two weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": true,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Oh shit, two weeks.",
+            "turn_number": 2428
+          }
+        ]
+      }
+    },
+    {
+      "source": "TM",
+      "turn_number": 2434,
+      "category": "travel_duration",
+      "episode_position_pct": 0.9951,
+      "payload": {
+        "speaker": "MATT",
+        "event_type": "time_mention",
+        "raw_text": "Yeah. We have two weeks until we pick up from that point in the story. Next week, look forward once again to Liam running his awesome one-shot.",
+        "preceding_context_chars": 143,
+        "extractor_version": "time_mention_v1_3",
+        "extracted_at": "2026-05-07T16:08:52Z",
+        "trigger_phrase": "two weeks",
+        "granularity_bucket": "weeks",
+        "is_anchored": false,
+        "time_anchor_turn_number": null,
+        "anchor_distance_turns": null,
+        "is_combat_state": false,
+        "is_recap_state": false,
+        "is_npc_dialogue_present": false,
+        "unknown_shape": false,
+        "same_turn_record_index": 0,
+        "preceding_turns": [
+          {
+            "speaker": "LAURA",
+            "text": "Oh shit, two weeks.",
+            "turn_number": 2428
+          },
+          {
+            "speaker": "MATT",
+            "text": "Two weeks.",
+            "turn_number": 2429
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Two weeks.",
+            "turn_number": 2430
+          },
+          {
+            "speaker": "SAM",
+            "text": "Wow, guys. We did a lot of strange things.",
+            "turn_number": 2431
+          },
+          {
+            "speaker": "MARISHA",
+            "text": "Yes, that was a weird day.",
+            "turn_number": 2432
+          },
+          {
+            "speaker": "TRAVIS",
+            "text": "It's the pharaoh king from Stargate.",
+            "turn_number": 2433
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -109,7 +109,7 @@ def test_last_active_actor_column_present():
 
 
 def test_update_last_active_actor_writes_and_logs_on_transition():
-    init_scene_state(101, 'seed')
+    init_scene_state(101)
     _reset_state(101)
     _reset_logs()
     update_last_active_actor(101, 'Donovan Ruby', 'dm_respond')
@@ -122,7 +122,7 @@ def test_update_last_active_actor_writes_and_logs_on_transition():
 
 
 def test_update_last_active_actor_noop_on_unchanged():
-    init_scene_state(102, 'seed')
+    init_scene_state(102)
     _reset_state(102)
     update_last_active_actor(102, 'Hilda', 'dm_respond')
     _reset_logs()
@@ -132,7 +132,7 @@ def test_update_last_active_actor_noop_on_unchanged():
 
 
 def test_update_last_active_actor_logs_clear_transition():
-    init_scene_state(103, 'seed')
+    init_scene_state(103)
     _reset_state(103)
     update_last_active_actor(103, 'Throx', 'combat_turn_set')
     _reset_logs()
@@ -144,7 +144,7 @@ def test_update_last_active_actor_logs_clear_transition():
 
 
 def test_update_last_active_actor_play_clears():
-    init_scene_state(104, 'seed')
+    init_scene_state(104)
     _reset_state(104)
     update_last_active_actor(104, 'Zara', 'dm_respond')
     _reset_logs()
@@ -156,7 +156,7 @@ def test_update_last_active_actor_play_clears():
 
 
 def test_pending_directive_upsert_insert_returns_replaced_false():
-    init_scene_state(201, 'seed')
+    init_scene_state(201)
     _reset_state(201)
     result = pending_directive_upsert(201, 'Donovan Ruby', 'stealth',
                                       'msg_a', 300)
@@ -165,7 +165,7 @@ def test_pending_directive_upsert_insert_returns_replaced_false():
 
 
 def test_pending_directive_upsert_replace_returns_prior():
-    init_scene_state(202, 'seed')
+    init_scene_state(202)
     _reset_state(202)
     pending_directive_upsert(202, 'Donovan Ruby', 'stealth', 'msg_a', 300)
     result = pending_directive_upsert(202, 'Hilda', 'perception',
@@ -176,7 +176,7 @@ def test_pending_directive_upsert_replace_returns_prior():
 
 
 def test_pending_directive_get_active_returns_row():
-    init_scene_state(203, 'seed')
+    init_scene_state(203)
     _reset_state(203)
     pending_directive_upsert(203, 'Donovan Ruby', 'stealth', 'msg_a', 300)
     row = pending_directive_get_active(203)
@@ -187,13 +187,13 @@ def test_pending_directive_get_active_returns_row():
 
 
 def test_pending_directive_get_active_returns_none_when_absent():
-    init_scene_state(204, 'seed')
+    init_scene_state(204)
     _reset_state(204)
     assert pending_directive_get_active(204) is None
 
 
 def test_pending_directive_lazy_expiry_sweeps_and_logs():
-    init_scene_state(205, 'seed')
+    init_scene_state(205)
     _reset_state(205)
     # ttl=0 means expires_at == created_at, so utcnow() >= expires_at fires
     # the sweep on the very next read.
@@ -213,7 +213,7 @@ def test_pending_directive_lazy_expiry_sweeps_and_logs():
 
 
 def test_pending_directive_consume_deletes():
-    init_scene_state(206, 'seed')
+    init_scene_state(206)
     _reset_state(206)
     pending_directive_upsert(206, 'Donovan Ruby', 'stealth', 'msg_a', 300)
     assert pending_directive_consume(206) is True
@@ -222,7 +222,7 @@ def test_pending_directive_consume_deletes():
 
 
 def test_pending_directive_delete_by_message_matches_only_correct_msg():
-    init_scene_state(207, 'seed')
+    init_scene_state(207)
     _reset_state(207)
     pending_directive_upsert(207, 'Donovan Ruby', 'stealth', 'msg_a', 300)
     # Wrong message id: no-op
@@ -241,7 +241,7 @@ def test_pending_directive_age_seconds_negative_on_garbage():
 
 
 def test_pending_directive_age_seconds_positive_on_real_value():
-    init_scene_state(208, 'seed')
+    init_scene_state(208)
     _reset_state(208)
     pending_directive_upsert(208, 'Donovan Ruby', 'stealth', 'msg_a', 300)
     row = pending_directive_get_active(208)
@@ -252,7 +252,7 @@ def test_pending_directive_age_seconds_positive_on_real_value():
 def test_pending_directives_cleared_by_campaign_delete_cascade():
     from dnd_engine import campaign_delete_cascade, create_campaign, campaign_set_status
     cid = create_campaign('test_guild_pdr', 'Cascade Test', creator_user_id='u1')
-    init_scene_state(cid, 'seed')
+    init_scene_state(cid)
     pending_directive_upsert(cid, 'Donovan Ruby', 'stealth', 'msg_a', 300)
     # Cascade refuses active campaigns; archive first.
     campaign_set_status(cid, 'archived')
@@ -280,7 +280,7 @@ def test_dc_column_present_after_db_init():
 
 
 def test_pending_directive_upsert_stores_dc():
-    init_scene_state(310, 'seed')
+    init_scene_state(310)
     _reset_state(310)
     pending_directive_upsert(310, 'Donovan Ruby', 'perception', 'msg_dc1',
                               300, dc=15)
@@ -290,7 +290,7 @@ def test_pending_directive_upsert_stores_dc():
 
 
 def test_pending_directive_upsert_stores_null_when_no_dc():
-    init_scene_state(311, 'seed')
+    init_scene_state(311)
     _reset_state(311)
     # dc kwarg omitted — default is None
     pending_directive_upsert(311, 'Donovan Ruby', 'perception', 'msg_dc2', 300)
@@ -300,7 +300,7 @@ def test_pending_directive_upsert_stores_null_when_no_dc():
 
 
 def test_pending_directive_get_active_surfaces_dc_and_campaign_id():
-    init_scene_state(312, 'seed')
+    init_scene_state(312)
     _reset_state(312)
     pending_directive_upsert(312, 'Hilda', 'stealth', 'msg_dc3', 300, dc=12)
     row = pending_directive_get_active(312)
@@ -342,7 +342,7 @@ def test_parse_skill_and_dc_edge_cases_per_spec_table():
 def test_upsert_with_bot_msg_source_id_writes_row():
     # Ship A's narration-emit writer uses str(msg.id) as source_message_id.
     # Helper is unchanged; just confirm the writer surface works.
-    init_scene_state(420, 'seed')
+    init_scene_state(420)
     _reset_state(420)
     pending_directive_upsert(420, 'Donovan Ruby', 'perception',
                               'bot-msg-id-7', 300, dc=15)
@@ -356,7 +356,7 @@ def test_two_disjoint_writers_share_helper_replaces_row():
     # Surface A (DM-typed) writes first; Surface B (LLM-emitted) replaces.
     # pending_directive_replaced semantics handle the sequential upserts.
     # §17 status preserved: both surfaces call the same helper.
-    init_scene_state(421, 'seed')
+    init_scene_state(421)
     _reset_state(421)
     # Surface A
     pending_directive_upsert(421, 'Donovan Ruby', 'perception',

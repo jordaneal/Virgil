@@ -18,7 +18,7 @@ This doc carries two horizons because the architectural thinking and the executi
 - Finish the multiplayer-fixes plan as scoped, with the MVP-test scrutiny applied to Ships 4 and 5 (see §11)
 - Extensive multi-hour playtesting in current architecture
 - Ship "dumb combat" — standard Avrae init with LLM-narrated transitions (no hidden init, no compression, no parallel state surfaces)
-- Listener edge-case verification (advantage, crits, multi-attack, resistance)
+- **Listener edge-case verification ✅ (S42, May 11, 2026)** — `avrae_listener.py` audited; advantage/disadvantage dice-modifier parsing + multi-target attack capture both patched; per-parse `listener_parsed:` telemetry added; 7 new test assertions green; 123-assertion regression sweep clean. Crit-force / save-with-damage / death-save outcome paths filed as deferred-future-ship candidates per fixture-availability constraints. See SESSIONS.md S42.
 - Let observed friction during real play dictate what combat work earns its slot next
 
 **Long-term reference design (v2+ horizon, years not months):**
@@ -48,12 +48,12 @@ What is NOT negotiable across horizons: Avrae as mechanical truth, no parallel p
 
 ### §3.1 What ships next, in order
 
-1. **Ship 2 — Scene State Canon Discipline** (already locked in multiplayer-fixes plan v3; Finding A closure)
-2. **Ship 3 — NPC State-Sync Boundary** (already locked; Finding H closure)
-3. **Playtest phase** — extensive multi-hour solo and small-group sessions in the post-Ship-3 architecture. Pacing observation, content variety observation, combat friction observation. **No new architecture during this phase.**
-4. **MVP-test pass on Ships 4 and 5** — re-examine against actual playtest evidence. Ship if observed friction justifies; defer if not.
-5. **Listener edge-case verification ship** — confirm `avrae_listener.py` handles advantage, disadvantage, crits, resistance, multi-attack embeds correctly. Small ship, observation-driven.
-6. **"Dumb combat" ship** — standard Avrae `!init begin` for combat; bot narrates top of each round to smooth transitions. No hidden init, no compression, no new state surfaces.
+1. **Ship 2 ✅ — Scene State Canon Discipline** (S39; Finding A closed; Doctrine §76 anchored)
+2. **Ship 3 ✅ — NPC State-Sync Boundary** (S41 post-pivot; Finding H closed via §1b suggester pattern; §1b second instance proven)
+3. **Listener edge-case verification ship ✅ (S42, May 11 2026)** — reordered ahead of playtest phase per operator framing ("pre-requisite for trustworthy playtest data"). `avrae_listener.py` audited; advantage/disadvantage dice-modifier parsing + multi-target attack capture both patched; per-parse `listener_parsed:` telemetry added. 7 new test assertions green. Deferred edge cases (forced-crit / save-with-damage / death-save outcome state) filed for future ship per fixture-availability constraints.
+4. **"Dumb combat" ship ✅ (S43, May 11 2026)** — auto-narration on three combat-mode state transitions (ROUND_START, BLOODIED_THRESHOLD_CROSSED, COMBATANT_DOWNED). DEATH_SAVE_EVENT_START deferred per S42 fixture blocker. **Atmospheric-vs-adjudication doctrine anchored** post-verify-clean — cliff-edge holds (no mechanical drift); ROUND_START quality drift (phantom NPCs + stale-narrative bleed) filed v1.x prompt-purity candidate. 39 new test assertions; 238-assertion regression sweep clean. See SESSIONS.md S43.
+5. **Playtest phase** — extensive multi-hour solo and small-group sessions in the post-dumb-combat architecture. Pacing observation, content variety observation, combat friction observation. **No new architecture during this phase.** **NEXT.**
+6. **MVP-test pass on Ships 4 and 5** — re-examine against actual playtest evidence. Ship if observed friction justifies; defer if not.
 7. **Then evaluate** — has observed friction surfaced specific combat problems that the long-term architecture would solve? If yes, file targeted ships for those specific problems. If no, the project is closer to v1.0 than v2.
 
 ### §3.2 What does NOT ship near-term

@@ -303,22 +303,22 @@ SCRATCH_A = 99001
 SCRATCH_B = 99002
 conn = sqlite3.connect(dnd_engine.DB_PATH)
 try:
+    # Ship 2 (S39) — fixture tightened to match post-§76 schema. The deleted
+    # eight columns (location, established_details, focus, open_questions,
+    # last_scene_change, active_npcs, active_threats, legacy tension) are no
+    # longer in the INSERT column list. INSERT OR REPLACE is preserved here
+    # (sufficient for test setup); production writer uses INSERT...ON CONFLICT
+    # per §75.
     conn.execute(
         "INSERT OR REPLACE INTO dnd_scene_state "
-        "(campaign_id, location, mode, focus, established_details, "
-        "active_npcs, active_threats, open_questions, tension, "
-        "last_player_action, last_scene_change, updated_at) "
-        "VALUES (?, '', 'exploration', '', '[]', '[]', '[]', '[]', 'low', "
-        "'', '', ?)",
+        "(campaign_id, mode, last_player_action, updated_at) "
+        "VALUES (?, 'exploration', '', ?)",
         (SCRATCH_A, '2026-05-04T00:00:00')
     )
     conn.execute(
         "INSERT OR REPLACE INTO dnd_scene_state "
-        "(campaign_id, location, mode, focus, established_details, "
-        "active_npcs, active_threats, open_questions, tension, "
-        "last_player_action, last_scene_change, updated_at) "
-        "VALUES (?, '', 'exploration', '', '[]', '[]', '[]', '[]', 'low', "
-        "'', '', ?)",
+        "(campaign_id, mode, last_player_action, updated_at) "
+        "VALUES (?, 'exploration', '', ?)",
         (SCRATCH_B, '2026-05-04T00:00:00')
     )
     conn.commit()

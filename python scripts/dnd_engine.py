@@ -322,18 +322,18 @@ def db_init():
         "WHERE canonical_name IS NULL OR canonical_name=''"
     )
 
+    # Ship 2 (S39) — scene state canon discipline. Post-Ship-2 schema for new
+    # DBs. The eight columns dropped by Ship 2 (location, established_details,
+    # focus, open_questions, last_scene_change + dead columns active_npcs,
+    # active_threats, legacy `tension`) are absent here. Existing DBs migrate
+    # via the Ship 2 idempotent DROP COLUMN block (search Ship 2 migration).
+    # ALTER ADD migrations below add: tension_int, progress_clocks,
+    # current_location_id, turn_counter, last_dm_response, last_active_actor,
+    # campaign_day, day_phase.
     conn.execute('''CREATE TABLE IF NOT EXISTS dnd_scene_state (
         campaign_id INTEGER PRIMARY KEY,
-        location TEXT DEFAULT '',
         mode TEXT DEFAULT 'exploration',
-        focus TEXT DEFAULT '',
-        established_details TEXT DEFAULT '[]',
-        active_npcs TEXT DEFAULT '[]',
-        active_threats TEXT DEFAULT '[]',
-        open_questions TEXT DEFAULT '[]',
-        tension TEXT DEFAULT 'low',
         last_player_action TEXT DEFAULT '',
-        last_scene_change TEXT DEFAULT '',
         updated_at TEXT DEFAULT ''
     )''')
     # Combat coordination state — who holds the active turn per campaign.
@@ -658,6 +658,37 @@ def db_init():
         "ON dnd_pending_roll_directives(source_message_id)"
     )
     conn2.commit()
+    # Ship 2 (S39) — idempotent DROP COLUMN migration for scene state canon
+    # discipline. Closes Finding A (recursive hallucination memory loop) and
+    # anchors Doctrine §76 four-property latent-canon test. Eight columns total:
+    #   Five §76 deletion targets (D1 Path A drop column for location; D2
+    #     ship-all-five for established_details, focus, open_questions,
+    #     last_scene_change):
+    #       location, established_details, focus, open_questions, last_scene_change
+    #   Three dead-column housekeeping drops (D4 bundle; zero active readers
+    #     confirmed via S38 review grep):
+    #       active_npcs, active_threats, tension (legacy string; the
+    #       tension_int column is unaffected)
+    # Idempotent: re-fetch PRAGMA each run; skip columns already absent.
+    # Soft-fail per-column: a single drop failure does not abort the migration.
+    _ss_post_alter = {
+        row[1] for row in
+        conn2.execute("PRAGMA table_info(dnd_scene_state)").fetchall()
+    }
+    _SHIP2_DROP_COLS = (
+        'location', 'established_details', 'focus', 'open_questions',
+        'last_scene_change', 'active_npcs', 'active_threats', 'tension',
+    )
+    for _col in _SHIP2_DROP_COLS:
+        if _col not in _ss_post_alter:
+            continue
+        try:
+            conn2.execute(f"ALTER TABLE dnd_scene_state DROP COLUMN {_col}")
+            conn2.commit()
+            log(f"schema_migration: dropped dnd_scene_state.{_col} (Ship 2)")
+        except sqlite3.OperationalError as _e:
+            log(f"schema_migration: drop failed for "
+                f"dnd_scene_state.{_col}: {_e!r}")
     conn2.close()
     conn.close()
 
@@ -1121,64 +1152,85 @@ def campaign_set_status(campaign_id: int, status: str) -> dict:
 # ─────────────────────────────────────────────────────────
 
 def get_scene_state(campaign_id: int):
-    """Return scene state dict for the campaign, or None."""
-    import json
+    """Return scene state dict for the campaign, or None.
+
+    Ship 2 (S39) — five §76 deletion targets removed (location freetext,
+    established_details, focus, open_questions, last_scene_change) plus three
+    dead columns (active_npcs, active_threats, legacy tension). The freetext
+    location surface is replaced by `location_label` — derived from
+    `dnd_locations.canonical_name` via current_location_id at read time.
+    Single-writer discipline: `set_current_location` writes the FK; the
+    canonical name is the read-side derived label. NULL FK or missing row →
+    location_label is '' → renderer surfaces `(between locations)` deliberate
+    ambiguity. Lookup is a separate PK query (not a JOIN) so the function
+    degrades cleanly when the dnd_locations table is absent (test fixtures
+    with minimal schemas).
+    """
     conn = sqlite3.connect(DB_PATH)
     row = conn.execute(
-        "SELECT location, mode, focus, established_details, active_npcs, "
-        "active_threats, open_questions, tension, last_player_action, "
-        "last_scene_change, updated_at, tension_int, progress_clocks, "
-        "last_dm_response, current_location_id, campaign_day, day_phase, "
-        "last_active_actor "
+        "SELECT mode, last_player_action, updated_at, "
+        "tension_int, progress_clocks, last_dm_response, "
+        "current_location_id, campaign_day, day_phase, "
+        "last_active_actor, turn_counter "
         "FROM dnd_scene_state "
         "WHERE campaign_id=?",
         (campaign_id,)
     ).fetchone()
-    conn.close()
     if not row:
+        conn.close()
         return None
+    current_location_id = row[6]
+    location_label = ''
+    if current_location_id is not None:
+        try:
+            loc_row = conn.execute(
+                "SELECT canonical_name FROM dnd_locations "
+                "WHERE id=? AND campaign_id=?",
+                (current_location_id, campaign_id)
+            ).fetchone()
+            if loc_row and loc_row[0]:
+                location_label = loc_row[0]
+        except sqlite3.OperationalError:
+            # dnd_locations missing (test fixture with minimal schema).
+            # Production always has the table via db_init.
+            pass
+    conn.close()
     return {
         'campaign_id': campaign_id,
-        'location': row[0] or '',
-        'mode': row[1] or 'exploration',
-        'focus': row[2] or '',
-        'established_details': json.loads(row[3] or '[]'),
-        'active_npcs': json.loads(row[4] or '[]'),
-        'active_threats': json.loads(row[5] or '[]'),
-        'open_questions': json.loads(row[6] or '[]'),
-        'tension': row[7] or 'low',
-        'tension_int': int(row[11]) if row[11] is not None else 0,
-        'progress_clocks': json.loads(row[12] or '[]') if len(row) > 12 else [],
-        'last_player_action': row[8] or '',
-        'last_scene_change': row[9] or '',
-        'last_dm_response': row[13] if len(row) > 13 and row[13] is not None else '',
-        'current_location_id': row[14] if len(row) > 14 else None,
+        'mode': row[0] or 'exploration',
+        'last_player_action': row[1] or '',
+        'updated_at': row[2] or '',
+        'tension_int': int(row[3]) if row[3] is not None else 0,
+        'progress_clocks': json.loads(row[4] or '[]'),
+        'last_dm_response': row[5] if row[5] is not None else '',
+        'current_location_id': current_location_id,
         # Track 4 #3 — time progression v1.
-        'campaign_day': int(row[15]) if len(row) > 15 and row[15] is not None else 1,
-        'day_phase': (row[16] if len(row) > 16 and row[16] else 'Morning'),
+        'campaign_day': int(row[7]) if row[7] is not None else 1,
+        'day_phase': (row[8] if row[8] else 'Morning'),
         # Bug 1 Phase 1 (S32) — footer-actor source of truth.
-        'last_active_actor': row[17] if len(row) > 17 and row[17] is not None else '',
-        'updated_at': row[10] or '',
+        'last_active_actor': row[9] if row[9] is not None else '',
+        'turn_counter': int(row[10]) if row[10] is not None else 0,
+        'location_label': location_label,
     }
 
 
-def init_scene_state(campaign_id: int, seed: str = ''):
-    """Ensure a scene_state row exists for this campaign and stamp the latest
-    scene-change seed. New rows get schema defaults across the board; existing
-    rows preserve everything (mode, location, day/phase, clocks, NPCs, etc.)
-    and only refresh `last_scene_change` + `updated_at`. /play is reopening
-    a scene, not resetting it — gameplay-advanced state must survive."""
+def init_scene_state(campaign_id: int):
+    """Ensure a scene_state row exists for this campaign. New rows get schema
+    defaults; existing rows preserve everything (mode, day/phase, clocks, etc.)
+    and only refresh `updated_at`. /play is reopening a scene, not resetting it —
+    gameplay-advanced state must survive.
+
+    Ship 2 (S39): the `seed` parameter was dropped. The legacy seed landed in
+    the now-deleted `last_scene_change` column; with that column gone the
+    parameter has no surface. Callers no longer pass a seed; /play's opening
+    narration is generated from the regular DM-respond loop, not seeded into
+    scene_state.
+    """
     conn = sqlite3.connect(DB_PATH)
     conn.execute(
-        "INSERT INTO dnd_scene_state "
-        "(campaign_id, location, mode, focus, established_details, active_npcs, "
-        "active_threats, open_questions, tension, last_player_action, "
-        "last_scene_change, updated_at) "
-        "VALUES (?, '', 'exploration', '', '[]', '[]', '[]', '[]', 'low', '', ?, ?) "
-        "ON CONFLICT(campaign_id) DO UPDATE SET "
-        "last_scene_change=excluded.last_scene_change, "
-        "updated_at=excluded.updated_at",
-        (campaign_id, seed[:500], datetime.datetime.now().isoformat())
+        "INSERT INTO dnd_scene_state (campaign_id, updated_at) VALUES (?, ?) "
+        "ON CONFLICT(campaign_id) DO UPDATE SET updated_at=excluded.updated_at",
+        (campaign_id, datetime.datetime.now().isoformat())
     )
     conn.commit()
     conn.close()
@@ -1394,6 +1446,65 @@ def update_last_active_actor(campaign_id: int, new_actor: str, trigger: str) -> 
             f"from={from_label} to={to_label} trigger={trigger}")
     finally:
         conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Ship S45 — narrative-buffer reset at combat→exploration boundary.
+# ---------------------------------------------------------------------------
+
+# Closeout text for the three rolling narrative buffers reset on combat exit.
+# Centralized so tests can assert exact strings and a future ship that extends
+# this pattern to other mode transitions can reuse / parameterize them.
+_INIT_END_CLOSEOUT_SCENE = (
+    "Combat resolves. The party stands down, weapons sheathed; "
+    "the immediate threat has passed. Mode returns to exploration."
+)
+_INIT_END_CLOSEOUT_DM = "Combat resolves. Mode returns to exploration."
+_INIT_END_CLOSEOUT_PLAYER = "[combat ended]"
+
+
+def reset_narrative_buffers_on_combat_exit(campaign_id: int) -> None:
+    """Reset the three rolling narrative buffers on combat→exploration exit.
+
+    Ship S45 — surgical fix for post-`!init end` exploration narration drift.
+    Three rolling buffers accumulate combat-specific framing during combat:
+      - `dnd_campaigns.current_scene` (rolling-narration buffer, the S44 pass-3
+        finding — written by every `_dm_respond_and_post`)
+      - `dnd_scene_state.last_dm_response`
+      - `dnd_scene_state.last_player_action`
+    Mechanical cleanup on !init end (mode flip + clear_combatants +
+    clear_active_turn) does not touch these. Without explicit reset at the
+    boundary, the next exploration message reads polluted buffers and the
+    model produces locally-coherent-but-globally-wrong drift (invented
+    combatants, residual combat framing, counter-strike narration on a
+    post-combat scene).
+
+    Called by `_handle_init_event` evt_type='end' AFTER the existing
+    mechanical cleanup. Idempotent: calling twice produces the same final
+    state.
+
+    Closeout text is intentionally neutral atmospheric framing — not empty
+    strings — because an empty `current_scene` triggers the
+    `'The adventure is just beginning.'` fallback in `build_dm_context`,
+    which is also wrong post-combat. Synthesized text signals "the
+    immediately prior event was a combat resolution" without continuing
+    the combat's moment-to-moment beat.
+
+    Filed doctrine candidate (third instance of two-layer enforcement,
+    S43 + S44 + S45): mode transitions are state-reset surfaces — narrative
+    buffers must be reset at the boundary, mode flag alone is insufficient.
+
+    Note: parallel surface — `_handle_rest_event` (Avrae !lr / !sr) also
+    flips combat→exploration without going through `_handle_init_event`.
+    Per S45 locked spec, this ship only addresses the !init end path;
+    the rest-event path remains a candidate follow-up if drift surfaces
+    there.
+    """
+    update_scene(campaign_id, _INIT_END_CLOSEOUT_SCENE)
+    update_last_dm_response(campaign_id, _INIT_END_CLOSEOUT_DM)
+    update_scene_state(campaign_id, last_player_action=_INIT_END_CLOSEOUT_PLAYER)
+    log(f"init_end_buffer_reset: campaign={campaign_id}")
+
 
 
 def set_scene_mode(campaign_id: int, mode: str):
@@ -2724,9 +2835,11 @@ def canonicalize_name(s: str) -> str:
       - normalize curly quotes/apostrophes to ASCII
       - PRESERVE capitalization (distinguishes proper from common nouns)
 
-    See PHASE_12_SPEC §9.1. This is intentionally not lowercasing — "Garrick"
-    and "garrick" should NOT collapse, because the parser only emits proper
-    nouns and lowercase variants are likely a different entity or a miss.
+    See DOCTRINE.md §14 (strict literal match beats fuzzy) and §14.1 (unique
+    skeleton anchor collapse exception). This is intentionally not lowercasing
+    — "Garrick" and "garrick" should NOT collapse, because the parser only
+    emits proper nouns and lowercase variants are likely a different entity or
+    a miss.
     """
     if not s:
         return ''
@@ -2867,6 +2980,48 @@ def npc_upsert(campaign_id: int, name: str, role: str = '',
     ts = _now()
     conn = sqlite3.connect(DB_PATH)
     try:
+        # Unique skeleton anchor collapse (DOCTRINE.md §14.1). If the incoming
+        # canonical_name shares its leading whole-token with exactly ONE
+        # skeleton_origin=1 row in this campaign, route the upsert to that
+        # anchor's recency-bump UPDATE branch instead of inserting a new row.
+        # Four constraints lock the surface: unique anchor / skeleton_origin=1
+        # / same campaign_id / whole-token. Multi-anchor ambiguity logs and
+        # falls through to the strict-equality default. Skeleton-authored
+        # upserts (skeleton_origin=True) never collapse — they are themselves
+        # authored canon, not parser hits.
+        if not skeleton_origin:
+            _anchor_rows = conn.execute(
+                "SELECT id, canonical_name FROM dnd_npcs "
+                "WHERE campaign_id=? AND skeleton_origin=1",
+                (campaign_id,)
+            ).fetchall()
+            _anchors = [
+                (aid, aname) for (aid, aname) in _anchor_rows
+                if _is_token_prefix(canonical, aname)
+            ]
+            if len(_anchors) == 1:
+                anchor_id, anchor_name = _anchors[0]
+                conn.execute(
+                    "UPDATE dnd_npcs "
+                    "SET mention_count = mention_count + 1, "
+                    "    last_mentioned = ? "
+                    "WHERE id=? AND campaign_id=?",
+                    (ts, anchor_id, campaign_id)
+                )
+                conn.commit()
+                log(f"npc_token_prefix_collapse: campaign={campaign_id} "
+                    f"incoming='{canonical}' anchor_id={anchor_id} "
+                    f"anchor_name='{anchor_name}' (mention_count_bumped)")
+                return (anchor_id, False)
+            elif len(_anchors) >= 2:
+                _anchors_str = ', '.join(
+                    f"id={aid} name='{aname}'" for aid, aname in _anchors
+                )
+                log(f"npc_anchor_ambiguous: campaign={campaign_id} "
+                    f"incoming='{canonical}' anchors=[{_anchors_str}] "
+                    f"(no_collapse)")
+                # Fall through to existing strict-equality lookup below.
+
         existing = conn.execute(
             "SELECT id, role, location_id, description, skeleton_origin, "
             "origin_excerpt FROM dnd_npcs "
@@ -3396,11 +3551,13 @@ def names_overlap(a: str, b: str) -> bool:
 def npc_fragmentation_report(campaign_id: int) -> dict:
     """Compute alias-fragmentation metrics for a campaign.
 
-    Under strict literal matching (PHASE_12_SPEC §9.1), narration that
+    Under strict literal matching (DOCTRINE.md §14), narration that
     introduces "Eldrin Stormbow" once and then re-mentions as "Eldrin"
-    creates two rows for one person. This function reports the rate of
-    that drift WITHOUT mutating anything — it's a measurement primitive,
-    not a merge tool.
+    historically created two rows for one person. The DOCTRINE.md §14.1
+    exception (unique-skeleton-anchor collapse, implemented in npc_upsert)
+    now prevents this for skeleton-anchored cases; this function reports
+    the rate of any remaining drift WITHOUT mutating anything — it's a
+    measurement primitive, not a merge tool.
 
     A row is a "fragment" of another row if its canonical_name is a
     whole-token prefix of the other's canonical_name. See _is_token_prefix.
@@ -3505,10 +3662,11 @@ def canonicalize_location_name(s: str) -> str:
         ONLY if it is a separate token followed by more tokens
       - PRESERVE capitalization on all surviving tokens
 
-    See PHASE_12_SPEC §9.1 + Session 12 review. Leading-article stripping is
-    the same family of rule as honorific stripping for NPCs: deterministic
-    identity normalization, not fuzzy match. "Rusty Anchor" survives both
-    "The Rusty Anchor" and "Rusty Anchor" inputs as one canonical row.
+    See DOCTRINE.md §14 (strict literal match beats fuzzy) + Session 12 review.
+    Leading-article stripping is the same family of rule as honorific stripping
+    for NPCs: deterministic identity normalization, not fuzzy match. "Rusty
+    Anchor" survives both "The Rusty Anchor" and "Rusty Anchor" inputs as one
+    canonical row.
     """
     if not s:
         return ''
@@ -4690,30 +4848,46 @@ def apply_consequence_proposals(campaign_id: int, proposals: list,
 
 
 def update_scene_state(campaign_id: int, **kwargs):
-    """Merge updates into scene state. List fields append (deduped).
+    """Merge updates into scene state. Post-Ship-2 (S39) the LLM extraction
+    thread's write surface shrank dramatically:
+      - DELETED_FIELDS: the five §76 deletion targets + three dead-column
+        drops. Writes to these are logged as dropped (the extraction prompt
+        no longer requests them, but defense-in-depth in case the LLM emits
+        them anyway, or in case a caller passes them from older code).
+      - LOCKED_FIELDS: mode — owned by deterministic systems (set_scene_mode).
+      - SCALAR_FIELDS: last_player_action (verbatim player input; not LLM
+        narrative inference — borderline per spec audit, kept).
 
-    IMPORTANT: 'mode', 'tension', 'active_npcs', and 'active_threats' are
-    NOT accepted here — those are owned by deterministic systems, not the
-    LLM extraction thread. Use set_scene_mode() for mode changes.
+    JSON_LIST_FIELDS is empty post-Ship-2 (established_details and
+    open_questions both deleted). The branch is retained as a no-op so future
+    list fields can re-enter cleanly if a v1.x ship adds one with single-writer
+    discipline; if that never happens, the branch is dead code and gets
+    cleaned up in a future doc-update pass.
     """
-    import json
-    # These fields may only be written by deterministic code paths, not the
-    # LLM extraction thread. Silently drop them if passed.
-    LOCKED_FIELDS = {'mode', 'tension', 'active_npcs', 'active_threats'}
-
-    JSON_LIST_FIELDS = {'established_details', 'open_questions'}
-    SCALAR_FIELDS = {'location', 'focus', 'last_player_action', 'last_scene_change'}
+    # Ship 2 (S39) — Doctrine §76 deletion targets + dead-column housekeeping.
+    DELETED_FIELDS = {
+        'location', 'established_details', 'focus', 'open_questions',
+        'last_scene_change', 'tension', 'active_npcs', 'active_threats',
+    }
+    LOCKED_FIELDS = {'mode'}
+    JSON_LIST_FIELDS = set()
+    SCALAR_FIELDS = {'last_player_action'}
 
     current = get_scene_state(campaign_id)
     if current is None:
-        init_scene_state(campaign_id, seed='')
+        init_scene_state(campaign_id)
         current = get_scene_state(campaign_id)
 
     sets = []
     values = []
     for key, val in kwargs.items():
+        if key in DELETED_FIELDS:
+            log(f"update_scene_state: dropping LLM-write to deleted "
+                f"field '{key}' (Ship 2 §76 closure)")
+            continue
         if key in LOCKED_FIELDS:
-            log(f"update_scene_state: '{key}' is locked — only deterministic systems may write this field, skipping")
+            log(f"update_scene_state: '{key}' is locked — only deterministic "
+                f"systems may write this field, skipping")
             continue
         if key in JSON_LIST_FIELDS:
             existing = current.get(key, [])
@@ -4747,75 +4921,27 @@ def update_scene_state(campaign_id: int, **kwargs):
 
 
 def extract_scene_updates(campaign_id: int, player_action: str, dm_response: str):
-    """Lightweight LLM call to extract narrative scene updates from a DM turn.
+    """Persist per-turn scene state from a DM exchange.
 
-    SCOPE: This thread may ONLY update established_details, open_questions,
-    location, focus, and last_scene_change. It must NOT set mode, tension,
-    active_npcs, or active_threats — those are owned by deterministic systems.
-    The update_scene_state() function enforces this at the write layer, but
-    the extraction prompt also intentionally omits those fields so the LLM
-    doesn't waste tokens on them.
+    Ship 2 (S39): the legacy LLM extraction call is gone. Pre-Ship-2 this
+    function spawned a structured-extraction LLM call to summarize the DM
+    turn into `location`, `focus`, `established_details`, `open_questions`,
+    and `last_scene_change` updates. Those five columns are all deleted —
+    each was a four-property latent-canon contamination surface per Doctrine
+    §76. The only persisted field this thread now writes is
+    `last_player_action`, which is the player's input verbatim (no LLM
+    inference — fails property 4 of the four-property test, kept).
+
+    The thread launch from dm_respond is preserved (harmless after the LLM
+    call removal); the function returns near-instantly. The `dm_response`
+    argument is unused but kept in the signature for back-compat with the
+    call site and any patches in tests.
     """
-    import json
-    current = get_scene_state(campaign_id) or {}
-    extraction_prompt = (
-        "You extract structured scene-state updates from a D&D play exchange.\n\n"
-        f"Current scene state:\n"
-        f"- Location: {current.get('location') or '(unknown)'}\n"
-        f"- Focus: {current.get('focus') or '(unknown)'}\n"
-        f"- Already-established details: {', '.join(current.get('established_details') or []) or '(none)'}\n\n"
-        f"Player just said: \"{player_action}\"\n\n"
-        f"The DM just replied:\n\"\"\"\n{dm_response[:1500]}\n\"\"\"\n\n"
-        "Output ONLY valid JSON. Use this schema (omit fields that did NOT change):\n"
-        "{\"location\": \"...\", \"focus\": \"...\", "
-        "\"new_established_details\": [\"...\"], "
-        "\"new_open_questions\": [\"...\"], "
-        "\"last_scene_change\": \"one short sentence\"}\n\n"
-        "Rules: each list item 1-6 words. Only details the DM EXPLICITLY mentioned. "
-        "Do not repeat already-established details. If nothing meaningful changed, return {}."
-    )
     try:
-        # task_type='extraction' routes to cerebras/groq, skipping groq_heavy
-        # which is reserved for DnD narration. Pre-Session-16 this was set to
-        # 'dnd' by mistake — the JSON-extraction call competed with the actual
-        # narration call for groq_heavy each turn, doubled DND_PRIORITY_OVERRIDE
-        # log noise, and burned the heavy model on bounded structured output.
-        response, _ = route(
-            messages=[{"role": "user", "content": extraction_prompt}],
-            task_type="extraction",
-            system_prompt="You output structured JSON only. No prose.",
-        )
-        body = response.strip()
-        if body.startswith("```"):
-            body = re.sub(r"^```(?:json)?\s*", "", body)
-            body = re.sub(r"\s*```$", "", body)
-        m = re.search(r"\{.*\}", body, re.DOTALL)
-        if not m:
-            log("extract_scene_updates: no JSON in response")
-            return
-        data = json.loads(m.group(0))
+        update_scene_state(campaign_id, last_player_action=player_action[:500])
+        log("scene state updated: ['last_player_action']")
     except Exception as e:
-        log(f"extract_scene_updates parse error: {e}")
-        return
-
-    if not data:
-        return
-
-    # Only write the fields this thread is allowed to touch.
-    update_kwargs = {'last_player_action': player_action[:500]}
-    if data.get('location'):
-        update_kwargs['location'] = data['location']
-    if data.get('focus'):
-        update_kwargs['focus'] = data['focus']
-    if data.get('last_scene_change'):
-        update_kwargs['last_scene_change'] = data['last_scene_change']
-    if data.get('new_established_details'):
-        update_kwargs['established_details'] = data['new_established_details']
-    if data.get('new_open_questions'):
-        update_kwargs['open_questions'] = data['new_open_questions']
-
-    update_scene_state(campaign_id, **update_kwargs)
-    log(f"scene state updated: {list(update_kwargs.keys())}")
+        log(f"extract_scene_updates write failed: {e!r}")
 
 
 # ─────────────────────────────────────────────────────────
@@ -4884,12 +5010,53 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
                      time_directive="",
                      arbitration_block="", arbitration_hardstop_echo="",
                      resolution_block="", resolution_hardstop_echo="",
-                     acting_character_names=None):
+                     acting_character_names=None,
+                     suppress_for_combat_narration=False):
     """Compose the system prompt. Tone, pacing, voice — narration ONLY.
     Roll decisions come pre-made via roll_decision.
     Capability claims pre-validated via capability_decision (S9) — when
     a player claim isn't supported by Avrae or skeleton, surfaces a
-    soft annotation. Skeleton declarations CONFIRM but never block."""
+    soft annotation. Skeleton declarations CONFIRM but never block.
+
+    Ship S44 (combat narration prompt purity v1.x): when
+    `suppress_for_combat_narration=True`, nine context blocks are dropped
+    to prevent storytelling-quality drift in combat narration. The block
+    set was empirically narrowed across two S44 verify passes — the
+    initial scope (chroma retrieval + recent_npcs) was incomplete; this
+    expanded set covers every block that surfaces non-combat narrative
+    content into the prompt:
+
+      Chroma-derived bleed sources:
+      - `=== RELEVANT PAST EVENTS ===` (relevant_history)
+      - `=== DM PACING EXAMPLES ===` (dm_guidance via multi_query_knowledge_search)
+
+      Phantom-NPC sources (campaign-wide companions/recent_npcs surfacing
+      as scene presences):
+      - `=== TRAVELING COMPANIONS ===` (companions_section)
+      - `Recently active NPCs:` line inside SCENE STATE block
+
+      Campaign-arc / non-combat narrative bleed:
+      - `=== ACTIVE QUESTS ===` (quests_section)
+      - `=== <NAME>'S NOTABLE ITEMS ===` (inventory_section)
+      - `=== CENTRAL THREAD ===` (central_thread_block)
+      - `=== PENDING CONSEQUENCES ===` (consequence_block)
+      - `=== UNRESOLVED COMMITMENT ===` (commitment_block)
+
+    KEPT during combat narration (combat-relevant or static framing):
+      - tone / party / current_scene / mode_block (static framing)
+      - scene_state_section MINUS recent_npcs_line (authoritative state)
+      - `=== MECHANICAL EVENTS ===` (just-rolled Avrae events)
+      - `=== PACING DIRECTIVE ===` (tension/clocks pressure)
+      - `=== COMBAT PERSISTENCE ===` / `=== LOOT TO SURFACE ===` /
+        `=== COMBAT REDIRECT ===` (combat-specific directives)
+      - `=== DM PHILOSOPHY ===` (operating policy framing)
+      - `=== TIME ADVANCE ===` (rare; mostly empty mid-combat)
+      - all hardcoded inline rule blocks (HOW THIS GAME WORKS etc.)
+
+    Default False preserves pre-S44 behavior for all non-combat-narration
+    callers. Doctrine §77 cliff-edge is unaffected; this is the
+    information-side enforcement layer complementing the instruction-side
+    MUST/MUST-NOT clauses already shipping in `_COMBAT_NARRATION_INVARIANTS`."""
     if characters:
         char_summaries = "\n".join(
             f"- {c['name']}: Level {c.get('level', 1)} "
@@ -4909,16 +5076,24 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
     )
     tone = (campaign.get('tone') or '').strip() or DEFAULT_TONE
 
+    # Ship S44: suppress chroma retrieval block during combat narration to
+    # prevent stale-narrative bleed (prior combat's narrative text resurfacing
+    # via chroma similarity). Non-combat callers retain full retrieval.
     history_section = (
         f"\n\n=== RELEVANT PAST EVENTS ===\n{relevant_history}"
-        if relevant_history else ""
+        if relevant_history and not suppress_for_combat_narration else ""
     )
 
+    # Ship S44: suppress DM PACING EXAMPLES (chroma knowledge corpus) during
+    # combat narration. The 740k-doc FIREBALL+CRD3 corpus pulls combat-style
+    # examples that contain goblin-falls/death/blow-by-blow language even
+    # when the framing says "never copy specific details" — empirically the
+    # LLM treats vivid corpus prose as templates regardless.
     guidance_section = (
         f"\n\n=== DM PACING EXAMPLES ===\n"
         f"For ENERGY and PACING only. NEVER copy settings, names, places, or specific details.\n\n"
         f"{dm_guidance}"
-        if dm_guidance else ""
+        if dm_guidance and not suppress_for_combat_narration else ""
     )
 
     avrae_block = _format_avrae_events(avrae_events) if avrae_events else ""
@@ -4961,7 +5136,12 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
         _inv_char = acting_character_names[0]
     elif character_contexts and len(character_contexts) == 1:
         _inv_char = character_contexts[0].name
-    if _inv_char:
+    if _inv_char and not suppress_for_combat_narration:
+        # Ship S44: suppress inventory block during combat narration — items
+        # like "silver key" / "amulet" bleed into combat prose ("Donovan
+        # catches the lantern light on his silver key" mid-fight). Combat
+        # narration focuses on the roster + listener events; inventory
+        # context is non-combat.
         try:
             _inv_rows = get_inventory(campaign['id'], _inv_char)
             log(f"inventory_render: campaign={campaign['id']} "
@@ -5011,9 +5191,11 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
     # on every turn. Phrasing explicitly forbids literal restatement to
     # avoid keyword-spamming the hook. Composes with pacing directive
     # (pacing = how hard, central thread = which direction).
+    # Ship S44: suppressed during combat narration — campaign-arc
+    # directional pressure isn't relevant for round-top atmospheric beats.
     central_thread_block = (
         f"\n\n=== CENTRAL THREAD ===\n{central_thread_directive}"
-        if central_thread_directive else ""
+        if central_thread_directive and not suppress_for_combat_narration else ""
     )
 
     # Consequence directive (Track 3, Session 16) — surfaces accumulated
@@ -5022,9 +5204,12 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
     # remembers. Composed by orch.compute_consequence_directive; engine
     # just renders. Cap-at-3, severity-then-recency ordered. Empty when
     # nothing relevant is in scope.
+    # Ship S44: suppressed during combat narration — per-NPC pressure
+    # framing surfaces non-combatant NPC pressures; combat narration
+    # focuses on the in-init roster only.
     consequence_block = (
         f"\n\n=== PENDING CONSEQUENCES ===\n{consequence_directive}"
-        if consequence_directive else ""
+        if consequence_directive and not suppress_for_combat_narration else ""
     )
 
     # Committed-action resolution directive (Track 3, Session 19) —
@@ -5034,9 +5219,12 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
     # just renders. Last block in the tactical band, per locked §11.8 —
     # commitment is the most immediate-stakes constraint and matches the
     # `commitment=` slot reserved in the directive_emit log shape.
+    # Ship S44: suppressed during combat narration — tracks prior-turn
+    # unresolved action which bleeds prior-turn narrative content into
+    # combat-state-transition triggers.
     commitment_block = (
         f"\n\n=== UNRESOLVED COMMITMENT ===\n{commitment_directive}"
-        if commitment_directive else ""
+        if commitment_directive and not suppress_for_combat_narration else ""
     )
 
     # Combat persistence directive (Track 3, Session 21) — three composed
@@ -5177,37 +5365,51 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
 
     scene_state_section = ""
     if scene_state:
-        details = scene_state.get('established_details') or []
-        questions = scene_state.get('open_questions') or []
-        # S3 (Session 15): active_npcs is now derived from dnd_npcs.last_mentioned
-        # at prompt-render rather than read from a never-written field. Section
-        # is OMITTED entirely when empty (no "(none)" lie). active_threats
-        # prompt block dropped — schema column kept; defer until threat model
-        # exists.
+        # Ship 2 (S39) — render-line discipline post-§76 deletion. The
+        # `Location:` line now reads `location_label` (LEFT-JOIN-derived from
+        # dnd_locations via current_location_id; NULL FK → 'between locations').
+        # Lines for Focus, Established details, Open questions, and Last scene
+        # change were removed — their backing columns are gone. The LLM's
+        # scene-detail memory now flows through last_dm_response (verbatim
+        # prior narration, single-writer-disciplined) and skeleton-loaded
+        # canon, not laundered per-turn self-summary.
+        # S3 (Session 15): active_npcs prompt section is derived from
+        # dnd_npcs.last_mentioned at render time. The active_npcs column was
+        # dropped by Ship 2 (S39) as dead-column housekeeping.
         # Bug 3 fix: scope to NPCs at current location ∪ unattributed NPCs so
         # tavern NPCs don't surface after /travel. Falls back to campaign-wide
         # when current_location_id is unset.
         _scope_loc = scene_state.get('current_location_id')
-        recent_npcs = get_recently_active_npcs(
-            campaign['id'], limit=6, location_id=_scope_loc
-        )
-        log(f"npcs_in_context: campaign={campaign['id']} "
-            f"count={len(recent_npcs)} "
-            f"location_filtered={1 if _scope_loc else 0}")
-        recent_npcs_line = (
-            f"Recently active NPCs: {', '.join(recent_npcs)}\n"
-            if recent_npcs else ""
-        )
+        # Ship S44: suppress recent_npcs line during combat narration to
+        # prevent phantom-NPC drift (campaign companions narrated as combat
+        # participants despite not being in init). The combat narration
+        # directive already carries the authoritative combatant roster
+        # via `transition_context` — recent_npcs duplicates and confuses
+        # the context.
+        if suppress_for_combat_narration:
+            recent_npcs = []
+            recent_npcs_line = ""
+            log(f"npcs_in_context: campaign={campaign['id']} count=0 "
+                f"location_filtered=0 reason=combat_narration_suppressed")
+        else:
+            recent_npcs = get_recently_active_npcs(
+                campaign['id'], limit=6, location_id=_scope_loc
+            )
+            log(f"npcs_in_context: campaign={campaign['id']} "
+                f"count={len(recent_npcs)} "
+                f"location_filtered={1 if _scope_loc else 0}")
+            recent_npcs_line = (
+                f"Recently active NPCs: {', '.join(recent_npcs)}\n"
+                if recent_npcs else ""
+            )
+        _loc_label = scene_state.get('location_label') or ''
+        _loc_render = _loc_label if _loc_label else '(between locations)'
         scene_state_section = (
             "\n\n=== SCENE STATE (authoritative) ===\n"
-            f"Location: {scene_state.get('location') or '(not yet set)'}\n"
-            f"Focus: {scene_state.get('focus') or '(not yet set)'}\n"
+            f"Location: {_loc_render}\n"
             f"Tension: {tension_label(scene_state.get('tension_int') or 0)} ({scene_state.get('tension_int') or 0}/100)\n"
-            f"Established details: {', '.join(details) if details else '(none yet)'}\n"
             f"{recent_npcs_line}"
-            f"Open questions: {', '.join(questions) if questions else '(none)'}\n"
-            f"Last player action: {scene_state.get('last_player_action') or '(this is the first turn)'}\n"
-            f"Last scene change: {scene_state.get('last_scene_change') or '(scene just opened)'}"
+            f"Last player action: {scene_state.get('last_player_action') or '(this is the first turn)'}"
         )
         clocks = scene_state.get('progress_clocks') or []
         clock_block = clocks_to_prompt_block(clocks)
@@ -5215,18 +5417,48 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
             scene_state_section += "\n\n" + clock_block
 
     # Quest block — pulled fresh per turn. Active quests only.
+    # Ship S44: suppressed during combat narration — quest titles + summary
+    # text + given-by NPCs bleed campaign-arc narrative into combat
+    # round-top atmospheric beats.
     quests_section = ""
-    quest_block = quests_to_prompt_block(get_active_quests(campaign['id']))
-    if quest_block:
-        quests_section = f"\n\n{quest_block}"
+    if not suppress_for_combat_narration:
+        quest_block = quests_to_prompt_block(get_active_quests(campaign['id']))
+        if quest_block:
+            quests_section = f"\n\n{quest_block}"
 
     # Companions block — pulled fresh per turn. Slots between PARTY and the
     # scene description so the DM has the full party (PCs + NPCs) in mind
     # before reading current state.
+    # Ship S44: SUPPRESSED during combat narration — confirmed primary
+    # phantom-NPC source per S44 verify-pass-2. Lira/Borin/Eldrin live here
+    # (dnd_companions table), not in recent_npcs. The combat narration
+    # directive carries the authoritative combatant roster; companions
+    # block duplicates and confuses the context.
     companions_section = ""
-    companions_block = companions_to_prompt_block(get_companions(campaign['id']))
-    if companions_block:
-        companions_section = f"\n\n{companions_block}"
+    if not suppress_for_combat_narration:
+        companions_block = companions_to_prompt_block(get_companions(campaign['id']))
+        if companions_block:
+            companions_section = f"\n\n{companions_block}"
+
+    # Ship S44 verify-pass-3: `=== CURRENT SCENE ===` carries
+    # `campaign.current_scene` which is a rolling-narration buffer written
+    # after every _dm_respond_and_post (discord_dnd_bot.py:2757 ish:
+    # `update_scene(campaign_id, f"Last actions: {combined_action[:200]} |
+    # DM: {response[:200]}")`). For combat narration triggers, this means
+    # the prior round's narration text is re-injected as "current scene
+    # context" on the next round-start — the residual stale-narrative bleed
+    # source surfaced in S44 verify-pass-3. Suppress entirely during combat
+    # narration; the authoritative scene state comes from the SCENE STATE
+    # block (Ship 2 canon) + the combat narration directive (transition
+    # context carries the roster).
+    current_scene_text = (
+        "" if suppress_for_combat_narration
+        else (campaign.get('current_scene') or 'The adventure is just beginning.')
+    )
+    current_scene_section = (
+        f"\n\n=== CURRENT SCENE ===\n{current_scene_text}"
+        if current_scene_text else ""
+    )
 
     return f"""You are the Dungeon Master for a D&D 5th Edition campaign called "{campaign['name']}".{arbitration_section}{resolution_section}
 
@@ -5234,10 +5466,7 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
 {tone}
 
 === PARTY ===
-{char_summaries}{companions_section}
-
-=== CURRENT SCENE ===
-{campaign.get('current_scene') or 'The adventure is just beginning.'}{mode_block}{scene_state_section}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}
+{char_summaries}{companions_section}{current_scene_section}{mode_block}{scene_state_section}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}
 
 === HOW THIS GAME WORKS ===
 
@@ -5508,7 +5737,8 @@ def execute_auto_actions(campaign_id: int, actions: list):
 def dm_respond(campaign, characters, player_action, avrae_events=None,
                 acting_character_names=None, transition_context=None,
                 typing_user_id=None, actions: list = None,
-                resolution_result=None):
+                resolution_result=None,
+                suppress_for_combat_narration=False):
     """Run one DM turn. Returns response string. Roll-or-not decided by
     the orchestration engine, not the prompt.
 
@@ -6013,6 +6243,7 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         resolution_block=resolution_block_text,
         resolution_hardstop_echo=resolution_hardstop_text,
         acting_character_names=acting_character_names,
+        suppress_for_combat_narration=suppress_for_combat_narration,
     )
     # S24: save build_dm_context output size before skeleton/transition prepends.
     _build_chars = len(system)
@@ -6072,11 +6303,12 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
     )
     _scene_chars = 0
     if scene_state:
-        for _k in ('location', 'focus', 'last_player_action', 'last_scene_change'):
+        # Ship 2 (S39) — telemetry key list tightened post-§76 deletion.
+        # location → location_label (derived from FK); focus / established_details
+        # / open_questions / last_scene_change all removed (columns gone).
+        for _k in ('location_label', 'last_player_action'):
             _scene_chars += len(str(scene_state.get(_k) or ''))
         for _lst in (
-            scene_state.get('established_details') or [],
-            scene_state.get('open_questions') or [],
             scene_state.get('progress_clocks') or [],
         ):
             if isinstance(_lst, list):
@@ -6291,9 +6523,13 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         except Exception as _vfy_e:
             # Fail-open: verification error → treat as passed, post original
             log(f"[VERIFICATION_FALLBACK]: campaign={campaign['id']} error={_vfy_e!r}")
-            # Emit a minimal verification log line even on fallback
+            # Emit a minimal verification log line even on fallback.
+            # Uses VIOLATION_VERIFIER_ERROR sentinel so the journal can
+            # distinguish verifier-crashed from verified-clean. passed=1
+            # preserved per fail-open doctrine (line still parses against
+            # the normal `verification:` grep pattern).
             log(f"verification: campaign={campaign['id']} "
-                f"passed=1 violation_class=none detected='' "
+                f"passed=1 violation_class={_nv.VIOLATION_VERIFIER_ERROR} detected='' "
                 f"retry_fired=0 retry_passed=- escalated=0 "
                 f"narration_chars={len(response or '')} "
                 f"canonical_combatants_count=0")
