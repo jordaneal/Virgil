@@ -767,3 +767,8 @@ class RollBuffer:
 
     def clear(self, guild_id: int):
         self._events[guild_id] = []
+
+    def size(self, guild_id: int) -> int:
+        """Raw storage count for this guild (no sweep). Used by drain telemetry
+        so the count reflects events being cleared, not post-TTL survivors."""
+        return len(self._events.get(guild_id, []))

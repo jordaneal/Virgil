@@ -42,6 +42,7 @@ Slash commands work in any channel. Player-facing commands respond ephemerally
 - `/companion add <name> [persona]` — Add a traveling companion (max 3).
 - `/companion edit <companion_id> [name] [persona]` — Edit a companion.
 - `/companion remove <companion_id>` — Remove a companion.
+- `/compress [reason]` — Explicitly compress the current scene.
 - `/consequence list [npc]` — Show captured consequences for this campaign.
 - `/deletecampaign <campaign_ids>` — Soft-delete (archive) one or more campaigns. Comma-separated. Reversible via /setcampaign.
 - `/encounter <type>` — Start a stealth, social, or trap encounter (sets mode + spawns clocks).
@@ -53,10 +54,14 @@ Slash commands work in any channel. Player-facing commands respond ephemerally
 - `/play [scene]` — Open the scene with an opening narration.
 - `/purgeallcampaigns <confirm_phrase>` — PERMANENTLY delete EVERY archived campaign in this server. Irreversible.
 - `/purgecampaign <campaign_id> <confirm_phrase>` — PERMANENTLY delete an archived campaign and all its data. Irreversible.
+- `/quest abandon <quest_id>` — Mark a quest abandoned (party walked away).
+- `/quest accept <quest_id>` — Canonical §1b gate — offered → in-progress.
+- `/quest act` — Quest act anchor — advance / set / list / delete.
 - `/quest add <title> [summary] [priority] [given_by]` — Add a new active quest.
-- `/quest complete <quest_id>` — Mark a quest completed.
+- `/quest complete <quest_id>` — Mark a quest completed — fires reward dispatch.
 - `/quest delete <quest_id>` — Permanently delete a quest.
 - `/quest fail <quest_id>` — Mark a quest failed.
+- `/quest seed` — Read skeleton.md and import its quests + acts (idempotent — safe to re-run).
 - `/setcampaign <campaign_id>` — Switch the active campaign for this server.
 - `/skeleton load` — (Re)load this campaign's skeleton.md into canon.
 - `/skeleton status` — Show this campaign's skeleton file status + entity counts.

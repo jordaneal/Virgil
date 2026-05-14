@@ -4,15 +4,25 @@ Advisory parser. Reads DM narration, returns a list of suggested Avrae
 commands the player should run. Suggestion-only, never executes.
 
 Public API:
-    parse_mechanical_hints(narration: str) -> list[str]
+    parse_mechanical_hints(narration: str, campaign_id: int | None = None) -> list[str]
 
 Hard invariants:
 - Narration-only input. No player input, no character context, no scene state.
 - Whitelisted output. Only commands matching ALLOWED_PREFIXES survive.
 - No state writes. Reads strings, returns strings.
 - Never raises. Returns [] on any failure.
+
+S65.1 N-1 tightening:
+- Transaction-verb gate: hints only emit when narration contains a
+  transaction-completion verb (paid, handed, slid coins, etc.). Pure
+  dialogue ("how much?", price quotes, disputes) drops to []
+  with reason `no_transaction_verb`.
+- Cross-turn dedup: if `campaign_id` is supplied, identical hints
+  emitted in the last N entries for that campaign are suppressed
+  with reason `recent_duplicate`. Process-local cache; bounded.
 """
 
+import collections
 import json
 import re
 import time
@@ -82,6 +92,89 @@ def _validate(cmd):
 
 
 # ─────────────────────────────────────────────────────────
+# S65.1 N-1 — Transaction-verb gate
+# ─────────────────────────────────────────────────────────
+
+# Closed vocabulary. Narration must contain at least one of these surface
+# forms (whole-word match, case-insensitive) for a `!game coin` hint to
+# emit. Bare price mentions ("five silvers", "1sp each"), questions
+# ("how much?"), and disputes ("they were 50c before") do NOT trigger
+# emission. The 2026-05-14 baker scenario fired four hints across one
+# real transaction + three dispute turns; with this gate, only the
+# actual transaction turn (which contains "hands over"/"accepts payment"
+# /"slid the coins") fires.
+_COIN_TRANSACTION_VERBS = frozenset({
+    # Noun-overlap traps EXCLUDED: 'hands' ('flour-dusty hands' body part),
+    # 'places' ('in these places' locations). All other forms kept — they
+    # have rare-or-archaic noun usage that doesn't surface in fantasy
+    # narration. Whole-word lowercase match (re.findall pre-tokenizes).
+    'paid', 'pays', 'paying', 'pay',
+    'handed', 'handing',  # 'hands' excluded
+    'gave', 'gives', 'giving',
+    'passed', 'passes', 'passing',
+    'slid', 'slides', 'sliding',
+    'dropped', 'drops', 'dropping',
+    'tossed', 'tosses', 'tossing',
+    'flipped', 'flips', 'flipping',
+    'exchanged', 'exchanges', 'exchanging',
+    'pocketed', 'pockets', 'pocketing',
+    'accepted', 'accepts', 'accepting',
+    'received', 'receives', 'receiving',
+    'took', 'takes', 'taking',
+    'placed', 'placing',  # 'places' excluded
+    'spent', 'spending', 'spends',
+    'transferred', 'transfers',
+    'counted', 'counts', 'counting',
+})
+
+# Rest commands (longrest/shortrest/lr/sr) don't gate on transaction verbs;
+# they gate on explicit rest-completion narration ("the party beds down",
+# "you take an hour to bind your wounds"). The LLM prompt already
+# enforces this; no additional gate needed for rest hints.
+
+
+def _narration_has_transaction_verb(narration: str) -> bool:
+    """Return True if narration contains a transaction-completion verb.
+
+    Whole-word case-insensitive match against the closed vocabulary.
+    Does not look at price proximity — coarse-grained but sufficient: if
+    the narration is pure dialogue, NO transaction verb fires. If even
+    one fires, hints are allowed (validator will still drop malformed
+    commands).
+    """
+    if not narration:
+        return False
+    tokens = re.findall(r"[a-zA-Z]+", narration.lower())
+    return any(t in _COIN_TRANSACTION_VERBS for t in tokens)
+
+
+# ─────────────────────────────────────────────────────────
+# S65.1 N-1 — Cross-turn dedup
+# ─────────────────────────────────────────────────────────
+
+# Process-local LRU per campaign. Resets on bot restart (acceptable —
+# duplicate-suppression window is short). Bounded to ~12 entries per
+# campaign (≈3-4 turns worth of hints).
+_RECENT_HINTS_BUFLEN = 12
+_RECENT_HINTS_PER_CAMPAIGN: dict[int, collections.deque] = {}
+
+
+def _get_recent_hints(campaign_id: int) -> list[str]:
+    buf = _RECENT_HINTS_PER_CAMPAIGN.get(campaign_id)
+    return list(buf) if buf else []
+
+
+def _record_recent_hints(campaign_id: int, hints: list[str]) -> None:
+    if not campaign_id or not hints:
+        return
+    buf = _RECENT_HINTS_PER_CAMPAIGN.setdefault(
+        campaign_id, collections.deque(maxlen=_RECENT_HINTS_BUFLEN)
+    )
+    for h in hints:
+        buf.append(h)
+
+
+# ─────────────────────────────────────────────────────────
 # LLM call
 # ─────────────────────────────────────────────────────────
 
@@ -99,7 +192,15 @@ Allowed commands:
 
 Output rules:
 - Empty array [] if no mechanical bookkeeping is implied.
-- Only suggest what the narration literally describes happening.
+- Only suggest what the narration literally describes happening — coins
+  must visibly change hands or be paid out, not merely mentioned.
+- Bare price quotes are NOT transactions. If the narration only QUOTES
+  a price ("Five silvers for the loaves", "it costs 5sp", "they were
+  50c each before") with NO accompanying transaction action, output [].
+- Questions about price are NOT transactions. "How much?" with the
+  NPC answering does NOT trigger a hint until coins are paid.
+- Disputes about price are NOT transactions. "They were 50c before"
+  with the NPC re-stating a price does NOT trigger a hint.
 - Never suggest rolls, attacks, spells, HP changes, or condition commands.
 - Never invent amounts not in the narration.
 - One currency per coin command. If narration mentions mixed currency
@@ -137,7 +238,29 @@ Example narration: "The bandit's blade nicks your arm as you parry."
 Output: []
 
 Example narration: "You rest."
-Output: []"""
+Output: []
+
+DISPUTE / QUOTE / QUESTION — these should all output []:
+
+Example narration: "Baker smiles: 'Five silver pieces for the five
+loaves, good folk.' The clink of a copper coin in the wooden counter
+echoes softly."
+Output: []
+(The baker QUOTES a price; no transaction completes. The "clink" is
+ambient sound, not a payment action.)
+
+Example narration: "Baker chuckles, wiping his flour-dusty hands.
+'The market's been tighter lately, but I'm still charging a silver a
+loaf—your half-price was a kindness, not a new rate.'"
+Output: []
+(Pure dispute. NPC re-states a price; player hasn't accepted or paid.)
+
+Example narration: "The baker nods. 'Five loaves, at half-price for a
+traveling song—so five silvers total. Hand them over and they're yours,
+fresh as the sunrise.'"
+Output: []
+(NPC requests payment. Player has not yet handed over coin. Wait
+for the actual transaction-completion narration before emitting.)"""
 
 
 def _extract_json_array(text):
@@ -158,10 +281,24 @@ def _extract_json_array(text):
     return parsed
 
 
-def parse_mechanical_hints(narration):
+def parse_mechanical_hints(narration, campaign_id: int | None = None):
     """Read DM narration, return list of suggested Avrae commands.
 
     Never raises. Returns [] on any failure.
+
+    S65.1 N-1 — two-stage suppression:
+      1. Transaction-verb gate (coin hints only): if narration has no
+         transaction-completion verb, drop coin hints with reason
+         `no_transaction_verb`. Rest hints (longrest/shortrest) are not
+         gated this way — the LLM prompt's rest examples already require
+         a clear rest-completion narrative.
+      2. Cross-turn dedup: if `campaign_id` is provided, suppress hints
+         that exactly match anything emitted in this campaign's last
+         ~12 entries (≈3-4 turns).
+
+    Telemetry:
+      hint_extractor_emitted   — per-fire (campaign, hint, verb match)
+      hint_extractor_suppressed — per-suppression (campaign, hint, reason)
     """
     if not narration or not isinstance(narration, str):
         return []
@@ -187,15 +324,50 @@ def parse_mechanical_hints(narration):
                 f"latency_ms={int((time.monotonic() - started) * 1000)}")
             return []
 
+        # Stage 1: prompt-extracted candidates → schema validator
+        prevalidated = []
         for cand in candidates:
             if not isinstance(cand, str):
                 dropped.append((str(cand)[:60], "not_in_whitelist"))
                 continue
             ok, reason = _validate(cand)
             if ok:
-                validated.append(cand.strip())
+                prevalidated.append(cand.strip())
             else:
                 dropped.append((cand[:60], reason or "unknown"))
+
+        # Stage 2: transaction-verb gate (coin hints only)
+        narration_has_verb = _narration_has_transaction_verb(narration)
+        for cand in prevalidated:
+            is_coin = cand.startswith("!game coin")
+            if is_coin and not narration_has_verb:
+                dropped.append((cand[:60], "no_transaction_verb"))
+                log(f"hint_extractor_suppressed campaign_id={campaign_id} "
+                    f"hint={cand!r} reason=no_transaction_verb")
+                continue
+            validated.append(cand)
+
+        # Stage 3: cross-turn dedup (process-local, optional)
+        if campaign_id and validated:
+            recent = set(_get_recent_hints(campaign_id))
+            survived = []
+            for cand in validated:
+                if cand in recent:
+                    dropped.append((cand[:60], "recent_duplicate"))
+                    log(f"hint_extractor_suppressed campaign_id={campaign_id} "
+                        f"hint={cand!r} reason=recent_duplicate")
+                    continue
+                survived.append(cand)
+            validated = survived
+
+        # Stage 4: record what survived for next turn's dedup
+        if campaign_id:
+            _record_recent_hints(campaign_id, validated)
+
+        # Per-fire telemetry
+        for v in validated:
+            log(f"hint_extractor_emitted campaign_id={campaign_id} "
+                f"hint={v!r} transaction_verb_present={narration_has_verb}")
 
     except Exception as e:
         log(f"hint_parse: error={e!r} "

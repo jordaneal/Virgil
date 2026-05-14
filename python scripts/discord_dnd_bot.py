@@ -53,6 +53,12 @@ from dnd_engine import (
     pending_directive_age_seconds,
     update_combatants_from_init_list, clear_combatants, get_combatants,
     quest_add, quest_set_status, quest_delete, get_active_quests, get_all_quests,
+    quest_offer, quest_accept, quest_deliver, quest_fail, quest_abandon,
+    quest_seed_skeleton, get_offered_quests, get_quest_by_id,
+    get_offerable_skeleton_quests,
+    quest_act_upsert, set_current_act, quest_act_transition,
+    get_quest_acts, get_act_by_id, get_current_act,
+    get_turn_counter,
     companion_add, companion_remove, companion_edit, get_companions, COMPANION_CAP,
     update_tension,
     get_bound_character_names,
@@ -217,10 +223,18 @@ _DIRECTIVE_GROUP_KEYWORDS = (
 # or `*` (bold markers) so the colon-and-name suffix doesn't leak into
 # the skill string; the trailing `:` + name + closing `**` are tolerated
 # via the optional suffix clause.
+#
+# S65.A format unification: backtick boundary added alongside `**`. The
+# new operator-locked format is a bullet + backtick wrap:
+#     - `!check perception 15 : Donovan`
+# Boundary char class now excludes `` ` `` so a closing backtick stops
+# the skill_raw capture cleanly; the trailing lookahead accepts either
+# `*` (legacy bold close) or `` ` `` (current code close) as the
+# right-edge marker. Both formats parse to the same skill/DC/actor.
 _LLM_EMIT_DIRECTIVE_RX = re.compile(
-    r"!(?P<kind>check|save|cast)\s+(?P<skill_raw>[^\n!:*]+?)\s*"
-    r"(?::\s*[^\n!*]+?)?"     # optional ": <Character Name>" suffix
-    r"\s*(?=\n|$|\*)",        # stop at newline, end-of-string, or `**` close
+    r"!(?P<kind>check|save|cast)\s+(?P<skill_raw>[^\n!:*`]+?)\s*"
+    r"(?::\s*[^\n!*`]+?)?"     # optional ": <Character Name>" suffix
+    r"\s*(?=\n|$|\*|`)",       # stop at newline, EOL, `**` close, or backtick close
     re.IGNORECASE,
 )
 
@@ -266,9 +280,17 @@ _DC_STRIP_RX = re.compile(
     # `: <Name>` suffix and `**` bold-close markers in the player-facing
     # text while removing only the DC integer. Cast directives are NOT
     # stripped (Avrae's !cast takes trailing integer as spell level).
-    r"(?P<head>!(?:check|save)\s+[^\n!:*]+?)"
+    #
+    # S65.A format unification: backtick boundary added alongside `**`.
+    # The current operator-locked format is `` `!check skill DC : Name` ``
+    # (single backticks, rendered as inline code). Strip regex now accepts
+    # `**` (legacy) OR `` ` `` (current) as the closing-token alternation,
+    # and the boundary char classes exclude `` ` `` so the backtick close
+    # is preserved in `tail` after substitution. Both formats round-trip
+    # cleanly: DC integer is stripped; surrounding wrap/bullet survives.
+    r"(?P<head>!(?:check|save)\s+[^\n!:*`]+?)"
     r"\s+\d+"                              # the DC integer (this is what gets stripped)
-    r"(?P<tail>\s*(?::\s*[^\n!*]+?)?\s*(?:\*\*|(?=\n|$)))",
+    r"(?P<tail>\s*(?::\s*[^\n!*`]+?)?\s*(?:\*\*|`|(?=\n|$)))",
     re.IGNORECASE,
 )
 
@@ -407,6 +429,314 @@ async def _post_dm_aside(guild, text: str) -> None:
         await ch.send(text)
     except Exception as e:
         log(f"dm_aside_post: error={e!r}")
+
+
+# ─────────────────────────────────────────────────────────
+# Quest Layer v0 (S56 + v0.1 S57 UX patch) — suggester dispatch
+# §1b Reading-2: canonical-slash only. No in-character dialogue in
+# #dm-aside; card is pure operational suggestion. LLM renders the offer
+# scene organically on the next narration turn after /quest accept.
+# ─────────────────────────────────────────────────────────
+
+async def _dispatch_quest_offer_suggester(campaign: dict, guild,
+                                          scene_state: dict) -> None:
+    """Auto-fire suggester after narration posts. Reads canonical NPCs at
+    current location, offerable skeleton quests, cooldown state. If proposal
+    fires, posts #dm-aside card and stamps the cooldown clock.
+
+    Soft-fail throughout — suggester errors MUST NEVER block narration."""
+    try:
+        if guild is None or scene_state is None:
+            return
+        current_loc = scene_state.get('current_location_id')
+        if current_loc is None:
+            # No location bound — suggester has nothing to anchor against.
+            # Logged as gate_no_npcs at the compute layer.
+            return
+        # Canonical NPCs at location, filtered to skeleton_origin=1.
+        # S62 v0.x patch: EXCLUDE party companions (rows in dnd_companions).
+        # A canonical NPC who is also traveling with the party isn't a
+        # quest-giver — they're already committed to the party's existing
+        # quests by being in the band. Operator-feedback bug from S61
+        # playtest: Eldrin/Lira/Borin showed up as quest voicers despite
+        # being in the party companion list.
+        all_at_loc = npc_list(campaign['id'], location_id=current_loc) or []
+        try:
+            _companion_names = {
+                (c.get('name') or '').strip().lower()
+                for c in (get_companions(campaign['id']) or [])
+            }
+        except Exception as _e:
+            log(f"quest_offer_suggester: get_companions error={_e!r}")
+            _companion_names = set()
+        skel_npcs = [
+            n for n in all_at_loc
+            if n.get('skeleton_origin')
+            and (n.get('canonical_name') or '').strip().lower() not in _companion_names
+        ]
+        # Offerable skeleton quests.
+        offerable = get_offerable_skeleton_quests(campaign['id'])
+        # Active quests (offered + in-progress) — used by the suggester to
+        # avoid re-proposing in-flight quests. Conservative filter at v0:
+        # offerable already excludes in-progress by status='offered' filter;
+        # but include offered+in-progress here for future suggester logic.
+        active = (get_offered_quests(campaign['id'])
+                  + get_active_quests(campaign['id']))
+        # Per-NPC cooldown map.
+        guild_id_int = guild.id if hasattr(guild, 'id') else int(scene_state.get('_guild_id') or 0)
+        current_turn = get_turn_counter(campaign['id'])
+        candidate_npc_ids = [n.get('id') for n in skel_npcs if n.get('id')]
+        cooldown_map = _build_cooldown_map(guild_id_int, candidate_npc_ids,
+                                           current_turn)
+        proposal, signals = orch.compute_quest_offer_suggester(
+            scene_state=scene_state,
+            canonical_npcs_at_location=skel_npcs,
+            active_quests=active,
+            offerable_quests=offerable,
+            turns_since_last_offer_per_npc=cooldown_map,
+        )
+        # Always-fire telemetry (§59 contract).
+        log(orch.quest_offer_log_summary(
+            signals,
+            voicer_npc_name=proposal['voicer_npc_name'] if proposal else '',
+            quest_title=proposal['quest_title'] if proposal else '',
+            quest_id=proposal['quest_id'] if proposal else 0,
+        ))
+        if proposal is None:
+            return
+        # Stamp the cooldown clock (matches the "card posted" semantic —
+        # even if the operator declines, the NPC has been "given the floor"
+        # this turn).
+        _record_quest_offer_post(guild_id_int, proposal['voicer_npc_id'],
+                                  current_turn)
+        # Capture the proposal moment in the audit trail. The quest is
+        # already at status='offered' (from /quest seed-skeleton); this
+        # call updates offer_npc_id + offered_turn with the suggested voicer
+        # + current turn so the audit log preserves "card-posted-at" history
+        # even if the operator never accepts.
+        try:
+            quest_offer(
+                campaign['id'], proposal['quest_id'],
+                offer_npc_id=proposal['voicer_npc_id'],
+                offered_turn=current_turn,
+                source='propose',
+            )
+        except Exception as e:
+            log(f"quest_offer_proposal_audit: error={e!r}")
+        # Build the suggester card and post (pure operational; no
+        # in-character dialogue per v0.1 S57 UX patch).
+        card = _format_quest_offer_card(proposal)
+        await _post_dm_aside(guild, card)
+    except Exception as e:
+        log(f"quest_offer_dispatch: error={e!r}")
+        import traceback
+        log(traceback.format_exc())
+
+
+def _format_quest_offer_card(proposal: dict) -> str:
+    """Render the suggester card text — pure operational suggestion per v0.1
+    S57 UX patch. No in-character dialogue (Reading-2 framing). The LLM
+    renders the offer scene organically on the next narration turn after
+    /quest accept flips the quest to in-progress."""
+    reward = (proposal.get('reward_summary') or '').strip() or '(unspecified)'
+    summary = (proposal.get('quest_summary') or '').strip()
+    summary_line = f"\n_Summary:_ {summary}" if summary else ""
+    return (
+        f"**[QUEST OFFER PROPOSED]**\n"
+        f"NPC voicer: **{proposal['voicer_npc_name']}** (at current location)\n"
+        f"Quest #{proposal['quest_id']}: **{proposal['quest_title']}**"
+        f"{summary_line}\n"
+        f"Reward: {reward}\n\n"
+        f"_Run `/quest accept {proposal['quest_id']}` when the party commits "
+        f"in-character (the LLM will pick up the new in-progress quest on "
+        f"the next turn). "
+        f"`/quest abandon {proposal['quest_id']}` dismisses._"
+    )
+
+
+# ─────────────────────────────────────────────────────────
+# Composition Layer v0 (S60) — quest-act suggester dispatch
+# §1b fourth project instance — canonical /quest act advance slash gate,
+# deterministic-validator predicate (no cosine-similarity, Reading-2 direct).
+# Fires only on Scene Lifecycle compression turn per §11.9 lock.
+# ─────────────────────────────────────────────────────────
+
+# Per-(guild_id, quest_id) turn-counter snapshot when a quest_act suggester
+# card was last posted. Used to cooldown re-firing on the same compression
+# (compression cadence already rate-limits; this is belt-and-suspenders).
+_quest_act_suggester_last_turn: dict[tuple[int, int], int] = {}
+
+
+def _scene_count_at_current_act(campaign_id: int, quest_id: int) -> int:
+    """Approximate scene-count since current_act was anchored. v0
+    approximation: scenes between the most-recent act-anchor write and
+    current turn, derived from dnd_quests_audit (act_advance/act_set rows)
+    + dnd_scene_state.turn_counter.
+
+    Falls back to scene_state.turn_counter when no audit history exists
+    (Act 1 case — the anchor was set by quest_accept which doesn't write
+    an act-transition audit row). The approximation is operator-friendly:
+    "how many turns since this act started" → predicate scene_count_threshold
+    compares against this directly.
+
+    Soft-fail: returns 0 on error so suggester decides safe (no fire)."""
+    try:
+        import sqlite3 as _sq
+        from dnd_engine import DB_PATH as _DBP, get_turn_counter as _gtc
+        cur_turn = _gtc(campaign_id) or 0
+        conn = _sq.connect(_DBP)
+        row = conn.execute(
+            "SELECT MAX(turn_counter) FROM dnd_quests_audit "
+            "WHERE campaign_id=? AND quest_id=? "
+            "AND source IN ('act_advance','act_set','act_override')",
+            (campaign_id, quest_id)
+        ).fetchone()
+        conn.close()
+        last_transition_turn = (row[0] if row and row[0] is not None else 0)
+        # When no transition audit exists, fall back to accepted_turn
+        # (Act 1 was anchored by quest_accept).
+        if not last_transition_turn:
+            q = get_quest_by_id(campaign_id, quest_id) or {}
+            last_transition_turn = q.get('accepted_turn') or 0
+        return max(0, cur_turn - last_transition_turn)
+    except Exception as e:
+        log(f"_scene_count_at_current_act: error={e!r}")
+        return 0
+
+
+async def _dispatch_quest_act_suggester(campaign: dict, guild,
+                                        scene_state: dict) -> None:
+    """Compression-coupled act-transition suggester per §11.9. Fires from
+    Scene Lifecycle compression dispatch path (when tier=soft or strong
+    fires). Reads current_act + candidate_next_act + scene_count +
+    location_id; calls compute_quest_act_suggester; posts card to
+    #dm-aside if proposal returned.
+
+    §1b fourth project instance: NO cosine-similarity, NO paste-detection.
+    Canonical-slash gate is /quest act advance <quest_id>. Operator
+    approves; engine writes via quest_act_transition.
+
+    Soft-fail throughout — suggester errors MUST NEVER block narration."""
+    try:
+        if guild is None or scene_state is None:
+            return
+        current_act = get_current_act(campaign['id'])
+        if not current_act:
+            # No anchor — suggester silent. Log per §59 always-fire.
+            log("quest_act_suggester: fired=0 reason=no_current_act "
+                f"campaign={campaign['id']}")
+            return
+        quest_id = current_act['quest_id']
+        # Get the candidate next act (act_index = current + 1).
+        all_acts = get_quest_acts(campaign['id'], quest_id) or []
+        current_idx = current_act['act_index']
+        candidate_next = next(
+            (a for a in all_acts if a['act_index'] == current_idx + 1),
+            None
+        )
+        scene_count = _scene_count_at_current_act(campaign['id'], quest_id)
+        loc_id = scene_state.get('current_location_id')
+        proposal, signals = orch.compute_quest_act_suggester(
+            scene_state=scene_state,
+            current_act=current_act,
+            candidate_next_act=candidate_next,
+            scene_count_at_current_act=scene_count,
+            current_location_id=loc_id,
+        )
+        log(orch.quest_act_suggester_log_summary(signals, proposal))
+        if proposal is None:
+            return
+        # Cooldown check (belt-and-suspenders; compression cadence rate-
+        # limits already).
+        guild_id_int = guild.id if hasattr(guild, 'id') else 0
+        current_turn = get_turn_counter(campaign['id']) or 0
+        last = _quest_act_suggester_last_turn.get((guild_id_int, quest_id))
+        if last is not None and (current_turn - last) < 3:
+            log(f"quest_act_suggester: fired=0 reason=local_cooldown "
+                f"campaign={campaign['id']} quest_id={quest_id}")
+            return
+        _quest_act_suggester_last_turn[(guild_id_int, quest_id)] = current_turn
+        card = _format_quest_act_card(proposal, current_act, candidate_next)
+        await _post_dm_aside(guild, card)
+    except Exception as e:
+        log(f"quest_act_suggester_dispatch: error={e!r}")
+        import traceback
+        log(traceback.format_exc())
+
+
+def _format_quest_act_card(proposal: dict, current_act: dict,
+                            next_act: dict) -> str:
+    """Render the act-transition suggester card — pure operational suggestion.
+    No in-character dialogue (Reading-2 framing, §1b fourth instance).
+    Operator runs `/quest act advance <quest_id>` to approve."""
+    quest_id = proposal.get('quest_id')
+    cur_idx = proposal.get('current_act_index')
+    nxt_idx = proposal.get('proposed_next_act_index')
+    cur_title = (current_act.get('act_title') or '').strip()
+    nxt_title = (next_act.get('act_title') or '').strip()
+    reason = proposal.get('predicate_reason') or 'predicate match'
+    nxt_desc = (next_act.get('act_description') or '').strip()
+    desc_line = f"\n_Next act:_ {nxt_desc}" if nxt_desc else ""
+    return (
+        f"**[QUEST ACT TRANSITION PROPOSED]**\n"
+        f"Quest #{quest_id}\n"
+        f"Current: **Act {cur_idx} — {cur_title}**\n"
+        f"Proposed: **Act {nxt_idx} — {nxt_title}**"
+        f"{desc_line}\n"
+        f"Predicate reason: {reason}\n\n"
+        f"_Run `/quest act advance {quest_id}` to confirm "
+        f"(LLM will pick up the new act on the next turn)._"
+    )
+
+
+def _parse_reward_summary_for_inventory(reward_summary: str) -> list[dict]:
+    """Parse a structured reward_summary for inventory-side auto-add per
+    §11.6 (d) hybrid. Returns a list of {'name': str, 'quantity': int} dicts.
+
+    Strict format expected per §7 reward_summary audit guidance:
+      "50gp" → [{'name': 'gp', 'quantity': 50}]
+      "50gp + Stoneforge favor" → [{'name': 'gp', 'quantity': 50}]
+                                   (faction tokens not auto-added at v0)
+      "shortbow" → [{'name': 'shortbow', 'quantity': 1}]
+      "50gp + shortbow" → [{'name': 'gp', 'quantity': 50},
+                            {'name': 'shortbow', 'quantity': 1}]
+    Freetext like "the deepest gratitude" → [] (no auto-add)."""
+    import re
+    items: list[dict] = []
+    if not reward_summary:
+        return items
+    # Split on '+' or ','
+    parts = re.split(r'[+,]', reward_summary)
+    for raw in parts:
+        token = raw.strip()
+        if not token:
+            continue
+        # Match "Ngp" / "Nsp" / "Ncp" / "Npp" / "Ngold" / "Nsilver" pattern.
+        m = re.match(r'^\s*(\d+)\s*(gp|sp|cp|pp|gold|silver)\s*$', token, re.I)
+        if m:
+            qty = int(m.group(1))
+            unit = m.group(2).lower()
+            # Normalize unit tokens to gp/sp/cp/pp.
+            unit_map = {'gold': 'gp', 'silver': 'sp'}
+            unit = unit_map.get(unit, unit)
+            items.append({'name': unit, 'quantity': qty})
+            continue
+        # Match "<faction> reputation" / "<faction> favor" — skip auto-add
+        # (faction layer doesn't exist per spec §12.2).
+        if re.search(r'\b(reputation|favor)\b', token, re.I):
+            continue
+        # Match a single named item — only register if token is reasonably
+        # item-shaped (no verbs, no "gratitude" / "thanks" / "honor" type
+        # freetext). v0 heuristic: token is 1-3 words, no descriptors like
+        # "deepest" / "lasting" / "eternal".
+        if re.search(r'\b(gratitude|thanks|honor|respect|recognition|'
+                     r'praise|story|tale)\b', token, re.I):
+            continue
+        words = token.split()
+        if 1 <= len(words) <= 3 and all(re.match(r'^[a-zA-Z\-]+$', w)
+                                         for w in words):
+            items.append({'name': token, 'quantity': 1})
+    return items
 
 
 # Aside wording (locked in BUG_1_SPEC.md §K — operational tone, not error).
@@ -801,6 +1131,114 @@ intents.members = True
 
 bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
 buffer = al.RollBuffer()
+
+
+# ─────────────────────────────────────────────────────────
+# §78.6 layer-4 render-vs-marker — per-guild combat beat counter
+# ─────────────────────────────────────────────────────────
+# Counts narratable beats during a combat session so COMBAT_END can branch:
+# 0 beats → deterministic neutral closeout (no LLM); ≥1 beats → LLM render.
+# Increments on BLOODIED_THRESHOLD_CROSSED + COMBATANT_DOWNED dispatches
+# (HP-state transitions = actual combat content). ROUND_START does NOT
+# increment (structurally always-fires regardless of content — counting it
+# would mis-classify exactly the 0-action case we're detecting). COMBAT_END
+# reads + branches; does not increment.
+# Reset on !init begin; cleared on !init end after dispatch completes.
+# In-memory by design — transience matches transience of combat sessions
+# (§78.5 substrate-match: DB column for ephemeral state would be wrong
+# substrate). Keyed by guild_id.
+_combat_beat_counter: dict[int, int] = {}
+
+# §78.6 deterministic boundary marker — posted to #dm-narration in lieu of
+# LLM dispatch when COMBAT_END fires with zero narratable beats. Neutral
+# closeout that doesn't presuppose combat events occurred. Sibling-shape to
+# S45's _INIT_END_CLOSEOUT_SCENE but distinct surface (this posts to Discord;
+# S45's writes to current_scene buffer).
+_COMBAT_END_NEUTRAL_CLOSEOUT = "Combat ends. The moment passes."
+
+
+def _reset_combat_beats(guild_id: int) -> None:
+    _combat_beat_counter[guild_id] = 0
+
+
+def _increment_combat_beat(guild_id: int) -> int:
+    _combat_beat_counter[guild_id] = _combat_beat_counter.get(guild_id, 0) + 1
+    return _combat_beat_counter[guild_id]
+
+
+def _get_combat_beats(guild_id: int) -> int:
+    return _combat_beat_counter.get(guild_id, 0)
+
+
+def _clear_combat_beats(guild_id: int) -> None:
+    _combat_beat_counter.pop(guild_id, None)
+
+
+# ─────────────────────────────────────────────────────────
+# Scene lifecycle stale counter (Scene Lifecycle v1, S52)
+# F-54 scene immortality — §59 sibling state substrate
+# ─────────────────────────────────────────────────────────
+
+_scene_stale_turns: dict[int, int] = {}
+
+# §11.L modified: capture per-guild whether last combat had narratable beats,
+# so the climactic-hold predicate has signal in post-combat exploration.
+# Set at COMBAT_END before _clear_combat_beats; persists until next combat start.
+_last_combat_had_beats: dict[int, bool] = {}
+
+
+def _reset_scene_stale(guild_id: int) -> None:
+    _scene_stale_turns.pop(guild_id, None)
+
+
+def _increment_scene_stale(guild_id: int) -> int:
+    _scene_stale_turns[guild_id] = _scene_stale_turns.get(guild_id, 0) + 1
+    return _scene_stale_turns[guild_id]
+
+
+def _get_scene_stale(guild_id: int) -> int:
+    return _scene_stale_turns.get(guild_id, 0)
+
+
+# ─────────────────────────────────────────────────────────
+# Quest Layer v0 (S56 + v0.1 S57 UX patch) — in-memory state
+# §1b third project instance — Reading-2 framing per S57 patch:
+# canonical `/quest accept <id>` slash is the ONLY acceptance trigger.
+# Cosine-similarity paste-detection was dropped per live-verify UX finding
+# (in-character RP text in #dm-aside read as "too mechanical, not free
+# flowing enough"). The suggester card is now pure operational suggestion;
+# the LLM renders the offer scene organically on the next narration turn
+# after /quest accept flips status to in-progress.
+# ─────────────────────────────────────────────────────────
+
+# Per-(guild_id, npc_id) turn-counter of last offer-card posted. Used by
+# the suggester's cooldown gate (§11.3, _QUEST_OFFER_COOLDOWN = 6 turns).
+# Missing key = never offered for that NPC.
+_quest_offer_last_turn: dict[tuple[int, int], int] = {}
+
+
+def _record_quest_offer_post(guild_id: int, npc_id: int,
+                              turn_counter: int) -> None:
+    """Stamp the cooldown clock for (guild_id, npc_id) at the current turn.
+    Called on suggester-card post to #dm-aside, BEFORE operator approval."""
+    _quest_offer_last_turn[(guild_id, npc_id)] = turn_counter
+
+
+def _turns_since_last_offer(guild_id: int, npc_id: int,
+                             current_turn: int) -> int:
+    """Return turns since last offer-card to this NPC. Returns a large value
+    when no prior offer recorded (effectively bypasses the cooldown gate)."""
+    last = _quest_offer_last_turn.get((guild_id, npc_id))
+    if last is None:
+        return 9999
+    return max(0, current_turn - last)
+
+
+def _build_cooldown_map(guild_id: int, npc_ids: list[int],
+                        current_turn: int) -> dict:
+    """Convenience: build the per-NPC cooldown dict the suggester expects."""
+    return {nid: _turns_since_last_offer(guild_id, nid, current_turn)
+            for nid in npc_ids}
 
 
 # ─────────────────────────────────────────────────────────
@@ -1334,6 +1772,13 @@ async def _handle_init_event(message, init_evt):
 
         if evt_type == 'begin' and current_mode != 'combat':
             set_scene_mode(campaign['id'], 'combat')
+            # §78.6 reset the per-guild combat beat counter at session start.
+            # Beats accumulate via BLOODIED/DOWNED dispatches during combat
+            # and gate the COMBAT_END render path at session end.
+            _reset_combat_beats(message.guild.id)
+            # §11.I: combat entry is an activity signal — reset stale counter.
+            # Post-combat exploration starts fresh regardless of pre-combat value.
+            _reset_scene_stale(message.guild.id)
             log(f"init: combat started (guild={message.guild.id}) → mode='combat'")
         elif evt_type == 'end' and current_mode == 'combat':
             # Ship S45-F: snapshot combat state BEFORE mechanical cleanup
@@ -1362,6 +1807,25 @@ async def _handle_init_event(message, init_evt):
             # fallback. Either way, no stale combat narration survives the
             # boundary.
             reset_narrative_buffers_on_combat_exit(campaign['id'])
+            # §78 layer-1 in-memory state reset (sibling to S45's DB-side
+            # narrative buffer reset). RollBuffer holds in-memory Avrae events
+            # keyed by guild. Drain at the combat→exploration boundary to
+            # prevent stale combat-mechanical events (check/save/attack/cast/
+            # damage/roll) from leaking into post-combat narration — both the
+            # `(N rolls in play)` footer artifact AND the LLM prompt's AVRAE
+            # EVENTS block via _format_avrae_events. Mirrors clear_combatants
+            # / clear_active_turn blunt-full-reset pattern on the in-memory
+            # substrate. Ordering: runs BEFORE _dispatch_combat_narration so
+            # COMBAT_END's buffer.consume(['combat']) stays cleanly empty
+            # per S45-F's clean-closeout intent.
+            try:
+                drained_count = buffer.size(message.guild.id)
+                buffer.clear(message.guild.id)
+                log(f"init_end_rollbuffer_drained: campaign={campaign['id']} "
+                    f"guild={message.guild.id} drained_count={drained_count}")
+            except Exception as e:
+                log(f"init_end_rollbuffer_drained: error campaign={campaign['id']} "
+                    f"guild={message.guild.id} err={e!r}")
             log(f"init: combat ended (guild={message.guild.id}) → mode='exploration', combat state cleared")
 
             # Ship S45-F: COMBAT_END auto-closeout narration. Closes the
@@ -1374,12 +1838,47 @@ async def _handle_init_event(message, init_evt):
             # categorical HP labels and the MUST/MUST-NOT clauses prevent
             # post-combat speculation. Soft-fails per §59 — combat narration
             # never blocks mechanical state.
-            await _dispatch_combat_narration(
-                campaign,
-                {'kind': 'COMBAT_END'},
-                combat_state_override=pre_clear_combat_state,
-                scene_override={'mode': 'combat'},
+            #
+            # §78.6 layer-4 render-vs-marker branch: if zero narratable
+            # beats fired during this combat (no BLOODIED, no DOWNED
+            # dispatches), the LLM render presupposition fails — the
+            # directive's "falling tension / cessation of motion / room
+            # settling" framing has no narrative referent. Branch to
+            # deterministic neutral closeout (boundary marker without LLM
+            # speculation). Multi-action combats fall through to the
+            # existing S45-F dispatch unchanged.
+            beats = _get_combat_beats(message.guild.id)
+            if beats == 0:
+                log(f"combat_end_zero_action: campaign={campaign['id']} "
+                    f"guild={message.guild.id} beats=0 "
+                    f"deterministic_closeout=1")
+                try:
+                    narration_ch = get_channel(message.guild, 'narration')
+                    if narration_ch:
+                        await narration_ch.send(_COMBAT_END_NEUTRAL_CLOSEOUT)
+                    else:
+                        log("combat_end_zero_action: narration channel "
+                            "not found, closeout marker not posted")
+                except Exception as e:
+                    log(f"combat_end_zero_action: post error err={e!r}")
+            else:
+                log(f"combat_end_llm_dispatch: campaign={campaign['id']} "
+                    f"guild={message.guild.id} beats={beats}")
+                await _dispatch_combat_narration(
+                    campaign,
+                    {'kind': 'COMBAT_END'},
+                    combat_state_override=pre_clear_combat_state,
+                    scene_override={'mode': 'combat'},
+                )
+            # §11.L modified: capture beat history BEFORE clearing, so the
+            # climactic-hold predicate has signal in post-combat exploration.
+            # _combat_beat_counter is about to be cleared; this flag persists
+            # until next combat start (§11.I reset at !init begin).
+            _last_combat_had_beats[message.guild.id] = (
+                _get_combat_beats(message.guild.id) > 0
             )
+            # §78.6 counter cleanup after dispatch (either branch).
+            _clear_combat_beats(message.guild.id)
         elif evt_type == 'turn':
             controller_id = init_evt.get('controller_id')
             name = init_evt.get('name', '')
@@ -1460,6 +1959,21 @@ async def _dispatch_combat_narration(campaign, trigger_event,
             suppress_for_combat_narration=True,
         )
         log(orch.combat_narration_log_summary(trigger_event, fired=True))
+        # §78.6 beat counter — increment only on HP-state-transition kinds
+        # (actual combat content). ROUND_START fires regardless of content
+        # and is excluded by design; COMBAT_END reads the counter and does
+        # not increment.
+        if trigger_event.get('kind') in ('BLOODIED_THRESHOLD_CROSSED',
+                                          'COMBATANT_DOWNED'):
+            try:
+                guild_id_for_beat = campaign.get('guild_id', '')
+                if guild_id_for_beat:
+                    new_count = _increment_combat_beat(int(guild_id_for_beat))
+                    log(f"combat_beat_incremented: campaign={campaign['id']} "
+                        f"guild={guild_id_for_beat} kind={trigger_event.get('kind')} "
+                        f"beats={new_count}")
+            except Exception as e:
+                log(f"combat_beat_incremented: error err={e!r}")
     except Exception as e:
         log(f"_dispatch_combat_narration error: trigger={trigger_event!r} "
             f"err={e!r}")
@@ -1852,6 +2366,33 @@ async def _handle_rest_event(message, rest_evt):
                              source_detail='Avrae !sr')
         except Exception as e:
             log(f"_handle_rest_event: advance_time error: {e!r}")
+
+        # §78 layer-1 in-memory state reset, mode-agnostic application
+        # (sibling to S48's init-end drain). Every Avrae rest embed lands
+        # in RollBuffer via on_message → buffer.add with kind='rest'. The
+        # actor-extraction fallback to 'someone' currently keeps these
+        # entries from matching PC-actor consume filters (zero observed
+        # buffer.consume hits on roll_kinds=['rest'] across full journal),
+        # but that protection is serendipitous, not structural — if a
+        # future Avrae embed parses to a real PC name, the rest event
+        # would surface in the next matching-actor turn's footer
+        # ((N rolls in play)) AND in the LLM prompt's AVRAE EVENTS block.
+        # Drain at the rest boundary, regardless of mode, closes the
+        # substrate-completion gap before the serendipity breaks.
+        try:
+            drained_count = buffer.size(message.guild.id)
+            buffer.clear(message.guild.id)
+            log(f"rest_event_rollbuffer_drained: campaign={campaign['id']} "
+                f"guild={message.guild.id} drained_count={drained_count} "
+                f"rest_kind={rest_kind}")
+        except Exception as e:
+            log(f"rest_event_rollbuffer_drained: error campaign={campaign['id']} "
+                f"guild={message.guild.id} err={e!r}")
+
+        # §1.F.d: advance_time is an activity signal; reset stale counter.
+        _reset_scene_stale(message.guild.id)
+        log(f"scene_lifecycle_reset: campaign={campaign['id']} "
+            f"guild={message.guild.id} reason=rest_advance_time rest_kind={rest_kind}")
     except Exception as e:
         log(f"_handle_rest_event error: {e}")
 
@@ -2101,6 +2642,12 @@ async def on_message(message: discord.Message):
                 f"reason={_classify_unparsed_reason(_action_text)}")
         return  # Don't fall through — Avrae owns the !-prefix response.
 
+    # Quest Layer v0.1 (S57 UX patch) — cosine-similarity paste-detection
+    # REMOVED. Reading-2 framing per §11.12 patched lock: canonical /quest
+    # accept <id> slash is the only acceptance trigger. No paste-detection
+    # auxiliary layer. LLM renders the offer scene organically on the next
+    # narration turn after /quest accept flips status to in-progress.
+
     char = get_character_by_controller(campaign['id'], str(message.author.id))
     if not char:
         await message.channel.send(
@@ -2186,16 +2733,19 @@ async def on_message(message: discord.Message):
         pass
 
 
-async def _attach_hints(message, embed, narration):
+async def _attach_hints(message, embed, narration, campaign_id: int | None = None):
     """Background task: parse mechanical hints from narration, edit message
     in place to append a bookkeeping section if any survive the whitelist.
 
     Silent on timeout, empty result, or any error. Never blocks narration
     delivery — runs after the post has already happened.
+
+    S65.1 N-1: `campaign_id` enables cross-turn dedup in the parser and
+    `hint_extractor_emitted/suppressed` telemetry.
     """
     try:
         hints = await asyncio.wait_for(
-            asyncio.to_thread(parse_mechanical_hints, narration),
+            asyncio.to_thread(parse_mechanical_hints, narration, campaign_id),
             timeout=5.0,
         )
     except asyncio.TimeoutError:
@@ -2208,8 +2758,14 @@ async def _attach_hints(message, embed, narration):
     if not hints:
         return
 
+    # S65.A format unification (operator request): bullet + backtick command,
+    # no preamble, no horizontal divider. Visual consistency with roll
+    # requests, attack templates, and Suggested Actions — all now render as
+    # bullet + boxed command. Redundant "Bookkeeping (you type these):"
+    # framing removed; the boxed command + bullet read as "this is a
+    # mechanical thing for you to type" without needing explanatory text.
     bookkeeping = "\n".join(f"- `{h}`" for h in hints)
-    suffix = f"\n\n─────────\n*Bookkeeping (you type these):*\n{bookkeeping}"
+    suffix = f"\n\n{bookkeeping}"
 
     # Discord embed description cap is 4096. Trim original to make room.
     headroom = 4096 - len(suffix) - 8
@@ -2227,7 +2783,8 @@ async def _attach_hints(message, embed, narration):
         log(f"_attach_hints: edit failed {e!r}")
 
 
-async def _extract_and_persist_world(campaign_id, narration, guild=None):
+async def _extract_and_persist_world(campaign_id, narration, guild=None,
+                                      guild_id_int: int = 0):
     """Background task: parse locations, then NPCs, persisting both via the
     deterministic engine write paths. Advisory only — never blocks narration
     delivery, never raises into the caller.
@@ -2410,6 +2967,14 @@ async def _extract_and_persist_world(campaign_id, narration, guild=None):
                             campaign_id, n["name"], guild
                         )
                     )
+                    # §1.F.c was an LLM-extracted activity signal in v1 spec but
+                    # was dropped in S53 v1.x patch: live verify (May 2026)
+                    # surfaced LLM-forgeable signal pattern — scene-padded NPC
+                    # introductions reset the stagnation counter and defeated
+                    # detection. The guild_id_int param is preserved for a
+                    # potential corroborated-signal v1.x candidate (NPC was_new
+                    # AND location/roll co-occurring). See spec §1.F footnote
+                    # and §12.10 for the v1.x direction.
         except Exception as e:
             log(f"npc_upsert: error campaign={campaign_id} "
                 f"name={n['name']!r} err={e!r}")
@@ -2726,7 +3291,8 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
                                 transition_context: str = None,
                                 location_label_override: str = None,
                                 resolution_result=None,
-                                suppress_for_combat_narration: bool = False):
+                                suppress_for_combat_narration: bool = False,
+                                scene_lifecycle_inputs: dict = None):
     """Called by the batcher. Pulls Avrae events for the relevant actors,
     fires the DM, posts narration.
 
@@ -2825,6 +3391,24 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
         log(f"buffer.consume: {len(avrae_events)} events for "
             f"actors={actor_names_canonical} roll_kinds={roll_kinds}")
 
+        # Scene Lifecycle v1 — build inputs for compute_scene_lifecycle_directive.
+        # Snapshot stale counter BEFORE narration posts (counter is the signal
+        # that this turn's directive computes against; update happens after post).
+        # §1.F.b: Avrae roll consumed this turn → activity signal → will reset counter.
+        _sl_guild_id_int = int(guild_id_str)
+        _sl_had_avrae_roll = bool(avrae_events)
+        if scene_lifecycle_inputs is None:
+            _sl_stale = _get_scene_stale(_sl_guild_id_int)
+            scene_lifecycle_inputs = {
+                'stale_turns': _sl_stale,
+                'trigger_kind': 'auto',
+                'last_combat_had_beats': _last_combat_had_beats.get(_sl_guild_id_int, False),
+                # §11.L: counter was reset at combat start (§11.I), so stale_turns
+                # is a valid proxy for turns since last combat end in exploration.
+                'turns_since_combat_end': _sl_stale,
+                'explicit_reason': '',
+            }
+
         # Bug 1 Phase 1 (S32) — exploration-mode footer-actor write.
         # First actor in the batch is the canonical "footer actor" for
         # this turn (mirrors the persistence directive's first-actor pick).
@@ -2843,13 +3427,14 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
                     dm_respond, campaign, characters, combined_action, avrae_events,
                     actor_names, transition_context, first_user_id, actions,
                     resolution_result, suppress_for_combat_narration,
+                    scene_lifecycle_inputs,
                 )
         except (discord.HTTPException, asyncio.TimeoutError) as e:
             log(f"typing_indicator_failed: command=_dm_respond_and_post err={e!r}")
             response = await asyncio.to_thread(
                 dm_respond, campaign, characters, combined_action, avrae_events,
                 actor_names, transition_context, first_user_id, actions,
-                resolution_result,
+                resolution_result, False, scene_lifecycle_inputs,
             )
 
         # Ship A live-verify patch (S36 #3) — DC strip. Parse the LLM-emit
@@ -2995,8 +3580,55 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
         except Exception as e:
             log(f"_llm_emit_directive_write error: {e!r}")
 
-        asyncio.create_task(_attach_hints(msg, embed, response))
-        asyncio.create_task(_extract_and_persist_world(campaign["id"], response, guild))
+        asyncio.create_task(_attach_hints(msg, embed, response, campaign["id"]))
+        asyncio.create_task(_extract_and_persist_world(
+            campaign["id"], response, guild, guild_id_int=_sl_guild_id_int
+        ))
+
+        # Scene Lifecycle v1 — update stale counter AFTER posting (§1.F).
+        # §1.F.b: Avrae roll consumed → reset (something mechanical happened).
+        # Otherwise: increment toward soft/hard threshold.
+        try:
+            if _sl_had_avrae_roll:
+                _reset_scene_stale(_sl_guild_id_int)
+                log(f"scene_lifecycle_reset: campaign={campaign['id']} "
+                    f"guild={_sl_guild_id_int} reason=avrae_roll")
+            else:
+                _new_stale = _increment_scene_stale(_sl_guild_id_int)
+                log(f"scene_lifecycle_increment: campaign={campaign['id']} "
+                    f"guild={_sl_guild_id_int} stale_turns={_new_stale}")
+        except Exception as e:
+            log(f"scene_lifecycle_counter_update: error={e!r}")
+
+        # Quest Layer v0 (S56) — fire suggester after narration posts.
+        # §1b third-instance: canonical-slash + auxiliary-cosine framing.
+        # Suggester writes nothing; on proposal, posts card to #dm-aside
+        # and caches proposal for paste-detection. Operator approves via
+        # paste-match OR explicit /quest accept <id>. Soft-fail throughout.
+        try:
+            _scene_for_quest = get_scene_state(campaign['id'])
+            await _dispatch_quest_offer_suggester(
+                campaign, guild, _scene_for_quest
+            )
+        except Exception as e:
+            log(f"quest_offer_dispatch_outer: error={e!r}")
+
+        # Composition Layer v0 (S60) §11.9 — compression-coupled act-
+        # transition suggester. Fires only when the stale counter has hit
+        # _STALE_SOFT_THRESHOLD (the same trigger that fires the Scene
+        # Lifecycle directive's soft/strong tier). Mirrors compression
+        # cadence — natural narrative-pause moment. Per locked §11.12:
+        # canonical /quest act advance slash gate; deterministic-validator
+        # predicate (Reading-2 direct, no cosine-similarity).
+        try:
+            _post_stale = _get_scene_stale(_sl_guild_id_int)
+            if _post_stale >= orch._STALE_SOFT_THRESHOLD:
+                _scene_for_act = get_scene_state(campaign['id'])
+                await _dispatch_quest_act_suggester(
+                    campaign, guild, _scene_for_act
+                )
+        except Exception as e:
+            log(f"quest_act_suggester_dispatch_outer: error={e!r}")
     except Exception as e:
         log(f"_dm_respond_and_post error: {e}")
         import traceback; log(traceback.format_exc())
@@ -4226,6 +4858,13 @@ async def play(interaction: discord.Interaction, scene: str = None):
     # for back-compat but does not flow into scene_state.
     init_scene_state(campaign['id'])
 
+    # §11.O: session-open is a hard reset for the stale counter. A new /play
+    # call signals a fresh narrative context; any prior stale count must not
+    # carry into the opening turn and immediately fire a lifecycle directive.
+    if interaction.guild_id:
+        _reset_scene_stale(interaction.guild_id)
+        _last_combat_had_beats.pop(interaction.guild_id, None)
+
     # Bug 1 Phase 1 (S32) — clear footer-actor on /play. Opening narration
     # doesn't address a specific player, so any prior turn's actor must
     # not bleed into the next directive's footer-binding window. Soft-fail
@@ -4250,16 +4889,25 @@ async def play(interaction: discord.Interaction, scene: str = None):
 
     # Open scene gets full DM treatment — knowledge_search will pull Mercer
     # campaign openings since we tag this as a "scene transition."
+    # Ship 2 (S39) dropped `seed` parameter behavior — the `scene` slash
+    # argument is preserved in the signature for back-compat but is no
+    # longer consumed downstream. S65 Fix 1 (F-021): replace the legacy
+    # `{seed}` reference (NameError) with `{scene or ''}`. When `/play` is
+    # invoked without the optional `scene` arg, the bracketed marker becomes
+    # `[Open the scene] ` — classifier still routes it (META prefix is the
+    # `[Open` bracket-frame), narration falls back to the regular DM-respond
+    # opening logic.
+    _seed_text = scene or ''
     try:
         async with narration_ch.typing():
             opening = await asyncio.to_thread(
-                dm_respond, campaign, chars, f"[Open the scene] {seed}", [],
+                dm_respond, campaign, chars, f"[Open the scene] {_seed_text}", [],
                 None
             )
     except (discord.HTTPException, asyncio.TimeoutError) as e:
         log(f"typing_indicator_failed: command=play err={e!r}")
         opening = await asyncio.to_thread(
-            dm_respond, campaign, chars, f"[Open the scene] {seed}", [],
+            dm_respond, campaign, chars, f"[Open the scene] {_seed_text}", [],
             None
         )
 
@@ -4330,6 +4978,84 @@ async def play(interaction: discord.Interaction, scene: str = None):
     log(f"state_footer: campaign={campaign['id']} "
         f"{orch.state_footer_log_summary(state_signals)}")
     await interaction.followup.send(f"{E['ok']} Scene opened in {narration_ch.mention}.", ephemeral=True)
+
+
+@bot.tree.command(name='compress', description='[DM] Explicitly compress the current scene.')
+@app_commands.describe(reason='Optional context for the compression (e.g. "we have covered everything here")')
+async def compress(interaction: discord.Interaction, reason: str = ''):
+    """DM-only explicit scene compression (Scene Lifecycle v1, §1.H).
+
+    Fires compute_scene_lifecycle_directive with trigger_kind='explicit' regardless
+    of the current stale counter. DM authority over scene transition is final.
+    Resets the stale counter after dispatch (§11.J). Mode gate: refuses in combat.
+    """
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message("DM or campaign owner only.", ephemeral=True)
+        return
+    guild_id_str = str(interaction.guild_id)
+    campaign = get_active_campaign(guild_id_str)
+    if not campaign:
+        await interaction.response.send_message("No active campaign.", ephemeral=True)
+        return
+    scene = get_scene_state(campaign['id'])
+    if not scene:
+        await interaction.response.send_message(
+            "No active scene — run `/play` first.", ephemeral=True
+        )
+        return
+    mode = (scene.get('mode') or 'exploration').lower()
+    if mode == 'combat':
+        await interaction.response.send_message(
+            "Scene compression is not available in combat mode.", ephemeral=True
+        )
+        return
+
+    narration_ch = get_channel(interaction.guild, 'narration')
+    if not narration_ch:
+        await interaction.response.send_message(
+            f"Missing #{CHANNEL_NAMES['narration']}. Run `/setup` first.", ephemeral=True
+        )
+        return
+
+    await interaction.response.defer(ephemeral=True)
+
+    try:
+        characters = get_characters(campaign['id'])
+        reason_str = (reason or '').strip()
+        combined_action = (
+            f"[Scene Lifecycle: DM-initiated compression"
+            + (f": {reason_str}" if reason_str else "")
+            + "]"
+        )
+        _compress_inputs = {
+            'stale_turns': _get_scene_stale(interaction.guild_id or 0),
+            'trigger_kind': 'explicit',
+            'last_combat_had_beats': _last_combat_had_beats.get(
+                interaction.guild_id or 0, False
+            ),
+            'turns_since_combat_end': 9999,
+            'explicit_reason': reason_str,
+        }
+        await _dm_respond_and_post(
+            campaign, characters,
+            actions=[('[DM]', combined_action)],
+            combined_action=combined_action,
+            scene_lifecycle_inputs=_compress_inputs,
+        )
+        # §11.J: explicit compression resets the stale counter — DM intent
+        # is that the scene is being closed; start fresh.
+        if interaction.guild_id:
+            _reset_scene_stale(interaction.guild_id)
+        log(f"/compress: campaign={campaign['id']} guild={guild_id_str} "
+            f"reason={reason_str!r}")
+        await interaction.followup.send(
+            f"{E.get('ok', '✅')} Scene compression triggered.", ephemeral=True
+        )
+    except Exception as e:
+        log(f"/compress: error={e!r}")
+        await interaction.followup.send(
+            "Scene compression failed — check journal for details.", ephemeral=True
+        )
 
 
 @bot.tree.command(name='nudge', description='[DM] Prompt a player to act in-character.')
@@ -4477,6 +5203,15 @@ async def travel(interaction: discord.Interaction,
         "a single atmospheric beat at the destination, then hand agency "
         "back to the player."
     )
+
+    # §1.F.a: location change is an activity signal — reset stale counter.
+    # §1.F.d: advance_time (via travel) is also an activity signal.
+    # Both fire on /travel; a single reset covers both.
+    if interaction.guild_id:
+        _reset_scene_stale(interaction.guild_id)
+        log(f"scene_lifecycle_reset: campaign={campaign['id']} "
+            f"guild={interaction.guild_id} reason=travel_location_change "
+            f"dest={dest_canonical!r}")
 
     log(f"/travel: campaign={campaign['id']} from={origin_name!r} "
         f"to={dest_canonical!r} resolved={1 if dest_loc else 0} "
@@ -4842,11 +5577,13 @@ async def quest_add_cmd(
 
 
 @quest_group.command(name='list', description='[PLAYER] Show quests for this campaign.')
-@app_commands.describe(status='Filter by status (default: active)')
+@app_commands.describe(status='Filter by status (default: in-progress)')
 @app_commands.choices(status=[
-    app_commands.Choice(name='active', value='active'),
+    app_commands.Choice(name='offered', value='offered'),
+    app_commands.Choice(name='in-progress', value='in-progress'),
     app_commands.Choice(name='completed', value='completed'),
     app_commands.Choice(name='failed', value='failed'),
+    app_commands.Choice(name='abandoned', value='abandoned'),
     app_commands.Choice(name='all', value='all'),
 ])
 async def quest_list_cmd(
@@ -4857,7 +5594,7 @@ async def quest_list_cmd(
     if not campaign:
         await interaction.response.send_message("No active campaign.", ephemeral=True)
         return
-    status_value = status.value if status else 'active'
+    status_value = status.value if status else 'in-progress'
     if status_value == 'all':
         quests = get_all_quests(campaign['id'])
     else:
@@ -4868,7 +5605,11 @@ async def quest_list_cmd(
         )
         return
     lines = []
-    status_icon = {'active': '⚔', 'completed': '✓', 'failed': '✗'}
+    status_icon = {
+        'offered': '?', 'in-progress': '⚔', 'completed': '✓',
+        'delivered': '✓',  # legacy alias rows display same icon
+        'failed': '✗', 'abandoned': '…',
+    }
     for q in quests:
         icon = status_icon.get(q['status'], '•')
         pri = q.get('priority', 'normal')
@@ -4877,17 +5618,27 @@ async def quest_list_cmd(
         given_tag = f" — {given}" if given else ''
         summary = q.get('summary', '')
         summary_tag = f"\n   _{summary}_" if summary else ''
-        lines.append(f"{icon} **#{q['id']}** {q['title']}{pri_tag}{given_tag}{summary_tag}")
+        reward = (q.get('reward_summary') or '').strip()
+        reward_tag = f"\n   _reward: {reward}_" if reward else ''
+        lines.append(
+            f"{icon} **#{q['id']}** [{q['status']}] {q['title']}"
+            f"{pri_tag}{given_tag}{summary_tag}{reward_tag}"
+        )
     body = "\n".join(lines)
     if len(body) > 1900:
         body = body[:1900] + "\n…(truncated — too many quests to display)"
     await interaction.response.send_message(body, ephemeral=True)
 
 
-@quest_group.command(name='complete', description='[DM] Mark a quest completed.')
+@quest_group.command(name='complete',
+                     description='[DM] Mark a quest completed — fires reward dispatch.')
 @app_commands.describe(quest_id='Quest to complete')
 @app_commands.autocomplete(quest_id=quest_id_autocomplete)
 async def quest_complete_cmd(interaction: discord.Interaction, quest_id: int):
+    """Canonical resolution command. Engine helper `quest_deliver` performs
+    the state transition; the slash command was renamed in S61 v0.x patch
+    (operator preference — "complete" reads more plainly than "deliver").
+    Status enum value: 'completed'."""
     if not is_dm_or_creator(interaction):
         await interaction.response.send_message("DM or campaign owner only.", ephemeral=True)
         return
@@ -4895,14 +5646,8 @@ async def quest_complete_cmd(interaction: discord.Interaction, quest_id: int):
     if not campaign:
         await interaction.response.send_message("No active campaign.", ephemeral=True)
         return
-    if quest_set_status(campaign['id'], quest_id, 'completed'):
-        await interaction.response.send_message(
-            f"{E['ok']} Quest #{quest_id} marked completed.", ephemeral=True
-        )
-    else:
-        await interaction.response.send_message(
-            f"{E['facepalm']} Quest #{quest_id} not found.", ephemeral=True
-        )
+    # Route through quest_deliver to get reward-dispatch behavior (§11.6).
+    await _do_quest_deliver(interaction, campaign, quest_id)
 
 
 @quest_group.command(name='fail', description='[DM] Mark a quest failed.')
@@ -4945,6 +5690,460 @@ async def quest_delete_cmd(interaction: discord.Interaction, quest_id: int):
         await interaction.response.send_message(
             f"{E['facepalm']} Quest #{quest_id} not found.", ephemeral=True
         )
+
+
+# ─────────────────────────────────────────────────────────
+# Quest Layer v0 (S56) — new slash commands per §11.7
+# /quest offer, /quest accept, /quest deliver, /quest abandon,
+# /quest seed-skeleton. Existing add/list/complete/fail/delete preserved.
+# ─────────────────────────────────────────────────────────
+
+# /quest offer DROPPED in S61 v0.x patch — auto-fire suggester via
+# compression-coupled path covers the practical surface; manual fire was
+# never observed in live verify. Operator can still trigger an offer via
+# editing skeleton.md + /quest seed if they want a specific quest to surface.
+
+
+@quest_group.command(name='accept',
+                     description='[DM] Canonical §1b gate — offered → in-progress.')
+@app_commands.describe(quest_id='Quest to accept (must be at status=offered)')
+@app_commands.autocomplete(quest_id=quest_id_autocomplete)
+async def quest_accept_cmd(interaction: discord.Interaction, quest_id: int):
+    """Canonical §1b deterministic gate per §11.12 Reading-2 (v0.1 patch).
+    Transitions a quest from offered → in-progress. Refuses non-offered
+    prior status."""
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message("DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message("No active campaign.", ephemeral=True)
+        return
+    current_turn = get_turn_counter(campaign['id'])
+    if quest_accept(campaign['id'], quest_id, accepted_turn=current_turn,
+                    source='accept'):
+        await interaction.response.send_message(
+            f"{E['ok']} Quest #{quest_id} accepted (in-progress).",
+            ephemeral=True
+        )
+    else:
+        # Refusal reason already logged at the engine layer.
+        await interaction.response.send_message(
+            f"{E['facepalm']} Cannot accept #{quest_id} — must be at "
+            f"status='offered'. Check `/quest list status:offered`.",
+            ephemeral=True
+        )
+
+
+async def _do_quest_deliver(interaction: discord.Interaction, campaign: dict,
+                             quest_id: int) -> None:
+    """Shared implementation of /quest deliver and /quest complete (alias).
+    Transitions in-progress → delivered, dispatches reward summary to
+    #dm-aside, auto-adds parseable items to inventory."""
+    current_turn = get_turn_counter(campaign['id'])
+    result = quest_deliver(campaign['id'], quest_id, delivered_turn=current_turn)
+    if result is None:
+        await interaction.response.send_message(
+            f"{E['facepalm']} Cannot deliver #{quest_id} — must be at "
+            f"status='in-progress'.", ephemeral=True
+        )
+        return
+    # §11.6 (d) hybrid: aside post + auto-inventory.
+    reward = result.get('reward_summary', '') or '(unspecified)'
+    title = result.get('title', f'#{quest_id}')
+    parsed_items = _parse_reward_summary_for_inventory(
+        result.get('reward_summary', '')
+    )
+    inv_lines = []
+    for item in parsed_items:
+        try:
+            add_item(campaign['id'], '', item['name'], item['quantity'])
+            inv_lines.append(f"  + {item['name']} ×{item['quantity']}")
+        except Exception as e:
+            log(f"quest_deliver_inventory_add: error item={item!r} err={e!r}")
+            inv_lines.append(f"  ! {item['name']} ×{item['quantity']} (add failed: {e})")
+    aside_text = (
+        f"**[REWARD READY]** Quest #{quest_id} delivered: **{title}**.\n"
+        f"Reward: {reward}\n"
+    )
+    if inv_lines:
+        aside_text += f"\nAuto-added to inventory:\n" + "\n".join(inv_lines) + "\n"
+    else:
+        aside_text += f"\n_(No structured items parsed; reward stays narrative.)_\n"
+    # Suggested narration line for operator paste (§11.6 (b) seed).
+    aside_text += (
+        f"\nSuggested narration: \"The {title.lower()} has been seen through "
+        f"to its end. The reward — {reward} — passes hands. The road continues.\"\n"
+        f"_Paste into #dm-narration when the reward scene resolves._"
+    )
+    await _post_dm_aside(interaction.guild, aside_text)
+    log(f"quest_deliver_dispatch: campaign={campaign['id']} quest_id={quest_id} "
+        f"items_parsed={len(parsed_items)} reward='{reward}'")
+    await interaction.response.send_message(
+        f"{E['ok']} Quest #{quest_id} delivered. Reward summary + inventory "
+        f"updates posted to #dm-aside.", ephemeral=True
+    )
+
+
+# /quest deliver DROPPED in S61 v0.x patch — `/quest complete` is the
+# canonical operator slash going forward. The engine helper `quest_deliver`
+# remains as the underlying state-transition function (preserved name for
+# code-side back-compat); only the slash command surface flipped.
+
+
+@quest_group.command(name='abandon',
+                     description='[DM] Mark a quest abandoned (party walked away).')
+@app_commands.describe(quest_id='Quest to abandon')
+@app_commands.autocomplete(quest_id=quest_id_autocomplete)
+async def quest_abandon_cmd(interaction: discord.Interaction, quest_id: int):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message("DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message("No active campaign.", ephemeral=True)
+        return
+    current_turn = get_turn_counter(campaign['id'])
+    if quest_abandon(campaign['id'], quest_id, turn_counter=current_turn,
+                     source='abandon'):
+        await interaction.response.send_message(
+            f"{E['ok']} Quest #{quest_id} abandoned.", ephemeral=True
+        )
+    else:
+        await interaction.response.send_message(
+            f"{E['facepalm']} Cannot abandon #{quest_id} — quest not found "
+            f"or already in a terminal state.", ephemeral=True
+        )
+
+
+@quest_group.command(name='seed',
+                     description='[DM] Read skeleton.md and import its quests + acts (idempotent — safe to re-run).')
+async def quest_seed_skeleton_cmd(interaction: discord.Interaction):
+    """Bridges skeleton.md `## Major hooks` into dnd_quests as
+    skeleton_origin=1 rows at status='offered'. Idempotent: re-running with
+    no skeleton.md changes is a no-op. Edge case (Finding 3): if operator
+    edits an existing hook title mid-campaign, the renamed hook inserts as
+    a new row; the original-title row persists as an orphan. Operator
+    cleans up via `/quest delete <old_id>`."""
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message("DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message("No active campaign.", ephemeral=True)
+        return
+    # Load skeleton.md hooks.
+    try:
+        from skeleton_loader import parse_skeleton_file
+        parsed = parse_skeleton_file(campaign['id'], force_reload=True)
+    except Exception as e:
+        log(f"quest_seed_skeleton: skeleton parse error={e!r}")
+        await interaction.response.send_message(
+            f"{E['facepalm']} skeleton.md parse failed: {e}", ephemeral=True
+        )
+        return
+    if parsed is None:
+        await interaction.response.send_message(
+            f"{E['facepalm']} No skeleton.md found for campaign "
+            f"`{campaign['name']}`. Author one at "
+            f"`campaigns/{campaign['id']}/skeleton.md` first.",
+            ephemeral=True
+        )
+        return
+    hooks_raw = parsed.get('hooks') or []
+    if not hooks_raw:
+        await interaction.response.send_message(
+            f"{E['facepalm']} skeleton.md has no `## Major hooks` section "
+            f"(or it's empty). Add at least one hook bullet first.",
+            ephemeral=True
+        )
+        return
+    # v0 format: hooks are flat bullet strings. voicer_npc_id stays None
+    # (priority-rule fallback in suggester handles voicer selection per §1.D).
+    # Structured `## Quest hooks` format (title + voicer + reward) is a
+    # v0.1 follow-up filed §12.9.
+    hook_dicts = [
+        {
+            'title': h.strip(),
+            'summary': '',
+            'reward': '',
+            'voicer_npc_id': None,
+        }
+        for h in hooks_raw if (h or '').strip()
+    ]
+    # Composition Layer v0 (S60) — also seed quests from quest_decompositions
+    # (the new ### Quest title H3 + #### Acts shape). Decomposition titles
+    # are deduplicated against flat-bullet hooks (same title = same quest).
+    decompositions = parsed.get('quest_decompositions') or []
+    decomp_titles = {(d.get('title') or '').strip() for d in decompositions}
+    # Add each decomposition title to the hook list if not already present
+    # as a flat bullet.
+    flat_titles = {hd['title'] for hd in hook_dicts}
+    for d in decompositions:
+        t = (d.get('title') or '').strip()
+        if not t or t in flat_titles:
+            continue
+        hook_dicts.append({
+            'title':   t,
+            'summary': (d.get('description') or '').strip()[:500],
+            'reward':  '',
+            'voicer_npc_id': None,
+        })
+    result = quest_seed_skeleton(campaign['id'], hook_dicts)
+
+    # Composition Layer v0 — seed acts for each quest decomposition.
+    # Match decomposition title back to a dnd_quests row (newly inserted
+    # OR existing skeleton_origin=1 with matching title). Idempotency
+    # delegated to quest_act_upsert (UNIQUE constraint on quest_id +
+    # act_index handles re-seed without duplicates).
+    acts_inserted = 0
+    acts_updated = 0
+    location_unresolved = 0
+    if decompositions:
+        # Build a title→quest_id lookup from current skeleton-origin quests.
+        all_quests = get_all_quests(campaign['id']) or []
+        title_to_qid = {
+            (q.get('title') or '').strip(): q.get('id')
+            for q in all_quests
+            if q.get('skeleton_origin') == 1
+        }
+        # Resolve location names via engine helper. Soft: any unresolved
+        # location_name stays as a string in the predicate JSON (suggester
+        # treats it as location_id mismatch, falls through to operator-only
+        # for that act). Logged at seed time.
+        from dnd_engine import location_get_by_name
+        for d in decompositions:
+            qtitle = (d.get('title') or '').strip()
+            qid = title_to_qid.get(qtitle)
+            if not qid:
+                log(f"quest_seed_skeleton_acts: skipped — quest title "
+                    f"{qtitle!r} not in dnd_quests")
+                continue
+            for act in d.get('acts') or []:
+                # Convert the parser's predicate dict to JSON storage shape.
+                # location_name → location_id resolution at seed time.
+                pred = dict(act.get('predicate') or {})
+                loc_name = pred.pop('location_name', None)
+                if loc_name:
+                    loc_row = location_get_by_name(campaign['id'], loc_name)
+                    if loc_row:
+                        pred['location_id'] = loc_row['id']
+                    else:
+                        location_unresolved += 1
+                        log(f"quest_seed_skeleton_acts: location_name "
+                            f"{loc_name!r} not in dnd_locations "
+                            f"campaign={campaign['id']} quest_id={qid} "
+                            f"act_index={act.get('act_index')}")
+                import json as _json_seed
+                predicate_json = _json_seed.dumps(pred)
+                act_id, was_new = quest_act_upsert(
+                    campaign['id'], qid,
+                    act_index=act.get('act_index'),
+                    act_title=act.get('act_title') or '',
+                    act_description=act.get('act_description') or '',
+                    transition_predicate_json=predicate_json,
+                    skeleton_origin=1,
+                )
+                if was_new:
+                    acts_inserted += 1
+                else:
+                    acts_updated += 1
+
+    msg_parts = [
+        f"{E['ok']} Skeleton seed complete: "
+        f"quests inserted={result['inserted']}, skipped={result['skipped']}",
+    ]
+    if acts_inserted or acts_updated:
+        msg_parts.append(
+            f"_Acts: inserted={acts_inserted}, updated={acts_updated}"
+            + (f", location_unresolved={location_unresolved}"
+               if location_unresolved else "")
+            + "._"
+        )
+    elif decompositions:
+        msg_parts.append(
+            "_Quest decompositions found but no acts seeded (quests not yet "
+            "in dnd_quests — run seed again after the quests land)._"
+        )
+    if result['inserted'] > 0 and result['voicer_unresolved'] == result['inserted']:
+        msg_parts.append(
+            "_All voicers unresolved (skeleton.md flat-bullet format). "
+            "Suggester will use priority-rule fallback (first "
+            "skeleton_origin=1 NPC at current location)._"
+        )
+    if result['skipped'] > 0:
+        msg_parts.append(
+            "_Skipped rows are existing skeleton_origin=1 quests with "
+            "matching title. Use `/quest list status:offered` to inspect; "
+            "`/quest delete <id>` for orphans from prior hook renames._"
+        )
+    await interaction.response.send_message(
+        "\n".join(msg_parts), ephemeral=True
+    )
+
+
+# ─────────────────────────────────────────────────────────
+# Composition Layer v0 (S60) — quest-act slash commands per §11.7 + §11.13
+# All under the existing /quest group (extends the surface; no new top-level
+# slash command). Canonical §1b gate: /quest act advance + /quest act set.
+# Operator orphan-cleanup via /quest act delete (Quest Layer v0 precedent).
+# ─────────────────────────────────────────────────────────
+
+quest_act_group = app_commands.Group(
+    name='act',
+    description='[DM] Quest act anchor — advance / set / list / delete.',
+    parent=quest_group,
+)
+
+
+async def quest_act_id_autocomplete(
+    interaction: discord.Interaction,
+    current: str,
+) -> list[app_commands.Choice[int]]:
+    """Autocomplete for /quest act delete — lists acts across the campaign."""
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        return []
+    # All-acts query: iterate every quest's acts.
+    import sqlite3 as _sq
+    from dnd_engine import DB_PATH as _DBP
+    conn = _sq.connect(_DBP)
+    try:
+        rows = conn.execute(
+            "SELECT a.id, a.act_index, a.act_title, q.title "
+            "FROM dnd_quest_acts a "
+            "JOIN dnd_quests q ON q.id = a.quest_id "
+            "WHERE q.campaign_id=? "
+            "ORDER BY q.id ASC, a.act_index ASC LIMIT 25",
+            (campaign['id'],)
+        ).fetchall()
+    finally:
+        conn.close()
+    needle = current.lower()
+    return [
+        app_commands.Choice(
+            name=f"#{r[0]} [{r[3]} → Act {r[1]}] {r[2]}"[:100],
+            value=r[0],
+        )
+        for r in rows
+        if needle in (r[2] or '').lower() or needle in (r[3] or '').lower()
+        or needle in str(r[0])
+    ][:25]
+
+
+@quest_act_group.command(
+    name='advance',
+    description='[DM] Advance the quest to its next act (canonical §1b gate).',
+)
+@app_commands.describe(quest_id='Quest whose act to advance (must have current_act_id set)')
+@app_commands.autocomplete(quest_id=quest_id_autocomplete)
+async def quest_act_advance_cmd(interaction: discord.Interaction, quest_id: int):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message("DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message("No active campaign.", ephemeral=True)
+        return
+    cur = get_current_act(campaign['id'])
+    if cur is None or cur.get('quest_id') != quest_id:
+        await interaction.response.send_message(
+            f"{E['facepalm']} Quest #{quest_id} is not the currently anchored "
+            f"quest, or that quest has no acts authored. Accept the quest "
+            f"first (and ensure its acts are seeded via `/quest seed` from "
+            f"skeleton.md `#### Acts` subsection).",
+            ephemeral=True
+        )
+        return
+    next_index = cur['act_index'] + 1
+    current_turn = get_turn_counter(campaign['id'])
+    result = quest_act_transition(
+        campaign['id'], quest_id, next_index,
+        source='act_advance', turn_counter=current_turn,
+    )
+    if result is None:
+        await interaction.response.send_message(
+            f"{E['facepalm']} Cannot advance — quest #{quest_id} has no "
+            f"act {next_index} (current is final act, or quest has no acts).",
+            ephemeral=True
+        )
+        return
+    await interaction.response.send_message(
+        f"{E.get('ok', '✅')} Advanced to **Act {next_index} — "
+        f"{result['act_title']}**. Composition directive will surface on the "
+        f"next turn.",
+        ephemeral=True
+    )
+
+
+# S61 v0.x patch — /quest act set, /quest act list, /quest act delete all
+# DROPPED. Operator surface trimmed to just /quest act advance + /quest act
+# add (the latter added in S62 patch). Non-sequential jumps + per-act
+# inspection + orphan cleanup were unused in live verify; sqlite-direct
+# manipulation remains available for the rare edge case.
+
+
+@quest_act_group.command(
+    name='add',
+    description='[DM] Author an act on an existing quest (Discord-side; no skeleton.md edit needed).',
+)
+@app_commands.describe(
+    quest_id='Quest to attach the act to',
+    act_index='Sequential ordinal (1, 2, 3...). Re-using an index updates that act in place.',
+    title='Short act title (e.g. "Approach the farmstead")',
+    description='Optional longer description for prompt-side context',
+)
+@app_commands.autocomplete(quest_id=quest_id_autocomplete)
+async def quest_act_add_cmd(interaction: discord.Interaction,
+                             quest_id: int, act_index: int,
+                             title: str, description: str = ''):
+    """S62 v0.x patch — Discord-side act authoring per operator feedback
+    ("I am never going to open an md file"). Skeleton.md authoring remains
+    available via `/quest seed` but is no longer the only path.
+
+    Idempotent on (quest_id, act_index) — re-using an index updates the
+    existing act in place rather than duplicating. Predicate JSON defaults
+    to empty (operator-only auto-suggester); v0.x doesn't expose predicate
+    authoring via slash (rare, narrow surface). If you want predicate
+    auto-fire, author via skeleton.md `#### Acts` subsection with
+    `Scene count threshold: N` / `Location: <name>` hints, then /quest seed."""
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message("DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message("No active campaign.", ephemeral=True)
+        return
+    quest = get_quest_by_id(campaign['id'], quest_id)
+    if quest is None:
+        await interaction.response.send_message(
+            f"{E['facepalm']} Quest #{quest_id} not found.", ephemeral=True
+        )
+        return
+    if act_index < 1:
+        await interaction.response.send_message(
+            f"{E['facepalm']} act_index must be >= 1.", ephemeral=True
+        )
+        return
+    act_id, was_new = quest_act_upsert(
+        campaign['id'], quest_id, act_index, title,
+        act_description=description,
+        transition_predicate_json='{}',
+        skeleton_origin=0,
+    )
+    if not act_id:
+        await interaction.response.send_message(
+            f"{E['facepalm']} Could not author act — engine refused. Check "
+            f"quest is in this campaign.", ephemeral=True
+        )
+        return
+    verb = "Added" if was_new else "Updated"
+    await interaction.response.send_message(
+        f"{E.get('ok', '✅')} {verb} Quest #{quest_id} **Act {act_index}: "
+        f"{title}**. Re-run `/quest act add` with the same act_index to "
+        f"edit; sequential ordinals (1, 2, 3...) drive `/quest act advance`.",
+        ephemeral=True
+    )
 
 
 bot.tree.add_command(quest_group)

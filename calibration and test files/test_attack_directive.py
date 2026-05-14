@@ -99,7 +99,10 @@ check_in('attack: severity surfaces',                 'meaningful', out)
 check_in('attack: reason field surfaces',             'Avrae handles attack rolls', out)
 check_in('attack: canonical-name reminder',           'canonical NPC name', out)
 # B2.1 follow-up: no-quotes rule (Avrae uses positional parsing)
-check_in('attack: no-quotes rule explicit',           'DO NOT wrap', out)
+# S65.A format unification — "DO NOT wrap" capitalization softened to
+# "Do NOT wrap" in the attack template after the bullet+backtick rewrite.
+# Substring check stays — partial-case match is fine.
+check_in('attack: no-quotes rule explicit',           'NOT wrap multi-word names in quotes', out)
 check_in('attack: positive example unquoted',         '!attack unarmed strike -t Garrick', out)
 check_not_in('attack: template itself unquoted',      '!attack "<weapon-name>"', out)
 # B2.1 follow-up: narration-required (LLM was emitting command-only)
@@ -120,12 +123,24 @@ skill_decision = RollDecision(
     reason="Sneaking past a guard.",
 )
 skill_out = skill_decision.to_prompt_directive()
-check_in('skill: mentions !check',                '!check stealth <DC>', skill_out)
+# S65 Fix 3 — DC is now engine-computed (severity='meaningful' → DC 15). The
+# directive renders the DC literal, not a `<DC>` placeholder. The previous
+# "DC GUIDANCE" framing was renamed to "DIFFICULTY TIER" (the DC integer is
+# no longer LLM-chosen; the tier table is informational only).
+check_in('skill: mentions !check',                '!check stealth 15', skill_out)
 check_not_in('skill: no attack template',         '<weapon-name>', skill_out)
 check_not_in('skill: no <No Target> warning',     '<No Target>', skill_out)
-check_in('skill: includes DC GUIDANCE',           'DC GUIDANCE', skill_out)
-check_in('skill: format template requires colon-name bold line',
-         '**!check stealth <DC> : <First Name>**', skill_out)
+check_in('skill: includes DIFFICULTY TIER',       'DIFFICULTY TIER', skill_out)
+check_in('skill: engine-computed DC label',       'Engine-computed DC: 15', skill_out)
+# S65.A format unification — bullet + bold-actor-prefix + boxed bare command.
+# Actor name lives OUTSIDE the backticks; box contains only Avrae syntax.
+check_in('skill: format template uses actor-outside-box shape (example)',
+         '- **Donovan:** `!check stealth 15`', skill_out)
+check_in('skill: format template includes <First Name> placeholder',
+         '- **<First Name>:** `!check stealth 15`', skill_out)
+check_not_in('skill: no <DC> placeholder remains', '<DC>', skill_out)
+check_not_in('skill: no legacy bold-around-command wrap', '**!check stealth', skill_out)
+check_not_in('skill: actor not inside backtick box', '`!check stealth 15 : Donovan`', skill_out)
 
 
 save_decision = RollDecision(
@@ -136,11 +151,20 @@ save_decision = RollDecision(
     reason="Reflex save against trap.",
 )
 save_out = save_decision.to_prompt_directive()
-check_in('save: mentions !save',                  '!save dex <DC>', save_out)
+# S65 Fix 3 — severity='dire' → DC 20.
+check_in('save: mentions !save',                  '!save dex 20', save_out)
 check_not_in('save: no attack template',          '<weapon-name>', save_out)
-check_in('save: includes DC GUIDANCE',            'DC GUIDANCE', save_out)
-check_in('save: format template requires colon-name bold line',
-         '**!save dex <DC> : <First Name>**', save_out)
+check_in('save: includes DIFFICULTY TIER',        'DIFFICULTY TIER', save_out)
+check_in('save: engine-computed DC label',        'Engine-computed DC: 20', save_out)
+# S65.A format unification — actor-outside-box shape. Box contains only
+# bare Avrae syntax; actor name lives in bold prefix outside backticks.
+check_in('save: format template uses actor-outside-box shape (example)',
+         '- **Donovan:** `!save dex 20`', save_out)
+check_in('save: format template includes <First Name> placeholder',
+         '- **<First Name>:** `!save dex 20`', save_out)
+check_not_in('save: no <DC> placeholder remains', '<DC>', save_out)
+check_not_in('save: no legacy bold-around-command wrap', '**!save dex', save_out)
+check_not_in('save: actor not inside backtick box', '`!save dex 20 : Donovan`', save_out)
 
 
 no_roll_decision = RollDecision(needs_roll=False, reason="Casual chat.")

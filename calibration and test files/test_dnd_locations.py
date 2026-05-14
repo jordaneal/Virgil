@@ -330,7 +330,7 @@ parent_loc = location_upsert(del_camp, 'Hollowmoor', type='region')
 child_loc = location_upsert(del_camp, 'The Hollow Inn', type='tavern',
                             parent_location_id=parent_loc)
 # An NPC pinned to the child location
-npc_id = npc_upsert(del_camp, 'Tilda', location_id=child_loc)
+npc_id, _ = npc_upsert(del_camp, 'Tilda', location_id=child_loc) or (None, False)
 # Party in the child
 set_current_location(del_camp, child_loc)
 

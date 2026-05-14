@@ -190,7 +190,7 @@ guild3, cid3 = make_campaign('Consequence Count Test')
 bind_character(cid3, '333', 'Tova', race='Elf', char_class='Ranger', level=2)
 
 # Insert an NPC and two consequences of different kinds
-npc_id = npc_upsert(cid3, 'Garrick', role='merchant')
+npc_id, _ = npc_upsert(cid3, 'Garrick', role='merchant') or (None, False)
 check_truthy('cons_count setup: npc inserted', npc_id is not None)
 
 if npc_id:

@@ -109,12 +109,12 @@ check('original unaffected', get_turn_counter(CAMP), 2)
 
 
 # ─── set up NPCs ─────────────────────────────────────────────────────────────
-reginald_id = npc_upsert(CAMP, 'Reginald the Innkeeper', role='innkeeper')
-lira_id     = npc_upsert(CAMP, 'Lira', role='ranger')
-thorne_id   = npc_upsert(CAMP, 'Thorne', role='fence')
-kael_id     = npc_upsert(CAMP, 'Kael', role='captain')
+reginald_id, _ = npc_upsert(CAMP, 'Reginald the Innkeeper', role='innkeeper') or (None, False)
+lira_id, _     = npc_upsert(CAMP, 'Lira', role='ranger') or (None, False)
+thorne_id, _   = npc_upsert(CAMP, 'Thorne', role='fence') or (None, False)
+kael_id, _     = npc_upsert(CAMP, 'Kael', role='captain') or (None, False)
 # NPC in a different campaign for isolation testing
-other_npc   = npc_upsert(OTHER_CAMP, 'Garrick', role='smith')
+other_npc, _   = npc_upsert(OTHER_CAMP, 'Garrick', role='smith') or (None, False)
 
 check_truthy('reginald inserted', reginald_id)
 check_truthy('lira inserted', lira_id)

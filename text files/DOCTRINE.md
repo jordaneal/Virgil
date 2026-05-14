@@ -764,6 +764,50 @@ Concrete clauses (S43 prompt-side enforcement, verified live):
 
 **Filed v1.x candidate:** apply the pattern to other mode-transition surfaces if drift surfaces. Candidates: `_handle_rest_event` !lr/!sr (parallel combat→exploration trigger that doesn't currently call the buffer-reset helper); future exploration→travel transitions in `/travel`; downtime→exploration transitions if downtime mode lands. Each surface needs the same four-layer audit at design time.
 
+### §78.5 Substrate-agnostic and boundary-agnostic application
+
+**Anchored:** Session 49 (RollBuffer drain at rest-event boundary). Promoted from S48 implicit-application reading after S49 verified the third instance.
+
+**Trigger:** S48 (init-end RollBuffer drain) and S49 (rest-event RollBuffer drain) both applied §78 layer-1 cleanup to a substrate (in-memory RollBuffer) and boundary (rest event) the S45 anchoring did not explicitly name. Each application surfaced the same question: is the four-layer rule scoped to the surfaces named at anchor time (DB-side mechanical state, `!init end` boundary), or is it substrate-and-boundary-agnostic by intent? S49's quick-check recon confirmed a third instance and pushed past the two-instance threshold; the substrate-and-boundary-agnostic framing earned explicit codification.
+
+**Doctrine:** §78's four-layer rule applies **across substrates** (DB-side state, in-memory state, and any other persistence layer holding state that drove the prior mode) **and across boundaries** (`!init end`, `!lr`/`!sr` rest events, and any other mode-transition surface). The four layers themselves are unchanged across substrates and boundaries; what's load-bearing is the recognition that substrate diversity (DB vs in-memory) and boundary diversity (init-end vs rest-event vs future mode flips) do not earn carve-outs from the four-layer rule. The rule's intent at S45 anchor time was "all mechanical state resets at the boundary" — substrate is implementation detail, not doctrinal carve-up.
+
+**Why this is a composition observation rather than a new doctrine:** §78's four layers don't change; the surfaces they apply across are what's anchored by accumulated instances. This is parallel to the §17+§76 composition observation filed at S41: §17 names the discipline, §76 names the failure mode that discipline preempts, and the two compose into operational consequence. Here, §78 names the rule, and §78.5 names the surface-agnostic intent that future ships in adjacent territory inherit without re-deriving.
+
+**Project instances:**
+1. **S45 — DB substrate, init-end boundary.** Original anchoring. `clear_active_turn` + `clear_combatants` at `_handle_init_event` evt_type='end'.
+2. **S48 — In-memory substrate, init-end boundary.** `buffer.clear(guild_id)` + `init_end_rollbuffer_drained:` telemetry at `_handle_init_event` evt_type='end'. Surfaced that DB-side cleanup alone left in-memory RollBuffer holding stale events through the boundary.
+3. **S49 — In-memory substrate, rest-event boundary.** `buffer.clear(guild_id)` + `rest_event_rollbuffer_drained:` telemetry at `_handle_rest_event`, mode-agnostic placement. First boundary other than `!init end` covered.
+
+**Operational consequence:** when a new mode-transition surface is designed (future `/travel`, downtime→exploration, social→combat, etc.), the four-layer audit applies regardless of which substrates the prior mode populated. Layer-1 mechanical cleanup specifically extends to **every substrate carrying prior-mode state**, not just DB-side state. The audit checklist at design time: list every substrate (DB tables, in-memory buffers, caches, locks) the prior mode wrote to; ensure each gets cleanup at the boundary.
+
+**Cross-references:** §78 (parent rule); §17 (single write paths — each substrate's cleanup goes through its single drain entry per §17 discipline, e.g. `RollBuffer.clear` is the single drain entry reused by both S48 and S49 sites); §76 (sibling composition observation — §17+§76 is the discipline+failure-mode composition shape; §78+§78.5 is the rule+surface-agnostic-intent composition shape).
+
+**Filed v1.x candidate:** if a fourth substrate surfaces in a future ship (e.g. a new in-memory cache populated by combat mode, or a Discord-side state surface like reactions tied to mode), the substrate-agnostic intent is the audit hook — the candidate ship inherits the cleanup requirement at the boundary without needing a fresh doctrine derivation.
+
+### §78.6 Layer-4 render is conditional on content-to-render
+
+**Anchored:** Session 50 (COMBAT_END 0-action framing fix).
+
+**Trigger:** S45-anchored §78 layer-4 (boundary atmospheric closeout) was specced as unconditional LLM dispatch. S50 recon surfaced that on 0-action combats (mechanical begin + end with no narratable combat events between), the LLM render produces vivid speculative atmospherics — "clash of steel and shouted commands fade into a heavy silence, dust settling on the cobblestones" applied to a combat where no clash, no shouts, no dust occurred. The LLM had zero positive signal that 0-action happened and was directed by COMBAT_END framing to render combat-vocabulary atmospherics regardless. Symptom is framing drift within §77 (no adjudication crossed, but presupposed events that didn't exist).
+
+**Doctrine:** §78 layer-4's LLM RENDER is conditional on content-to-render; the BOUNDARY MARKER itself is unconditional. Layer-4 has two operational modes:
+- **LLM render** — fires when narratable content exists during the bounded mode session (multi-action combat). The LLM produces atmospheric closeout per §77 atmospheric continuity rules.
+- **Deterministic boundary marker** — fires when no narratable content existed during the bounded session (0-action combat). Engine emits fixed neutral text; LLM bypassed entirely.
+
+The choice between modes is content-conditioned: the dispatch surface tracks whether content-bearing events fired during the session and branches at boundary-dispatch time.
+
+**Why this is a refinement, not an amendment:** §78's four-layer rule is unchanged — mode transitions still require all four layers; boundary atmospheric closeout (layer 4) still part of the state-reset surface. What's refined is layer-4's internal structure: render-mode vs marker-mode is a content-conditioned operational choice within layer 4, not a layer-4 elision. The boundary itself is always acknowledged.
+
+**Project instances:**
+1. **S50 — COMBAT_END at !init end boundary.** Beat counter (BLOODIED_THRESHOLD_CROSSED + COMBATANT_DOWNED dispatches) tracked per-guild during combat via in-memory dict keyed by guild_id (§78.5 substrate match — transient state, transient substrate). ROUND_START does NOT increment (structurally always-fires regardless of content). COMBAT_END reads the counter and branches: 0 beats → deterministic neutral closeout posted directly (`_COMBAT_END_NEUTRAL_CLOSEOUT = "Combat ends. The moment passes."`); ≥1 beats → existing LLM dispatch unchanged. Counter cleared after dispatch (either branch). Telemetry primitives: `combat_end_zero_action: campaign={N} guild={N} beats=0 deterministic_closeout=1` and `combat_end_llm_dispatch: campaign={N} guild={N} beats={N}` distinguish the paths in journals.
+
+**Operational consequence:** when a new layer-4 dispatch is designed (future mode-transition surfaces with atmospheric closeout — exploration→travel, downtime→exploration, etc.), the design-time question is "what counts as content-to-render?" Each surface needs to define its content predicate (here: beats = BLOODIED + DOWNED dispatches during the session). The deterministic boundary marker is the fallback when the predicate is false. The marker itself need not be elaborate — a single sentence acknowledging the boundary is sufficient; richness lives in the LLM render path which only fires when there's content to render richly.
+
+**Cross-references:** §78 (parent rule); §78.5 (sibling refinement — substrate-agnostic application; §78.5 is about WHERE the four-layer rule applies, §78.6 is about HOW layer-4 behaves on edge cases); §77 (atmospheric continuity — §78.6 prevents §77 violations on weak-anchor cases by elision rather than relying on LLM compliance with negative clauses, which is empirically partial); §59 (pure-function sibling pattern — beat tracking could grow into a §59 sibling if other surfaces need it; for now in-memory dict + helpers in `discord_dnd_bot.py` is sufficient).
+
+**Filed v1.x candidate:** if a future ship surfaces a similar content-vs-marker distinction at another layer-4 surface (e.g. ROUND_START on a 0-action round, exploration→travel atmospheric closeout when no exploration narration occurred, downtime→exploration closeout when nothing happened during downtime), the §78.6 framing is the audit hook — that ship can cite §78.6 rather than re-derive. Each surface needs its own content predicate definition; the render-vs-marker split is the durable shape.
+
 ---
 
 ## Candidates (filed, not anchored)

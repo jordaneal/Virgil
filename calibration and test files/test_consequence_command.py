@@ -60,9 +60,9 @@ check_truthy('empty: has guidance text', '_No consequences' in empty_msg)
 
 
 # ─── set up canonical NPCs ───────────────────────────────────────────────────
-reginald = npc_upsert(CAMP, 'Reginald the Innkeeper', role='innkeeper')
-lira     = npc_upsert(CAMP, 'Lira', role='ranger')
-thorne   = npc_upsert(CAMP, 'Thorne', role='fence')
+reginald, _ = npc_upsert(CAMP, 'Reginald the Innkeeper', role='innkeeper') or (None, False)
+lira, _     = npc_upsert(CAMP, 'Lira', role='ranger') or (None, False)
+thorne, _   = npc_upsert(CAMP, 'Thorne', role='fence') or (None, False)
 
 
 # ─── apply proposals (light integration: capture → list) ─────────────────────

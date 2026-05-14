@@ -2673,13 +2673,507 @@ New file `test_npc_token_prefix_collapse.py`: 8 scenarios, 41 assertions, all gr
 | **Tests passing** | 41/41 new + 39/39 `test_npc_near_match.py` + 219/219 `test_npc_extractor.py` (regression sweep intact) |
 | **Patches landed** | 1 architectural ship (Path A spec→review→implement); 1 doctrine amendment (§14.1 first amendment-to-existing-lock the project has shipped); 1 operational migration (3 rows sum-into-canonical) |
 | **Recon result** | External reviewers (ChatGPT + Gemini) converged on 7 of 8 contested points; single divergence resolved toward Gemini on cleanup-with-2B logic |
-| **Live-verify results** | Structural: 41/41 tests pass, bot restart clean (PID 247822), migration values exact (44/51/42), regression sweep intact. Behavioral verify pending operator-side Discord walk-through. |
+| **Live-verify results** | Structural: 41/41 tests pass, bot restart clean (PID 247822), migration values exact (44/51/42), regression sweep intact. **Behavioral: closed live in campaign 17 — collapse log fired twice on "Eldrin" short-form emission, anchor mc bumped 44→46, zero bare-firstname rows regrew, resolver renders canonical names, zero ambiguous-anchor logs.** Loop closed end-to-end. |
 | **Doctrine anchored** | §14.1 (first amendment-to-existing-lock; new sub-numbering precedent in DOCTRINE.md) |
 | **Doctrine candidates filed** | None pre-emptively. The amendment-via-sub-numbering pattern is single-instance; awaits second occurrence to anchor as candidate. |
 | **HALT escalations** | 0 — all eight implementation phases passed gates without pivot-or-defer; line-number drift in brief surfaced as in-flight adjustment, not HALT |
-| **Ship status** | ✅ STRUCTURALLY SHIPPED — code + tests + docs + migration all green; behavioral verify pending operator Discord walk-through |
+| **Ship status** | ✅ SHIPPED LIVE — code + tests + docs + migration + behavioral verify all green; doctrine §14.1 active write-path invariant in campaign 17 |
 | **Multiplayer Fixes plan v3 status** | Unchanged — Ships 1-A-2-3 ✅ / Listener verification ✅ / Dumb combat ✅ / Dumb combat prompt purity ✅ / Combat-boundary hardening ✅ / Ships 4-5 MVP-test scrutiny pending playtest phase |
 | **Next session recommendation** | (1) Operator walks the five-step Discord verify in campaign 17 (~5 min) to close the behavioral verify; (2) Resume cleanup-tail queue from S46 (RollBuffer drain on !init end — medium friction; COMBAT_END 0-action framing — lowest friction; _handle_rest_event recon-now ship); (3) Playtest phase when operator's schedule allows; (4) Filed not sequenced: multi-section PHASE_12_SPEC header citation updates (polish), row 11 Garrik emergent-fragmentation ship (separate scope), PHASE_12_SPEC.md reconstruction (corpus-archaeology). |
 | **PC rsync** | done via targeted rsync of 6 files (dnd_engine.py, test_npc_token_prefix_collapse.py, NPC_TOKEN_PREFIX_COLLAPSE_SPEC.md, DOCTRINE.md, VIRGIL_MASTER.md, WHY.md); push-all-to-pc.sh NOT run per Deployment workflow; planner-side SESSIONS.md entry pending push-docs |
+
+---
+
+# Session 48 — RollBuffer Drain on `!init end` (§78 layer-1 in-memory substrate completion) (May 13, 2026)
+
+S47 closed the doctrine-amendment ship (§14.1 token-prefix collapse). S48 resumes the cleanup-tail queue with the first item: RollBuffer drain on `!init end`. Path B small ship; recon-first dispatch (per F-60 discipline) reshaped the friction ranking before action. Single doctrine-application ship; second instance of §78 four-layer rule applied at the state-reset surface, this time on the in-memory mechanical-event substrate.
+
+## What landed
+
+### 1. §78 layer-1 extends to in-memory substrate (application, not amendment)
+
+§78's four-layer rule (mode transitions = mechanical cleanup + narrative buffer reset + transitional-window silence + boundary atmospheric closeout) was anchored at S45 against DB-side mechanical state (`clear_active_turn`, `clear_combatants`). S48 recon confirmed that in-memory RollBuffer survives the same boundary without draining — stale rolls leak into post-combat narration via `_format_avrae_events`'s `=== AVRAE EVENTS ===` block, plus surface as `(N rolls in play)` footer artifact.
+
+The doctrine's intent was substrate-agnostic ("all mechanical state resets at the boundary"); the S45 anchoring just hadn't been tested against in-memory state. S48 ships the application without amendment to DOCTRINE.md — the rule already covers it. WHY.md captures the reasoning. Second instance backs the substrate-agnostic read: S45 (DB substrate) + S48 (in-memory substrate).
+
+### 2. Fix shape: guild-wide flush (Candidate A from recon)
+
+New `RollBuffer.size(guild_id) → int` in `avrae_listener.py` (raw storage count, no sweep — reflects events being cleared, not post-TTL survivors). Drain call `buffer.clear(message.guild.id)` + new telemetry `init_end_rollbuffer_drained: campaign={N} guild={N} drained_count={N}` in `_handle_init_event` evt_type='end' path, sibling step AFTER `reset_narrative_buffers_on_combat_exit` (S45) and BEFORE `_dispatch_combat_narration` (S45-F). Try/except wrapper — drain never blocks mechanical state.
+
+Fix-shape selection rationale recorded in recon: (A) guild-wide flush mirrors S45's blunt-full-reset pattern at the same layer; (B) per-actor drain has same strict-equality failure-mode risk that motivated §14.1; (C) push-into-COMBAT_END-dispatch intermixes mechanical-cleanup and atmospheric-closeout semantics violating layer separation; (D) skip-and-let-TTL-handle-it doesn't fix the symptom.
+
+### 3. Loop-closure proof in live verify
+
+Pre-fix journal evidence (2026-05-11T22:14:58): `buffer.consume: 1 events for actors=['donovan ruby'] roll_kinds=['check']` surfacing immediately after `init: combat ended`. Post-fix live verify (2026-05-13T17:00, Stonebridge market scene): `init_end_rollbuffer_drained: campaign=17 guild=1498592771471314977 drained_count=2` at boundary, followed by `buffer.consume: 0 events for actors=['donovan ruby']` on first post-combat turn. Direct counter — the failing-state journal evidence is now structurally impossible.
+
+## What didn't surface this session
+
+- **No HALT escalations.** Recon-first dispatch caught the friction-ranking reshape before action ship; action ship walked clean.
+- **No new doctrine candidates filed.** §78 four-layer rule's substrate-agnostic read earned its second instance via S48; not a new candidate, application of existing doctrine.
+- **No regressions.** Regression panel (S45 init_end_buffer_reset 10/10, S22 avrae_sweep 11/11, avrae_listener_edge_cases 7/7) intact.
+
+## Friction-ranking reshape from recon
+
+The S45 filing framed RollBuffer drain as "orthogonal buffer cleanup — medium operator-friction." Recon revealed two findings that reshaped the ship before dispatch:
+
+**Finding 1:** The footer artifact `(1 roll in play)` is the visible tip; the larger failure mode is the AVRAE EVENTS block pollution feeding stale mid-combat rolls into post-combat narration prompts. The LLM may narrate stale checks as if they just happened in the post-combat scene — the exact failure mode §77 (renderer-not-ruler) and §78 (mode-transition state-reset) exist to prevent. Reframed: structural-friction §78 completeness, not cosmetic-friction polish.
+
+**Finding 2:** §78's layer-1 anchoring at S45 named DB-side mechanical state; in-memory RollBuffer is structurally distinct substrate. Substrate-agnostic read of the doctrine resolves it without amendment.
+
+Neither finding came from doc-side recon — both required server-side journal grep + code read. F-60 discipline applied: filings are starting points, not specs; recon-first dispatch catches scope errors planner can't see.
+
+## Discovered findings (informational, not blocking)
+
+**`_handle_rest_event` (`!lr` / `!sr`) parallel surface.** Recon Phase 4 surfaced that rest-event path exits combat without going through `_handle_init_event` — same §78 four-layer audit likely applies, both for `reset_narrative_buffers_on_combat_exit` AND `buffer.clear(guild_id)`. Next queued ship per F-60 recon-first discipline. Observe playtest first; re-decide before dispatch.
+
+**Sweep telemetry silent because consume always wins.** `unconsumed_roll_swept:` (S22) has zero hits across the entire journal — every stale roll is consumed by some actor's turn rather than aging out. S48's drain will likely never trip the sweep either; if it does, existing telemetry catches it.
+
+**New telemetry primitive worth folding into playtest framework §5.2.** `init_end_rollbuffer_drained:` rate is meaningful state-integrity signal during playtest. Not blocking; flag for next framework touch.
+
+## What this session does NOT do
+
+- **Per-actor drain semantic (Candidate B).** Rejected per fix-shape selection — strict-equality matcher would inherit the same Phase 6 failure mode that motivated §14.1.
+- **Push-into-COMBAT_END drain (Candidate C).** Rejected — intermixes layer-1 (mechanical cleanup) with layer-4 (atmospheric closeout); violates layer separation.
+- **`_handle_rest_event` recon.** Next ship; not this one.
+- **DOCTRINE.md amendment.** §78 four-layer rule already covers substrate-agnostically; ship is application, not amendment.
+
+## Tests
+
+New file `test_init_end_rollbuffer_drain.py`: 10 assertions, all green. Regression panel (S45 init_end_buffer_reset 10/10, S22 avrae_sweep 11/11, avrae_listener_edge_cases 7/7) intact.
+
+## Cross-references
+
+- `VIRGIL_MASTER_S47_DELTA.md` — new three-patch delta following S45 delta pattern (header stamp + §78 layer-1 in-memory extension + Active scripts append)
+- `WHY.md` — architectural-call entry: why application not amendment, why guild-wide over per-actor, S45 cross-ref as DB-substrate first instance
+- `avrae_listener.py:768` — `buffer.clear(guild_id)` existing single drain entry, preserves §17
+- `discord_dnd_bot.py` `_handle_init_event` evt_type='end' — fix site, sibling to S45's `reset_narrative_buffers_on_combat_exit`
+- DOCTRINE.md §78 — unchanged; substrate-agnostic intent satisfied by application
+- S45 SESSIONS entry — first instance of §78 layer-1 (DB substrate)
+- F-60 — recon-first discipline that caught the friction-ranking reshape
+
+| Field | Value |
+|---|---|
+| **Code shipped** | `avrae_listener.py` (RollBuffer.size method addition); `discord_dnd_bot.py` (buffer.clear + telemetry in _handle_init_event evt_type='end' path); `VIRGIL_MASTER_S47_DELTA.md` (new three-patch delta); `WHY.md` (architectural-call entry) |
+| **Planner edits** | SESSIONS.md S48 entry |
+| **Tests added** | 10 assertions in `test_init_end_rollbuffer_drain.py` (new file) |
+| **Tests passing** | 10/10 new + regression panel intact (S45 10/10, S22 11/11, edge_cases 7/7) |
+| **Patches landed** | 1 doctrine-application ship (§78 layer-1 substrate-agnostic completion); 1 telemetry primitive (`init_end_rollbuffer_drained:`) |
+| **Recon result** | Recon-first dispatch reshaped friction ranking from cosmetic to structural-completeness; fix-shape A selected over B/C/D with named reasoning |
+| **Live-verify results** | All three pass criteria hit in campaign 17 Stonebridge market scene 17:00 UTC: drain fired with drained_count=2, post-combat footer clean (no rolls-in-play artifact), AVRAE EVENTS block empty on first post-combat narration. Direct counter to pre-fix journal evidence. |
+| **Doctrine anchored** | None (§78 substrate-agnostic application, not amendment) |
+| **Doctrine candidates filed** | None pre-emptively. Substrate-agnostic pattern has two instances now (S45 DB + S48 in-memory); if a third substrate surfaces in a future ship, anchor the pattern as candidate. |
+| **HALT escalations** | 0 — recon caught scope reshape before action ship; action ship walked clean |
+| **Ship status** | ✅ SHIPPED LIVE — code + tests + docs + live verify all green; §78 layer-1 now active across both substrates in campaign 17 |
+| **Multiplayer Fixes plan v3 status** | Unchanged — Ships 1-A-2-3 ✅ / Listener verification ✅ / Dumb combat ✅ / Dumb combat prompt purity ✅ / Combat-boundary hardening ✅ / Ships 4-5 MVP-test scrutiny pending playtest phase |
+| **Next session recommendation** | (1) `_handle_rest_event` recon-first ship — parallel surface to `_handle_init_event` per S48 recon Phase 4; same §78 audit applies. (2) COMBAT_END 0-action framing — lowest-friction creative-writing fix from S46 queue. (3) Playtest phase when schedule allows. (4) Filed not sequenced: row 11 Garrik emergent-fragmentation ship, multi-section PHASE_12_SPEC header citations, PHASE_12_SPEC.md reconstruction, fold `init_end_rollbuffer_drained:` into playtest framework §5.2 on next framework touch. |
+| **PC rsync** | done via targeted rsync of 5 files (avrae_listener.py, discord_dnd_bot.py, test_init_end_rollbuffer_drain.py, WHY.md, VIRGIL_MASTER_S47_DELTA.md); push-all-to-pc.sh NOT run per Deployment workflow; planner-side SESSIONS.md entry pending push-docs |
+
+---
+
+# Session 49 — Rest-Event RollBuffer Drain (mode-agnostic, §78 third-instance application) (May 13, 2026)
+
+S48 closed the init-end RollBuffer drain (§78 in-memory substrate completion). S49 continues the cleanup-tail queue with the rest-event boundary as parallel surface. Path B small ship; recon-first dispatch (per F-60) reshaped scope before action, and a quick-check follow-up surfaced an S48 framing correction that this entry carries forward honestly per the append-only ledger convention.
+
+## Context correction (S48 framing)
+
+S48's SESSIONS entry recommended `_handle_rest_event` recon-first as the next ship and framed the combat-mode branch of that handler as never-having-fired in production. A quick-check recon dispatched pre-S49-action surfaced that this was wrong: the combat-mode branch fired once on 2026-04-30T09:36:49 (campaign 20, guild=1498592771471314977). S48 entry is preserved as the planner's read at the time; this entry carries the corrected understanding. The Apr 30 firing produced no visible drift in the post-rest narration — actor extraction fell to the `'someone'` fallback, which kept the rest event from matching any consume filter and the substrate concern stayed unrealized.
+
+The correction reshaped the ship's framing from "anticipated-friction protection on an unfired path" to "observed-once-but-symptom-free path with serendipitous extraction-fallback protection." The fix-shape decision (B over A/C) survived the correction — the Apr 30 evidence doesn't change that layer-2/4 §78 gaps have never produced symptoms even on the path's one firing; "evolve from observed friction" still defers those layers. What the correction DID change: the mode-agnostic substrate-completion drain (B) earned its slot more clearly, because the serendipitous protection from actor-extraction fallback is structural unreliability rather than structural safety.
+
+## What landed
+
+### 1. §78 layer-1 third-instance application at rest-event boundary
+
+`buffer.clear(message.guild.id)` + `rest_event_rollbuffer_drained:` telemetry inside `_handle_rest_event`, mode-agnostic placement (outside the `if current_mode == 'combat'` branch), AFTER `advance_time`. Try/except wrapper. Telemetry includes `rest_kind` field (long rest / short rest / rest) for playtest pattern analysis.
+
+Mode-agnostic placement is the load-bearing design choice. Two reasons:
+- Rest events pollute RollBuffer regardless of mode; the combat-mode gate would leave exploration-mode rests with the same substrate gap.
+- Serendipitous protection via actor-extraction fallback to `'someone'` is real but unreliable; if Avrae's embed format changes or actor extraction improves, the gap surfaces immediately. Mode-agnostic drain protects against that without depending on extraction behavior.
+
+Reuses `RollBuffer.size()` (S48 addition) and existing `RollBuffer.clear()`. §17 single-write-path preserved.
+
+### 2. Test-development self-correction (methodological note)
+
+Initial mode-agnostic placement assertion used naive indent comparison (drain at indent depth 12, combat-branch body also at depth 12 — false equality, would have falsely-passed on a load-bearing design test). Switched to structural anchor (`# Track 4 #3 — time advancement` comment marks the first mode-agnostic line after the if/else block). Caught pre-ship, not post-hoc. Documented in WHY.md.
+
+The pattern is worth noting because the test was about to falsely-pass on the WHOLE POINT of the ship: if the assertion can't distinguish "outside the if/else" from "inside the combat branch," the test isn't testing mode-agnostic placement, it's just testing that the line exists somewhere in the handler body.
+
+### 3. Deferred per "evolve from observed friction"
+
+Combat-mode-branch §78 layer-2 (`reset_narrative_buffers_on_combat_exit` inside the combat-mode branch) and layer-4 (COMBAT_END-equivalent dispatch or new `REST_END_FROM_COMBAT` directive kind) gaps remain in code. Apr 30 firing didn't produce visible drift; deferred until playtest or production evidence justifies the ship. Audit findings durable in S48 recon doc + this entry; future ship dispatches quickly when justified.
+
+Layer-4 specifically: if it ever lands, it likely warrants a new `REST_END_FROM_COMBAT` trigger kind rather than reusing COMBAT_END — the existing `_COMBAT_NARRATION_INVARIANTS` and phantom-NPC clauses are tuned to `!init end` confirmation semantics and would produce off-kilter rest narration ("clash of steel" applied to "the party rests"). Filing the shape, not committing to it.
+
+## What didn't surface this session
+
+- **No HALT escalations.** One in-flight test-development self-correction (naive indent → structural anchor) but caught pre-ship and resolved without invoking pivot-or-defer.
+- **No new doctrine candidates filed pre-emptively.** §78 substrate-agnostic application is now at three instances (S45 DB-init-end + S48 in-memory-init-end + S49 in-memory-rest-event) — crosses the two-instance threshold for doctrine-candidate filing; planner reconciliation note below.
+- **No regressions.** Regression panel: S48 init_end_rollbuffer_drained 10/10 + S45 init_end_buffer_reset 10/10 + S22 avrae_sweep 11/11 + avrae_listener_edge_cases 7/7 all intact.
+
+## Doctrine candidate surfaced (not yet filed)
+
+§78 substrate-agnostic application has three instances now — above the two-instance threshold per WORKING_WITH_CLAUDE.md anchoring discipline. The composition observation is: "the four-layer rule applies across substrates (DB / in-memory) and across boundaries (init-end / rest-event), not just at the original anchored surface." The four layers themselves are unchanged across instances; what's anchored by three-instance accumulation is the substrate-and-boundary-agnostic intent.
+
+Filing shape if anchored: `.5` sibling per the composition-observation pattern WORKING_WITH_CLAUDE.md names ("composition observations file as `.5` siblings once first instance is concrete"). §78.5 substrate-agnostic application, or whatever numbering convention DOCTRINE.md uses for sub-clauses of existing entries.
+
+Not filed in this session pre-emptively per the discipline rule against planner-side momentum filings. Surfaced for operator decision: anchor now as §78.5 (three instances earned the candidate slot), or wait for a fourth substrate-or-boundary instance to confirm the pattern is genuine rather than coincidental. Planner lean: anchor now — substrate-agnostic intent is load-bearing for future ships in adjacent territory; explicit codification preserves the boundary against drift-toward-substrate-specific-readings.
+
+## Discovered findings (informational, not blocking)
+
+**`_handle_init_list_event` combat-exit audit (deferred from S48 recon Phase 5 #2).** Potential third combat-exit surface — init-list edit that clears the last enemy could exit combat without firing `!init end`. Recon-first, separate dispatch. Not sequenced.
+
+**Telemetry calibration window.** `rest_event_rollbuffer_drained:` is a new primitive; first few playtest sessions are the calibration window for what `drained_count` values look like in practice and whether `rest_kind` patterns reveal anything (long-rest vs short-rest frequency, etc.). No instrumentation needed; passive observation.
+
+**`init_end_rollbuffer_drained:` + `rest_event_rollbuffer_drained:` both belong in playtest framework §5.2** on next framework touch.
+
+## What this session does NOT do
+
+- **Combat-mode-branch §78 layer-2/4 fixes** — deferred per observed-friction discipline.
+- **`_handle_init_list_event` audit** — separate scope.
+- **Shared `exit_combat_to_exploration` helper refactor** — still premature DRY at two-and-a-half instances (S48 full, S49 partial); 3 full instances would earn the abstraction, the rest-event boundary is partial.
+- **DOCTRINE.md amendment** — §78 is substrate-agnostic by intent; §78.5 candidate filing is operator decision, not auto-anchored.
+
+## Tests
+
+New file `test_rest_event_rollbuffer_drain.py`: 10 assertions, all green. Regression panel intact (4 prior test files, all pass).
+
+## Cross-references
+
+- `VIRGIL_MASTER_S49_DELTA.md` — new three-patch delta following S45/S47 pattern (header stamp + §78 layer-1 mode-agnostic rest-event extension + Active scripts append)
+- `WHY.md` — architectural-call entry: why mode-agnostic placement, why layer-2/4 gaps stay deferred, why source-text regression chosen over handler invocation, methodological note on the indent-vs-anchor self-correction
+- `discord_dnd_bot.py` `_handle_rest_event` — fix site, mode-agnostic placement after `advance_time`
+- `avrae_listener.py:768` — `buffer.clear` single drain entry, preserves §17
+- DOCTRINE.md §78 — unchanged; substrate-agnostic intent satisfied by application; candidate §78.5 surfaced for operator filing decision
+- S48 SESSIONS entry — second instance of §78 layer-1 (in-memory substrate, init-end boundary); S49 is third instance (in-memory substrate, rest-event boundary)
+- F-60 — recon-first discipline; this session's quick-check recon caught the S48 framing error
+
+| Field | Value |
+|---|---|
+| **Code shipped** | `discord_dnd_bot.py` (buffer.clear + telemetry in _handle_rest_event mode-agnostic placement); `VIRGIL_MASTER_S49_DELTA.md` (new delta artifact); `WHY.md` (architectural-call entry) |
+| **Planner edits** | SESSIONS.md S49 entry (includes S48 framing correction) |
+| **Tests added** | 10 assertions in `test_rest_event_rollbuffer_drain.py` (new file) |
+| **Tests passing** | 10/10 new + regression panel intact (S48 10/10, S45 10/10, S22 11/11, edge_cases 7/7) |
+| **Patches landed** | 1 doctrine-application ship (§78 layer-1 third-instance, in-memory substrate at rest-event boundary); 1 telemetry primitive (`rest_event_rollbuffer_drained:`) |
+| **Recon result** | Pre-dispatch quick-check recon corrected S48 framing (Apr 30 combat-mode firing); fix-shape B (mode-agnostic Layer-1 drain) confirmed over A/C/D/E with named reasoning |
+| **Live-verify results** | **Closed live in campaign 17 (May 13, 18:57-18:58):** Long rest (`!game lr`) and short rest (`!game sr`) both fired `rest_event_rollbuffer_drained:` with `drained_count=1` and correct `rest_kind` field. Subsequent `buffer.consume` returned 0 events for `actors=['donovan ruby']`; subsequent narration posted with 0 avrae events. Both rest-kind paths verified. First journal evidence of structural protection over serendipity: pre-S49, rest events lingered up to 75s relying on `actor='someone'` extraction fallback to keep them out of PC filters; post-S49, drained immediately at boundary. Structural verify: 10/10 tests pass, bot restart clean, mode-agnostic placement test anchored on structural marker not indent. |
+| **Doctrine anchored** | **§78.5 Substrate-agnostic and boundary-agnostic application** — anchored as composition-observation sub-section under §78. Three instances back the anchoring: S45 (DB substrate, init-end boundary) + S48 (in-memory substrate, init-end boundary) + S49 (in-memory substrate, rest-event boundary). Parallels the §17+§76 composition pattern at S41. |
+| **Doctrine candidates filed** | None pre-emptively. §78.5 was surfaced + anchored within this session per operator decision (three-instance threshold met). |
+| **HALT escalations** | 0 — test-development self-correction (indent→anchor) resolved pre-ship without HALT |
+| **Ship status** | ✅ SHIPPED LIVE — code + tests + docs + restart + behavioral verify all green; §78 layer-1 now active across three instances (S45 DB-init-end + S48 in-memory-init-end + S49 in-memory-rest-event) |
+| **Multiplayer Fixes plan v3 status** | Unchanged — Ships 1-A-2-3 ✅ / Listener verification ✅ / Dumb combat ✅ / Dumb combat prompt purity ✅ / Combat-boundary hardening ✅ / Ships 4-5 MVP-test scrutiny pending playtest phase |
+| **Next session recommendation** | (1) COMBAT_END 0-action framing — lowest-friction creative-writing fix from S46 queue, last item before playtest opens. (2) Playtest phase when schedule allows. (3) Filed not sequenced: combat-mode-branch §78 layer-2/4 (deferred per observed-friction), `_handle_init_list_event` audit, row 11 Garrik emergent-fragmentation, multi-section PHASE_12_SPEC header citations, PHASE_12_SPEC.md reconstruction, fold both rollbuffer-drain primitives into playtest framework §5.2 on next framework touch. |
+| **PC rsync** | done via targeted rsync of 4 files (discord_dnd_bot.py, test_rest_event_rollbuffer_drain.py, WHY.md, VIRGIL_MASTER_S49_DELTA.md); push-all-to-pc.sh NOT run per Deployment workflow; planner-side SESSIONS.md entry pending push-docs |
+
+---
+
+# Session 50 — COMBAT_END 0-Action Framing Fix (§78.6 anchored, layer-4 render-vs-marker) (May 13, 2026)
+
+S49 closed the rest-event RollBuffer drain (§78 third-instance application). S50 closes the cleanup-tail queue with the last symptom-fix from S46's filing: COMBAT_END 0-action framing drift. Path B small ship per locked plan; first doctrine-anchoring this planner instance has shipped (§78.6 layer-4 render-vs-marker, sub-section under §78 parallel to §78.5). Recon-first dispatch (per F-60) reshaped the scope from "cosmetic creative-writing" to "layer-4 doctrine refinement."
+
+## What landed
+
+### 1. §78.6 anchored — layer-4 render is conditional on content-to-render
+
+DOCTRINE.md §78 gains a second sub-section parallel to §78.5. The refinement: §78 layer-4 (boundary atmospheric closeout) has two operational modes:
+- **LLM render** — fires when narratable content exists during the bounded mode session. The LLM produces atmospheric closeout per §77 atmospheric continuity rules.
+- **Deterministic boundary marker** — fires when no narratable content existed during the bounded session. Engine emits fixed neutral text; LLM bypassed entirely.
+
+The choice between modes is content-conditioned. §78's four-layer rule itself is unchanged — mode transitions still require all four layers; boundary atmospheric closeout still part of the state-reset surface. What's refined is layer-4's internal structure.
+
+**One-instance anchoring with named reasoning.** Standard discipline is two-instance threshold (per WORKING_WITH_CLAUDE.md). §78.6 anchored at one instance because the distinction is **structurally derived, not emergent** — the moment you ask "when should layer-4 dispatch LLM render vs deterministic marker," the framework forces the distinction. The two-instance threshold protects against premature anchoring of patterns that might not be real; here the pattern is locked by the structure of layer-4 itself, not waiting for confirmation. This is an explicit exception to the rule with named reasoning, not a quiet break.
+
+### 2. Symptom evidence and fix shape
+
+S50 recon reproduced the symptom from today's S48 verify walk: a 0-action combat (init begin + init end with no rolls between) produced COMBAT_END narration that fabricated atmospheric events that did not occur:
+
+> "The clash of steel and shouted commands fade into a heavy silence, the dust settling on the cobblestones as the last echoes die away. Donovan Ruby stands steady, his breath coming in measured pulls, the room now still and empty."
+
+No clash, no shouts, no dust, no motion, no echoes ever occurred in narration. Within §77 (no adjudication crossed; no HP claims; no kills) but the framing presupposed narratable events that didn't exist.
+
+Recon Phase 2 verdict: LLM had **zero positive signal** that 0-action happened, and the COMBAT_END framing explicitly directed combat-vocabulary atmospherics regardless. Not LLM compliance issue; directive design issue.
+
+Fix-shape locked at F (hybrid):
+- In-memory beat counter (`_combat_beat_counter: dict[int, int]`) keyed by guild_id
+- Increments on BLOODIED + DOWNED dispatches only (HP-state transitions = actual combat content)
+- ROUND_START + COMBAT_END do NOT increment (structurally always-fires / counter-reader respectively)
+- Reset on `!init begin`; cleared on `!init end` after dispatch
+- COMBAT_END dispatch branches: beats=0 → deterministic neutral closeout (`"Combat ends. The moment passes."`); beats≥1 → existing LLM render unchanged
+
+### 3. Beat definition explicit-not-inferred
+
+The action-ship dispatch pinned beat semantics explicitly so Code didn't have to infer at implementation time:
+- **Increment:** BLOODIED, DOWNED
+- **Do NOT increment:** ROUND_START (structurally always-fires regardless of content), COMBAT_END (the kind reading the counter)
+
+Rationale: BLOODIED and DOWNED require HP-state transitions which require actual combat content (attack hit + damage applied). ROUND_START fires when Avrae rotates the active turn back to the start of round, regardless of whether anyone took action. Counting ROUND_START would mis-classify exactly the 0-action case we're detecting.
+
+### 4. Cleanup-tail queue drained
+
+S46 filed five small follow-ups. Four shipped across S47-S50; one fixture-gated and waiting:
+
+| Filing | Disposition |
+|---|---|
+| COMBAT_END 0-action framing | ✅ S50 (this session) |
+| RollBuffer drain on `!init end` | ✅ S48 |
+| Phantom companions DB hygiene | ✅ S46 (deferred — surface was misnamed; redirected to `dnd_npcs` fragmentation → S47) |
+| `_handle_rest_event` parallel-surface audit | ✅ S49 |
+| DEATH_SAVE_EVENT_START | Fixture-gated; still waiting |
+
+**Cleanup tail is structurally drained.** Next phase opens to playtest.
+
+## What didn't surface this session
+
+- **No HALT escalations.** One regression-test fragility caught and fixed mid-ship (S48 test's hardcoded source-text window pushed past assertion target by §78.6's ~1500 additional chars; Code switched to dynamic boundary using `\nasync def ` anchor).
+- **No further doctrine candidates filed pre-emptively.** §78.6 is the doctrine anchored this session; no adjacent candidates surfaced.
+- **No regressions outside the one S48-test fragility, which was caught and resolved in-session.**
+
+## Methodological note worth carrying forward
+
+Hardcoded source-text-character-offsets in regression tests are fragility — when new code lands between the anchor and the window boundary, the window can push past the assertion target. S48's test used a hardcoded 4000-char window from a specific anchor; §78.6's branch additions pushed `_dispatch_combat_narration` past it. Code switched to a dynamic end-of-function boundary (`\nasync def ` anchor) which is more resilient to future additions. Pattern: prefer structural anchors (function boundaries, named markers) over absolute character counts. Not filing as candidate (one instance); mental note for future test writes.
+
+## Discovered findings (informational, not blocking)
+
+**ROUND_START 0-action edge** — same §78.6 shape could apply if the conservative environment-focused framing produces drift in playtest. Lower-priority than COMBAT_END was — ROUND_START framing already avoids specific-event presupposition. Filed; observe playtest first.
+
+**Combat-mode-branch §78 layer-2/4 at `_handle_rest_event`** — still deferred per S49 reconciliation. If playtest produces visible drift after rest-during-combat, the layer-4 fix there would benefit from §78.6's render-vs-marker framing.
+
+**`_handle_init_list_event` combat-exit audit** — third potential combat-exit surface; recon-first, separate dispatch.
+
+**Both rollbuffer-drain primitives + new beat-tracking primitives belong in playtest framework §5.2** on next framework touch (`init_end_rollbuffer_drained:`, `rest_event_rollbuffer_drained:`, `combat_end_zero_action:`, `combat_end_llm_dispatch:`, `combat_beat_incremented:`).
+
+## What this session does NOT do
+
+- **ROUND_START 0-action framing** — separate observation-justified ship if symptom surfaces.
+- **Refactor to shared layer-4 content-predicate helper** — premature DRY at one instance; future ship needing the pattern earns the abstraction.
+- **Schema changes** — in-memory substrate locked per §78.5 substrate-agnostic guidance.
+- **Per-actor or per-round beat granularity** — current ship is per-combat-session aggregate; finer granularity is candidate work if needed.
+
+## Tests
+
+New file `test_combat_end_zero_action.py`: 14 assertions, all green. Regression panel: S48 test fragility caught + fixed (10/10); S45 init_end_buffer_reset 10/10; S49 rest_event_rollbuffer_drain 10/10; S22 avrae_sweep 11/11; avrae_listener_edge_cases 7/7. Total 52 assertions pass.
+
+## Cross-references
+
+- `DOCTRINE.md` — §78.6 sub-section added (layer-4 render-vs-marker doctrine refinement); placed after §78.5 parallel-structurally
+- `VIRGIL_MASTER_S50_DELTA.md` — new four-patch delta following S45/S47/S49 pattern
+- `WHY.md` — architectural-call entry with five subsections (F vs A/B/C/D, beat = BLOODIED+DOWNED rationale, in-memory vs DB, §78.6 vs fold-in, branch at caller not dispatch function)
+- `discord_dnd_bot.py` — fix sites: module-level beat counter + reset in `_handle_init_event` evt_type='begin' + increment inside `_dispatch_combat_narration` + branch at COMBAT_END dispatch site in `_handle_init_event` evt_type='end'
+- DOCTRINE.md §78 — parent rule, unchanged; §78.6 refines layer-4 internal structure
+- DOCTRINE.md §78.5 — parallel sub-section; sibling refinement on different doctrine axis (§78.5 = where rule applies; §78.6 = how layer-4 behaves on edge cases)
+- S48 + S49 SESSIONS entries — sibling §78 application ships in the S45-S50 arc
+- S46 follow-up filings — cleanup-tail queue, now drained except for fixture-gated DEATH_SAVE_EVENT_START
+
+| Field | Value |
+|---|---|
+| **Code shipped** | `discord_dnd_bot.py` (module-level beat counter + 4 helpers + neutral closeout constant + reset wire + increment wire gated to BLOODIED/DOWNED + COMBAT_END branch site + counter cleanup); `DOCTRINE.md` (§78.6 sub-section); `VIRGIL_MASTER_S50_DELTA.md` (new delta artifact); `WHY.md` (architectural-call entry) |
+| **Planner edits** | SESSIONS.md S50 entry |
+| **Tests added** | 14 assertions in `test_combat_end_zero_action.py` (new file) |
+| **Tests passing** | 14/14 new + 38/38 regression (S48 10/10 after fragility fix, S45 10/10, S49 10/10, S22 11/11, edge_cases 7/7) |
+| **Patches landed** | 1 doctrine-anchoring ship (§78.6 one-instance anchored with named exception to two-instance rule); 3 telemetry primitives (`combat_end_zero_action:`, `combat_end_llm_dispatch:`, `combat_beat_incremented:`); 1 in-flight regression-test fix (S48 hardcoded source-text window → dynamic boundary) |
+| **Recon result** | Pre-dispatch recon reshaped scope from "cosmetic creative-writing" to "layer-4 doctrine refinement"; fix-shape F (hybrid: deterministic on 0-action, LLM on multi-action) confirmed over A/B/C/D/E with named reasoning |
+| **Live-verify results** | **Closed live in campaign 17 (May 13 evening):** Both Path 1 (0-action) and Path 2 (intended multi-action) reached `combat_end_zero_action: beats=0` — Path 2 didn't get a BLOODIED to actually exercise the multi-action branch, but wiring is functional and structural test 7 covers the multi-action branch with mocked beat counter. §78.6 is now active on the deterministic-marker path in production. Structural verify: 14/14 tests pass + 38/38 regression intact, bot restart clean. |
+| **Doctrine anchored** | **§78.6 Layer-4 render is conditional on content-to-render.** One-instance anchored with named exception to two-instance rule — the distinction is structurally derived from §78 layer-4's design, not emergent from accumulated cases. Parallel sub-section to §78.5 (§78.5 = where four-layer rule applies; §78.6 = how layer-4 behaves on content-conditioned edge cases). |
+| **Doctrine candidates filed** | None pre-emptively. |
+| **HALT escalations** | 0 — one regression-test fragility caught and resolved mid-ship (S48 hardcoded source-text window); did not escalate to HALT |
+| **Ship status** | ✅ SHIPPED LIVE — code + tests + docs + restart + behavioral verify all green; §78.6 active in production; cleanup tail closed |
+| **Multiplayer Fixes plan v3 status** | Unchanged — Ships 1-A-2-3 ✅ / Listener verification ✅ / Dumb combat ✅ / Dumb combat prompt purity ✅ / Combat-boundary hardening ✅ / Ships 4-5 MVP-test scrutiny pending playtest phase. **S46 cleanup-tail queue drained (4 of 5 shipped; DEATH_SAVE_EVENT_START fixture-gated).** |
+| **Next session recommendation** | **Playtest phase.** Cleanup tail is drained; no new architecture during playtest per S45-locked discipline. (1) Operator walks the S50 live verify (two paths in handoff). (2) Playtest sessions when schedule allows. (3) Filed not sequenced: ROUND_START 0-action edge (§78.6 pattern applies if symptom surfaces), combat-mode-branch §78 layer-2/4 at `_handle_rest_event` (deferred), `_handle_init_list_event` audit, row 11 Garrik emergent-fragmentation, DEATH_SAVE_EVENT_START (fixture-gated), multi-section PHASE_12_SPEC citations, PHASE_12_SPEC.md reconstruction, fold all five new telemetry primitives into playtest framework §5.2 on next framework touch. |
+| **PC rsync** | done via targeted rsync of 6 files (discord_dnd_bot.py, test_combat_end_zero_action.py, test_init_end_rollbuffer_drain.py [S48 regression fix], DOCTRINE.md, VIRGIL_MASTER_S50_DELTA.md, WHY.md); push-all-to-pc.sh NOT run per Deployment workflow; planner-side SESSIONS.md entry pending push-docs |
+
+
+
+
+
+---
+
+# Session 51 — Every-Turn Time Signal in SCENE STATE Block (§76 read-side analogue closure) (May 13, 2026)
+
+S50's live verify walk surfaced a separate body/footer divergence bug: footer rendered Day 10 Midday correctly (reads from DB) but narration body defaulted to "morning light" framing because the LLM had no current-time signal between time-advance moments. Code traced the mechanism, surfaced fix-shape framing, asked for the next move; planner shipped Path B small ship per §76's filed read-side candidate. Sixth consecutive small ship in the pre-playtest cleanup arc (S45 → S48 → S49 → S50 → S51).
+
+## Context
+
+Mechanism (per S50-verify recon): `compute_time_directive` (`dnd_orchestration.py:2917-2941`) fires only on `just_advanced=True` turns and provides the time signal via active narrate-the-advance beat. SCENE STATE block in `dnd_engine.py:5407-5413` carries Location / Tension / Recent NPCs / Last player action but NOT campaign_day or day_phase. So the LLM gets a time signal on the turn immediately after time advances, then nothing on subsequent turns. Footer (state_footer) reads campaign_day + day_phase directly from DB and renders correctly — explaining body/footer divergence symptom (footer: Day 10 Midday; body: "morning light washes over the market").
+
+§76's body explicitly named this filing: *"S36 time-of-day drift demonstrates that even a fully-locked field (engine-bound `day_phase`) can be drifted-against in adjacent narrative prose that no four-property field caused... filed candidate for future Ship 4/5 if observed friction accumulates."* S50 verify produced concrete observed friction. S51 closes the most common case at the prompt-input layer; the verifier candidate stays filed as safety net for partial LLM compliance.
+
+## What landed
+
+### 1. SCENE STATE block carries Day + Time of day every turn
+
+Fix-shape A locked over C (functionally identical; A is smaller delta; `compute_time_directive` stays untouched). Two lines added to `scene_state_section` at the build_dm_context site (between Location and Tension per Code's judgment on positional consistency):
+
+```
+Day: {scene_state.get('campaign_day', '?')}
+Time of day: {scene_state.get('day_phase', '?')}
+```
+
+Canonical keys per `get_scene_state` at `dnd_engine.py:1208-1209`. None/0/empty fallback renders `?` without crashing. `compute_time_directive` untouched per separate-responsibility logic: passive every-turn signal (S51's job) vs active narrate-the-advance beat (compute_time_directive's job).
+
+### 2. §76 read-side analogue first project instance
+
+§76's body named the read-side filing; S51 is the first instance of "engine-emit authoritative signal at prompt-input layer" pattern applied to read-side drift. Architecturally parallel to C1 (Engine-computed binding > validator-on-LLM-output) but on read-side rather than write-side — same argument shape (close the LLM-compliance dependency by giving the LLM ground truth), different surface (passive signal vs decision binding).
+
+Doctrine: §76 stays unchanged at one instance. Promotion to §76.1 sub-section (or similar) waits for second read-side instance per the emergent-pattern two-instance rule. The pattern is genuinely emergent here — the read-side analogue concept was named in §76's body but its operational shape is what S51 establishes; a second instance confirms the shape is generalizable rather than ad-hoc.
+
+### 3. Multi-turn live verify confirms structural fix
+
+Load-bearing case: turns 2+ post-advance previously drifted to "morning light" defaults; post-S51 hold the current time signal across multi-turn play. Verify walk in campaign 17 (Day 11 Midday → Evening via `/advance days:0 phases:2`):
+
+| Turn | Player input | Narration excerpt | Time-of-day reflected? |
+|---|---|---|---|
+| 1 (post-advance) | "I look around." | "the last amber of sunset slips away as the training ground's lanterns sputter to life" | ✓ Evening |
+| 2 | "I head over to the merchant stall." | "the sun's last amber slips behind the stone walls, and the lanterns along the training yard flicker to life" | ✓ Evening |
+| 3 | "What's in the back of the shop?" | scene continues consistently in Evening framing | ✓ Evening |
+| 4 | "I ask the keeper about the road north." | grounded in current moment | ✓ Evening |
+
+Pre-S51: only turn-1-after-advance had time signal; turns 2+ drifted. Post-S51: every turn carries authoritative time in SCENE STATE block.
+
+## Friction-ranking pattern (extending pattern from S46/S47, S48, S50)
+
+S51 differs from the three prior arc-internal recon-reshapes: the bug was caught DURING verify of an unrelated ship (S50), not via a filed follow-up at session start. Different surface for the same discipline: **verify walks surface adjacent bugs; treat them like recon findings.** Code's framing of fix shapes during S50 verify let planner reach decision quickly; ship was small enough for in-arc dispatch rather than queue-for-next-session.
+
+Worth noting that the F-60 "filings are starting points, not specs" discipline generalizes to "verify-surfaced findings are starting points, not specs" — the same recon-first-then-decide pattern applies. S50 verify gave concrete journal evidence + file:line citations before any fix shape locked.
+
+## What didn't surface this session
+
+- **No HALT escalations.** Two test-extraction bugs caught during writing (initial `section-bound find(')', ...)` returned wrong paren; `find("\\n\\n", ...)` for compute_time_directive truncated at docstring boundary). Both fixed with unique post-section anchors. Methodological pattern note below.
+- **No new §-entries.** §76 stays unchanged; promotion to §76.1 waits for second instance.
+- **No regressions.** S50 14/14, S48 10/10, S45 10/10, S49 10/10 all intact.
+
+## Methodological note (test-development pattern, third instance — anchoring threshold met)
+
+S49 caught a naive-indent test that would have falsely-passed on mode-agnostic placement. S50 caught a hardcoded 4000-char source-text window that became stale after §78.6 added ~1500 chars. S51 caught two text-extraction bugs (wrong-paren find + docstring-boundary truncation) during test writing.
+
+**Three instances now** of the pattern: hardcoded character-offsets, position-based finds, and indent-only comparisons in regression tests are fragility; structural anchors (function boundaries, named markers, content-pattern anchors, unique post-section markers) are the resilient version. Three-instance threshold met per WORKING_WITH_CLAUDE.md anchoring discipline. Earned a methodological note in WHY.md or WORKING_WITH_CLAUDE.md — candidate filing decision for operator. Not pre-emptively anchored per the discipline rule against planner-side momentum filings; surfaced for operator review.
+
+## Filed candidate — player-narrative-authority drift (separate ship, recon-first when justified)
+
+The S51 verify walk surfaced an adjacent drift mode worth flagging. Out of scope for this session per F-60 (recon-first, observe more playtest before fix-shape commits):
+
+**Symptom shape:** DM correctly refused player premise on turn 2 ("There's no merchant stall here — those stalls line the market square beyond the guild hall, not the training grounds") — correct §77-aligned response: scene boundary held, redirect offered. But on turn 3 ("What's in the back of the shop?"), the DM caved and fully materialized a merchant interior INSIDE the training ground (curtained doorway, crates, locked chest). Turn 4 doubled down with "the clatter of the market" — at the training ground.
+
+**Why this matters:** turn-2's correct refusal was undone by turn-3 player premise pressure. Player narration shouldn't materialize new physical surfaces by assuming them — letting them violates the canonical scene state (location='training ground', merchant stalls explicitly NOT there per turn-2's own declaration).
+
+**Doctrine adjacency:** §77 (atmospheric continuity, not adjudication) covers WHAT can be narrated; this is about WHO writes scene canon under player premise pressure. Possibly a §77 sub-section ("scene boundaries are DM-canon; player premise contradicting established scene gets refused-or-transitioned, not retroactively granted"). Sibling to §1a roll-discipline rules — LLM has hard-stops against inventing mechanical outcomes; could earn parallel hard-stops against inventing scene canon.
+
+**Filed candidates (not for action now):**
+- Recon-first ship: survey journal/playtest for other instances. If recurring: prompt-side invariant clause + engine-side scene-canon check + player-vs-DM authority directive.
+- Verifier candidate: SCENE_BOUNDARY_DRIFT violation class in `narration_verifier` — detects narration referencing entities/surfaces inconsistent with SCENE STATE's Location/canon.
+
+Not starting either tonight. Per `feedback_no_pre_sequencing.md` and §38 filed-not-sequenced — needs more playtest observations before committing to fix shape. Filed in this entry as durable artifact so future planners (including this planner across context boundaries) can find it when adjacent symptoms surface.
+
+## What this session does NOT do
+
+- **`compute_time_directive` changes.** Its `just_advanced` gate is correct as-is per separate-responsibility logic.
+- **Verifier-layer Ship 4/5 candidate.** Still filed under §76; this fix doesn't retire it.
+- **Player-narrative-authority drift fix.** Filed as above; recon-first when justified.
+- **§76.1 anchoring.** One instance; waits for second per emergent-pattern two-instance rule.
+- **DOCTRINE.md update.** §76's read-side framing already covers this; the fix is application of the named candidate, not amendment.
+
+## Tests
+
+New file `test_scene_state_time_signal.py`: 10 assertions, all green. Regression: S50 14/14, S48 10/10, S45 10/10, S49 10/10 all intact.
+
+## Cross-references
+
+- `VIRGIL_MASTER_S51_DELTA.md` — new three-patch delta (header stamp + SCENE STATE prompt block subsection + Section 3 Core Design Principles fourth bullet on §76 read-side analogue). Independent of S45/S47/S49/S50 deltas.
+- `WHY.md` — architectural-call entry: why engine-emit-every-turn over verifier-after-the-fact (C1 sibling shape on read-side) / why A over C (separates passive signal from active beat) / why §76 stays anchor at one instance (§76.1 waits for second instance per emergent-pattern rule).
+- `dnd_engine.py` `scene_state_section` build_dm_context site — fix site (Day + Time of day lines added between Location and Tension)
+- DOCTRINE.md §76 — parent doctrine, unchanged; S51 is first read-side application instance
+- C1 (Candidate) — architecturally parallel write-side pattern; same engine-emit-authoritative argument applied to read-side here
+- S50 SESSIONS entry — verify walk that surfaced this bug
+- §77 — protected by signal-side fix routing around LLM-compliance question entirely
+- §17 — preserved; no new write paths (SCENE STATE block is read-only from dnd_scene_state)
+
+| Field | Value |
+|---|---|
+| **Code shipped** | `dnd_engine.py` (Day + Time of day lines added to scene_state_section between Location and Tension; canonical key extraction from scene_state dict; None/0/empty fallback to `?`); `VIRGIL_MASTER_S51_DELTA.md` (new three-patch delta); `WHY.md` (architectural-call entry on read-side analogue) |
+| **Planner edits** | SESSIONS.md S51 entry; S50 entry's live-verify and ship-status fields updated to SHIPPED LIVE |
+| **Tests added** | 10 assertions in `test_scene_state_time_signal.py` (new file) |
+| **Tests passing** | 10/10 new + regression panel intact (S50 14/14, S48 10/10, S45 10/10, S49 10/10) |
+| **Patches landed** | 1 read-side prompt-input fix closing the most common S36 / S50-verify time-divergence symptom; 1 §76 read-side analogue first project instance |
+| **Recon result** | Bug surfaced during S50 verify walk (not a session-start filed follow-up); Code traced the mechanism (`compute_time_directive` just_advanced gate vs SCENE STATE block omission of time fields) + provided file:line citations + fix-shape framing pre-dispatch. Planner shipped Path B against shape A per locked plan. |
+| **Live-verify results** | **Closed live in campaign 17 (May 13 evening multi-turn walk):** Day 11 Midday → Evening via `/advance days:0 phases:2`; turns 1-4 post-advance all carry Evening framing in narration body (pre-S51: only turn 1 had signal; turns 2+ drifted to morning defaults). Footer + body now consistent across multi-turn play. |
+| **Doctrine anchored** | None this session. §76 read-side analogue gains first project instance; §76.1 sub-section waits for second instance per emergent-pattern two-instance rule. |
+| **Doctrine candidates filed** | None pre-emptively. Methodological note (source-text-character-offset fragility in regression tests) reaches three-instance threshold this session; candidate filing decision deferred to operator. Player-narrative-authority drift candidate filed in entry body as durable artifact; recon-first ship if symptom recurs. |
+| **HALT escalations** | 0 — two test-extraction bugs caught + fixed in-flight during test writing (wrong-paren find + docstring-boundary truncation); no doctrine HALT |
+| **Ship status** | ✅ SHIPPED LIVE — code + tests + docs + restart + behavioral verify all green; §76 read-side analogue closing the most common time-drift case in production |
+| **Multiplayer Fixes plan v3 status** | Unchanged — Ships 1-A-2-3 ✅ / Listener verification ✅ / Dumb combat ✅ / Dumb combat prompt purity ✅ / Combat-boundary hardening ✅ / Ships 4-5 MVP-test scrutiny pending playtest phase. S46 cleanup-tail queue drained at S50; S51 closes verify-surfaced adjacent bug. |
+| **Cleanup tail status** | Drained. S46 queue closed at S50. S51 is verify-surfaced cleanup, separate from the S46 queue. No further cleanup ships pending. |
+| **Next session recommendation** | **Playtest phase ready to open.** Six consecutive small ships closed; no architectural commits pending; gating bar fully cleared per HCN v3 §3.1. (1) Playtest sessions when schedule allows. (2) Operator decision on methodological-note anchoring (three-instance threshold met for source-text-fragility pattern). (3) Filed not sequenced: player-narrative-authority drift (recon-first if recurs in playtest), ROUND_START 0-action edge (§78.6 pattern applies if surfaces), combat-mode-branch §78 layer-2/4 at rest-event boundary, `_handle_init_list_event` audit, row 11 Garrik emergent-fragmentation, DEATH_SAVE_EVENT_START (fixture-gated), multi-section PHASE_12_SPEC citations, PHASE_12_SPEC.md reconstruction, fold all S48+S49+S50+S51 telemetry primitives into playtest framework §5.2 on next framework touch. |
+| **PC rsync** | done via targeted rsync of 4 files (dnd_engine.py, test_scene_state_time_signal.py, WHY.md, VIRGIL_MASTER_S51_DELTA.md); push-all-to-pc.sh NOT run per Deployment workflow; planner-side SESSIONS.md entry pending push-docs |
+
+
+
+
+
+---
+
+# Session 52 — Telemetry fold into PLAYTEST_OBSERVATION_FRAMEWORK §5.2 (May 13, 2026)
+
+Planner-only doc-edit ship. No Code dispatch, no production-code touch. S52 folds the five new telemetry primitives shipped across S48 + S49 + S50 into the playtest framework's state-integrity metrics section so playtest sessions inherit fresh grep instructions without re-deriving them.
+
+This is the kind of small-but-durable work that earns its slot when an operator-defined gap ("playtest postponed") opens between cleanup ships. Item shape mirrors S46's framework v2 revision: documentation work that compounds when playtest does open, no architectural commits pending while it lands.
+
+## What landed
+
+`PLAYTEST_OBSERVATION_FRAMEWORK.md` §5.2 — five new bullet entries appended after the existing paired-signal note. Each entry follows the established §5 format: log line shape (with field names) / what it tracks (operational meaning) / architectural signal (what rate or distribution tells the operator). Doctrine cross-references included (§78.5 for the two RollBuffer drains; §78.6 for the three COMBAT_END layer-4 primitives).
+
+Primitives folded:
+- `init_end_rollbuffer_drained:` (S48, §78.5)
+- `rest_event_rollbuffer_drained:` (S49, §78.5; carries `rest_kind` field distinguishing long-rest vs short-rest)
+- `combat_end_zero_action:` (S50, §78.6; layer-4 BOUNDARY MARKER branch)
+- `combat_end_llm_dispatch:` (S50, §78.6; layer-4 LLM RENDER branch)
+- `combat_beat_incremented:` (S50, §78.6; per-dispatch increment, gated to BLOODIED + DOWNED kinds)
+
+Status header at top of framework doc carries the new revision note: "Revised S52 — §5.2 telemetry fold..." alongside the existing S46 revision note.
+
+## What this session does NOT do
+
+- **Touch any code.** Pure planner doc-edit ship.
+- **Anchor new doctrine.** The five primitives already cite their anchored doctrine entries (§78.5 / §78.6); the fold is operational, not doctrinal.
+- **Change framework structure.** Bullets append to existing §5.2 in established format. No new sub-sections, no metric-set additions, no threshold revisions.
+- **Run any external review.** Single-source planner work; no convergent-review trigger conditions met.
+
+## Friction-ranking observation
+
+S52 is the second planner-only doc-edit ship this arc (first was S51's WORKING_WITH_CLAUDE.md anchor for structural-anchors-over-character-offsets methodological note). Both shipped between operator-defined gaps in higher-leverage work. The pattern: planner-only doc-edit ships earn their slot when (a) the work is durable (doesn't get stale), (b) compounds across future ships (next planner / framework user inherits the addition), (c) the gap is operator-defined rather than planner-manufactured. S52 hits all three: telemetry fold is durable until the primitives themselves change; compounds for every future playtest session; the gap was "playtest postponed" not "planner needs busywork."
+
+Worth flagging as discipline: doc-edit ships are legitimate work, but require the same earned-slot framing as code ships. The integrity check is whether the gap is real (operator-defined) or whether the ship is filling time. S52 + S51's WORKING_WITH_CLAUDE anchor both pass the check; pre-emptive doc edits during active ship sequences would not.
+
+## Tests
+
+N/A. Doc-edit ship.
+
+## Cross-references
+
+- `PLAYTEST_OBSERVATION_FRAMEWORK.md` §5.2 — destination of the fold
+- S48 / S49 / S50 SESSIONS entries — origin of the five primitives
+- DOCTRINE.md §78.5 / §78.6 — anchored doctrine these primitives serve
+- S51 SESSIONS entry — named this fold as filed-not-sequenced item; S52 closes it
+- `WORKING_WITH_CLAUDE.md` Workflow refinements — "Planner does not add doc edits without earned justification" discipline applied here
+
+| Field | Value |
+|---|---|
+| **Code shipped** | None. Planner-only doc-edit ship. |
+| **Planner edits** | `PLAYTEST_OBSERVATION_FRAMEWORK.md` (§5.2 telemetry fold: 5 new bullets + status-header revision note); SESSIONS.md S52 entry |
+| **Tests added** | None |
+| **Tests passing** | N/A |
+| **Patches landed** | 1 framework operational fold (5 telemetry primitives documented for playtest grep) |
+| **Recon result** | N/A — primitives were already operational from S48/S49/S50 ships; this fold is documentation only |
+| **Live-verify results** | N/A — framework doc is reference material, not executable code |
+| **Doctrine anchored** | None |
+| **Doctrine candidates filed** | None |
+| **HALT escalations** | 0 (one MCP edit timeout recovered cleanly on retry) |
+| **Ship status** | ✅ SHIPPED — doc edit landed, framework status header updated, ready for playtest grep when phase opens |
+| **Multiplayer Fixes plan v3 status** | Unchanged |
+| **Cleanup tail status** | Drained at S50. S51 + S52 are post-cleanup follow-on ships, not S46 queue items. |
+| **Next session recommendation** | Playtest when schedule allows. Filed not sequenced: player-narrative-authority drift (recon-first if recurs), ROUND_START 0-action edge, combat-mode-branch §78 layer-2/4 at rest-event boundary, `_handle_init_list_event` audit, row 11 Garrik emergent-fragmentation, DEATH_SAVE_EVENT_START (fixture-gated), multi-section PHASE_12_SPEC citations, PHASE_12_SPEC.md reconstruction. |
+| **PC rsync** | N/A — planner-only ship, edit landed directly on PC via MCP; push-docs required to land server-canonical |
+
+
+
+
+
 
 

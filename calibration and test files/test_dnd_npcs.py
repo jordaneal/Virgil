@@ -81,9 +81,9 @@ check('upsert: curly-only-ws returns None', npc_upsert(CAMP, '\t\n'), None)
 
 
 # ─── Insert: simple NPC ───────────────────────────────────────────────────────
-gid = npc_upsert(CAMP, 'Garrick', role='blacksmith',
-                 description='gruff, missing left ear',
-                 origin_excerpt='You meet Garrick, a gruff smith.')
+gid, _ = npc_upsert(CAMP, 'Garrick', role='blacksmith',
+                    description='gruff, missing left ear',
+                    origin_excerpt='You meet Garrick, a gruff smith.') or (None, False)
 check_truthy('insert: returns id', gid)
 
 g = npc_get(CAMP, gid)
@@ -112,7 +112,7 @@ check('get_by_name: case sensitive (no fuzzy)',
 # ─── Parser × parser: re-mention bumps mention_count + last_mentioned ─────────
 import time as _time
 _time.sleep(0.01)  # ensure ISO timestamp differs (microsecond resolution)
-gid2 = npc_upsert(CAMP, 'Garrick')
+gid2, _ = npc_upsert(CAMP, 'Garrick') or (None, False)
 check('upsert: same row id on dup',     gid2,                    gid)
 g = npc_get(CAMP, gid)
 check('upsert: mention_count bumped',   g['mention_count'],      2)
@@ -123,7 +123,7 @@ g_first = g['first_mentioned']
 
 
 # ─── Parser × parser: empty fields fill in, conflicts kept ────────────────────
-gid3 = npc_upsert(CAMP, 'Garrick', role='', description='')  # nothing to fill
+gid3, _ = npc_upsert(CAMP, 'Garrick', role='', description='') or (None, False)  # nothing to fill
 check('upsert: count bumped even with empty payload',
       npc_get(CAMP, gid)['mention_count'], 3)
 
@@ -134,7 +134,7 @@ check('upsert: parser conflict keeps existing role',
 
 
 # ─── Parser × parser: empty-then-fill ─────────────────────────────────────────
-mid = npc_upsert(CAMP, 'Mira')                           # bare insert
+mid, _ = npc_upsert(CAMP, 'Mira') or (None, False)       # bare insert
 m = npc_get(CAMP, mid)
 check('mira: role empty', m['role'], '')
 npc_upsert(CAMP, 'Mira', role='innkeeper')              # fill
@@ -144,9 +144,9 @@ check('mira: mention_count=2',             m['mention_count'], 2)
 
 
 # ─── Skeleton lock: parser cannot overwrite authored canon ────────────────────
-sid = npc_upsert(CAMP, 'Aldric', role='king',
-                 description='just king',
-                 skeleton_origin=True)
+sid, _ = npc_upsert(CAMP, 'Aldric', role='king',
+                    description='just king',
+                    skeleton_origin=True) or (None, False)
 check('skeleton insert: skeleton_origin=1',
       npc_get(CAMP, sid)['skeleton_origin'], 1)
 check('skeleton insert: mention_count=1',
@@ -161,7 +161,7 @@ check('skeleton lock: mention bumped',        a['mention_count'],   2)
 
 
 # ─── Promotion: parser-detected → skeleton.md ─────────────────────────────────
-pid = npc_upsert(CAMP, 'Bardus', role='guard')
+pid, _ = npc_upsert(CAMP, 'Bardus', role='guard') or (None, False)
 check('promo precondition: skeleton_origin=0',
       npc_get(CAMP, pid)['skeleton_origin'], 0)
 npc_upsert(CAMP, 'Bardus', role='captain', description='scarred',
@@ -183,7 +183,7 @@ check('reload: mention_count unchanged',   a['mention_count'],   2)
 
 # ─── Cross-campaign isolation ─────────────────────────────────────────────────
 CAMP2 = 9002
-gid_other = npc_upsert(CAMP2, 'Garrick', role='different smith')
+gid_other, _ = npc_upsert(CAMP2, 'Garrick', role='different smith') or (None, False)
 check_truthy('cross: separate row id',    gid_other != gid)
 check('cross: CAMP still has 1 Garrick',
       len([n for n in npc_list(CAMP) if n['canonical_name'] == 'Garrick']), 1)
@@ -196,9 +196,9 @@ check('cross: CAMP Garrick role unchanged',
 # ─── npc_list filter by location_id ───────────────────────────────────────────
 LOC_REDHAVEN = 1
 LOC_OTHER    = 2
-loc_npc1 = npc_upsert(CAMP, 'Tilda', location_id=LOC_REDHAVEN)
-loc_npc2 = npc_upsert(CAMP, 'Boris', location_id=LOC_OTHER)
-loc_npc3 = npc_upsert(CAMP, 'Cara',  location_id=LOC_REDHAVEN)
+loc_npc1, _ = npc_upsert(CAMP, 'Tilda', location_id=LOC_REDHAVEN) or (None, False)
+loc_npc2, _ = npc_upsert(CAMP, 'Boris', location_id=LOC_OTHER) or (None, False)
+loc_npc3, _ = npc_upsert(CAMP, 'Cara',  location_id=LOC_REDHAVEN) or (None, False)
 red = [n['canonical_name'] for n in npc_list(CAMP, location_id=LOC_REDHAVEN)]
 other = [n['canonical_name'] for n in npc_list(CAMP, location_id=LOC_OTHER)]
 check('list: redhaven filter',  sorted(red),    ['Cara', 'Tilda'])
@@ -232,7 +232,7 @@ check('aliases: cleared',             npc_get(CAMP, gid)['aliases'],      [])
 
 # ─── origin_excerpt truncation ────────────────────────────────────────────────
 long_ex = 'X' * 250
-oid = npc_upsert(CAMP, 'Bigtext', origin_excerpt=long_ex)
+oid, _ = npc_upsert(CAMP, 'Bigtext', origin_excerpt=long_ex) or (None, False)
 check('excerpt: truncated to 100',
       len(npc_get(CAMP, oid)['origin_excerpt']), 100)
 
@@ -425,12 +425,12 @@ ok_other = npc_upsert(OTHER_CAMP, 'Donovan Ruby', role='rogue')
 check_truthy('npc_upsert: same name in different campaign OK', ok_other)
 
 
-# ─── S7 — auto-execute quest dedup (Session 15) ──────────────────────────────
-# parse_auto_execute → execute_auto_actions QUEST_ADD branch must dedup
-# against existing ACTIVE quests (case+whitespace normalized). Manual
-# /quest add remains unrestricted; this is auto-execute scope only.
+# ─── S7 — quest dedup (Session 15; S65.1 migrated off execute_auto_actions) ──
+# `quest_add_with_dedup` dedups against existing ACTIVE quests (case+whitespace
+# normalized). Migrated from execute_auto_actions QUEST_ADD branch in S65.1
+# F-008 close. Manual /quest add remains unrestricted (uses raw quest_add).
 from dnd_engine import (           # noqa: E402
-    execute_auto_actions, quest_add, quest_set_status,
+    quest_add_with_dedup, quest_set_status,
 )
 
 # Fresh campaign for these tests
@@ -438,41 +438,31 @@ QD_GUILD = 'test-guild-quest-dedup-15'
 QD_CAMP = create_campaign(QD_GUILD, 'Quest Dedup Test')
 check_truthy('quest dedup: campaign created', QD_CAMP)
 
-# 1) First QUEST_ADD lands cleanly (no existing quests)
-results = execute_auto_actions(QD_CAMP, [
-    {'cmd': 'QUEST_ADD', 'args': ['Investigate the Crystal Cave']}
-])
-check('quest dedup: first add succeeds', len(results), 1)
-check('quest dedup: first add success flag', results[0][0], True)
+# 1) First add lands cleanly (no existing quests)
+result = quest_add_with_dedup(QD_CAMP, 'Investigate the Crystal Cave')
+check_truthy('quest dedup: first add succeeds', result is not None)
+check('quest dedup: first add was_new', result[1], True)
 
 # 2) Identical title → dedup, no new row
-results = execute_auto_actions(QD_CAMP, [
-    {'cmd': 'QUEST_ADD', 'args': ['Investigate the Crystal Cave']}
-])
-check('quest dedup: identical title rejected', len(results), 0)
+result = quest_add_with_dedup(QD_CAMP, 'Investigate the Crystal Cave')
+check('quest dedup: identical title rejected', result, None)
 
 # 3) Case-insensitive dedup
-results = execute_auto_actions(QD_CAMP, [
-    {'cmd': 'QUEST_ADD', 'args': ['investigate the crystal cave']}
-])
-check('quest dedup: case-insensitive', len(results), 0)
+result = quest_add_with_dedup(QD_CAMP, 'investigate the crystal cave')
+check('quest dedup: case-insensitive', result, None)
 
 # 4) Whitespace-normalized dedup ("Investigate  the  Crystal  Cave")
-results = execute_auto_actions(QD_CAMP, [
-    {'cmd': 'QUEST_ADD', 'args': ['Investigate  the  Crystal  Cave']}
-])
-check('quest dedup: whitespace-normalized', len(results), 0)
+result = quest_add_with_dedup(QD_CAMP, 'Investigate  the  Crystal  Cave')
+check('quest dedup: whitespace-normalized', result, None)
 
 # 5) Different title → succeeds
-results = execute_auto_actions(QD_CAMP, [
-    {'cmd': 'QUEST_ADD', 'args': ['Find the Lost Heirloom']}
-])
-check('quest dedup: different title succeeds', len(results), 1)
+result = quest_add_with_dedup(QD_CAMP, 'Find the Lost Heirloom')
+check_truthy('quest dedup: different title succeeds', result is not None)
+check('quest dedup: different title was_new', result[1], True)
 
 # 6) Completing a quest unblocks re-adding the same title (non-active filter).
-#    Find the original quest's id and complete it; then a new QUEST_ADD with
+#    Find the original quest's id and complete it; then a new add with
 #    the same title should succeed.
-all_quests_before = get_active_quests = None  # noqa: shadow + reset import
 from dnd_engine import get_all_quests, get_active_quests as _get_active  # noqa: E402
 
 before = _get_active(QD_CAMP)
@@ -481,17 +471,13 @@ check_truthy('quest dedup: crystal cave still active', crystal is not None)
 
 quest_set_status(QD_CAMP, crystal['id'], 'completed')
 # Now re-add — should succeed because it's no longer in the ACTIVE list
-results = execute_auto_actions(QD_CAMP, [
-    {'cmd': 'QUEST_ADD', 'args': ['Investigate the Crystal Cave']}
-])
-check('quest dedup: completed quest unblocks re-add', len(results), 1)
+result = quest_add_with_dedup(QD_CAMP, 'Investigate the Crystal Cave')
+check_truthy('quest dedup: completed quest unblocks re-add', result is not None)
 
 # Cross-campaign isolation: same title in a different campaign should land
 OTHER_QD_CAMP = create_campaign('test-guild-other-qd', 'Other Quest Campaign')
-results = execute_auto_actions(OTHER_QD_CAMP, [
-    {'cmd': 'QUEST_ADD', 'args': ['Investigate the Crystal Cave']}
-])
-check('quest dedup: cross-campaign isolated', len(results), 1)
+result = quest_add_with_dedup(OTHER_QD_CAMP, 'Investigate the Crystal Cave')
+check_truthy('quest dedup: cross-campaign isolated', result is not None)
 
 
 # ─── S3 — get_recently_active_npcs (Session 15) ───────────────────────────────

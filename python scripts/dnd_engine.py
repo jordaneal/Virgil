@@ -50,6 +50,16 @@ USE_KNOWLEDGE_GUIDANCE = True  # Corpus integration is a load-bearing design
                                 # CRD3+FIREBALL exemplars even when semantic
                                 # match is loose. Tonal bleed managed via prompt.
 
+# S65.1 F-008 close. When False, execute_auto_actions is a no-op (parse still
+# strips any stale LLM-emitted tail for display cleanup). State writes for
+# quest/clock/mode require operator slash commands (/quest add, /clock tick,
+# /mode). Rollback path: flip to True; the AUTO-EXECUTE prompt section was
+# removed from build_dm_context, so re-enabling also requires restoring that
+# section if the LLM is to be re-instructed to emit tails. Bare flag flip
+# preserves the parser as defense-in-depth (LLM may still spontaneously emit
+# a tail; parse_auto_execute strips it cleanly).
+AUTO_EXECUTE_ENABLED = False
+
 
 # ─────────────────────────────────────────────────────────
 # Logging
@@ -415,24 +425,86 @@ def db_init():
         "CREATE INDEX IF NOT EXISTS idx_loot_pending_lookup "
         "ON dnd_loot_pending(campaign_id, surfaced)"
     )
-    # Quest log — DM-managed, slash-command driven. Status lifecycle:
-    # active → completed | failed. Active quests inject into the DM prompt;
-    # completed/failed remain queryable via /quest list but stay out of the
-    # system prompt to keep focus tight (2C.2).
+    # Quest log — DM-managed, slash-command driven. Status lifecycle (Quest
+    # Layer v0, S56): offered → in-progress → delivered | failed | abandoned.
+    # In-progress quests inject into the DM prompt; other statuses are
+    # queryable via /quest list but stay out of the system prompt.
+    #
+    # v0 amendment: 6 columns added additively (offer_npc_id FK to dnd_npcs,
+    # offered_turn, accepted_turn, delivered_turn, reward_summary,
+    # skeleton_origin). Existing rows have NULLs; new helpers fill them on
+    # transition writes. Status enum migrated alias→canonical (see
+    # _migrate_quest_status below).
     conn.execute('''CREATE TABLE IF NOT EXISTS dnd_quests (
-        id           INTEGER PRIMARY KEY AUTOINCREMENT,
-        campaign_id  INTEGER NOT NULL,
-        title        TEXT    NOT NULL,
-        summary      TEXT    DEFAULT '',
-        status       TEXT    DEFAULT 'active',
-        priority     TEXT    DEFAULT 'normal',
-        given_by     TEXT    DEFAULT '',
-        created_at   TEXT    NOT NULL,
-        updated_at   TEXT    NOT NULL
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        campaign_id     INTEGER NOT NULL,
+        title           TEXT    NOT NULL,
+        summary         TEXT    DEFAULT '',
+        status          TEXT    DEFAULT 'in-progress',
+        priority        TEXT    DEFAULT 'normal',
+        given_by        TEXT    DEFAULT '',
+        offer_npc_id    INTEGER,
+        offered_turn    INTEGER,
+        accepted_turn   INTEGER,
+        delivered_turn  INTEGER,
+        reward_summary  TEXT    DEFAULT '',
+        skeleton_origin INTEGER DEFAULT 0,
+        created_at      TEXT    NOT NULL,
+        updated_at      TEXT    NOT NULL
     )''')
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_quests_campaign_status "
         "ON dnd_quests(campaign_id, status)"
+    )
+    # v0 audit table — append-only state-transition log mirroring the
+    # dnd_time_advancements pattern (S27 precedent). Every quest_offer /
+    # quest_accept / quest_deliver / quest_fail / quest_abandon transition
+    # writes a row here. Source enum: 'offer' | 'accept' | 'deliver' |
+    # 'fail' | 'abandon' | 'seed_skeleton' | 'delete' | 'add'.
+    # Composition Layer v0 (S60) — extended with act-transition source enum
+    # values ('act_advance', 'act_set', 'act_override', 'act_propose') +
+    # `to_act_index` column for act-transition rows. Status-transition rows
+    # leave to_act_index NULL; act-transition rows leave from_status /
+    # to_status NULL. Source discriminates by enum value (§11.8 lock).
+    conn.execute('''CREATE TABLE IF NOT EXISTS dnd_quests_audit (
+        id             INTEGER PRIMARY KEY AUTOINCREMENT,
+        campaign_id    INTEGER NOT NULL,
+        quest_id       INTEGER NOT NULL,
+        from_status    TEXT    DEFAULT '',
+        to_status      TEXT,
+        source         TEXT    NOT NULL,
+        actor_npc_id   INTEGER,
+        turn_counter   INTEGER,
+        detail         TEXT    DEFAULT '',
+        to_act_index   INTEGER,
+        created_at     TEXT    NOT NULL
+    )''')
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_quests_audit_campaign_quest "
+        "ON dnd_quests_audit(campaign_id, quest_id)"
+    )
+    # Composition Layer v0 (S60) — `dnd_quest_acts` table. FK to dnd_quests
+    # with ON DELETE CASCADE per §11.13 lock — parent quest delete auto-removes
+    # child acts. UNIQUE constraint on (quest_id, act_index) makes
+    # quest_act_upsert idempotent by construction. PRAGMA foreign_keys=ON
+    # required for CASCADE to fire; enforced at cascade-firing helper sites
+    # (quest_delete, campaign_delete_cascade) per per-connection PRAGMA
+    # semantics in SQLite.
+    conn.execute('''CREATE TABLE IF NOT EXISTS dnd_quest_acts (
+        id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+        quest_id                  INTEGER NOT NULL REFERENCES dnd_quests(id) ON DELETE CASCADE,
+        act_index                 INTEGER NOT NULL,
+        act_title                 TEXT    NOT NULL,
+        act_description           TEXT    DEFAULT '',
+        transition_predicate_json TEXT    DEFAULT '{}',
+        skeleton_origin           INTEGER DEFAULT 0,
+        created_at                TEXT    NOT NULL,
+        updated_at                TEXT    NOT NULL,
+        UNIQUE(quest_id, act_index)
+    )''')
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_quest_acts_quest_id "
+        "ON dnd_quest_acts(quest_id)"
     )
     # Companions — DM-managed NPCs that travel with the party (2C.3).
     # Pure prompt content. No mechanical state. No autonomous logic.
@@ -552,6 +624,56 @@ def db_init():
         if col not in npc_cols:
             conn.execute(f"ALTER TABLE dnd_npcs ADD COLUMN {col} {ctype}")
     conn.commit()
+    # Quest Layer v0 (S56) — additive column migration on existing
+    # dnd_quests. CREATE TABLE above is correct for fresh DBs; this block
+    # handles pre-v0 databases where the columns don't exist yet.
+    quest_cols = {row[1] for row in conn.execute("PRAGMA table_info(dnd_quests)").fetchall()}
+    for col, ctype in [
+        ('offer_npc_id',    'INTEGER'),
+        ('offered_turn',    'INTEGER'),
+        ('accepted_turn',   'INTEGER'),
+        ('delivered_turn',  'INTEGER'),
+        ('reward_summary',  "TEXT DEFAULT ''"),
+        ('skeleton_origin', 'INTEGER DEFAULT 0'),
+    ]:
+        if col not in quest_cols:
+            conn.execute(f"ALTER TABLE dnd_quests ADD COLUMN {col} {ctype}")
+    conn.commit()
+    # Status enum alias→migrate per §1.B locked decision (Finding 1):
+    # existing 'active' rows become 'in-progress'; existing 'completed' rows
+    # become 'delivered'. Runs once; subsequent runs are no-ops because no
+    # rows match (idempotent by construction). R4 evidence confirmed
+    # near-zero migration cost (campaign 17 had 0 rows pre-v0).
+    cur = conn.execute(
+        "UPDATE dnd_quests SET status='in-progress' WHERE status='active'"
+    )
+    migrated_active = cur.rowcount
+    # S61 v0.x patch: flip canonical resolution status. Pre-S61 wrote
+    # 'delivered'; post-S61 writes 'completed'. The earlier S56 line that
+    # migrated legacy 'completed' → 'delivered' is now reversed — but no
+    # row ever held the intermediate 'completed' value going forward
+    # because the writer flipped at the same release. Migration is
+    # idempotent: rows at 'delivered' move to 'completed' once.
+    cur = conn.execute(
+        "UPDATE dnd_quests SET status='completed' WHERE status='delivered'"
+    )
+    migrated_delivered = cur.rowcount
+    conn.commit()
+    if migrated_active or migrated_delivered:
+        log(f"quest_status_migration: active→in-progress={migrated_active} "
+            f"delivered→completed={migrated_delivered}")
+    # Composition Layer v0 (S60) — additive column migration on existing
+    # dnd_quests_audit. New `to_act_index INTEGER` column carries act-transition
+    # row data. Existing status-transition rows have NULL (correct semantic).
+    # Pre-v0 audit table also had `to_status TEXT NOT NULL`; the new CREATE
+    # TABLE drops the NOT NULL so act-transition rows can leave to_status
+    # NULL. Existing tables can't be ALTERed to drop NOT NULL in SQLite, so
+    # for pre-v0 audit tables we keep to_status NOT NULL and helpers write
+    # an empty-string sentinel ('') for act-transition rows.
+    audit_cols = {row[1] for row in conn.execute("PRAGMA table_info(dnd_quests_audit)").fetchall()}
+    if 'to_act_index' not in audit_cols:
+        conn.execute("ALTER TABLE dnd_quests_audit ADD COLUMN to_act_index INTEGER")
+    conn.commit()
     conn2 = sqlite3.connect(DB_PATH)
     existing = {row[1] for row in conn2.execute("PRAGMA table_info(dnd_scene_state)")}
     if 'tension_int' not in existing:
@@ -591,6 +713,13 @@ def db_init():
         # set_active_turn / clear_active_turn (combat), and /play (clear).
         # Default '' = no active actor in footer yet.
         conn2.execute("ALTER TABLE dnd_scene_state ADD COLUMN last_active_actor TEXT DEFAULT ''")
+        conn2.commit()
+    if 'current_act_id' not in existing:
+        # Composition Layer v0 (S60). Single-writer is set_current_act()
+        # mirroring set_current_location. Default NULL = no act anchor
+        # (between quests, pure exploration, downtime). Preserved across
+        # Scene Lifecycle compression by structural inheritance (R6 evidence).
+        conn2.execute("ALTER TABLE dnd_scene_state ADD COLUMN current_act_id INTEGER DEFAULT NULL")
         conn2.commit()
     # Track 4 #3 (Session 27) — Time Progression v1. Two new scene_state
     # columns and one new audit-log table. Single write path is
@@ -691,6 +820,23 @@ def db_init():
                 f"dnd_scene_state.{_col}: {_e!r}")
     conn2.close()
     conn.close()
+    # Composition Layer v0 (S60) §11.13 amendment — verify
+    # PRAGMA foreign_keys=ON behavior is enabled at cascade-firing helper
+    # sites. SQLite PRAGMA foreign_keys is per-connection (default OFF), so
+    # this is informational at engine init: confirm the PRAGMA setting works
+    # on this build, and log a startup line so the operator can see the
+    # cascade infrastructure is wired. Each cascade-firing helper applies
+    # PRAGMA on its own connection (quest_delete, campaign_delete_cascade,
+    # and the test fixture).
+    try:
+        _fk_check = sqlite3.connect(DB_PATH)
+        _fk_check.execute("PRAGMA foreign_keys=ON")
+        _fk_state = _fk_check.execute("PRAGMA foreign_keys").fetchone()
+        _fk_check.close()
+        log(f"fk_cascade_init: pragma_supported={_fk_state[0]} "
+            f"(cascade-firing helpers apply per-connection PRAGMA)")
+    except Exception as _e:
+        log(f"fk_cascade_init: error={_e!r}")
 
 
 def get_active_campaign(guild_id: str):
@@ -950,6 +1096,16 @@ _CAMPAIGN_SCOPED_TABLES = (
     'dnd_consequences',  # Session 16 — child of dnd_npcs.npc_id; delete first
     'dnd_npcs',
     'dnd_locations',
+    'dnd_quests_audit',  # Quest Layer v0 (S56) — references dnd_quests.id;
+                          # delete before parent. Composition v0 (S60) extends
+                          # this surface with act-transition rows.
+    # Composition Layer v0 (S60) — dnd_quest_acts is intentionally NOT in
+    # this list. It has no `campaign_id` column (it's joined to a campaign
+    # via dnd_quests.quest_id); the per-table DELETE WHERE campaign_id=?
+    # loop would fail with `no such column: campaign_id`. The FK ON DELETE
+    # CASCADE on dnd_quest_acts.quest_id handles cleanup automatically
+    # when dnd_quests rows are deleted (with PRAGMA foreign_keys=ON, which
+    # campaign_delete_cascade applies per §11.13 lock).
     'dnd_quests',
     'dnd_companions',
     'dnd_combat_state',
@@ -986,6 +1142,12 @@ def campaign_delete_cascade(campaign_id: int) -> dict:
     """
     conn = sqlite3.connect(DB_PATH)
     try:
+        # Composition Layer v0 (S60) §11.13 — PRAGMA enforces FK cascades
+        # on this connection so dnd_quest_acts is cleaned up via the FK,
+        # belt-and-suspenders alongside the explicit per-table DELETE loop
+        # (which also handles `dnd_quest_acts` per _CAMPAIGN_SCOPED_TABLES
+        # ordering).
+        conn.execute("PRAGMA foreign_keys=ON")
         row = conn.execute(
             "SELECT id, status, name FROM dnd_campaigns WHERE id=?",
             (campaign_id,)
@@ -2583,98 +2745,839 @@ def enqueue_loot_for_defeats(campaign_id: int, creature_names: list[str]) -> int
 # DM-only via slash commands. No LLM extraction — quest lifecycle is structural,
 # managed by deterministic write paths. Active quests inject into the DM prompt.
 
-VALID_QUEST_STATUSES = {'active', 'completed', 'failed'}
+# Quest Layer v0 (S56) — canonical five-status set per §1.B lock.
+# S61 v0.x UX patch: canonical resolution status renamed delivered →
+# completed (operator preference for plain-English). Existing rows migrated
+# at db_init; 'delivered' kept as alias so any external caller that writes
+# the old value normalizes to canonical.
+VALID_QUEST_STATUSES = {'offered', 'in-progress', 'completed', 'failed', 'abandoned'}
+_QUEST_STATUS_ALIASES = {
+    'active': 'in-progress',     # legacy → canonical (S56 ship)
+    'delivered': 'completed',    # canonical-flip (S61 patch)
+}
 VALID_QUEST_PRIORITIES = {'low', 'normal', 'urgent'}
 
 
+def _normalize_quest_status(status: str) -> str:
+    """Map aliases to canonical names per §1.B. Returns the input unchanged
+    if it's already canonical or invalid (caller validates after normalize)."""
+    return _QUEST_STATUS_ALIASES.get(status, status)
+
+
+def _quest_audit(conn, campaign_id: int, quest_id: int,
+                 from_status: str, to_status: str, source: str,
+                 actor_npc_id: int = None, turn_counter: int = None,
+                 detail: str = '', to_act_index: int = None) -> None:
+    """Append-only audit-log writer for quest state AND act transitions.
+    Internal helper — must be called from inside the same connection/
+    transaction as the dnd_quests / dnd_quest_acts / dnd_scene_state write
+    to stay atomic with the state change.
+
+    Composition Layer v0 (S60) extension: source enum values
+    ('act_advance', 'act_set', 'act_override', 'act_propose') write
+    act-transition rows. For these, from_status/to_status are sentinel
+    empty strings; to_act_index carries the new act ordinal.
+
+    Pre-S60 audit table had `to_status TEXT NOT NULL`; helpers writing
+    act-transition rows pass '' for to_status to satisfy the constraint
+    on legacy DBs. Fresh DBs created with the S60+ CREATE TABLE allow
+    NULL to_status; both shapes coexist."""
+    conn.execute(
+        "INSERT INTO dnd_quests_audit "
+        "(campaign_id, quest_id, from_status, to_status, source, "
+        "actor_npc_id, turn_counter, detail, to_act_index, created_at) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?)",
+        (campaign_id, quest_id, from_status or '',
+         '' if to_status is None else to_status,
+         source, actor_npc_id, turn_counter, detail or '',
+         to_act_index, _now())
+    )
+
+
+_QUEST_SELECT_COLS = (
+    "id, title, summary, status, priority, given_by, "
+    "offer_npc_id, offered_turn, accepted_turn, delivered_turn, "
+    "reward_summary, skeleton_origin, created_at, updated_at"
+)
+
+
+def _quest_row_to_dict(r) -> dict:
+    """Map a SELECT tuple (in _QUEST_SELECT_COLS order) to a dict.
+    Centralized so all readers return the same shape."""
+    return {
+        'id': r[0], 'title': r[1], 'summary': r[2], 'status': r[3],
+        'priority': r[4], 'given_by': r[5],
+        'offer_npc_id': r[6], 'offered_turn': r[7], 'accepted_turn': r[8],
+        'delivered_turn': r[9], 'reward_summary': r[10] or '',
+        'skeleton_origin': r[11] or 0,
+        'created_at': r[12], 'updated_at': r[13],
+    }
+
+
 def quest_add(campaign_id: int, title: str, summary: str = '',
-              priority: str = 'normal', given_by: str = '') -> int:
-    """Create a new active quest. Returns the new quest id."""
+              priority: str = 'normal', given_by: str = '',
+              reward_summary: str = '',
+              skeleton_origin: int = 0) -> int:
+    """Create a new in-progress quest (operator-authored, bypasses offered
+    state). Returns the new quest id. Writes audit row with source='add'."""
     if priority not in VALID_QUEST_PRIORITIES:
         priority = 'normal'
     ts = _now()
     conn = sqlite3.connect(DB_PATH)
-    cur = conn.execute(
-        "INSERT INTO dnd_quests "
-        "(campaign_id, title, summary, status, priority, given_by, created_at, updated_at) "
-        "VALUES (?,?,?,?,?,?,?,?)",
-        (campaign_id, title, summary, 'active', priority, given_by, ts, ts)
-    )
-    quest_id = cur.lastrowid
-    conn.commit()
-    conn.close()
-    log(f"quest_add: campaign={campaign_id} id={quest_id} title='{title}' priority={priority}")
+    try:
+        cur = conn.execute(
+            "INSERT INTO dnd_quests "
+            "(campaign_id, title, summary, status, priority, given_by, "
+            "reward_summary, skeleton_origin, created_at, updated_at) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (campaign_id, title, summary, 'in-progress', priority, given_by,
+             reward_summary, 1 if skeleton_origin else 0, ts, ts)
+        )
+        quest_id = cur.lastrowid
+        _quest_audit(conn, campaign_id, quest_id, '', 'in-progress', 'add',
+                     detail=f"title='{title}'")
+        conn.commit()
+    finally:
+        conn.close()
+    log(f"quest_add: campaign={campaign_id} id={quest_id} title='{title}' "
+        f"priority={priority} skeleton_origin={skeleton_origin}")
     return quest_id
 
 
+def quest_add_with_dedup(campaign_id: int, title: str) -> tuple[int, bool] | None:
+    """Insert a new in-progress quest, deduping against existing ACTIVE quests
+    by normalized title (case-insensitive, whitespace-collapsed).
+
+    Returns (quest_id, True) on insert, None on dedup (duplicate active quest).
+    Completed/delivered quests do NOT block re-adding the same title — only
+    quests in the active filter (see get_active_quests).
+
+    Migrated from execute_auto_actions QUEST_ADD branch in S65.1 F-008 close.
+    Manual /quest add (discord_dnd_bot.quest_add_cmd) still uses raw quest_add
+    without dedup — DM may deliberately re-add an identical-title quest.
+    """
+    norm_new = ' '.join(title.split()).lower()
+    existing_active = get_active_quests(campaign_id)
+    duplicate = next(
+        (q for q in existing_active
+         if ' '.join((q.get('title') or '').split()).lower() == norm_new),
+        None
+    )
+    if duplicate:
+        log(f"quest_add_with_dedup: rejected campaign={campaign_id} "
+            f"title={title!r} existing_id={duplicate.get('id')}")
+        return None
+    quest_id = quest_add(campaign_id, title)
+    return (quest_id, True)
+
+
 def quest_set_status(campaign_id: int, quest_id: int, status: str) -> bool:
-    """Update a quest's status. Returns True if a row was updated."""
+    """Generic status update (back-compat shim — prefer the transition-specific
+    helpers below for new code). Aliases 'active'/'completed' map to canonical
+    'in-progress'/'delivered'. Writes audit row with source='set_status'.
+    Returns True if a row was updated."""
+    status = _normalize_quest_status(status)
     if status not in VALID_QUEST_STATUSES:
         log(f"quest_set_status: invalid status '{status}'")
         return False
     conn = sqlite3.connect(DB_PATH)
-    cur = conn.execute(
-        "UPDATE dnd_quests SET status=?, updated_at=? WHERE id=? AND campaign_id=?",
-        (status, _now(), quest_id, campaign_id)
-    )
-    updated = cur.rowcount > 0
-    conn.commit()
-    conn.close()
+    try:
+        prior = conn.execute(
+            "SELECT status FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone()
+        prior_status = prior[0] if prior else ''
+        cur = conn.execute(
+            "UPDATE dnd_quests SET status=?, updated_at=? "
+            "WHERE id=? AND campaign_id=?",
+            (status, _now(), quest_id, campaign_id)
+        )
+        updated = cur.rowcount > 0
+        if updated:
+            _quest_audit(conn, campaign_id, quest_id, prior_status, status,
+                         'set_status')
+        conn.commit()
+    finally:
+        conn.close()
     if updated:
-        log(f"quest_set_status: campaign={campaign_id} id={quest_id} → {status}")
+        log(f"quest_status_change: campaign={campaign_id} id={quest_id} "
+            f"{prior_status}→{status} source=set_status")
     return updated
 
 
-def quest_delete(campaign_id: int, quest_id: int) -> bool:
-    """Permanently delete a quest. Returns True if a row was removed."""
+def quest_offer(campaign_id: int, quest_id: int,
+                offer_npc_id: int = None,
+                offered_turn: int = None,
+                source: str = 'offer') -> bool:
+    """Transition a quest to status='offered'. Records offer_npc_id +
+    offered_turn. Source: 'offer' (canonical) | 'paste' (cosine-detected).
+
+    Accepts from any prior status (re-offering an abandoned quest is allowed
+    per §16 engine-defends-invariants — the offer transition is non-destructive
+    of audit history). Returns True if the row was updated."""
     conn = sqlite3.connect(DB_PATH)
-    cur = conn.execute(
-        "DELETE FROM dnd_quests WHERE id=? AND campaign_id=?",
-        (quest_id, campaign_id)
-    )
-    deleted = cur.rowcount > 0
-    conn.commit()
-    conn.close()
+    try:
+        prior = conn.execute(
+            "SELECT status FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone()
+        if prior is None:
+            return False
+        prior_status = prior[0]
+        cur = conn.execute(
+            "UPDATE dnd_quests SET status='offered', "
+            "offer_npc_id=COALESCE(?, offer_npc_id), "
+            "offered_turn=COALESCE(?, offered_turn), updated_at=? "
+            "WHERE id=? AND campaign_id=?",
+            (offer_npc_id, offered_turn, _now(), quest_id, campaign_id)
+        )
+        updated = cur.rowcount > 0
+        if updated:
+            _quest_audit(conn, campaign_id, quest_id, prior_status, 'offered',
+                         source, actor_npc_id=offer_npc_id,
+                         turn_counter=offered_turn)
+        conn.commit()
+    finally:
+        conn.close()
+    if updated:
+        log(f"quest_status_change: campaign={campaign_id} id={quest_id} "
+            f"{prior_status}→offered source={source} "
+            f"offer_npc_id={offer_npc_id} offered_turn={offered_turn}")
+    return updated
+
+
+def quest_accept(campaign_id: int, quest_id: int,
+                 accepted_turn: int = None,
+                 source: str = 'accept') -> bool:
+    """Transition offered → in-progress. Refuses from other prior statuses
+    per §16 (engine defends invariants — accept only after offered).
+    Returns True if updated."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        prior = conn.execute(
+            "SELECT status FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone()
+        if prior is None:
+            return False
+        prior_status = prior[0]
+        if prior_status != 'offered':
+            log(f"quest_accept: refused campaign={campaign_id} id={quest_id} "
+                f"prior_status={prior_status} (must be 'offered')")
+            return False
+        cur = conn.execute(
+            "UPDATE dnd_quests SET status='in-progress', "
+            "accepted_turn=COALESCE(?, accepted_turn), updated_at=? "
+            "WHERE id=? AND campaign_id=?",
+            (accepted_turn, _now(), quest_id, campaign_id)
+        )
+        updated = cur.rowcount > 0
+        if updated:
+            _quest_audit(conn, campaign_id, quest_id, 'offered', 'in-progress',
+                         source, turn_counter=accepted_turn)
+        conn.commit()
+    finally:
+        conn.close()
+    if updated:
+        log(f"quest_status_change: campaign={campaign_id} id={quest_id} "
+            f"offered→in-progress source={source} "
+            f"accepted_turn={accepted_turn}")
+        # Composition Layer v0 (S60) — on accept, anchor current_act_id to
+        # Act 1 of the accepted quest if acts exist. NULL otherwise (per
+        # §1.D: "set current_act_id to Act 1 of that quest if acts exist,
+        # NULL otherwise. Same write-path discipline as set_current_location").
+        try:
+            _acts = get_quest_acts(campaign_id, quest_id)
+            if _acts:
+                _act1 = _acts[0]
+                set_current_act(campaign_id, _act1['id'])
+                log(f"quest_act_anchor_set: campaign={campaign_id} "
+                    f"quest_id={quest_id} act_id={_act1['id']} "
+                    f"act_index={_act1['act_index']} source=quest_accept")
+        except Exception as e:
+            log(f"quest_act_anchor_set: error on accept "
+                f"campaign={campaign_id} quest_id={quest_id} err={e!r}")
+    return updated
+
+
+def quest_deliver(campaign_id: int, quest_id: int,
+                  delivered_turn: int = None) -> dict | None:
+    """Transition in-progress → completed (resolution status). Refuses from
+    other prior statuses per §16. Returns the reward dispatch payload
+    (reward_summary, voicer FK) on success for caller to dispatch via
+    #dm-aside + inventory primitives, or None on refusal.
+
+    Function name `quest_deliver` is preserved for engine-side back-compat;
+    the canonical resolution status value flipped delivered → completed in
+    the S61 v0.x UX patch (operator preference for plain-English status).
+    The `delivered_turn` column name is unchanged (column rename has no
+    operator-facing value)."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute(
+            "SELECT status, reward_summary, offer_npc_id, title "
+            "FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone()
+        if row is None:
+            return None
+        prior_status, reward_summary, offer_npc_id, title = row
+        if prior_status != 'in-progress':
+            log(f"quest_deliver: refused campaign={campaign_id} id={quest_id} "
+                f"prior_status={prior_status} (must be 'in-progress')")
+            return None
+        cur = conn.execute(
+            "UPDATE dnd_quests SET status='completed', "
+            "delivered_turn=COALESCE(?, delivered_turn), updated_at=? "
+            "WHERE id=? AND campaign_id=?",
+            (delivered_turn, _now(), quest_id, campaign_id)
+        )
+        updated = cur.rowcount > 0
+        if updated:
+            _quest_audit(conn, campaign_id, quest_id, 'in-progress',
+                         'completed', 'complete',
+                         actor_npc_id=offer_npc_id,
+                         turn_counter=delivered_turn,
+                         detail=f"reward='{reward_summary or ''}'")
+        conn.commit()
+    finally:
+        conn.close()
+    if not updated:
+        return None
+    log(f"quest_status_change: campaign={campaign_id} id={quest_id} "
+        f"in-progress→completed source=complete "
+        f"completed_turn={delivered_turn}")
+    # Composition Layer v0 (S60) — clear act anchor if this quest owns it.
+    _clear_act_anchor_if_quest_owned(campaign_id, quest_id, 'quest_complete')
+    return {
+        'quest_id': quest_id,
+        'title': title,
+        'reward_summary': reward_summary or '',
+        'offer_npc_id': offer_npc_id,
+    }
+
+
+def _clear_act_anchor_if_quest_owned(campaign_id: int, quest_id: int,
+                                      source: str) -> None:
+    """Composition Layer v0 (S60) — clear dnd_scene_state.current_act_id if
+    it currently points to an act of the exiting quest. Per §1.D: quest
+    deliver/fail/abandon should clear the anchor when that quest was the
+    current-act-bearing quest. Soft-fail."""
+    try:
+        owner_quest = get_quest_act_anchor_quest_id(campaign_id)
+        if owner_quest == quest_id:
+            set_current_act(campaign_id, None)
+            log(f"quest_act_anchor_cleared: campaign={campaign_id} "
+                f"quest_id={quest_id} source={source}")
+    except Exception as e:
+        log(f"quest_act_anchor_cleared: error campaign={campaign_id} "
+            f"quest_id={quest_id} source={source} err={e!r}")
+
+
+def quest_fail(campaign_id: int, quest_id: int,
+               turn_counter: int = None) -> bool:
+    """Transition any non-terminal status → failed. Returns True if updated."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        prior = conn.execute(
+            "SELECT status FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone()
+        if prior is None:
+            return False
+        prior_status = prior[0]
+        if prior_status in ('completed', 'delivered', 'failed', 'abandoned'):
+            log(f"quest_fail: refused campaign={campaign_id} id={quest_id} "
+                f"prior_status={prior_status} (terminal)")
+            return False
+        cur = conn.execute(
+            "UPDATE dnd_quests SET status='failed', updated_at=? "
+            "WHERE id=? AND campaign_id=?",
+            (_now(), quest_id, campaign_id)
+        )
+        updated = cur.rowcount > 0
+        if updated:
+            _quest_audit(conn, campaign_id, quest_id, prior_status, 'failed',
+                         'fail', turn_counter=turn_counter)
+        conn.commit()
+    finally:
+        conn.close()
+    if updated:
+        log(f"quest_status_change: campaign={campaign_id} id={quest_id} "
+            f"{prior_status}→failed source=fail")
+        _clear_act_anchor_if_quest_owned(campaign_id, quest_id, 'quest_fail')
+    return updated
+
+
+def quest_abandon(campaign_id: int, quest_id: int,
+                  turn_counter: int = None,
+                  source: str = 'abandon') -> bool:
+    """Transition any non-terminal status → abandoned. Source: 'abandon'
+    (DM /quest abandon) | 'decline' (DM declined a proposed offer card)."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        prior = conn.execute(
+            "SELECT status FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone()
+        if prior is None:
+            return False
+        prior_status = prior[0]
+        if prior_status in ('completed', 'delivered', 'failed', 'abandoned'):
+            log(f"quest_abandon: refused campaign={campaign_id} id={quest_id} "
+                f"prior_status={prior_status} (terminal)")
+            return False
+        cur = conn.execute(
+            "UPDATE dnd_quests SET status='abandoned', updated_at=? "
+            "WHERE id=? AND campaign_id=?",
+            (_now(), quest_id, campaign_id)
+        )
+        updated = cur.rowcount > 0
+        if updated:
+            _quest_audit(conn, campaign_id, quest_id, prior_status, 'abandoned',
+                         source, turn_counter=turn_counter)
+        conn.commit()
+    finally:
+        conn.close()
+    if updated:
+        log(f"quest_status_change: campaign={campaign_id} id={quest_id} "
+            f"{prior_status}→abandoned source={source}")
+        _clear_act_anchor_if_quest_owned(campaign_id, quest_id, 'quest_abandon')
+    return updated
+
+
+def quest_seed_skeleton(campaign_id: int, hooks: list[dict]) -> dict:
+    """Idempotent skeleton-quest seeder. Inserts a row per hook at
+    status='offered', skeleton_origin=1. Dedup key: (campaign_id, title,
+    skeleton_origin=1) — existing matches are skipped.
+
+    hooks: list of dicts with keys (title, summary, reward, voicer_npc_id).
+    voicer_npc_id may be None when skeleton.md didn't author a mapping or
+    the canonical NPC isn't in dnd_npcs yet (logged as unresolved per
+    §1.D fallback).
+
+    EDGE CASE (Finding 3): if operator edits a skeleton.md hook title
+    mid-campaign and re-seeds, the renamed hook inserts as a new row;
+    the original-title row persists as an orphan with skeleton_origin=1.
+    Operator cleans up via /quest delete <old_id>. The seeder logs the
+    operator hint when inserts exceed skeleton.md hook count (which would
+    only happen if a prior hook was renamed since last seed).
+
+    Returns: {'inserted': N, 'skipped': N, 'voicer_resolved': N,
+              'voicer_unresolved': N}
+    """
+    ts = _now()
+    conn = sqlite3.connect(DB_PATH)
+    inserted = 0
+    skipped = 0
+    voicer_resolved = 0
+    voicer_unresolved = 0
+    try:
+        for hook in hooks:
+            title = (hook.get('title') or '').strip()
+            if not title:
+                continue
+            existing = conn.execute(
+                "SELECT id FROM dnd_quests "
+                "WHERE campaign_id=? AND title=? AND skeleton_origin=1",
+                (campaign_id, title)
+            ).fetchone()
+            if existing is not None:
+                skipped += 1
+                continue
+            summary = hook.get('summary', '') or ''
+            reward = hook.get('reward', '') or ''
+            voicer_npc_id = hook.get('voicer_npc_id')
+            if voicer_npc_id is not None:
+                voicer_resolved += 1
+            else:
+                voicer_unresolved += 1
+            cur = conn.execute(
+                "INSERT INTO dnd_quests "
+                "(campaign_id, title, summary, status, priority, given_by, "
+                "offer_npc_id, reward_summary, skeleton_origin, "
+                "created_at, updated_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                (campaign_id, title, summary, 'offered', 'normal', '',
+                 voicer_npc_id, reward, 1, ts, ts)
+            )
+            quest_id = cur.lastrowid
+            _quest_audit(conn, campaign_id, quest_id, '', 'offered',
+                         'seed_skeleton', actor_npc_id=voicer_npc_id,
+                         detail=f"title='{title}'")
+            inserted += 1
+        conn.commit()
+    finally:
+        conn.close()
+    log(f"quest_seed: campaign={campaign_id} inserted={inserted} "
+        f"skipped={skipped} voicer_resolved={voicer_resolved} "
+        f"voicer_unresolved={voicer_unresolved}")
+    return {
+        'inserted': inserted,
+        'skipped': skipped,
+        'voicer_resolved': voicer_resolved,
+        'voicer_unresolved': voicer_unresolved,
+    }
+
+
+def quest_delete(campaign_id: int, quest_id: int) -> bool:
+    """Permanently delete a quest. Returns True if a row was removed.
+    Writes an audit row with source='delete' BEFORE the row goes away so
+    the audit log preserves the lifecycle of orphans cleaned up via this
+    surface (Finding 3 cleanup path).
+
+    Composition Layer v0 (S60) — PRAGMA foreign_keys=ON applied to this
+    connection so that the dnd_quest_acts.quest_id FK CASCADE fires and
+    child acts are auto-removed. Per §11.13 lock."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        conn.execute("PRAGMA foreign_keys=ON")
+        prior = conn.execute(
+            "SELECT status, title FROM dnd_quests "
+            "WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone()
+        if prior is None:
+            return False
+        prior_status, title = prior
+        # Count child acts before delete for telemetry (cascade-aware audit).
+        cascaded_act_count = conn.execute(
+            "SELECT COUNT(*) FROM dnd_quest_acts WHERE quest_id=?",
+            (quest_id,)
+        ).fetchone()[0]
+        _quest_audit(conn, campaign_id, quest_id, prior_status, 'deleted',
+                     'delete',
+                     detail=f"title='{title}' cascaded_acts={cascaded_act_count}")
+        cur = conn.execute(
+            "DELETE FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        )
+        deleted = cur.rowcount > 0
+        conn.commit()
+    finally:
+        conn.close()
     if deleted:
-        log(f"quest_delete: campaign={campaign_id} id={quest_id}")
+        log(f"quest_delete: campaign={campaign_id} id={quest_id} "
+            f"prior_status={prior_status} cascaded_acts={cascaded_act_count}")
     return deleted
 
 
 def get_active_quests(campaign_id: int) -> list:
-    """Return all active quests for the campaign, oldest first."""
-    return get_all_quests(campaign_id, status_filter='active')
+    """Return in-progress quests for the campaign, oldest first. Status
+    'in-progress' is the canonical v0 name; legacy 'active' rows have been
+    migrated at engine init (Finding 1)."""
+    return get_all_quests(campaign_id, status_filter='in-progress')
+
+
+def get_offered_quests(campaign_id: int) -> list:
+    """Return offered (pre-acceptance) quests for the campaign."""
+    return get_all_quests(campaign_id, status_filter='offered')
+
+
+def get_quest_by_id(campaign_id: int, quest_id: int) -> dict | None:
+    """Return one quest row by id (campaign-scoped). None if not found."""
+    conn = sqlite3.connect(DB_PATH)
+    row = conn.execute(
+        f"SELECT {_QUEST_SELECT_COLS} FROM dnd_quests "
+        "WHERE id=? AND campaign_id=?",
+        (quest_id, campaign_id)
+    ).fetchone()
+    conn.close()
+    return _quest_row_to_dict(row) if row else None
+
+
+def get_offerable_skeleton_quests(campaign_id: int) -> list:
+    """Return skeleton_origin=1 quests at status='offered' that have NOT
+    yet been accepted/delivered/failed/abandoned. These are the candidate
+    pool for compute_quest_offer_suggester (§3.1 fire predicate input)."""
+    conn = sqlite3.connect(DB_PATH)
+    rows = conn.execute(
+        f"SELECT {_QUEST_SELECT_COLS} FROM dnd_quests "
+        "WHERE campaign_id=? AND skeleton_origin=1 AND status='offered' "
+        "ORDER BY id ASC",
+        (campaign_id,)
+    ).fetchall()
+    conn.close()
+    return [_quest_row_to_dict(r) for r in rows]
 
 
 def get_all_quests(campaign_id: int, status_filter: str = None) -> list:
-    """Return quests for the campaign, optionally filtered by status."""
+    """Return quests for the campaign, optionally filtered by status.
+    Aliases 'active'/'completed' map to canonical names per §1.B."""
+    if status_filter is not None:
+        status_filter = _normalize_quest_status(status_filter)
     conn = sqlite3.connect(DB_PATH)
     if status_filter and status_filter in VALID_QUEST_STATUSES:
         rows = conn.execute(
-            "SELECT id, title, summary, status, priority, given_by, created_at, updated_at "
-            "FROM dnd_quests WHERE campaign_id=? AND status=? ORDER BY id ASC",
+            f"SELECT {_QUEST_SELECT_COLS} FROM dnd_quests "
+            "WHERE campaign_id=? AND status=? ORDER BY id ASC",
             (campaign_id, status_filter)
         ).fetchall()
     else:
         rows = conn.execute(
-            "SELECT id, title, summary, status, priority, given_by, created_at, updated_at "
-            "FROM dnd_quests WHERE campaign_id=? ORDER BY id ASC",
+            f"SELECT {_QUEST_SELECT_COLS} FROM dnd_quests "
+            "WHERE campaign_id=? ORDER BY id ASC",
             (campaign_id,)
         ).fetchall()
     conn.close()
-    return [
-        {
-            'id': r[0], 'title': r[1], 'summary': r[2], 'status': r[3],
-            'priority': r[4], 'given_by': r[5],
-            'created_at': r[6], 'updated_at': r[7],
-        }
-        for r in rows
-    ]
+    return [_quest_row_to_dict(r) for r in rows]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Composition Layer v0 (S60) — dnd_quest_acts helpers + scene_state act anchor
+# §17 single-writer pattern; §11.13 ON DELETE CASCADE on dnd_quest_acts.quest_id
+# ─────────────────────────────────────────────────────────────────────────────
+
+_QUEST_ACT_SELECT_COLS = (
+    "id, quest_id, act_index, act_title, act_description, "
+    "transition_predicate_json, skeleton_origin, created_at, updated_at"
+)
+
+
+def _quest_act_row_to_dict(r) -> dict:
+    return {
+        'id': r[0], 'quest_id': r[1], 'act_index': r[2],
+        'act_title': r[3], 'act_description': r[4] or '',
+        'transition_predicate_json': r[5] or '{}',
+        'skeleton_origin': r[6] or 0,
+        'created_at': r[7], 'updated_at': r[8],
+    }
+
+
+def quest_act_upsert(campaign_id: int, quest_id: int, act_index: int,
+                     act_title: str, act_description: str = '',
+                     transition_predicate_json: str = '{}',
+                     skeleton_origin: int = 0) -> tuple[int, bool]:
+    """Upsert an act for a quest. Idempotent on (quest_id, act_index) — re-
+    running with the same key updates fields in place, never duplicates.
+
+    Returns (act_id, was_new). Refuses cross-campaign quest_id at the engine
+    boundary per §16 engine-defends-invariants. quest_id must exist in
+    dnd_quests for this campaign.
+
+    Mirrors npc_upsert / quest_add shape — §17 single writer for
+    dnd_quest_acts table."""
+    ts = _now()
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        # §16 — validate quest_id belongs to this campaign.
+        q_ok = conn.execute(
+            "SELECT 1 FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone() is not None
+        if not q_ok:
+            log(f"quest_act_upsert: refused — quest_id={quest_id} not in "
+                f"campaign={campaign_id}")
+            return (0, False)
+        existing = conn.execute(
+            "SELECT id FROM dnd_quest_acts WHERE quest_id=? AND act_index=?",
+            (quest_id, act_index)
+        ).fetchone()
+        if existing is not None:
+            act_id = existing[0]
+            conn.execute(
+                "UPDATE dnd_quest_acts SET act_title=?, act_description=?, "
+                "transition_predicate_json=?, skeleton_origin=?, updated_at=? "
+                "WHERE id=?",
+                (act_title, act_description, transition_predicate_json,
+                 1 if skeleton_origin else 0, ts, act_id)
+            )
+            was_new = False
+        else:
+            cur = conn.execute(
+                "INSERT INTO dnd_quest_acts "
+                "(quest_id, act_index, act_title, act_description, "
+                "transition_predicate_json, skeleton_origin, "
+                "created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)",
+                (quest_id, act_index, act_title, act_description,
+                 transition_predicate_json,
+                 1 if skeleton_origin else 0, ts, ts)
+            )
+            act_id = cur.lastrowid
+            was_new = True
+        conn.commit()
+    finally:
+        conn.close()
+    log(f"quest_act_upsert: campaign={campaign_id} quest_id={quest_id} "
+        f"act_index={act_index} act_id={act_id} was_new={was_new}")
+    return (act_id, was_new)
+
+
+def get_quest_acts(campaign_id: int, quest_id: int) -> list:
+    """Return all acts for a quest, ordered by act_index. Refuses cross-
+    campaign access at the read boundary (returns [] if quest_id not in
+    campaign)."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        # §16 — refuse cross-campaign.
+        q_ok = conn.execute(
+            "SELECT 1 FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone() is not None
+        if not q_ok:
+            return []
+        rows = conn.execute(
+            f"SELECT {_QUEST_ACT_SELECT_COLS} FROM dnd_quest_acts "
+            "WHERE quest_id=? ORDER BY act_index ASC",
+            (quest_id,)
+        ).fetchall()
+    finally:
+        conn.close()
+    return [_quest_act_row_to_dict(r) for r in rows]
+
+
+def get_act_by_id(campaign_id: int, act_id: int) -> dict | None:
+    """Return one act row by id (campaign-scoped via JOIN to dnd_quests).
+    Returns None if not found or cross-campaign."""
+    # Explicit alias-qualified column list to avoid ambiguous-column errors
+    # on the JOIN (both dnd_quest_acts and dnd_quests have `id`).
+    cols = (
+        "a.id, a.quest_id, a.act_index, a.act_title, a.act_description, "
+        "a.transition_predicate_json, a.skeleton_origin, "
+        "a.created_at, a.updated_at"
+    )
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute(
+            f"SELECT {cols} FROM dnd_quest_acts a "
+            "JOIN dnd_quests q ON q.id = a.quest_id "
+            "WHERE a.id=? AND q.campaign_id=?",
+            (act_id, campaign_id)
+        ).fetchone()
+    finally:
+        conn.close()
+    return _quest_act_row_to_dict(row) if row else None
+
+
+def get_current_act(campaign_id: int) -> dict | None:
+    """Return the current act dict for a campaign (resolves
+    dnd_scene_state.current_act_id), or None if no anchor set."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute(
+            "SELECT current_act_id FROM dnd_scene_state WHERE campaign_id=?",
+            (campaign_id,)
+        ).fetchone()
+        if row is None or row[0] is None:
+            return None
+        act_id = row[0]
+    finally:
+        conn.close()
+    return get_act_by_id(campaign_id, act_id)
+
+
+def set_current_act(campaign_id: int, act_id) -> bool:
+    """Single-writer for dnd_scene_state.current_act_id. Mirrors
+    set_current_location shape per §17. Validates act_id exists AND its
+    parent quest is in the same campaign per §16. NULL clears the anchor
+    (always permitted).
+
+    Returns True on successful write, False if FK invalid or scene_state
+    row missing."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        if act_id is not None:
+            # Alias-qualified to avoid id-column ambiguity on the JOIN.
+            ok = conn.execute(
+                "SELECT 1 FROM dnd_quest_acts AS a "
+                "JOIN dnd_quests AS q ON q.id = a.quest_id "
+                "WHERE a.id=? AND q.campaign_id=?",
+                (act_id, campaign_id)
+            ).fetchone() is not None
+            if not ok:
+                log(f"set_current_act: refused — act_id={act_id} not in "
+                    f"campaign={campaign_id}")
+                return False
+        cur = conn.execute(
+            "UPDATE dnd_scene_state SET current_act_id=?, updated_at=? "
+            "WHERE campaign_id=?",
+            (act_id, _now(), campaign_id)
+        )
+        if cur.rowcount == 0:
+            log(f"set_current_act: refused — no scene_state row for "
+                f"campaign={campaign_id}")
+            return False
+        conn.commit()
+    finally:
+        conn.close()
+    log(f"set_current_act: campaign={campaign_id} act_id={act_id}")
+    return True
+
+
+def quest_act_transition(campaign_id: int, quest_id: int, to_act_index: int,
+                         source: str = 'act_advance',
+                         turn_counter: int = None) -> dict | None:
+    """Transition the campaign's current_act_id to the act at
+    (quest_id, to_act_index). Writes both dnd_scene_state.current_act_id
+    AND a dnd_quests_audit row atomically (single transaction).
+
+    source enum: 'act_advance' | 'act_set' | 'act_override' — semantics
+    differentiated at log time per §11.8.
+
+    Returns the new act dict on success, None on refusal (target act not
+    found, quest not in campaign).
+
+    Composition Layer v0 (S60) §1.D + §1.G — engine-deterministic
+    transition; LLM never writes this state."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        # Validate quest in campaign.
+        q_ok = conn.execute(
+            "SELECT 1 FROM dnd_quests WHERE id=? AND campaign_id=?",
+            (quest_id, campaign_id)
+        ).fetchone() is not None
+        if not q_ok:
+            return None
+        # Find target act.
+        target = conn.execute(
+            f"SELECT {_QUEST_ACT_SELECT_COLS} FROM dnd_quest_acts "
+            "WHERE quest_id=? AND act_index=?",
+            (quest_id, to_act_index)
+        ).fetchone()
+        if target is None:
+            log(f"quest_act_transition: refused — quest_id={quest_id} "
+                f"has no act_index={to_act_index}")
+            return None
+        target_dict = _quest_act_row_to_dict(target)
+        # Write scene_state.current_act_id.
+        cur = conn.execute(
+            "UPDATE dnd_scene_state SET current_act_id=?, updated_at=? "
+            "WHERE campaign_id=?",
+            (target_dict['id'], _now(), campaign_id)
+        )
+        if cur.rowcount == 0:
+            log(f"quest_act_transition: refused — no scene_state row for "
+                f"campaign={campaign_id}")
+            return None
+        # Write audit row.
+        _quest_audit(conn, campaign_id, quest_id, '', '', source,
+                     turn_counter=turn_counter,
+                     to_act_index=to_act_index,
+                     detail=f"act_title='{target_dict['act_title']}'")
+        conn.commit()
+    finally:
+        conn.close()
+    log(f"quest_act_transition: campaign={campaign_id} quest_id={quest_id} "
+        f"to_act_index={to_act_index} source={source}")
+    return target_dict
+
+
+def get_quest_act_anchor_quest_id(campaign_id: int) -> int | None:
+    """Return the quest_id that owns the current_act_id, or None if no
+    anchor. Used by quest-exit helpers to decide whether to clear the
+    anchor when a quest delivers / fails / abandons."""
+    act = get_current_act(campaign_id)
+    return act['quest_id'] if act else None
 
 
 def quests_to_prompt_block(quests: list, max_shown: int = 5) -> str:
-    """Format active quests as a prompt block. Returns empty string if no
-    quests. Active-only — completed/failed never inject into the system prompt."""
-    active = [q for q in quests if q.get('status') == 'active']
+    """Format active (in-progress) quests as a prompt block. Returns empty
+    string if no quests. Quest Layer v0 (S56): the canonical render path is
+    compute_active_quest_directive in dnd_orchestration; this function is
+    retained for any non-build_dm_context callers (currently none) and as a
+    back-compat shim. Accepts 'active' AND 'in-progress' filter values to
+    match either pre/post-migration row state."""
+    active = [q for q in quests if q.get('status') in ('active', 'in-progress')]
     if not active:
         return ""
     # Priority order: urgent > normal > low. Within priority, oldest first.
@@ -5008,6 +5911,9 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
                      persistence_directive="", loot_directive="",
                      combat_redirect="",
                      time_directive="",
+                     scene_lifecycle_directive="",
+                     active_quest_directive="",
+                     composition_directive="",
                      arbitration_block="", arbitration_hardstop_echo="",
                      resolution_block="", resolution_hardstop_echo="",
                      acting_character_names=None,
@@ -5212,6 +6118,31 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
         if consequence_directive and not suppress_for_combat_narration else ""
     )
 
+    # Active-quest directive (Quest Layer v0, S56) — renders in-progress
+    # quests as ambient narrative pressure. Tactical-band placement per
+    # locked §11.8 (AFTER consequence_block, BEFORE commitment_block) — quest
+    # pressure aligns with consequence pressure (both are "stakes the world
+    # tracks"). Suppressed during combat narration per S44 (quest titles
+    # bleed campaign-arc context into combat round-top atmospheric beats).
+    #
+    # Composition Layer v0 (S60) §11.4 — composition directive extends this
+    # block (not a separate sibling). When `composition_directive` is non-
+    # empty, the act-line renders inside the active-quest block, inserted
+    # right before the trailing AUTHORITATIVE reminder line. Suppressed
+    # under the same gate as `active_quest_directive`.
+    if active_quest_directive and not suppress_for_combat_narration:
+        if composition_directive:
+            _aq_body = active_quest_directive.rstrip()
+            _aq_body = f"{_aq_body}\n{composition_directive}"
+        else:
+            _aq_body = active_quest_directive
+        active_quest_block = (
+            f"\n\n=== ACTIVE QUESTS (AUTHORITATIVE — outstanding commitments) ===\n"
+            f"{_aq_body}"
+        )
+    else:
+        active_quest_block = ""
+
     # Committed-action resolution directive (Track 3, Session 19) —
     # surfaces the godmode-escape failure mode (player commits to combat,
     # next turn tries to scene-shift without resolving the prior commitment).
@@ -5270,6 +6201,19 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
     time_directive_block = (
         f"\n\n=== TIME ADVANCE ===\n{time_directive}"
         if time_directive else ""
+    )
+
+    # Scene lifecycle directive (Scene Lifecycle v1, S52) — F-54 scene immortality.
+    # Fires on exploration+social turns when stale counter reaches soft or hard
+    # threshold, or when DM explicitly calls /compress. Suppressed during combat
+    # narration (mode gate in compute_scene_lifecycle_directive already handles
+    # this, but suppress_for_combat_narration is applied here as well for
+    # belt-and-suspenders consistency with all sibling directive blocks).
+    # Placed last in the instructional band so it's the final constraint before
+    # HARD STOP RULES — last-instruction-wins per §2 (§1.I placement decision).
+    scene_lifecycle_block = (
+        f"\n\n=== SCENE LIFECYCLE ===\n{scene_lifecycle_directive}"
+        if scene_lifecycle_directive and not suppress_for_combat_narration else ""
     )
 
     # Arbitration block (Track 7 #2) — multi-actor binding verdicts for the
@@ -5404,9 +6348,21 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
             )
         _loc_label = scene_state.get('location_label') or ''
         _loc_render = _loc_label if _loc_label else '(between locations)'
+        # S51 — every-turn time signal. compute_time_directive only fires on
+        # just-advanced turns; without authoritative time in SCENE STATE,
+        # the LLM defaults to "morning light" framing on non-advance turns
+        # and the body/footer divergence surfaces (footer reads DB directly
+        # and stays correct). §76 read-side analogue closed at the prompt
+        # input layer; verifier candidate stays filed as safety net.
+        _day = scene_state.get('campaign_day')
+        _phase = scene_state.get('day_phase')
+        _day_render = _day if _day else '?'
+        _phase_render = _phase if _phase else '?'
         scene_state_section = (
             "\n\n=== SCENE STATE (authoritative) ===\n"
             f"Location: {_loc_render}\n"
+            f"Day: {_day_render}\n"
+            f"Time of day: {_phase_render}\n"
             f"Tension: {tension_label(scene_state.get('tension_int') or 0)} ({scene_state.get('tension_int') or 0}/100)\n"
             f"{recent_npcs_line}"
             f"Last player action: {scene_state.get('last_player_action') or '(this is the first turn)'}"
@@ -5417,14 +6373,15 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
             scene_state_section += "\n\n" + clock_block
 
     # Quest block — pulled fresh per turn. Active quests only.
-    # Ship S44: suppressed during combat narration — quest titles + summary
-    # text + given-by NPCs bleed campaign-arc narrative into combat
-    # round-top atmospheric beats.
+    # Quest Layer v0 (S56) — quests_section is now empty here. Active-quest
+    # rendering moved to the tactical band via `active_quest_block` per
+    # locked §11.8 (compute_active_quest_directive in dnd_orchestration is
+    # the canonical render path; footer 🗒️ surface in discord_dnd_bot stays
+    # for ambient awareness). Variable preserved as empty string to keep the
+    # prompt f-string assembly stable (any non-build_dm_context callers of
+    # quests_to_prompt_block still get the legacy formatter; only the engine
+    # prompt assembly stopped using it).
     quests_section = ""
-    if not suppress_for_combat_narration:
-        quest_block = quests_to_prompt_block(get_active_quests(campaign['id']))
-        if quest_block:
-            quests_section = f"\n\n{quest_block}"
 
     # Companions block — pulled fresh per turn. Slots between PARTY and the
     # scene description so the DM has the full party (PCs + NPCs) in mind
@@ -5466,7 +6423,7 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
 {tone}
 
 === PARTY ===
-{char_summaries}{companions_section}{current_scene_section}{mode_block}{scene_state_section}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}
+{char_summaries}{companions_section}{current_scene_section}{mode_block}{scene_state_section}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{active_quest_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}{scene_lifecycle_block}
 
 === HOW THIS GAME WORKS ===
 
@@ -5524,64 +6481,41 @@ Do NOT mix genres. Do NOT restate what the player said. Do NOT pad atmosphere wh
 
 Plain prose. **bold** for key names. *italics* for thought, whisper, or OOC asides.
 
-=== AUTO-EXECUTE (TIER 1 STRUCTURAL CHANGES) ===
-
-This is the AUTHORITATIVE state-write layer. If this turn explicitly enacted a Tier 1 structural change, append a machine-readable tail. The tail is stripped before the player sees it — it exists ONLY to commit state. This decision is made BEFORE any UI suggestions; commit state first, present second.
-
-Tier 1 commands (these belong ONLY here, never in Player UI Suggestions):
-- QUEST_ADD|<title>         — a quest the party just committed to in this narration
-- CLOCK_TICK|<name>|<n>     — a clock explicitly advanced (n = integer segments ticked)
-- MODE|<mode>               — scene mode shift (combat/exploration/social/travel/downtime)
-
-MODE rule: emit ONLY on a clear action-state transition — blade drawn, chase begins, fight starts, ambush lands. Atmosphere alone ("tension builds", "feels dangerous", "something stirs") does NOT qualify. Borderline fires you do emit should be honest transitions, not atmospheric hedges.
-
-Tail format — exact, no variation:
-AUTO_EXECUTE_BEGIN
-QUEST_ADD|Investigate the Crystal Cave
-CLOCK_TICK|Detection|1
-MODE|combat
-AUTO_EXECUTE_END
-
-Rules:
-- Tail is ALWAYS the very last content in the response. Nothing follows AUTO_EXECUTE_END.
-- Omit the entire tail if no Tier 1 changes occurred. Most turns: no tail.
-- One line per change. No duplicates. Titles must be plain text — no pipe characters.
-- Do not emit QUEST_ADD for quests already in the quest log.
-- Do not emit CLOCK_TICK for clocks that don't exist yet — that goes in Player UI Suggestions as /clock create.
-
 === PLAYER UI SUGGESTIONS (DERIVED ONLY, OPTIONAL) ===
 
-This is a REFLECTIVE UI layer, not a decision layer. It surfaces ambiguous or higher-impact actions the player may want to run manually — actions the engine deliberately does NOT auto-execute. It is purely derivative: it cannot mutate state, and it must never overlap with the AUTO-EXECUTE tail above.
+This is a REFLECTIVE UI layer, not a decision layer. It surfaces ambiguous or higher-impact actions the operator/DM may want to run manually. It is purely derivative — it cannot mutate state. State writes happen via DM slash commands; this block only surfaces what the narration just established.
 
-If this turn surfaced a Tier 2/3 action worth offering, you MAY append a "Suggested Actions" block immediately before the AUTO-EXECUTE tail (or at the end of the response if no tail).
+If this turn surfaced a Tier 2/3 action worth offering, you MAY append one or more suggestion lines at the end of the response.
 
 Allowed commands ONLY:
 - /encounter stealth|social|trap   — start an encounter preset (mode + clocks + tension)
 - /clock create <name> <capacity>  — create a new progress clock
 - /companion add|remove|edit       — manage NPC companions
 
-DO NOT include /quest, /clock tick, or /mode in this block. Those are Tier 1 and belong in the AUTO-EXECUTE tail. If you find yourself wanting to suggest one of them here, emit it as AUTO-EXECUTE instead.
+DO NOT include /quest, /clock tick, or /mode in this block. Those are state writes the DM types directly when the narrative warrants — they are not LLM-emit surfaces.
 
-Format exactly (bullets required, no trailing commas):
+S65.A format unification — suggestion lines are bullets with the command wrapped in single backticks. NO "Suggested Actions:" preamble, NO horizontal divider. Each suggestion is one line, on its own:
 
-  Suggested Actions:
-  - /encounter stealth
-  - /clock create Detection 4
+  - `/encounter stealth`
+  - `/clock create Detection 4`
+
+The bullet + backticked command is the unified shape across roll requests, attack templates, mechanical hints, and Suggested Actions. Operator pastes the command verbatim; the visual box marks it as "type this."
 
 INVALID examples (do NOT do this):
-  Suggested Actions:
-  /encounter stealth,            ← missing bullet, trailing comma
-  - Suggest: /encounter stealth  ← extra prefix
-  /companion Frank interact      ← invented subcommand
+  Suggested Actions:              ← NO header preamble
+  - /encounter stealth             ← missing backtick wrap
+  - Suggest: `/encounter stealth`  ← extra prefix before the bullet
+  `/companion Frank interact`      ← invented subcommand
 
 Rules:
 - 1 to 3 suggestions, never more.
+- Each suggestion is `- ` followed by the command wrapped in single backticks.
 - Use only the three allowed commands above. Do NOT invent commands or subcommands.
 - Suggest only what the narration just established. No speculation.
-- If nothing in this turn warrants a Tier 2/3 suggestion, OMIT the block entirely. Silence is correct.
-- If HARD STOP RULE 1 (roll required) applies, OMIT this block.
+- If nothing in this turn warrants a Tier 2/3 suggestion, OMIT entirely. Silence is correct.
+- If HARD STOP RULE 1 (roll required) applies, OMIT entirely.
 
-This block reflects state that already exists; it does not create it.
+These lines reflect state that already exists; they do not create it.
 
 === FINAL TONE REMINDER ===
 {tone}
@@ -5666,7 +6600,16 @@ def execute_auto_actions(campaign_id: int, actions: list):
     """Execute validated Tier 1 actions. Returns list of (success, undo_line) tuples.
 
     Never raises — all errors are caught and logged with structured reasons.
+
+    S65.1 F-008 close: gated behind AUTO_EXECUTE_ENABLED. When False, returns
+    [] immediately. State writes for quest/clock/mode require operator slash
+    commands. Rollback = flip AUTO_EXECUTE_ENABLED to True.
     """
+    if not AUTO_EXECUTE_ENABLED:
+        if actions:
+            log(f"auto_execute_disabled campaign_id={campaign_id} "
+                f"would_have_executed={len(actions)} actions")
+        return []
     results = []
     for action in actions:
         cmd = action['cmd']
@@ -5738,7 +6681,8 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
                 acting_character_names=None, transition_context=None,
                 typing_user_id=None, actions: list = None,
                 resolution_result=None,
-                suppress_for_combat_narration=False):
+                suppress_for_combat_narration=False,
+                scene_lifecycle_inputs=None):
     """Run one DM turn. Returns response string. Roll-or-not decided by
     the orchestration engine, not the prompt.
 
@@ -6056,6 +7000,85 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
     except Exception as e:
         log(f"dm_respond: commitment directive failed: {e}")
 
+    # Scene Lifecycle directive (Scene Lifecycle v1, S52) — F-54 scene immortality.
+    # Eleventh §59 sibling. Inputs passed from discord_dnd_bot via scene_lifecycle_inputs
+    # dict; commitment_text state (computed above) provides the climactic-hold
+    # predicate's commitment arm. Always-fire telemetry per §59 contract.
+    scene_lifecycle_text = ""
+    scene_lifecycle_signals: dict = {}
+    try:
+        _sl_inputs = scene_lifecycle_inputs or {}
+        _sl_body, scene_lifecycle_signals = orch.compute_scene_lifecycle_directive(
+            scene_state=scene_state,
+            stale_turns=_sl_inputs.get('stale_turns', 0),
+            trigger_kind=_sl_inputs.get('trigger_kind', 'auto'),
+            last_combat_had_beats=_sl_inputs.get('last_combat_had_beats', False),
+            turns_since_combat_end=_sl_inputs.get('turns_since_combat_end', 9999),
+            commitment_directive_active=bool(commitment_text),
+            explicit_reason=_sl_inputs.get('explicit_reason', ''),
+        )
+        scene_lifecycle_text = _sl_body
+        log(
+            f"scene_lifecycle: campaign={campaign['id']} "
+            f"mode={scene_lifecycle_signals.get('mode', '')} "
+            f"stale_turns={scene_lifecycle_signals.get('stale_turns', 0)} "
+            f"tier={scene_lifecycle_signals.get('tier', 'none')} "
+            f"fired={scene_lifecycle_signals.get('fired', 0)}"
+            + (
+                f" suppressed_reason={scene_lifecycle_signals['suppressed_reason']}"
+                if scene_lifecycle_signals.get('suppressed_reason') else ""
+            )
+        )
+    except Exception as e:
+        log(f"dm_respond: scene lifecycle directive failed: {e}")
+
+    # Active-quest directive (Quest Layer v0, S56) — 13th §59 sibling.
+    # Renders status='in-progress' quests as ambient narrative pressure.
+    # Pure read of dnd_quests via orchestration; always-fire telemetry.
+    active_quest_text = ""
+    active_quest_signals: dict = {}
+    try:
+        _aq_rows = get_active_quests(campaign['id'])
+        _aq_body, active_quest_signals = orch.compute_active_quest_directive(
+            active_quests=_aq_rows,
+            scene_state=scene_state,
+        )
+        active_quest_text = _aq_body
+        log(
+            f"active_quest: campaign={campaign['id']} "
+            f"active_count={active_quest_signals.get('active_count', 0)} "
+            f"rendered={active_quest_signals.get('rendered', 0)} "
+            f"fired={active_quest_signals.get('fired', 0)} "
+            f"chars={len(_aq_body)}"
+        )
+    except Exception as e:
+        log(f"dm_respond: active quest directive failed: {e}")
+
+    # Composition directive (Composition Layer v0, S60) — 15th §59 sibling.
+    # Renders the current act inside the active-quest block per §11.4 lock.
+    # Pure read of dnd_quest_acts via get_current_act; always-fire telemetry.
+    # Returns ('', {}) when current_act_id IS NULL (quiet baseline per
+    # Scene Lifecycle v1 precedent).
+    composition_text = ""
+    composition_signals: dict = {}
+    _current_act = None
+    try:
+        _current_act = get_current_act(campaign['id'])
+        _comp_body, composition_signals = orch.compute_composition_directive(
+            active_quests=_aq_rows if '_aq_rows' in locals() else get_active_quests(campaign['id']),
+            current_act=_current_act,
+            scene_state=scene_state,
+        )
+        composition_text = _comp_body
+        log(
+            f"composition_directive: campaign={campaign['id']} "
+            f"current_act_id={(_current_act or {}).get('id', 'none')} "
+            f"fired={composition_signals.get('fired', 0)} "
+            f"chars={len(_comp_body)}"
+        )
+    except Exception as e:
+        log(f"dm_respond: composition directive failed: {e}")
+
     # Init directive (Track 3 / Combat Initiation Orchestration v1, Session 20).
     # Detects COMBAT intent in non-combat mode with no active init tracker.
     # When all three gates pass, extends the ROLL DIRECTIVE block with a
@@ -6238,6 +7261,9 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         loot_directive=loot_text,
         combat_redirect=redirect_text,
         time_directive=time_text,
+        scene_lifecycle_directive=scene_lifecycle_text,
+        active_quest_directive=active_quest_text,
+        composition_directive=composition_text,
         arbitration_block=arbitration_block_text,
         arbitration_hardstop_echo=arbitration_hardstop_text,
         resolution_block=resolution_block_text,
@@ -6618,10 +7644,20 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         except Exception as e:
             log(f"consequence capture thread launch failed: {e}")
         try:
-            if response and "Suggested Actions:" in response:
-                lines = response.split("Suggested Actions:", 1)[1].splitlines()
-                count = sum(1 for ln in lines if ln.strip().startswith("- /"))
-                log(f"suggestion_emitted campaign_id={campaign['id']} count={count}")
+            # S65.A format unification: "Suggested Actions:" header preamble
+            # retired. Detect suggestion bullets by pattern directly. New
+            # shape: lines beginning with `- ` followed by either a backtick-
+            # wrapped slash-command (`- \`/encounter stealth\``) OR a bare
+            # slash-command (`- /encounter stealth`, legacy / LLM-format-drift
+            # fallback). Both patterns count.
+            if response:
+                count = 0
+                for ln in response.splitlines():
+                    stripped = ln.strip()
+                    if stripped.startswith("- `/") or stripped.startswith("- /"):
+                        count += 1
+                if count:
+                    log(f"suggestion_emitted campaign_id={campaign['id']} count={count}")
         except Exception as e:
             log(f"suggestion log failed: {e}")
 
@@ -6633,11 +7669,26 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
                 results = execute_auto_actions(campaign['id'], actions)
                 undo_lines = [undo for success, undo in results if success]
                 if undo_lines:
-                    # Insert undo lines between prose and Suggested Actions block
+                    # Insert undo lines between prose and any suggestion bullets.
+                    # S65.A: "Suggested Actions:" header preamble retired — the
+                    # anchor is now the first suggestion bullet line itself
+                    # (`- `/...` or `- /...`). Falls through to append-at-end
+                    # when no bullets exist.
                     undo_block = "\n".join(undo_lines)
-                    if "Suggested Actions:" in cleaned:
-                        parts = cleaned.split("Suggested Actions:", 1)
-                        cleaned = parts[0].rstrip() + "\n" + undo_block + "\n\nSuggested Actions:" + parts[1]
+                    cleaned_lines = cleaned.splitlines()
+                    insert_at = None
+                    for i, ln in enumerate(cleaned_lines):
+                        stripped = ln.strip()
+                        if stripped.startswith("- `/") or stripped.startswith("- /"):
+                            insert_at = i
+                            break
+                    if insert_at is not None:
+                        cleaned = (
+                            "\n".join(cleaned_lines[:insert_at]).rstrip()
+                            + "\n" + undo_block
+                            + "\n\n"
+                            + "\n".join(cleaned_lines[insert_at:])
+                        )
                     else:
                         cleaned = cleaned + "\n" + undo_block
             response = cleaned

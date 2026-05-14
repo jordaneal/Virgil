@@ -1,6 +1,6 @@
 # lessons_doc_v3_candidates
 
-**Staging doc for v3-bound architectural lessons surfaced during Track 5 Ships 3 and 4 (Loot/Reward, Compression Cadence).** Read alongside `corpus_builder_lessons_v2.md`; this doc stages additions to that canonical set, awaiting promotion at the next v2→v3 transition point.
+**Staging doc for v3-bound architectural lessons surfaced during Track 5 Ships 3, 4, and 5 (Loot/Reward, Compression Cadence, Cross-Extractor Analysis).** Read alongside `corpus_builder_lessons_v2.md`; this doc stages additions to that canonical set, awaiting promotion at the next v2→v3 transition point.
 
 This doc is not authoritative. `corpus_builder_lessons_v2.md` remains the canonical reference. Candidates below are recommendations for v3 promotion based on cross-ship pattern recurrence; promotion-readiness varies per candidate and is tiered explicitly in §1–§2.
 
@@ -10,7 +10,7 @@ The promotion model follows v1→v2: candidates filed in `lessons_doc_v{N}_candi
 
 ## Purpose
 
-Track 5 Ships 3 and 4 surfaced twelve patterns across their findings docs (LR §7, CC §7). Four of those patterns are cross-ship architectural lessons applicable to future extractors; six are single-ship architectural or operational lessons that may or may not generalize; two are CRD3-corpus-specific FP filters that belong in corpus-handling guidance rather than cross-cutting architectural doctrine.
+Track 5 Ships 3, 4, and 5 surfaced fourteen patterns across their findings docs (LR §7, CC §7, Cross-Extractor §7). Four of those patterns are cross-ship architectural lessons applicable to future extractors; eight are single-ship architectural or operational lessons that may or may not generalize; two are CRD3-corpus-specific FP filters that belong in corpus-handling guidance rather than cross-cutting architectural doctrine.
 
 This doc separates the three tiers so the next v2→v3 promotion review has tiered candidates to evaluate rather than a flat list. Tier 1 candidates are ready for promotion as-written. Tier 2 candidates need one more ship's confirmation before promotion. Tier 3 candidates are corpus-specific and should land in `CORPUS_BUILDER.md` or equivalent rather than the architectural lessons doc.
 
@@ -153,6 +153,34 @@ These candidates are real architectural patterns with single-ship evidence but u
 
 ---
 
+### Candidate 24 — Phase 1 hypotheses must be validated against actual extractor taxonomies
+
+**Source ship:** Cross-Extractor Analysis (X3 rejection, replaced by X3b directional flip).
+
+**Pattern.** Cross-extractor research questions inherited verbatim from source ships' §9 deferred-question inventories may be unanswerable as filed when the inheriting question's premise depends on extractor capabilities the source ship's findings doc didn't enumerate. LR-X1 assumed EC's taxonomy carried perception/investigation/insight signals (a reasonable assumption from outside EC's findings doc); cross-extractor verification revealed EC's six categories are exclusively combat-onset (interruption, npc_turns_hostile, wave_or_phase_shift, player_action_escalation, environmental_materialization, trap_activation). The X3 join produced ~0.3% match rate not because Matt doesn't telegraph rewards, but because the question was unanswerable.
+
+The reframe to X3b (directional flip: do LR quest-offers precede EC combat-initiations?) took ~20 lines of code and preserved the cross-extractor pipeline's value on this question, but the lesson is that the misspecification should have been caught at Phase 1, not Phase 2.
+
+**Forward rule for v3.** Phase 1 specs for cross-extractor analysis ships must include an explicit taxonomy-verification step: each X-question's required source-extractor categories listed and confirmed against the source extractors' actual category lists. The verification step lives in Phase 1, not Phase 2 — catching this before Phase 2 spends effort building joins for unanswerable questions.
+
+**Why Tier 2.** Single-ship evidence. The lesson is general (any future cross-extractor pipeline should run this verification) but the empirical demonstration is X3 alone. Promote to Tier 1 if a second cross-extractor ship surfaces an analogous misspecification.
+
+---
+
+### Candidate 25 — Cross-extractor proximity windows should be set against per-source category-density baselines
+
+**Source ship:** Cross-Extractor Analysis (X3b window-scaling, X4 R3 window-sensitivity).
+
+**Pattern.** Phase 1 §13.3 (c) locked configurable per-question windows with a 15-turn default. X3b showed the signal rate jumps from 1.6% at 25 turns to 8.2% at 50 turns and is flat thereafter — the 15-turn default would have understated the signal materially. X4's R3 rule used 25 turns by default; the actual rule's sensitivity to that window wasn't tested before publication. Cross-extractor proximity windows interact with per-source category density: sparse sources (EC at 1.21 records/episode) need wider windows than dense sources (TM at 25.7 records/episode).
+
+A single global default window is wrong on its face when paired sources have order-of-magnitude differences in record density. The Phase 1 spec's §13.3 lock was operationally correct (per-question configurable, default 15) but didn't anticipate that the "configurable" part would matter substantially for every join.
+
+**Forward rule for v3.** Phase 1 specs for cross-extractor analysis ships should set proximity-window defaults per source-pair, not globally. Window default = ~3-5× the typical inter-record turn-distance for the sparser source in the pair. Phase 1 spec should include a per-pair table of recommended windows derived from source-extractor record density, alongside the per-pair intersection counts.
+
+**Why Tier 2.** Single-ship evidence. The lesson is mechanical (window-tuning against record density is good practice) but the empirical demonstration here is two X-questions in one ship. Promote if a second cross-extractor ship's results materially change at window-tuning.
+
+---
+
 ## Tier 3 — Corpus-specific, recommend filing in `CORPUS_BUILDER.md` or `notes/`
 
 These two patterns are real and recurring but specific to the CRD3 corpus's production-context features. They belong in corpus-handling documentation rather than cross-extractor architectural doctrine.
@@ -182,22 +210,23 @@ These two patterns are real and recurring but specific to the CRD3 corpus's prod
 | Tier | Count | Disposition |
 |---|---:|---|
 | Tier 1 — recommended for v3 promotion | 4 | Promote as Lessons 12–15 at next v2→v3 transition |
-| Tier 2 — filed awaiting cross-ship confirmation | 6 | Re-evaluate at next v3 promotion review or next ship |
+| Tier 2 — filed awaiting cross-ship confirmation | 8 | Re-evaluate at next v3 promotion review or next ship |
 | Tier 3 — corpus-specific, file elsewhere | 2 | Move to `CORPUS_BUILDER.md` or extractor-specific docs |
-| **Total candidates filed** | **12** | |
+| **Total candidates filed** | **14** | |
 
 Source breakdown by ship:
 - Loot/Reward (Ship 3): 6 candidates (Tier 1: 0; Tier 2: 4; Tier 3: 2)
 - Compression Cadence (Ship 4): 6 candidates (Tier 1: 4; Tier 2: 2)
+- Cross-Extractor Analysis (Ship 5): 2 candidates (Tier 1: 0; Tier 2: 2)
 
-Compression Cadence carries the cross-ship-joint candidates because its findings explicitly framed its lessons against TM and LR precedent; Loot/Reward's candidates are framed against its own ship's calibration only. This is a documentation pattern, not a substantive difference — LR's candidates may have joint-ship character that wasn't surfaced at LR's findings time.
+Compression Cadence carries the cross-ship-joint candidates because its findings explicitly framed its lessons against TM and LR precedent; Loot/Reward's candidates are framed against its own ship's calibration only. Cross-Extractor's candidates are pipeline-architectural rather than extractor-architectural — they apply to future cross-extractor work specifically. This is a documentation pattern, not a substantive difference — LR's candidates may have joint-ship character that wasn't surfaced at LR's findings time.
 
 ---
 
 ## What this doc isn't
 
 - **Not authoritative.** `corpus_builder_lessons_v2.md` remains the canonical reference. v3 doesn't exist yet; this is a staging file for its eventual creation.
-- **Not exhaustive.** Future ships will surface additional candidates. This doc captures Ships 3 and 4 only.
+- **Not exhaustive.** Future ships will surface additional candidates. This doc captures Ships 3, 4, and 5 only.
 - **Not a substitute for findings docs.** Each candidate's full context lives in its source ship's findings doc §6 and §7. This doc summarizes for cross-ship promotion review, not for first-time learning of the pattern.
 
 ---
@@ -218,3 +247,5 @@ Compression Cadence carries the cross-ship-joint candidates because its findings
 | 21. Knowledge-grant inversion | Loot/Reward | `track5_findings_loot_reward.md` | §7 Lesson 5 |
 | 22. Donor-read DISCOURSE | Loot/Reward | `track5_findings_loot_reward.md` | §7 Lesson 3 |
 | 23. Sale-price refund disambiguation | Loot/Reward | `track5_findings_loot_reward.md` | §7 Lesson 6 |
+| 24. Phase 1 hypotheses against actual extractor taxonomies | Cross-Extractor Analysis | `track5_findings_cross_extractor.md` | §5, §7 |
+| 25. Cross-extractor proximity windows per source-pair | Cross-Extractor Analysis | `track5_findings_cross_extractor.md` | §7 |

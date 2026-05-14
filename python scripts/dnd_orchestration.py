@@ -676,16 +676,59 @@ def classify_action_intent(text: str, mode: str = 'exploration') -> str:
     return INTENT_SOCIAL  # exploration default: general roleplay, no roll
 
 
+# S65 Fix 3 — DC-less roll closure. Severity-to-DC table is the deterministic
+# substrate that closes the "LLM forgot the DC" category error. Each severity
+# maps to a 5e RAW band:
+#   minor      → 10 (easy)
+#   meaningful → 15 (medium, default for most uncertain attempts)
+#   dire       → 20 (hard)
+# Attack rolls have no DC (Avrae handles attack-vs-AC); the table is consulted
+# only for skill_check / save categories. The mapping lives here next to
+# RollDecision so future severity additions update the DC table atomically.
+_SEVERITY_TO_DC: dict[str, int] = {
+    'minor':      10,
+    'meaningful': 15,
+    'dire':       20,
+}
+_DEFAULT_DC_FOR_UNKNOWN_SEVERITY = 15  # falls through to medium
+
+
 @dataclass
 class RollDecision:
     """The output of the discipline engine. Narration consumes this verbatim;
-    it must not invent its own roll-or-not call."""
+    it must not invent its own roll-or-not call.
+
+    S65 Fix 3: `dc` is now an engine-computed field, populated by
+    `should_call_roll` for every `needs_roll=True` decision in skill_check or
+    save categories. Attack rolls leave dc=None (Avrae handles attack-vs-AC).
+    The deterministic substrate closes the prior failure mode where the LLM
+    was asked to pick a DC from RAW guidance and intermittently emitted a
+    DC-less template.
+    """
     needs_roll: bool
     skill: str = ''           # e.g. "stealth", "persuasion", "perception"
     save: str = ''            # e.g. "dex", "wis"
     category: str = ''        # one of: skill_check | save | attack | initiative | none
     severity: str = 'minor'   # minor | meaningful | dire
     reason: str = ''          # human-readable why-or-why-not, for the prompt
+    dc: Optional[int] = None  # S65 Fix 3 — engine-computed DC for skill/save
+
+    def __post_init__(self):
+        """S65 Fix 3 — auto-fill `dc` from severity for skill_check and save
+        categories when caller didn't supply one explicitly. Attack rolls
+        stay dc=None (Avrae handles attack-vs-AC). Defense-in-depth: any
+        future RollDecision(True, ..., category='skill_check', ...) call
+        site automatically gets a DC without requiring caller updates.
+        """
+        if self.dc is not None:
+            return  # caller-supplied DC wins
+        if not self.needs_roll:
+            return  # no-roll decisions don't need a DC
+        if self.category in ('skill_check', 'save'):
+            self.dc = _SEVERITY_TO_DC.get(
+                self.severity, _DEFAULT_DC_FOR_UNKNOWN_SEVERITY
+            )
+        # category='attack' / 'initiative' / 'none' / '' → dc stays None
 
     def to_prompt_directive(self, init_directive_body: str = '') -> str:
         """Compact directive for the DM system prompt.
@@ -710,10 +753,13 @@ class RollDecision:
             # multi-word names — `!attack unarmed strike -t Garrick` is
             # correct, NOT `!attack "unarmed strike" -t Garrick`. The same
             # convention as `!check sleight of hand` in the skill path.
-            template = (
-                '!attack <weapon-name> -t <target>   '
-                '(or for a spell: !cast <spell-name> -t <target>)'
-            )
+            # S65.A format unification: attack template uses the same
+            # bullet + bold-actor + backticked-command shape as skill_check
+            # and save. Visual consistency across every actor-bound
+            # mechanical-instruction surface. The "(or for a spell)"
+            # alternative renders as a sibling line for the same reason.
+            # The box contains ONLY the bare Avrae command syntax — actor
+            # name lives outside (bold prefix).
             attack_text = (
                 f"ROLL DECISION: attack roll required ({self.severity}). "
                 f"Your message MUST narrate the player's attempt BEFORE the "
@@ -721,14 +767,26 @@ class RollDecision:
                 f"target's brief brace or dodge attempt — THEN end with the "
                 f"templated command. A response that is ONLY the command, with "
                 f"no narration, is INSUFFICIENT and breaks the table. "
-                f"End your message asking the player to roll: `{template}`. "
-                f"This is a TEMPLATE — fill `<weapon-name>` from the character's "
-                f"available attacks (e.g. `unarmed strike`, `shortsword`, "
-                f"`crossbow`, `longbow`), `<spell-name>` from the character's "
-                f"known spells (e.g. `fireball`, `eldritch blast`), and `<target>` "
-                f"from the NPC the player named (use the canonical NPC name from "
-                f"the scene context — e.g. `Garrick`, not `the bartender`). "
-                f"DO NOT wrap multi-word names in quotes — Avrae uses positional "
+                f"End your message with a single bullet line, the acting "
+                f"character's first name in bold + colon, then the bare "
+                f"Avrae command wrapped in single backticks. The backticked "
+                f"box contains ONLY the Avrae command syntax — no character "
+                f"name, no other prose. Exact shape:\n\n"
+                f"  - **<First Name>:** `!attack <weapon-name> -t <target>`\n\n"
+                f"(or, for a spell instead of a weapon:)\n\n"
+                f"  - **<First Name>:** `!cast <spell-name> -t <target>`\n\n"
+                f"This is a TEMPLATE — fill `<First Name>` from the ACTING "
+                f"CHARACTER block (e.g. 'Donovan'), `<weapon-name>` from the "
+                f"character's available attacks (e.g. `unarmed strike`, "
+                f"`shortsword`, `crossbow`, `longbow`), `<spell-name>` from "
+                f"the character's known spells (e.g. `fireball`, `eldritch "
+                f"blast`), and `<target>` from the NPC the player named "
+                f"(use the canonical NPC name from the scene context — "
+                f"e.g. `Garrick`, not `the bartender`). The character name "
+                f"lives OUTSIDE the backticks, bolded with the leading "
+                f"colon; backticks wrap only the Avrae command itself. "
+                f"Backticks are SINGLE (`` ` ``), NOT bold asterisks. Do NOT "
+                f"wrap multi-word names in quotes — Avrae uses positional "
                 f"parsing. `!attack unarmed strike -t Garrick` is correct; "
                 f"`!attack \"unarmed strike\" -t Garrick` is WRONG. "
                 f"The `-t <target>` argument is REQUIRED. Omitting it makes Avrae "
@@ -751,30 +809,67 @@ class RollDecision:
             cmd = "!roll"
             label = "roll"
         # Ship A §12.2 + S36 #5 live-verify patch: operator-locked format
-        # for the directive emission. Single bold line on its own at the
+        # for the directive emission. Single line on its own at the
         # end of the message, character name after colon.
+        #
+        # S65 Fix 3 (DC-less roll closure): the DC is now engine-computed
+        # via `__post_init__` from severity, not LLM-chosen. The template
+        # contains the literal DC integer, not a `<DC>` placeholder.
+        #
+        # S65.A format unification (post-S65 operator request): roll-request,
+        # attack-template, mechanical-hint, and Suggested-Actions surfaces
+        # all converge on the same shape — single bullet, backtick-wrapped
+        # command. The prior bold-wrap (`**...**`) format reads as emphasis
+        # which mixes with the LLM's own narrative emphasis (compare with
+        # the consequence sentence in resolution narration, which the LLM
+        # legitimately bolds for storytelling). Backtick-wrap renders as
+        # inline code (gray-boxed monospace) which is visually distinct
+        # from narrative prose and from emphasis — operator-pasteable +
+        # unambiguously "this is a mechanical command." Strip regex
+        # (`_DC_STRIP_RX` in discord_dnd_bot.py) handles both `**` (legacy)
+        # and `` ` `` (current) boundaries for graceful coexistence during
+        # any narration with stale-format echo.
         if self.skill or self.save:
+            dc_int = self.dc if self.dc is not None else _DEFAULT_DC_FOR_UNKNOWN_SEVERITY
             return (
                 f"ROLL DECISION: {label} required ({self.severity}). "
+                f"Engine-computed DC: {dc_int}. "
                 f"Reason: {self.reason}\n\n"
                 f"END YOUR MESSAGE WITH A ROLL REQUEST. Format your "
                 f"message as TWO parts:\n\n"
                 f"1) ONE OR TWO sentences of NARRATIVE describing the "
                 f"acting character's attempt — what they do, what tension "
                 f"is in the moment. Then a blank line.\n"
-                f"2) On its own final line, ENTIRELY BOLD (wrapped in "
-                f"`**...**`), in this exact shape:\n\n"
-                f"  `**{cmd} <DC> : <First Name>**`\n\n"
+                f"2) On its own final line, a single bullet followed by "
+                f"the acting character's first name in bold + colon, then "
+                f"the bare Avrae command wrapped in single backticks. "
+                f"The backticked box contains ONLY the Avrae command "
+                f"syntax — no character name, no colon, no other text. "
+                f"Exact shape:\n\n"
+                f"  - **<First Name>:** `{cmd} {dc_int}`\n\n"
                 f"  Where:\n"
-                f"  - `<DC>` is an integer DC from the 5e RAW bands below\n"
-                f"  - `<First Name>` is the acting character's first name "
-                f"(e.g. 'Donovan' from 'Donovan Ruby' in the ACTING "
-                f"CHARACTER block above)\n\n"
-                f"EXAMPLE (substitute the real character name + DC):\n"
+                f"  - the leading `- ` is the bullet (Discord renders as a "
+                f"bullet point).\n"
+                f"  - `**<First Name>:**` is the acting character's first "
+                f"name in bold, followed by a colon (e.g. 'Donovan' from "
+                f"'Donovan Ruby' in the ACTING CHARACTER block above). "
+                f"The character name lives OUTSIDE the backticks.\n"
+                f"  - The command + DC is wrapped in single backticks "
+                f"(`` ` ``) NOT bold asterisks. Backticks render as "
+                f"inline code (a boxed monospace command). The box "
+                f"contains the EXACT Avrae command syntax only — no "
+                f"actor name, no DC label, no other prose.\n"
+                f"  - `{dc_int}` is the engine-computed DC — emit it "
+                f"VERBATIM inside the backticks. Do NOT substitute a "
+                f"different number, do NOT replace with a placeholder, "
+                f"do NOT omit it.\n\n"
+                f"EXAMPLE (substitute the real character name; DC is "
+                f"engine-fixed):\n"
                 f"  Donovan leans closer, scanning the runes for any "
                 f"shift in the carved lines.\n\n"
-                f"  **!check perception 15 : Donovan**\n\n"
-                f"DC GUIDANCE: pick a DC from the 5e RAW bands:\n"
+                f"  - **Donovan:** `{cmd} {dc_int}`\n\n"
+                f"DIFFICULTY TIER (informational — your NARRATIVE should "
+                f"match this tier; the DC integer itself is fixed):\n"
                 f"  5  = trivial (the actor would succeed on instinct)\n"
                 f"  10 = easy (routine for a competent character)\n"
                 f"  15 = medium (real friction, default for most "
@@ -783,13 +878,14 @@ class RollDecision:
                 f"  25 = very hard (extraordinary attempt; only experts "
                 f"succeed)\n"
                 f"  30 = nearly impossible (heroic stakes; success is rare)\n"
-                f"The DC is what the engine binds the outcome to. The "
-                f"narration after the roll is auto-generated bound to the "
-                f"rolled value vs the DC you picked.\n"
-                f"The bold roll-request line MUST appear as the final line "
-                f"of your message, alone, with NO trailing text after it. "
-                f"The line MUST be entirely wrapped in `**...**` so it "
-                f"renders bold to the player."
+                f"The DC binds the outcome. The narration after the roll "
+                f"is auto-generated bound to the rolled value vs the DC "
+                f"the engine picked.\n"
+                f"The bullet + backtick roll-request line MUST appear as "
+                f"the final line of your message, alone, with NO trailing "
+                f"text after it. Backticks are SINGLE (`` ` ``), NOT triple "
+                f"(``` ``` ```). Do NOT wrap the command in bold "
+                f"(`**...**`); use backticks only."
             )
         return (
             f"ROLL DECISION: {label} required ({self.severity}). "
@@ -2954,30 +3050,59 @@ def compute_time_directive(scene_state, just_advanced: bool) -> str:
 # Same LLM, different system prompt, different context shape: factual state
 # reference only, no past-narration retrieval.
 
+# S65 Fix 4 — `#dm-aside` role-confusion hard-fork. The prior framing
+# addressed Virgil to "the player" out-of-character, which caused the
+# role-confusion failure mode observed S64 (1:14 AM playtest): when the
+# DM/operator typed feedback like "remember my character is a half-elf,"
+# Virgil replied as if to a player ("you might want to ask your DM"),
+# third-party-advising the operator AS the DM. Per Gemini's framing the
+# fix is a hard system-prompt-prefix fork: in `#dm-aside`, the asker IS
+# the DM/operator. Per GPT 1/3's scope discipline note: this identity
+# merge applies in `#dm-aside` ONLY — do NOT propagate "Virgil-as-DM"
+# framing to `#dm-narration` (which still has its own role separation
+# between Virgil-as-narrator and players-as-characters). Channel-boundary
+# scoping is preserved at the call site: only `_advisory_respond` uses
+# this prompt.
 ADVISORY_SYSTEM_PROMPT = (
-    "You are Virgil, speaking out-of-character to help the player understand "
-    "the game. This is a private aside channel — not in-character narration.\n"
+    "You are Virgil, the underlying game engine, communicating directly "
+    "with the human Dungeon Master in a private aside channel. You are "
+    "NOT speaking to a player. You are NOT in-character. You are "
+    "diagnosing system state, surfacing telemetry, or responding to "
+    "operator queries about engine behavior. The operator addressing you "
+    "IS the DM; treat their feedback about character pronouns, scene "
+    "state, or narration behavior as authoritative.\n"
     "\n"
     "Your job:\n"
-    "- Answer the player's questions about what's happening, what they have, "
-    "what they can do.\n"
-    "- Explain mechanics, options, and game state plainly.\n"
-    "- Reference the scene, inventory, active turn, and combat state below "
-    "as factual reference.\n"
-    "- Suggest commands the player could run, but DO NOT emit them yourself.\n"
-    "- Be brief, practical, and friendly — like a DM leaning over to whisper "
-    "a clarification.\n"
+    "- Answer the DM's questions about engine state plainly and factually.\n"
+    "- Explain mechanics, surfaced state, current scene posture, and what "
+    "the engine sees vs. what was narrated.\n"
+    "- Reference the scene, inventory, active turn, combat state, and "
+    "available commands below as ground truth.\n"
+    "- When the DM tells you something corrective (a character pronoun "
+    "they want consistent, a fact about scene state, a narration habit "
+    "they want adjusted), acknowledge it as a note to carry into "
+    "subsequent narration. Do NOT redirect the DM to ask anyone else; "
+    "you are the system they're addressing.\n"
+    "- Suggest commands the DM could run, but DO NOT emit them yourself "
+    "(the bot-Avrae write boundary still holds; commands are typed by the "
+    "human DM).\n"
+    "- Be brief, practical, and direct — like an engineer answering a "
+    "system query, not a DM addressing a player.\n"
     "\n"
     "What you must NOT do:\n"
-    "- Do not narrate scene events (\"you draw your sword...\") — this is "
-    "OOC, not gameplay.\n"
-    "- Do not mutate the scene, advance time, or trigger combat.\n"
-    "- Do not invent items, NPCs, or world state the player doesn't already "
-    "have.\n"
-    "- Do not emit `!`-prefixed Avrae commands — only describe them as "
-    "options for the player to type.\n"
-    "- Do not break character so far that you forget you are still Virgil — "
-    "the warm, knowledgeable DM voice persists, just out of scene.\n"
+    "- Do not narrate scene events (\"the bandit lunges...\") — this is "
+    "an aside, not gameplay.\n"
+    "- Do not mutate scene state. Do not advance time. Do not trigger "
+    "combat. This channel is read-only with respect to engine state.\n"
+    "- Do not invent items, NPCs, or world state the engine does not "
+    "already have recorded.\n"
+    "- Do not emit `!`-prefixed Avrae commands — describe them as "
+    "options for the DM to type.\n"
+    "- Do not address the DM as if they were a player asking about their "
+    "character. Phrases like \"you might want to check with your DM\" or "
+    "\"ask the DM\" are wrong — the DM is who you are addressing.\n"
+    "- Do not narrate \"in-character\" responses from NPCs or the world. "
+    "This is operator-facing, not in-fiction.\n"
     "\n"
     "Critical command guidance:\n"
     "- A complete command reference is included below in the AVAILABLE "
@@ -2985,15 +3110,16 @@ ADVISORY_SYSTEM_PROMPT = (
     "and availability.\n"
     "- When suggesting a command, match the syntax in AVAILABLE COMMANDS "
     "exactly.\n"
-    "- If the player asks about a command not in AVAILABLE COMMANDS, say so "
+    "- If the DM asks about a command not in AVAILABLE COMMANDS, say so "
     "honestly (\"I don't see that as an available command\") rather than "
     "guessing or inventing syntax.\n"
-    "- Suggest commands the player could run; DO NOT emit them yourself.\n"
+    "- Suggest commands the DM could run; DO NOT emit them yourself.\n"
     "\n"
     "Format:\n"
-    "- Plain prose, conversational.\n"
+    "- Plain prose, conversational, direct.\n"
     "- Short answers preferred.\n"
-    "- Use bullet lists only when the player asks \"what are my options\".\n"
+    "- Use bullet lists when the DM asks \"what are the options\" or "
+    "for state summaries.\n"
 )
 
 
@@ -3078,10 +3204,14 @@ def build_advisory_context(
     else:
         lines.append("Campaign: (none active)")
 
+    # S65 Fix 4 — phrasing aligned with role-as-DM framing. Previously read
+    # "Asking player's character" which implied the asker was the player.
+    # Under the new framing the asker IS the DM/operator; the bound character
+    # is referenced as factual state, not as a self-reference.
     if bound_character_name:
-        lines.append(f"Asking player's character: {bound_character_name}")
+        lines.append(f"Bound character: {bound_character_name}")
     else:
-        lines.append("Asking player's character: (no bound character)")
+        lines.append("Bound character: (none)")
 
     # Scene block
     if scene_state:
@@ -4060,3 +4190,650 @@ def combat_narration_log_summary(trigger_event: dict, fired: bool,
     if reason:
         parts.append(f"reason={reason}")
     return " ".join(parts)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Scene Lifecycle Directive (Scene Lifecycle v1, S52)
+# Eleventh Doctrine §59 instance — F-54 scene immortality
+# ─────────────────────────────────────────────────────────────────────────────
+
+_STALE_SOFT_THRESHOLD = 3   # tunable; calibrate from scene_lifecycle: telemetry
+_STALE_HARD_THRESHOLD = 6   # tunable; calibrate from scene_lifecycle: telemetry
+_CLIMACTIC_HOLD_WINDOW = 10  # post-combat turns to suppress if combat had beats
+
+_SCENE_LIFECYCLE_SOFT_BODY = (
+    "SCENE LIFECYCLE — GENTLE:\n"
+    "This scene has been active for {n} exchanges without new information,\n"
+    "objective progress, or NPC-state change. If the current situation\n"
+    "has run its course, compress naturally — wrap the NPC exchange in one\n"
+    "sentence, narrate the party preparing to move on, and invite the next\n"
+    "player action from a fresh vantage point. If tension remains unresolved,\n"
+    "escalate rather than compress. Do not force closure — but lean toward it."
+)
+
+_SCENE_LIFECYCLE_HARD_BODY = (
+    "SCENE LIFECYCLE — COMPRESS NOW:\n"
+    "This scene has been active for {n} exchanges with no forward movement.\n"
+    "COMPRESS THIS SCENE: close any open beats in one sentence, summarize\n"
+    "the remaining situation without extending it, and move the party\n"
+    "toward the next meaningful event or location. You may narrate a brief\n"
+    'transition ("as the conversation wraps up..." / "with that resolved..."\n'
+    '/ "the moment passes...") but DO NOT open new NPC threads, introduce\n'
+    "new obstacles, or extend the current location's narration.\n"
+    "Retire the scene. Hand agency back to the players in a new context."
+)
+
+_SCENE_LIFECYCLE_EXPLICIT_BODY = (
+    "SCENE LIFECYCLE — DM-INITIATED COMPRESS:\n"
+    "The DM has explicitly called for a scene transition{reason_clause}.\n"
+    "Compress this scene now. Wrap remaining beats in one sentence and\n"
+    "move forward. Do not resist or extend."
+)
+
+
+def compute_scene_lifecycle_directive(
+    scene_state,
+    stale_turns: int,
+    trigger_kind: str,
+    last_combat_had_beats: bool = False,
+    turns_since_combat_end: int = 9999,
+    commitment_directive_active: bool = False,
+    explicit_reason: str = '',
+) -> tuple:
+    """Return (directive_body, signals_dict) for scene lifecycle pressure.
+
+    Eleventh Doctrine §59 instance — pure function over (scene_state,
+    stale_turns, trigger_kind, ...). No DB writes, no LLM calls.
+
+    trigger_kind: 'auto' | 'explicit'
+      'explicit' fires strong directive regardless of stale_turns (from /compress).
+      Explicit bypasses climactic-hold suppression — DM authority is final.
+
+    Returns ('', signals) when:
+      - mode gate fails (not exploration or social, §11.A)
+      - auto trigger below soft threshold (§5.5 86% quiet baseline)
+      - climactic-hold predicate fires (§5.7 / §11.L modified)
+
+    signals keys:
+      fired: 0|1
+      mode: str
+      stale_turns: int
+      tier: 'none' | 'soft' | 'strong' | 'explicit'
+      suppressed_reason: str (empty unless suppressed)
+    """
+    signals: dict = {
+        'fired': 0,
+        'mode': '',
+        'stale_turns': stale_turns,
+        'tier': 'none',
+        'suppressed_reason': '',
+    }
+
+    # Mode gate — exploration+social only (§11.A decision (b))
+    mode = ''
+    if isinstance(scene_state, dict):
+        mode = (scene_state.get('mode') or '').lower()
+    signals['mode'] = mode
+    if mode not in ('exploration', 'social'):
+        return ('', signals)
+
+    # Explicit trigger — DM intent bypasses threshold and hold suppression
+    if trigger_kind == 'explicit':
+        reason_clause = f': "{explicit_reason}"' if (explicit_reason or '').strip() else ''
+        body = _SCENE_LIFECYCLE_EXPLICIT_BODY.format(reason_clause=reason_clause)
+        signals['fired'] = 1
+        signals['tier'] = 'explicit'
+        return (body, signals)
+
+    # Below soft threshold — quiet baseline (§5.5: 86% quiet by design)
+    if stale_turns < _STALE_SOFT_THRESHOLD:
+        return ('', signals)
+
+    # Climactic-hold predicate check at fire-time (§5.7 / §11.L modified)
+    # Suppress if active commitment directive OR recent intense combat with beats
+    if (commitment_directive_active
+            or (last_combat_had_beats
+                and turns_since_combat_end < _CLIMACTIC_HOLD_WINDOW)):
+        signals['suppressed_reason'] = 'climactic_hold_suppressed'
+        return ('', signals)
+
+    # Tier selection — §11.D named constants, §11.G accumulate-indefinitely
+    if stale_turns < _STALE_HARD_THRESHOLD:
+        body = _SCENE_LIFECYCLE_SOFT_BODY.format(n=stale_turns)
+        signals['tier'] = 'soft'
+    else:
+        body = _SCENE_LIFECYCLE_HARD_BODY.format(n=stale_turns)
+        signals['tier'] = 'strong'
+
+    signals['fired'] = 1
+    return (body, signals)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Quest Layer v0 — §59 siblings 12 and 13 (Quest Layer v0, S56)
+# F-54-adjacent symptom: "the party has nothing structurally pulling them
+# forward." NPC-voiced quest offers + active-quest tracking.
+# §1b third project instance (canonical /quest accept slash gate;
+# cosine-similarity paste-detection is auxiliary UX layer).
+# ─────────────────────────────────────────────────────────────────────────────
+
+_QUEST_OFFER_COOLDOWN = 6   # per-NPC turns since last offer-card before re-fire
+_ACTIVE_QUEST_CAP = 3        # max quests rendered per directive (severity-then-recency)
+
+_QUEST_PRIORITY_RANK = {'urgent': 0, 'normal': 1, 'low': 2}
+
+
+def compute_quest_offer_suggester(
+    scene_state,
+    canonical_npcs_at_location: list,
+    active_quests: list,
+    offerable_quests: list,
+    turns_since_last_offer_per_npc: dict,
+) -> tuple:
+    """Return (proposal_dict | None, signals_dict) for quest offer suggester.
+
+    Twelfth Doctrine §59 instance — pure function over scene_state +
+    canonical NPCs at location + active quests + offerable skeleton quests +
+    per-NPC cooldown state. No DB writes, no LLM calls.
+
+    Inputs:
+      scene_state: dict from get_scene_state(); reads .mode for the gate.
+      canonical_npcs_at_location: list of NPC dicts at the current location
+        with skeleton_origin set (caller filters: dnd_npcs WHERE
+        skeleton_origin=1 AND location_id=current_location_id).
+      active_quests: list of quest dicts where status IN ('offered',
+        'in-progress') — caller-filtered. Used to suppress re-offering quests
+        already in flight.
+      offerable_quests: list of quest dicts where skeleton_origin=1 AND
+        status='offered'. The candidate pool. (Pre-seeded by
+        /quest seed-skeleton at v0; offered-then-declined rows can be
+        re-offered after operator clears via /quest delete or transitions
+        through abandoned.)
+      turns_since_last_offer_per_npc: dict[int, int] keyed by NPC id.
+        Missing keys treated as +inf (never offered for that NPC).
+
+    Returns (proposal, signals) where:
+      proposal: None when no fire; dict shape per spec §4 when firing:
+        {'voicer_npc_id': int, 'voicer_npc_name': str, 'quest_id': int,
+         'quest_title': str, 'quest_summary': str, 'reward_summary': str,
+         'offer_dialogue_seed': str}
+      signals: always-fire telemetry dict:
+        {'fired': 0|1, 'mode': str, 'reason': str, 'candidate_npc_count':
+         int, 'offerable_count': int}
+
+    Fire predicate (locked §11.3):
+      1. mode in {'social', 'exploration'}
+      2. At least one canonical_npc at location with skeleton_origin=1
+      3. That NPC is the offer_npc_id voicer for at least one quest in
+         offerable_quests (or, per §1.D fallback, NULL voicer_npc_id quests
+         are eligible for any skeleton_origin=1 NPC at location)
+      4. Cooldown clear: turns_since_last_offer_per_npc[npc_id] >=
+         _QUEST_OFFER_COOLDOWN (or no prior offer recorded for that NPC)
+
+    Reason values when fired=0:
+      'gate_mode'             — mode not in {social, exploration}
+      'gate_no_npcs'          — no skeleton_origin=1 NPCs at location
+      'gate_no_offerable'     — zero offerable quests
+      'gate_no_voicer_match'  — NPCs at location don't voice any offerable quest
+      'gate_cooldown'         — all candidate voicers are in cooldown window
+    """
+    signals = {
+        'fired': 0,
+        'mode': '',
+        'reason': '',
+        'candidate_npc_count': 0,
+        'offerable_count': 0,
+    }
+
+    # Mode gate (§11.3.1)
+    mode = ''
+    if isinstance(scene_state, dict):
+        mode = (scene_state.get('mode') or '').lower()
+    signals['mode'] = mode
+    if mode not in ('social', 'exploration'):
+        signals['reason'] = 'gate_mode'
+        return (None, signals)
+
+    # Candidate NPC count (§11.3.2)
+    npcs = [n for n in (canonical_npcs_at_location or [])
+            if isinstance(n, dict) and n.get('skeleton_origin')]
+    signals['candidate_npc_count'] = len(npcs)
+    if not npcs:
+        signals['reason'] = 'gate_no_npcs'
+        return (None, signals)
+
+    # Offerable quest pool (§11.3.3)
+    offerable = list(offerable_quests or [])
+    signals['offerable_count'] = len(offerable)
+    if not offerable:
+        signals['reason'] = 'gate_no_offerable'
+        return (None, signals)
+
+    # Build (voicer_npc, quest) candidate pairs (§11.3.3 + §1.D voicer fallback)
+    candidates = []
+    for q in offerable:
+        if not isinstance(q, dict):
+            continue
+        voicer_id = q.get('offer_npc_id')
+        for npc in npcs:
+            npc_id = npc.get('id')
+            if npc_id is None:
+                continue
+            # Match: quest's offer_npc_id == this NPC, OR voicer_id is NULL
+            # (priority-rule fallback per §1.D — any skeleton_origin=1 NPC
+            # at location may voice an unattributed quest).
+            if voicer_id is None or voicer_id == npc_id:
+                candidates.append((npc, q))
+
+    if not candidates:
+        signals['reason'] = 'gate_no_voicer_match'
+        return (None, signals)
+
+    # Cooldown gate (§11.3.4) — per-NPC. Filter candidates whose voicer is
+    # within the cooldown window.
+    cooldown_map = turns_since_last_offer_per_npc or {}
+    fresh = []
+    for (npc, q) in candidates:
+        npc_id = npc.get('id')
+        turns_since = cooldown_map.get(npc_id, _QUEST_OFFER_COOLDOWN)
+        if turns_since >= _QUEST_OFFER_COOLDOWN:
+            fresh.append((npc, q))
+
+    if not fresh:
+        signals['reason'] = 'gate_cooldown'
+        return (None, signals)
+
+    # Selection — first match in offerable order (oldest skeleton hook first).
+    # Multi-NPC at location: first NPC in input order wins. Operator can
+    # override at /quest offer <id> command time if a different voicer is
+    # desired (v1.x candidate: explicit voicer override slash arg).
+    voicer, quest = fresh[0]
+    proposal = {
+        'voicer_npc_id': voicer.get('id'),
+        'voicer_npc_name': voicer.get('canonical_name') or voicer.get('name') or '',
+        'quest_id': quest.get('id'),
+        'quest_title': quest.get('title') or '',
+        'quest_summary': quest.get('summary') or '',
+        'reward_summary': quest.get('reward_summary') or '',
+        'offer_dialogue_seed': '',  # filled by caller (skeleton-authored or LLM-fallback per §11.10)
+    }
+    signals['fired'] = 1
+    signals['reason'] = 'proposed'
+    return (proposal, signals)
+
+
+def quest_offer_log_summary(signals: dict, voicer_npc_name: str = '',
+                             quest_title: str = '', quest_id: int = 0) -> str:
+    """Compact telemetry line for quest_offer_proposed. Always-fire per §59
+    contract — emit even when proposal is None (gate-rejected)."""
+    parts = [
+        f"quest_offer_proposed: fired={signals.get('fired', 0)}",
+        f"mode={signals.get('mode', '')}",
+        f"reason={signals.get('reason', '')}",
+        f"candidate_npcs={signals.get('candidate_npc_count', 0)}",
+        f"offerable={signals.get('offerable_count', 0)}",
+    ]
+    if signals.get('fired'):
+        parts.append(f"voicer='{voicer_npc_name}'")
+        parts.append(f"quest_id={quest_id}")
+        parts.append(f"quest='{quest_title}'")
+    return " ".join(parts)
+
+
+def compute_active_quest_directive(active_quests: list,
+                                    scene_state) -> tuple:
+    """Return (directive_body, signals_dict) rendering active (in-progress)
+    quests as ambient prompt pressure.
+
+    Thirteenth Doctrine §59 instance — pure function. No DB writes, no LLM.
+
+    Renders status='in-progress' quests (caller-filtered or with internal
+    safety filter) as a compact block, cap-at-3 with priority-then-recency
+    sort per spec §11.9. Returns ('', signals) when no in-progress quests.
+
+    AUTHORITATIVE/EXHAUSTIVE framing per S22 #2 precedent — the block tells
+    the LLM these are real outstanding commitments, not optional flavor.
+
+    signals shape:
+      {'fired': 0|1, 'active_count': int, 'rendered': int, 'tier': 'auto'}
+    """
+    signals = {
+        'fired': 0,
+        'active_count': 0,
+        'rendered': 0,
+        'tier': 'auto',
+    }
+    if not active_quests:
+        return ('', signals)
+
+    # Internal safety filter: only 'in-progress' (accept 'active' alias per
+    # §1.B back-compat shim).
+    in_progress = [
+        q for q in active_quests
+        if isinstance(q, dict) and q.get('status') in ('in-progress', 'active')
+    ]
+    signals['active_count'] = len(in_progress)
+    if not in_progress:
+        return ('', signals)
+
+    # Sort: priority ASC (urgent=0, normal=1, low=2) → accepted_turn DESC
+    # (NULL last; newest accepted first within priority) → id ASC.
+    def _sort_key(q):
+        pri = _QUEST_PRIORITY_RANK.get(q.get('priority') or 'normal', 1)
+        # accepted_turn: NULL → -1 (sorts last when negating); negate for DESC
+        at = q.get('accepted_turn')
+        at_key = -(at if at is not None else -1)
+        return (pri, at_key, q.get('id', 0))
+
+    in_progress.sort(key=_sort_key)
+    shown = in_progress[:_ACTIVE_QUEST_CAP]
+    overflow = len(in_progress) - len(shown)
+    signals['rendered'] = len(shown)
+
+    lines = []
+    for q in shown:
+        title = q.get('title') or '(untitled)'
+        given_by = (q.get('given_by') or '').strip()
+        reward = (q.get('reward_summary') or '').strip()
+        priority = q.get('priority') or 'normal'
+
+        annotations = []
+        if given_by:
+            annotations.append(f"given by {given_by}")
+        if priority != 'normal':
+            annotations.append(priority)
+        if reward:
+            annotations.append(f"reward: {reward}")
+        annotation_str = f" ({', '.join(annotations)})" if annotations else ""
+
+        summary = (q.get('summary') or '').strip()
+        if summary:
+            lines.append(f"- {title}{annotation_str}: {summary}")
+        else:
+            lines.append(f"- {title}{annotation_str}")
+
+    if overflow > 0:
+        lines.append(f"({overflow} more outstanding — /quest list to see all)")
+
+    lines.append(
+        "These are real outstanding commitments. You may reference them in "
+        "narration when relevant. Do NOT invent new quests, declare quests "
+        "complete, or offer rewards beyond what is recorded."
+    )
+
+    signals['fired'] = 1
+    return ("\n".join(lines), signals)
+
+
+def active_quest_log_summary(signals: dict) -> str:
+    """Compact telemetry line for active_quest directive. Always-fire."""
+    return (
+        f"active_quest: fired={signals.get('fired', 0)} "
+        f"active_count={signals.get('active_count', 0)} "
+        f"rendered={signals.get('rendered', 0)} "
+        f"tier={signals.get('tier', 'auto')}"
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Composition Layer v0 — §59 siblings 14 and 15 (Composition Layer v0, S60)
+# F-54 motion-system third piece: scenes anchor to quest acts via
+# dnd_scene_state.current_act_id. Acts are skeleton-authored phases within
+# status='in-progress' (Read B locked §11.1). Compression-coupled auxiliary
+# suggester is the §1b fourth project instance (canonical-slash gate +
+# deterministic-validator predicate; Reading-2 direct, no cosine-similarity).
+# ─────────────────────────────────────────────────────────────────────────────
+
+import json as _json_acts
+
+
+def compute_quest_act_suggester(
+    scene_state,
+    current_act,                # dict from get_current_act() or None
+    candidate_next_act,         # dict from get_quest_acts() next-in-sequence or None
+    scene_count_at_current_act: int,
+    current_location_id,
+) -> tuple:
+    """Return (proposal_dict | None, signals_dict) for the act-transition
+    suggester. 14th Doctrine §59 instance.
+
+    Pure function over (scene_state, current_act, candidate_next_act,
+    scene_count, location_id). No DB writes, no LLM calls. Predicate
+    evaluation against `current_act.transition_predicate_json` (operator-
+    authored, narrow vocabulary per §11.7 lock: scene_count_threshold +
+    location_id).
+
+    Inputs:
+      scene_state: dict — reads .mode for gate (suggester silent in combat).
+      current_act: dict | None — the row from get_current_act, or None when
+        no anchor is set. Returns None proposal if current_act is None.
+      candidate_next_act: dict | None — next-in-sequence act (from
+        get_quest_acts at act_index = current_act.act_index + 1) or None
+        if current is the last act.
+      scene_count_at_current_act: int — caller-derived count of scenes
+        since current_act anchored. Approximated at v0 from scene_lifecycle
+        stale-counter telemetry (caller side); cooldown gate per §11.3.
+      current_location_id: int | None — from scene_state.
+
+    Returns (proposal, signals) where:
+      proposal: None when no fire; dict shape when firing:
+        {'quest_id': int, 'current_act_index': int, 'proposed_next_act_index':
+         int, 'next_act_title': str, 'predicate_reason': str}
+      signals: always-fire telemetry dict:
+        {'fired': 0|1, 'mode': str, 'reason': str,
+         'current_act_id': int|None, 'predicate_match_count': int}
+
+    Fire predicate (locked §11.3 + §11.7):
+      1. mode in {'social', 'exploration'} — combat suppresses
+      2. current_act is not None (caller filtered)
+      3. candidate_next_act is not None (caller filtered — there IS a next act)
+      4. transition_predicate_json non-empty AND at least one predicate field
+         matches the inputs
+         - scene_count_threshold: scene_count_at_current_act >= threshold
+         - location_id: current_location_id == predicate's location_id
+         - both non-NULL: AND-combined (both must match)
+
+    Reason values when fired=0:
+      'gate_mode'          — mode not in {social, exploration}
+      'no_current_act'     — current_act is None
+      'last_act'           — no candidate_next_act (current is final act)
+      'predicate_empty'    — transition_predicate_json is {} or unparseable
+      'predicate_no_match' — predicate(s) present but inputs don't match
+    """
+    signals = {
+        'fired': 0,
+        'mode': '',
+        'reason': '',
+        'current_act_id': None,
+        'predicate_match_count': 0,
+    }
+
+    mode = ''
+    if isinstance(scene_state, dict):
+        mode = (scene_state.get('mode') or '').lower()
+    signals['mode'] = mode
+    if mode not in ('social', 'exploration'):
+        signals['reason'] = 'gate_mode'
+        return (None, signals)
+
+    if not current_act:
+        signals['reason'] = 'no_current_act'
+        return (None, signals)
+    signals['current_act_id'] = current_act.get('id')
+
+    if not candidate_next_act:
+        signals['reason'] = 'last_act'
+        return (None, signals)
+
+    # Parse predicate JSON. Empty {} → operator-only mode for this act.
+    raw = (current_act.get('transition_predicate_json') or '').strip()
+    try:
+        predicate = _json_acts.loads(raw) if raw else {}
+    except (ValueError, TypeError):
+        predicate = {}
+    if not predicate:
+        signals['reason'] = 'predicate_empty'
+        return (None, signals)
+
+    # Narrow vocabulary (§11.7): scene_count_threshold + location_id only.
+    # Any other keys ignored at v0 (forward-compat — v0.x expansion adds
+    # rule types here without breaking existing predicate parses).
+    matches = 0
+    reasons = []
+    sc_threshold = predicate.get('scene_count_threshold')
+    if sc_threshold is not None:
+        try:
+            if int(scene_count_at_current_act) >= int(sc_threshold):
+                matches += 1
+                reasons.append(f"scene_count>={sc_threshold}")
+        except (TypeError, ValueError):
+            pass
+    loc_target = predicate.get('location_id')
+    if loc_target is not None:
+        try:
+            if current_location_id is not None and int(current_location_id) == int(loc_target):
+                matches += 1
+                reasons.append(f"location_id={loc_target}")
+        except (TypeError, ValueError):
+            pass
+
+    # Count predicate fields present.
+    fields_present = sum(1 for k in ('scene_count_threshold', 'location_id')
+                          if predicate.get(k) is not None)
+    signals['predicate_match_count'] = matches
+
+    # AND-combined: both non-NULL fields must match. With one field present,
+    # one match required. With zero present (after the filter above the
+    # predicate would be {} → predicate_empty path), unreachable here.
+    if fields_present == 0 or matches < fields_present:
+        signals['reason'] = 'predicate_no_match'
+        return (None, signals)
+
+    proposal = {
+        'quest_id': current_act.get('quest_id'),
+        'current_act_index': current_act.get('act_index'),
+        'proposed_next_act_index': candidate_next_act.get('act_index'),
+        'next_act_title': candidate_next_act.get('act_title') or '',
+        'predicate_reason': ' AND '.join(reasons),
+    }
+    signals['fired'] = 1
+    signals['reason'] = 'proposed'
+    return (proposal, signals)
+
+
+def quest_act_suggester_log_summary(signals: dict, proposal: dict = None) -> str:
+    """Compact telemetry line for quest_act_suggester. Always-fire per
+    §59 contract — emit even when proposal is None (gate-rejected)."""
+    parts = [
+        f"quest_act_suggester: fired={signals.get('fired', 0)}",
+        f"mode={signals.get('mode', '')}",
+        f"reason={signals.get('reason', '')}",
+        f"current_act_id={signals.get('current_act_id', 'none')}",
+    ]
+    if signals.get('fired') and proposal:
+        parts.append(f"quest_id={proposal.get('quest_id')}")
+        parts.append(f"current_act={proposal.get('current_act_index')}")
+        parts.append(f"proposed={proposal.get('proposed_next_act_index')}")
+        parts.append(f"predicate='{proposal.get('predicate_reason', '')}'")
+    return " ".join(parts)
+
+
+def compute_composition_directive(active_quests: list,
+                                   current_act,
+                                   scene_state) -> tuple:
+    """Return (directive_body, signals_dict) rendering the current act inline
+    inside the active-quest block. 15th Doctrine §59 instance.
+
+    Pure function. No DB writes, no LLM calls. Body shape per spec §5 — one
+    line per act-bearing quest with `Act N of M: <title> — <short description>`.
+    v0 caps render at the single current_act (single-active-act per §1.J);
+    multi-active-act is v1.x.
+
+    Returns ('', signals) when:
+      - current_act is None (no anchor; below-threshold quiet baseline)
+      - current_act's parent quest not found in active_quests
+      - mode is 'combat' (combat suppression per S44 active-quest pattern;
+        the composition surface inherits the same gate as its host block)
+
+    signals shape:
+      {'fired': 0|1, 'mode': str, 'current_act_id': int|None,
+       'current_act_index': int|None, 'quest_id': int|None}
+    """
+    signals = {
+        'fired': 0,
+        'mode': '',
+        'current_act_id': None,
+        'current_act_index': None,
+        'quest_id': None,
+    }
+
+    mode = ''
+    if isinstance(scene_state, dict):
+        mode = (scene_state.get('mode') or '').lower()
+    signals['mode'] = mode
+    # The host block (compute_active_quest_directive) is already suppressed
+    # under combat narration; we mirror the gate here for defense-in-depth.
+    if mode == 'combat':
+        return ('', signals)
+
+    if not current_act:
+        return ('', signals)
+
+    signals['current_act_id'] = current_act.get('id')
+    signals['current_act_index'] = current_act.get('act_index')
+    signals['quest_id'] = current_act.get('quest_id')
+
+    # Verify the act's parent quest is in the active list (status='in-progress').
+    quest_id = current_act.get('quest_id')
+    parent_quest = next(
+        (q for q in (active_quests or [])
+         if isinstance(q, dict) and q.get('id') == quest_id),
+        None
+    )
+    if parent_quest is None:
+        # Anchor points to an act whose parent is not in-progress — stale
+        # state (caller should clear via _clear_act_anchor_if_quest_owned,
+        # but we're a pure function so we just decline to render).
+        return ('', signals)
+
+    # Determine total acts for the "Act N of M" display. The caller could
+    # provide this; pure-function shape means we accept the act_index alone
+    # without M-context. Render without "of M" if we don't have it.
+    # (Implementation choice: caller can pass total via current_act with a
+    # synthetic 'total_acts' key. v0 ships without — Session 3 verify.)
+    total_acts = current_act.get('total_acts')
+
+    act_index = current_act.get('act_index') or '?'
+    act_title = (current_act.get('act_title') or '').strip()
+    act_description = (current_act.get('act_description') or '').strip()
+    quest_title = (parent_quest.get('title') or '').strip()
+
+    if total_acts:
+        index_str = f"Act {act_index} of {total_acts}"
+    else:
+        index_str = f"Act {act_index}"
+
+    # Body shape per spec §5 — one-line act render + optional second-line
+    # description. Compact; ~150-300 chars when firing.
+    if act_description:
+        body = (
+            f"Current act on \"{quest_title}\": **{index_str} — "
+            f"{act_title}**. {act_description}"
+        )
+    else:
+        body = (
+            f"Current act on \"{quest_title}\": **{index_str} — {act_title}**."
+        )
+
+    signals['fired'] = 1
+    return (body, signals)
+
+
+def composition_directive_log_summary(signals: dict) -> str:
+    """Compact telemetry line for composition_directive. Always-fire per §59."""
+    return (
+        f"composition_directive: fired={signals.get('fired', 0)} "
+        f"current_act_id={signals.get('current_act_id', 'none')} "
+        f"act_index={signals.get('current_act_index', 'none')} "
+        f"quest_id={signals.get('quest_id', 'none')}"
+    )

@@ -962,3 +962,134 @@ The doctrine amendment was the kind of call that single-reviewer judgment is lea
 
 The lesson generalizes: doctrine-touching amendments warrant convergent external review before lock. The cost is one round-trip per reviewer; the benefit is the safety boundary being argued out twice before the rule changes.
 
+## S47-arc — §78 layer-1 extends to in-memory substrate (RollBuffer drain)
+
+### Why this ship is application, not amendment
+
+S45 anchored §78 — mode transitions are state-reset surfaces; the four-layer rule (mechanical cleanup + narrative buffer reset + transitional silence + boundary atmospheric closeout) is the structural completion test. S45's layer-1 work was DB-side state: `set_scene_mode('exploration')`, `clear_active_turn`, `clear_combatants`. That's correct, but incomplete — RollBuffer, the in-memory per-guild rolling buffer of Avrae events, is also layer-1 substrate (mechanical-event memory) and was unaddressed.
+
+The S45 verify session filed the symptom: Donovan's mid-combat `check` roll persisting in RollBuffer across `!init end`, surfacing on the next matching-actor turn as both the `(N rolls in play)` footer artifact AND a stale entry in the LLM prompt's `=== AVRAE EVENTS ===` block via `_format_avrae_events`. Live journal evidence at `dnd_engine.log` 2026-05-11T22:14:58: `buffer.consume: 1 events for actors=['donovan ruby'] roll_kinds=['check']` immediately after `init: combat ended`. The post-init-end Donovan turn posted with `1 avrae events` instead of zero.
+
+S47-arc closes the gap with `buffer.clear(guild_id)` called as a sibling step to `reset_narrative_buffers_on_combat_exit` in `_handle_init_event` evt_type='end'. The pattern mirrors S45 exactly: blunt full reset at the boundary, no per-actor filtering, telemetry log line for operator visibility (`init_end_rollbuffer_drained: campaign={N} guild={N} drained_count={N}`).
+
+### Why this is not new doctrine
+
+§78's four-layer rule is substrate-agnostic. The text says "mode transitions are state-reset surfaces; mode-flag-only transitions are structurally incomplete." That governs DB-side state, in-memory state, file-side state, and any future substrate that holds mode-coupled memory. S47-arc is the second instance of the rule applied — first to the DB-side narrative buffers (S45), now to the in-memory mechanical-event buffer. The rule did not change; its application surface widened.
+
+The S47-arc recon was the test of substrate-coverage completeness — pure read-only investigation traced every cleanup step in `_handle_init_event` evt_type='end' and confirmed RollBuffer was the missing layer-1 substrate. Recon-first discipline per F-60 (filings are starting points, not specs) caught a related observation: `_handle_rest_event` (Avrae `!lr` / `!sr`) is the next parallel-surface candidate — it flips combat→exploration without going through `_handle_init_event`, so the same four-layer audit applies if drift surfaces in playtest. That observation was filed and deferred, not bundled into the S47-arc ship.
+
+### Why guild-wide flush over per-actor drain
+
+The recon surfaced three candidate fix shapes: (A) guild-wide flush via `buffer.clear(guild_id)`, (B) per-actor drain by iterating the snapshotted combatant roster, (C) push the drain into the COMBAT_END dispatch's `buffer.consume(actor_names=['combat'])` call by changing the actor filter. (A) was locked.
+
+The argument for (A): it mirrors S45's blunt-full-reset pattern on the DB-side substrate. The S45 reset overwrites `current_scene` / `last_dm_response` / `last_player_action` without per-actor filtering — `clear_combatants` similarly wipes the table without per-row checks. Layer-1 cleanup at a mode boundary is inherently bulk. (B) is more surgical but theoretical-only: it protects against the case where non-combatant actors had rolls in flight at `!init end`, which the journal evidence (zero `unconsumed_roll_swept` events across 15k log lines) shows doesn't happen in practice. The 75-second TTL plus the actor-filtered `buffer.consume` pattern means stale rolls always get consumed by some actor's turn before they age out — non-combatant overlap is rare-to-impossible during a `!init` session. (C) intermixes drain semantic with narration semantic and would dirty the COMBAT_END closeout prompt with mid-combat rolls, which S45-F's clean-closeout intent explicitly avoids.
+
+If a future symptom shows non-combatant rolls being incorrectly drained at `!init end`, that's a §78 layer-1 completeness issue that earns its own ship — the cost of fixing it then is the same as choosing (B) now, and the cost of doing nothing now is zero given no evidence the case fires. Choose the smaller delta when both shapes have equivalent worst-case repair cost.
+
+## S49 — §78 layer-1 third-instance application at rest-event boundary
+
+### Why mode-agnostic placement (not gated on the combat-mode branch)
+
+`_handle_rest_event` has a mode-gated combat-cleanup branch (`if current_mode == 'combat': set_scene_mode('exploration') + clear_active_turn + clear_combatants`). The intuitive parallel to S48 would be to wire the RollBuffer drain inside that same branch — drain only when rest is exiting combat. Recon evidence rejected that placement.
+
+Across the full journal (15527 lines, 408 `buffer.consume` calls), six `_handle_rest_event` firings produced zero `buffer.consume` hits on `roll_kinds=['rest']` and zero observed real-PC actor extractions on rest events. The two firings with full Phase-6 telemetry (May 8-9) both logged `unresolved_actor: name='Someone' canonical='someone'` — Avrae's `!lr` / `!sr` embed format in those sessions didn't carry a parseable character name, so the rest event landed in the buffer with `actor='someone'` and never matched any PC actor filter at consume time. The four pre-Phase-6 firings (Apr 30) showed the same end-state: the post-firing `buffer.consume: 0 events for actors=['Donovan Ruby']` line at `dnd_engine.log:878` rules out a real-PC actor match (if there had been one, that consume would have returned the rest event).
+
+This is structural unreliability, not safety. The serendipity protecting the codebase is "Avrae's rest embeds don't currently parse to real PC names" — which is environment-dependent (depends on whether the player's sheet is bound + how Avrae renders the embed) and could break without notice if Avrae updates its embed format or a different player typing the command produces a different parse. Gating the drain on the combat-mode branch would mean the non-combat-rest path (which is what's actually firing in production — 5 of 6 observed firings) remains uncovered, and the mode-agnostic concern persists.
+
+Mode-agnostic placement closes the substrate-completion gap before the serendipity breaks. Drain fires on every rest event regardless of whether a mode transition is happening, because the buffer pollution is mode-agnostic.
+
+### Why the combat-mode-branch §78 layer-2/4 audit gaps stay deferred
+
+S48-arc recon Phase 2 surfaced three additional §78 gaps at the rest-event boundary: layer-1 in-memory substrate (closed by S49), layer-2 narrative buffer reset (no `reset_narrative_buffers_on_combat_exit` call), layer-4 boundary atmospheric closeout (no `COMBAT_END`-equivalent dispatch). Layers 2 and 4 are deferred — not bundled into S49.
+
+The argument: evolve from observed friction. The combat-mode branch of `_handle_rest_event` has fired exactly once in production (Apr 30 09:36:49). The narration that posted immediately afterward (`_dm_respond_and_post: posted ..., 0 avrae events` at 09:36:52) showed no visible drift — no phantom NPCs, no stale combat framing, no inappropriate "combat resolves" closeout. The layers 2 and 4 gaps are real in code but have not produced observable symptoms even on the one firing where they would have applied.
+
+S45 anchored §78 on the basis of observed friction (post-`!init end` drift was the trigger). S48 closed the parallel in-memory gap because the symptom was journal-evident. Layer-2/4 at rest-event boundary has neither: the gap is structural but unfired. Fixing it now would introduce a new dispatch surface (potentially a `REST_END_FROM_COMBAT` directive kind — distinct semantics from `COMBAT_END` because rest implies recovery, not resolution) without evidence it's needed. The cost of deferring is zero (gap remains where it was); the cost of fixing prematurely is non-zero (new directive kind needs invariants, testing, and may produce off-kilter narration without playtest feedback to tune against).
+
+Audit findings durable in WHY.md + the S48-arc recon trail in SESSIONS.md. If playtest surfaces drift after a combat-mode rest, the ship dispatches quickly from filed evidence.
+
+### Why test by source-text regression rather than handler invocation
+
+The S49 test mirrors S48's source-text regression approach for the wiring assertions (mode-agnostic placement, ordering after `advance_time`, telemetry format). The buffer.clear unit behavior is already unit-proven by S48; re-proving it in S49 would be duplicate coverage. The S49-specific verification is the placement choice — drain MUST be outside the combat-mode-gated branch and MUST run after `advance_time`. Both are structural source-text claims that don't need a Discord-message fixture to verify.
+
+The naive indent comparison initially used (drain indent vs. if-branch indent) was rejected when both depths matched — the drain's own try-block body and the combat-mode if-branch body both indent to 12 spaces. The correct check is structural anchor: the `# Track 4 #3 — time advancement` comment is the first mode-agnostic line after the combat-mode if/else block closes, and drain placement after that comment proves mode-agnostic placement unambiguously. Anchoring on prose comments rather than indentation makes the test resilient to formatting changes that preserve semantics.
+
+## S50 — §78.6 layer-4 render-vs-marker anchoring (COMBAT_END 0-action fix)
+
+### Why hybrid (Candidate F) over suppress-entirely (A), deterministic-always (C), or invariant-only (D)
+
+S50 recon surfaced five fix-shape candidates (A: suppress dispatch on 0-action; B: emit 0-action signal to LLM; C: deterministic always; D: invariant-clause-only; E: defer; F: hybrid). F was locked.
+
+**Why not A (suppress dispatch entirely on 0-action):** Discord goes silent at the boundary. Player just sees `!init end` confirmation from Avrae and nothing else from the bot. Operator-side this reads as "the bot crashed" rather than "the boundary was acknowledged minimally." §78 layer-4's intent at S45 anchor time included "boundary marker" — silence is a layer-4 elision, not a layer-4 alternative mode. The boundary itself should always be acknowledged; only the RENDER richness varies.
+
+**Why not C (deterministic always — drop LLM render entirely):** Loses the rich LLM atmospheric work on multi-action combats, which S45-F was designed to surface. Combat that did have content (BLOODIED hits, DOWNED enemies) deserves richer atmospheric closeout than a single neutral sentence. The fix is to be conditional, not to abandon LLM render wholesale.
+
+**Why not D (invariant-clause-only):** The LLM has no positive signal that 0-action happened — `suppress_for_combat_narration=True` drops 10 context blocks, leaving the LLM with the directive + roster only. Adding a "MUST NOT invent combat events if none occurred" clause asks the LLM to detect 0-action from indirect signals (e.g., the roster showing one combatant at full HP). LLM compliance with negative clauses is empirically partial — and detection-from-inference is unreliable. The clean fix routes around LLM compliance entirely by engine-side branching.
+
+**Why not B (emit 0-action signal to LLM):** Same LLM-compliance concern as D, just with explicit signal instead of inferred. The LLM might still produce combat-vocabulary atmospherics under the "render an atmospheric beat" framing pressure even with `had_beats=false` in the prompt. Two render paths to tune separately doubles the prompt-engineering surface area without removing the drift risk.
+
+**Why F (hybrid: branch by content predicate, deterministic on 0-action, LLM on multi-action):** Closes the drift entirely on the 0-action path (no LLM, no drift possible). Preserves rich LLM render on multi-action (existing S45-F dispatch unchanged). The branching surface is small (single counter, single if/else at COMBAT_END dispatch site). Boundary marker is always present (silence avoided). Aligns with §78.6's "render-mode vs marker-mode" doctrine framing.
+
+### Why beat counter = BLOODIED + DOWNED (and explicitly NOT ROUND_START)
+
+The counter has to define "narratable combat content occurred." Three candidate definitions surfaced:
+
+1. **Any dispatch fired:** would include ROUND_START. But ROUND_START fires unconditionally at round-1 of every combat regardless of whether anyone took action — counting it would never produce a 0-beat state. Mis-classifies exactly the case we're detecting.
+
+2. **HP-state transitions (BLOODIED + DOWNED):** these require actual combat content. BLOODIED requires an attack rolled + damage applied + threshold crossed. DOWNED requires HP→0. Both presuppose mechanical events fired through the listener. Reliable proxy for "combat content occurred."
+
+3. **Avrae events landed in RollBuffer:** would include checks, saves, casts, etc. — broader signal. But also more false-positives: a Donovan `!check perception` mid-combat (the S48 verify scenario) IS a narratable event but isn't combat-vocabulary atmospheric content. A perception check doesn't earn "the dust settles" framing. BLOODIED + DOWNED specifically signal combat-vocabulary content; that's the right narrow proxy for COMBAT_END framing presupposition.
+
+Choice 2 was locked. ROUND_START exclusion is load-bearing — included as a regression assertion in `test_combat_end_zero_action.py` so a future change that adds ROUND_START to the gate would fail loudly.
+
+### Why in-memory dict over DB column for tracking substrate
+
+Per §78.5 substrate-agnostic intent: the substrate should match the transience of the state being tracked. A combat session is transient (lives between `!init begin` and `!init end`, typically minutes to ~an hour). An in-memory dict matches that transience — the counter exists only during the session, gets cleared after dispatch, and a bot restart correctly loses the counter (because restart would also mean any in-flight combat is mechanically inconsistent and shouldn't be relied on for boundary-render decisions).
+
+A DB column would persist the counter past the session it tracks. That's wrong substrate — it adds storage cost for transient state, complicates migrations, requires cleanup if the bot crashes mid-combat, and introduces an "old counter from yesterday's incomplete combat" risk on bot restart. In-memory dict has none of those concerns.
+
+The same logic that put RollBuffer in `avrae_listener.py` as an in-memory `dict[int, list]` (rather than as a SQLite table) applies here. The §78.5 framing is "substrate matches lifetime" — combat sessions are short-lived; their tracking state is short-lived; in-memory is the right substrate.
+
+### Why §78.6 as parallel sub-section to §78.5 rather than fold-in
+
+§78.5 and §78.6 address different axes of layer-4 behavior:
+
+- **§78.5 — substrate-agnostic application.** Where the four-layer rule applies (DB-side vs in-memory vs caches vs Discord-side; init-end vs rest-event vs future boundaries). §78.5 is **horizontal scope** of the rule across surfaces.
+
+- **§78.6 — layer-4 render-vs-marker.** How layer-4 internally behaves on content-vs-no-content cases. §78.6 is **vertical structure** within layer 4 specifically.
+
+Folding §78.6 into §78.5 would conflate "where does the rule apply" with "how does layer-4 implement boundary acknowledgment." They're orthogonal — §78.5 says the four-layer rule applies across all mode-transition surfaces; §78.6 says layer-4 (one of the four layers) has internal render-vs-marker structure. A future ship could touch §78.5 (new substrate) without touching §78.6 (no new layer-4 behavior), or touch §78.6 (new layer-4 surface with 0-content case) without touching §78.5 (existing substrate). Separate sub-sections keep the cross-reference clean.
+
+### Why the COMBAT_END branch fires AT the dispatch site, not inside `_dispatch_combat_narration`
+
+The increment side IS inside `_dispatch_combat_narration` (centralized kind gate, telemetry next to fire log). But the branch side is at the CALLER — in `_handle_init_event` evt_type='end'. Two reasons:
+
+1. **The branch decides between "dispatch the LLM" and "post deterministic text directly."** Deterministic text doesn't go through `_dispatch_combat_narration` at all (no directive computation, no `_dm_respond_and_post` indirection — just `channel.send(text)`). Putting the branch inside `_dispatch_combat_narration` would force that function to either skip its own dispatch (weird shape) or learn to post deterministic text (scope creep — its purpose is LLM dispatch).
+
+2. **The counter is read THEN cleared at the boundary.** Cleanup belongs with the boundary handler (`_handle_init_event`), not with the dispatch function (which is per-trigger, not per-session). Keeping both read and cleanup at the boundary handler keeps the session-lifecycle logic (reset on begin, clear on end) in one place.
+
+## S51 — every-turn time signal in SCENE STATE block (§76 read-side analogue closure)
+
+### Why engine-emit-every-turn over verifier-after-the-fact
+
+This is the sibling shape to C1 ("Engine-computed binding > validator-on-LLM-output") applied to read-side signal rather than write-side binding. The body/footer divergence — Discord footer showing Day 10 Midday, narration body opening "morning light washes over the market" — surfaces a class of LLM drift that has two structural fixes:
+
+- **Verifier-after-the-fact:** a `TIME_DRIFT` violation class in `narration_verifier` detects narration prose that contradicts `dnd_scene_state.day_phase` and triggers retry. The retry pressure closes drift on the second pass; the first response still landed visibly. Operator-visible latency + retry cost.
+- **Engine-emit-every-turn (S51):** the LLM gets authoritative time-of-day in the SCENE STATE block on every turn. Drift mostly doesn't happen because the LLM has the ground-truth in context. The verifier is a safety net for residual cases.
+
+C1's argument applies: validators close drift via retry pressure; engine signal closes drift via making the drift surface inaccessible (the LLM has no plausible reason to invent a time when it's stated in authoritative-tagged context). Both have a role — signal is the first reach; verifier is the safety net. §76's filing of the TIME_DRIFT verifier as Ship 4/5 candidate stays valid; S51 reduces the case-rate the verifier would need to catch, possibly to "playtest never observes it" levels.
+
+### Why A over C (functionally identical fix-shapes)
+
+Recon-side surfaced two functionally equivalent paths: (A) add time to SCENE STATE block always; (C) both A AND make `compute_time_directive` fire every turn. A was locked.
+
+The argument for A alone: `compute_time_directive`'s instruction body ("Open with one in-fiction beat marking the new time of day — dawn light, lanterns guttering out, market stalls opening, the chill of a late-night street, whatever fits the location. One sentence, location-appropriate. Then return agency to the player.") is specifically the narrate-the-advance beat. Firing it every turn would force a time-marking sentence even on turns where time hadn't just changed — wrong shape, would feel mechanical. The directive's `just_advanced` gate is correct for its purpose. A keeps the directive untouched and adds passive every-turn ground truth via SCENE STATE; the two responsibilities (passive signal vs active beat) stay cleanly separated.
+
+C would either duplicate the time information (SCENE STATE says it; directive narrates it; same turn) or require splitting the directive into "signal-only" vs "advance-narration" sub-shapes — net more code for no additional behavior. A is the smaller delta with the same drift-closure properties.
+
+### Why §76 stays the doctrine anchor rather than a new §-number
+
+§76 already names the read-side analogue framing — its body says "if observed friction accumulates, file the TIME_DRIFT verifier as Ship 4/5 candidate." S51 is application of §76's named mechanism (signal-side closure at the prompt-input layer), not a new mechanism. The doctrine's framing is intact; what's new is one project instance applying it.
+
+If a second read-side surface earns its own version of the same fix (e.g., location-drift, tension-drift), that would push toward a §76.1 sub-section ("read-side authoritative signal at prompt-input layer is the first reach; verifier is the safety net"). For now, one instance + the original §76 framing is sufficient. Per the §38 filed-not-sequenced + §34 no-pre-sequencing discipline, the sub-section earns its anchor when a second instance demonstrates the same shape; not before.
+

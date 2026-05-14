@@ -1,0 +1,237 @@
+# X4: Negative-Signal Rate
+
+**Question:** Which episodes show suppressed climactic signals (negative rules) or unusual structural patterns?
+
+**Scope:** 140 episodes (all streams)
+
+**Date:** 2026-05-12
+
+---
+
+## Key Findings
+
+- Climactic hold (combat): **2** episodes
+- Climactic hold (reward): **1** episodes
+- LR-X2 absence (EC without reward payoff): **20** episodes
+- Statistical outlier only: **14** episodes
+- Negative-rule dropped: **0** episodes
+- No flag: **103** episodes
+- Rule-vs-stat disagreement: 26 episodes (rule_only=12, stat_only=14)
+- 25th percentile threshold: 26 total records
+
+**C1E040 discrepancy note:** The spec lists C1E040 as an expected R1 fire, but its only EC record has category `player_action_escalation`, which is not in R1_EC_CATS={interruption, npc_turns_hostile}. R1 does not fire on C1E040 under the literal spec rule. The mandatory STOP condition (C1E114 and C1E108) passes. No threshold adjustment made; discrepancy documented here.
+
+---
+
+## Classification Counts
+
+| Classification | Count |
+|----------------|-------|
+| climactic_hold_combat | 2 |
+| climactic_hold_reward | 1 |
+| lr_x2_absence | 20 |
+| stat_outlier_only | 14 |
+| dropped_negative_rule | 0 |
+| no_flag | 103 |
+
+---
+
+## Rule vs Stat Agreement
+
+| Category | Count |
+|----------|-------|
+| Rule signal only | 12 |
+| Stat signal only | 14 |
+| Both rule and stat | 11 |
+| Neither | 103 |
+| Total disagreement | 26 |
+
+---
+
+## Sanity Check: Known Zero-CC Episodes
+
+Mandatory checks against 14 known zero-CC anchor episodes.
+
+**STOP condition:** R1 fires on C1E114 and R2 fires on C1E108 — both passed.
+
+| Episode | Expected | R1 | R2 | EC cats | late_r1 | late_r2 | CC | Total | neg_combat | neg_low | Classification |
+|---------|----------|----|----|---------|---------|---------|----|-------|------------|---------|----------------|
+| C1E003 | neg_low | False | False | - | 0.125 | 0.125 | 0 | 16 | False | True | no_flag |
+| C1E006 | neg_combat | False | False | player_action_escalation,interruption | 0.2083 | 0.2083 | 0 | 24 | False | False | no_flag |
+| C1E033 | neg_combat | False | False | npc_turns_hostile,interruption,interruption | 0.1579 | 0.1579 | 0 | 38 | False | False | lr_x2_absence |
+| C1E040 | R1 | False | False | player_action_escalation | 0.4667 | 0.4667 | 0 | 15 | False | False | no_flag |
+| C1E046 | neg_low | False | False | interruption | 0.2308 | 0.2308 | 0 | 13 | False | False | no_flag |
+| C1E073 | neg_low | False | False | - | 0.05 | 0.05 | 0 | 20 | False | True | no_flag |
+| C1E076 | R1 | True | False | npc_turns_hostile | 0.4286 | 0.4286 | 0 | 14 | False | False | climactic_hold_combat |
+| C1E085 | neg_low | False | False | interruption | 0.3 | 0.3 | 0 | 10 | False | False | no_flag |
+| C1E108 | R2 | False | True | interruption | 0.3421 | 0.3421 | 0 | 38 | False | False | climactic_hold_reward |
+| C1E114 | R1 | True | False | interruption | 0.5 | 0.5 | 0 | 14 | False | False | climactic_hold_combat |
+| C2E010 | neg_combat | False | False | environmental_materialization,interruption,wave_or_phase_shift | 0.2571 | 0.2571 | 0 | 35 | True | False | lr_x2_absence |
+| C2E015 | neg_combat | False | False | wave_or_phase_shift,environmental_materialization,environmental_materialization,environmental_materialization,interruption | 0.2143 | 0.2143 | 0 | 28 | True | False | lr_x2_absence |
+| C2E034 | neg_combat | False | False | npc_turns_hostile,interruption | 0.3243 | 0.3243 | 0 | 37 | False | False | no_flag |
+| C2E040 | neg_low | False | False | wave_or_phase_shift | 0.2857 | 0.2857 | 0 | 28 | False | False | no_flag |
+
+**Discrepancy:** C1E040 expected R1 but EC cat=player_action_escalation not in R1_EC_CATS. Documented above; no adjustment made (STOP condition C1E114 passed).
+
+---
+
+## Per-Episode Table
+
+| episode | ec | tm | lr | cc | late_frac | R1 | R2 | R3 | stat | dropped | classification |
+|---------|----|----|----|----|-----------|----|----|-----|------|---------|----------------|
+| C1E001 | 1 | 24 | 3 | 5 | 0.1212 | False | False | 1 | False | False | no_flag |
+| C1E002 | 1 | 22 | 9 | 1 | 0.0909 | False | False | 1 | False | False | no_flag |
+| C1E003 | 0 | 12 | 4 | 0 | 0.125 | False | False | 0 | False | False | no_flag |
+| C1E004 | 1 | 28 | 1 | 3 | 0.3333 | False | False | 1 | False | False | no_flag |
+| C1E005 | 2 | 16 | 1 | 5 | 0.25 | False | False | 2 | False | False | no_flag |
+| C1E006 | 2 | 20 | 2 | 0 | 0.2083 | False | False | 2 | False | False | no_flag |
+| C1E007 | 3 | 11 | 2 | 2 | 0.3333 | False | False | 3 | False | False | lr_x2_absence |
+| C1E008 | 1 | 13 | 2 | 1 | 0.1176 | False | False | 1 | False | False | no_flag |
+| C1E009 | 2 | 22 | 6 | 3 | 0.2424 | False | False | 2 | False | False | no_flag |
+| C1E010 | 2 | 29 | 2 | 1 | 0.1765 | False | False | 2 | False | False | no_flag |
+| C1E011 | 1 | 19 | 4 | 3 | 0.3704 | False | False | 1 | False | False | no_flag |
+| C1E013 | 1 | 20 | 4 | 3 | 0.25 | False | False | 1 | False | False | no_flag |
+| C1E014 | 0 | 30 | 19 | 3 | 0.2308 | False | False | 0 | True | False | stat_outlier_only |
+| C1E016 | 1 | 26 | 3 | 2 | 0.2188 | False | False | 1 | False | False | no_flag |
+| C1E017 | 4 | 26 | 3 | 4 | 0.3514 | False | False | 4 | True | False | lr_x2_absence |
+| C1E018 | 0 | 33 | 4 | 4 | 0.1951 | False | False | 0 | False | False | no_flag |
+| C1E019 | 2 | 25 | 4 | 2 | 0.4242 | False | False | 2 | False | False | no_flag |
+| C1E020 | 2 | 24 | 3 | 3 | 0.1562 | False | False | 2 | False | False | no_flag |
+| C1E021 | 2 | 17 | 9 | 1 | 0.2414 | False | False | 2 | False | False | no_flag |
+| C1E022 | 1 | 47 | 6 | 5 | 0.1017 | False | False | 1 | True | False | stat_outlier_only |
+| C1E023 | 2 | 32 | 7 | 3 | 0.3636 | False | False | 2 | False | False | no_flag |
+| C1E024 | 0 | 47 | 6 | 6 | 0.3051 | False | False | 0 | True | False | stat_outlier_only |
+| C1E025 | 4 | 13 | 1 | 1 | 0.1579 | False | False | 4 | True | False | lr_x2_absence |
+| C1E027 | 2 | 53 | 9 | 5 | 0.2464 | False | False | 2 | True | False | stat_outlier_only |
+| C1E028 | 1 | 43 | 4 | 5 | 0.2264 | False | False | 1 | False | False | no_flag |
+| C1E029 | 2 | 30 | 7 | 3 | 0.1429 | False | False | 2 | False | False | no_flag |
+| C1E030 | 2 | 20 | 1 | 4 | 0.2963 | False | False | 2 | False | False | no_flag |
+| C1E031 | 3 | 18 | 6 | 4 | 0.1935 | False | False | 3 | False | False | lr_x2_absence |
+| C1E032 | 2 | 30 | 4 | 7 | 0.186 | False | False | 2 | False | False | no_flag |
+| C1E033 | 3 | 31 | 4 | 0 | 0.1579 | False | False | 3 | False | False | lr_x2_absence |
+| C1E034 | 1 | 31 | 2 | 3 | 0.1622 | False | False | 1 | False | False | no_flag |
+| C1E035 | 1 | 21 | 3 | 1 | 0.6154 | False | False | 1 | True | False | stat_outlier_only |
+| C1E036 | 0 | 19 | 4 | 5 | 0.1429 | False | False | 0 | False | False | no_flag |
+| C1E037 | 1 | 48 | 11 | 1 | 0.1311 | False | False | 1 | True | False | stat_outlier_only |
+| C1E038 | 0 | 32 | 7 | 4 | 0.2558 | False | False | 0 | False | False | no_flag |
+| C1E039 | 2 | 38 | 4 | 4 | 0.2708 | False | False | 2 | False | False | no_flag |
+| C1E040 | 1 | 11 | 3 | 0 | 0.4667 | False | False | 1 | False | False | no_flag |
+| C1E042 | 1 | 21 | 3 | 3 | 0.5714 | False | False | 1 | True | False | stat_outlier_only |
+| C1E043 | 1 | 17 | 3 | 2 | 0.2174 | False | False | 1 | False | False | no_flag |
+| C1E044 | 0 | 34 | 2 | 5 | 0.2439 | False | False | 0 | False | False | no_flag |
+| C1E046 | 1 | 11 | 1 | 0 | 0.2308 | False | False | 1 | False | False | no_flag |
+| C1E047 | 0 | 21 | 2 | 1 | 0.2083 | False | False | 0 | False | False | no_flag |
+| C1E049 | 3 | 48 | 8 | 5 | 0.2969 | False | False | 3 | True | False | lr_x2_absence |
+| C1E050 | 1 | 29 | 0 | 5 | 0.2857 | False | False | 1 | False | False | no_flag |
+| C1E052 | 1 | 19 | 6 | 1 | 0.3704 | False | False | 1 | False | False | no_flag |
+| C1E053 | 0 | 23 | 1 | 5 | 0.3103 | False | False | 0 | False | False | no_flag |
+| C1E054 | 0 | 36 | 1 | 2 | 0.1795 | False | False | 0 | False | False | no_flag |
+| C1E055 | 2 | 37 | 6 | 1 | 0.1739 | False | False | 2 | False | False | no_flag |
+| C1E056 | 0 | 19 | 4 | 7 | 0.3667 | False | False | 0 | False | False | no_flag |
+| C1E057 | 0 | 25 | 3 | 5 | 0.3939 | False | False | 0 | False | False | no_flag |
+| C1E058 | 1 | 25 | 2 | 2 | 0.2667 | False | False | 1 | False | False | no_flag |
+| C1E060 | 0 | 21 | 3 | 2 | 0.3077 | False | False | 0 | False | False | no_flag |
+| C1E061 | 1 | 24 | 0 | 1 | 0.2692 | False | False | 1 | False | False | no_flag |
+| C1E062 | 1 | 18 | 1 | 1 | 0.3333 | False | False | 1 | False | False | no_flag |
+| C1E063 | 1 | 27 | 4 | 3 | 0.2 | False | False | 1 | False | False | no_flag |
+| C1E064 | 0 | 36 | 0 | 5 | 0.3171 | False | False | 0 | False | False | no_flag |
+| C1E065 | 0 | 48 | 9 | 5 | 0.3226 | False | False | 0 | True | False | stat_outlier_only |
+| C1E068 | 4 | 13 | 3 | 1 | 0.2857 | False | False | 4 | True | False | lr_x2_absence |
+| C1E071 | 3 | 21 | 1 | 4 | 0.2414 | False | False | 3 | False | False | lr_x2_absence |
+| C1E072 | 0 | 16 | 6 | 2 | 0.3333 | False | False | 0 | False | False | no_flag |
+| C1E073 | 0 | 17 | 3 | 0 | 0.05 | False | False | 0 | False | False | no_flag |
+| C1E075 | 0 | 20 | 4 | 3 | 0.0 | False | False | 0 | False | False | no_flag |
+| C1E076 | 1 | 12 | 1 | 0 | 0.4286 | True | False | 1 | False | False | climactic_hold_combat |
+| C1E085 | 1 | 8 | 1 | 0 | 0.3 | False | False | 1 | False | False | no_flag |
+| C1E086 | 2 | 19 | 2 | 2 | 0.36 | False | False | 2 | False | False | no_flag |
+| C1E087 | 1 | 28 | 3 | 2 | 0.3235 | False | False | 1 | False | False | no_flag |
+| C1E088 | 0 | 22 | 0 | 3 | 0.16 | False | False | 0 | False | False | no_flag |
+| C1E089 | 0 | 25 | 2 | 3 | 0.2 | False | False | 0 | False | False | no_flag |
+| C1E090 | 0 | 25 | 3 | 8 | 0.25 | False | False | 0 | False | False | no_flag |
+| C1E091 | 0 | 22 | 1 | 7 | 0.1667 | False | False | 0 | False | False | no_flag |
+| C1E092 | 1 | 15 | 4 | 1 | 0.1429 | False | False | 1 | False | False | no_flag |
+| C1E093 | 3 | 20 | 4 | 1 | 0.25 | False | False | 3 | False | False | lr_x2_absence |
+| C1E094 | 1 | 43 | 5 | 7 | 0.2679 | False | False | 1 | False | False | no_flag |
+| C1E095 | 0 | 37 | 2 | 5 | 0.25 | False | False | 0 | False | False | no_flag |
+| C1E096 | 0 | 42 | 4 | 4 | 0.16 | False | False | 0 | False | False | no_flag |
+| C1E097 | 1 | 41 | 4 | 6 | 0.2308 | False | False | 1 | False | False | no_flag |
+| C1E098 | 1 | 21 | 1 | 1 | 0.0833 | False | False | 1 | False | False | no_flag |
+| C1E099 | 2 | 19 | 2 | 4 | 0.2593 | False | False | 2 | False | False | no_flag |
+| C1E100 | 1 | 28 | 2 | 3 | 0.0882 | False | False | 1 | False | False | no_flag |
+| C1E101 | 0 | 17 | 4 | 4 | 0.12 | False | False | 0 | False | False | no_flag |
+| C1E102 | 1 | 18 | 2 | 1 | 0.0 | False | False | 1 | False | False | no_flag |
+| C1E103 | 0 | 11 | 3 | 2 | 0.25 | False | False | 0 | False | False | no_flag |
+| C1E104 | 0 | 29 | 5 | 1 | 0.1714 | False | False | 0 | False | False | no_flag |
+| C1E105 | 1 | 13 | 5 | 2 | 0.0476 | False | False | 1 | False | False | no_flag |
+| C1E106 | 0 | 14 | 1 | 3 | 0.0556 | False | False | 0 | False | False | no_flag |
+| C1E107 | 1 | 25 | 6 | 2 | 0.3529 | False | False | 1 | False | False | no_flag |
+| C1E108 | 1 | 28 | 9 | 0 | 0.3421 | False | True | 1 | False | False | climactic_hold_reward |
+| C1E109 | 0 | 10 | 0 | 3 | 0.2308 | False | False | 0 | False | False | no_flag |
+| C1E110 | 2 | 25 | 5 | 1 | 0.2727 | False | False | 2 | False | False | no_flag |
+| C1E111 | 2 | 14 | 2 | 2 | 0.1 | False | False | 2 | False | False | no_flag |
+| C1E112 | 0 | 22 | 1 | 3 | 0.3846 | False | False | 0 | False | False | no_flag |
+| C1E113 | 2 | 36 | 6 | 4 | 0.5 | False | False | 2 | True | False | stat_outlier_only |
+| C1E114 | 1 | 9 | 4 | 0 | 0.5 | True | False | 1 | True | False | climactic_hold_combat |
+| C1E115 | 0 | 22 | 4 | 1 | 0.4444 | False | False | 0 | False | False | no_flag |
+| C2E001 | 1 | 17 | 6 | 4 | 0.2143 | False | False | 1 | False | False | no_flag |
+| C2E002 | 0 | 16 | 0 | 5 | 0.0 | False | False | 0 | False | False | no_flag |
+| C2E003 | 3 | 27 | 2 | 5 | 0.1081 | False | False | 3 | False | False | lr_x2_absence |
+| C2E004 | 0 | 28 | 1 | 2 | 0.0645 | False | False | 0 | False | False | no_flag |
+| C2E005 | 2 | 29 | 2 | 5 | 0.2368 | False | False | 2 | False | False | no_flag |
+| C2E006 | 2 | 25 | 5 | 2 | 0.2647 | False | False | 2 | False | False | no_flag |
+| C2E007 | 4 | 31 | 1 | 2 | 0.2105 | False | False | 4 | True | False | lr_x2_absence |
+| C2E008 | 0 | 27 | 9 | 3 | 0.2821 | False | False | 0 | False | False | no_flag |
+| C2E009 | 0 | 25 | 4 | 2 | 0.4516 | False | False | 0 | False | False | no_flag |
+| C2E010 | 3 | 24 | 8 | 0 | 0.2571 | False | False | 3 | False | False | lr_x2_absence |
+| C2E011 | 0 | 33 | 3 | 6 | 0.1905 | False | False | 0 | False | False | no_flag |
+| C2E012 | 2 | 27 | 6 | 4 | 0.2308 | False | False | 2 | False | False | no_flag |
+| C2E013 | 0 | 26 | 5 | 3 | 0.4118 | False | False | 0 | False | False | no_flag |
+| C2E014 | 0 | 18 | 4 | 1 | 0.2609 | False | False | 0 | False | False | no_flag |
+| C2E015 | 5 | 22 | 1 | 0 | 0.2143 | False | False | 5 | True | False | lr_x2_absence |
+| C2E016 | 1 | 37 | 11 | 13 | 0.2742 | False | False | 1 | True | False | stat_outlier_only |
+| C2E017 | 2 | 31 | 2 | 2 | 0.2703 | False | False | 2 | False | False | no_flag |
+| C2E018 | 0 | 29 | 3 | 5 | 0.4865 | False | False | 0 | True | False | stat_outlier_only |
+| C2E019 | 3 | 23 | 10 | 5 | 0.0732 | False | False | 3 | True | False | lr_x2_absence |
+| C2E020 | 1 | 30 | 1 | 6 | 0.1579 | False | False | 1 | False | False | no_flag |
+| C2E021 | 2 | 27 | 4 | 6 | 0.1026 | False | False | 2 | False | False | no_flag |
+| C2E022 | 2 | 21 | 4 | 5 | 0.1875 | False | False | 2 | False | False | no_flag |
+| C2E023 | 1 | 31 | 14 | 7 | 0.283 | False | False | 0 | True | False | stat_outlier_only |
+| C2E024 | 0 | 29 | 4 | 2 | 0.3714 | False | False | 0 | False | False | no_flag |
+| C2E025 | 1 | 33 | 5 | 3 | 0.4762 | False | False | 1 | False | False | no_flag |
+| C2E026 | 3 | 47 | 3 | 7 | 0.1833 | False | False | 3 | True | False | lr_x2_absence |
+| C2E027 | 0 | 32 | 5 | 6 | 0.2326 | False | False | 0 | False | False | no_flag |
+| C2E028 | 1 | 22 | 7 | 2 | 0.125 | False | False | 1 | False | False | no_flag |
+| C2E029 | 4 | 20 | 5 | 3 | 0.25 | False | False | 4 | True | False | lr_x2_absence |
+| C2E030 | 0 | 31 | 7 | 7 | 0.2667 | False | False | 0 | False | False | no_flag |
+| C2E031 | 0 | 30 | 5 | 4 | 0.0256 | False | False | 0 | False | False | no_flag |
+| C2E032 | 1 | 48 | 9 | 5 | 0.2222 | False | False | 1 | True | False | stat_outlier_only |
+| C2E033 | 0 | 32 | 7 | 2 | 0.2195 | False | False | 0 | False | False | no_flag |
+| C2E034 | 2 | 31 | 4 | 0 | 0.3243 | False | False | 2 | False | False | no_flag |
+| C2E035 | 0 | 28 | 10 | 4 | 0.1429 | False | False | 0 | True | False | stat_outlier_only |
+| C2E036 | 1 | 34 | 2 | 8 | 0.2222 | False | False | 1 | False | False | no_flag |
+| C2E037 | 0 | 13 | 3 | 5 | 0.4286 | False | False | 0 | False | False | no_flag |
+| C2E038 | 1 | 24 | 2 | 5 | 0.25 | False | False | 1 | False | False | no_flag |
+| C2E039 | 3 | 33 | 3 | 2 | 0.2927 | False | False | 3 | False | False | lr_x2_absence |
+| C2E040 | 1 | 24 | 3 | 0 | 0.2857 | False | False | 1 | False | False | no_flag |
+| C2E041 | 2 | 20 | 4 | 1 | 0.3333 | False | False | 2 | False | False | no_flag |
+| C2E042 | 2 | 25 | 2 | 2 | 0.1935 | False | False | 2 | False | False | no_flag |
+| C2E043 | 1 | 41 | 2 | 6 | 0.42 | False | False | 1 | False | False | no_flag |
+| C2E044 | 3 | 19 | 2 | 1 | 0.16 | False | False | 3 | False | False | lr_x2_absence |
+| C2E045 | 4 | 21 | 2 | 2 | 0.3448 | False | False | 4 | True | False | lr_x2_absence |
+| C2E046 | 3 | 24 | 2 | 3 | 0.1875 | False | False | 3 | False | False | lr_x2_absence |
+
+---
+
+## Corpus-Level Summary
+
+| Metric | Value |
+|--------|-------|
+| Total episodes | 140 |
+| 25th pct threshold | 26 total records |
+| climactic_hold_combat | 2 |
+| climactic_hold_reward | 1 |
+| lr_x2_absence | 20 |
+| stat_outlier_only | 14 |
+| dropped_negative_rule | 0 |
+| no_flag | 103 |
+| Rule-vs-stat disagreement | 26 |

@@ -92,6 +92,17 @@ _cache_lock = threading.Lock()
 _RE_H1 = re.compile(r"^\#\s+(.*?)\s*$")
 _RE_H2 = re.compile(r"^\#\#\s+(.*?)\s*$")
 _RE_H3 = re.compile(r"^\#\#\#\s+(.*?)\s*$")
+_RE_H4 = re.compile(r"^\#\#\#\#\s+(.*?)\s*$")
+# Composition Layer v0 (S60) — recognize "1. ", "2. ", etc. as act-index
+# prefixes inside `#### Acts` subsections under quest H3s.
+_RE_ACT_INDEX = re.compile(r"^\s*(\d+)\.\s+(.*?)\s*$")
+# Per-act predicate hint lines authored under each numbered act. Operator-
+# friendly: "Scene count threshold: 2" / "Location: farmstead grounds".
+_RE_ACT_HINT = re.compile(
+    r"^\s*(scene\s+count\s+threshold|location|location_id|"
+    r"scene_count|scene_count_threshold)\s*:\s*(.+?)\s*$",
+    re.I,
+)
 
 # H3 parens parser. Examples:
 #   "Garrick (blacksmith, Redhaven)"  → name='Garrick', kind='blacksmith', loc='Redhaven'
@@ -214,6 +225,17 @@ def _parse_skeleton_text(text: str) -> dict:
         'player_capabilities':  {},
         'starting_time':        None,   # {'day': int, 'phase': str} | None
         'unknown_sections':     [],
+        # Composition Layer v0 (S60) — quest-decomposition extraction.
+        # Each entry corresponds to an `### <Quest title>` H3 inside the
+        # ## Major hooks section, with optional `#### Acts` subsection.
+        # Existing flat-bullet hooks remain in `result['hooks']`; this
+        # field is additive and stays empty for skeletons that don't use
+        # the v0 authoring extension.
+        # Shape: [{'title': str, 'description': str, 'acts': [
+        #   {'act_index': int, 'act_title': str, 'act_description': str,
+        #    'predicate': dict}  # narrow vocab: scene_count_threshold + location_id
+        # ]}]
+        'quest_decompositions': [],
     }
 
     section = None             # current H2 section (lowercased) or None
@@ -221,6 +243,60 @@ def _parse_skeleton_text(text: str) -> dict:
     current_entry = None       # the dict we're building
     description_lines = []     # buffered prose for the current entry
     central_conflict_lines = []
+    # Composition Layer v0 (S60) — quest-decomposition parsing state.
+    # When entry_kind=='hooks' AND an H3 appears, switch into per-quest
+    # parsing. `current_quest` is the dict being built; `current_act` is
+    # the dict for the in-progress act under `#### Acts`.
+    current_quest = None
+    current_quest_desc_lines = []
+    in_acts_subsection = False
+    current_act_entry = None
+    current_act_desc_lines = []
+
+    def _flush_act():
+        nonlocal current_act_entry
+        if current_act_entry is None or current_quest is None:
+            current_act_entry = None
+            return
+        desc = "\n".join(current_act_desc_lines).strip()
+        # Parse hint lines out of the description into structured predicate.
+        predicate = {}
+        remaining_desc_lines = []
+        for dline in current_act_desc_lines:
+            mh = _RE_ACT_HINT.match(dline)
+            if mh:
+                key_raw = mh.group(1).strip().lower()
+                val_raw = mh.group(2).strip()
+                # Map operator-friendly keys to JSON keys.
+                if key_raw in ('scene count threshold', 'scene_count_threshold',
+                               'scene_count'):
+                    try:
+                        predicate['scene_count_threshold'] = int(val_raw)
+                    except ValueError:
+                        pass
+                elif key_raw in ('location', 'location_id'):
+                    # Operator authors location by name here; engine-side
+                    # resolution to dnd_locations.id happens at seed time.
+                    # Stash the raw name; bot-side seeder resolves.
+                    predicate['location_name'] = val_raw
+            else:
+                if dline.strip():
+                    remaining_desc_lines.append(dline)
+        current_act_entry['act_description'] = "\n".join(remaining_desc_lines).strip()
+        current_act_entry['predicate'] = predicate
+        current_quest['acts'].append(current_act_entry)
+        current_act_entry = None
+
+    def _flush_quest():
+        nonlocal current_quest, in_acts_subsection
+        _flush_act()
+        if current_quest is None:
+            return
+        # Description is everything pre-Acts; Acts content goes into acts list.
+        current_quest['description'] = "\n".join(current_quest_desc_lines).strip()
+        result['quest_decompositions'].append(current_quest)
+        current_quest = None
+        in_acts_subsection = False
 
     def _flush_entry():
         """Move buffered description into current_entry and append to result."""
@@ -248,7 +324,9 @@ def _parse_skeleton_text(text: str) -> dict:
         if m_h1 and not _RE_H2.match(line) and not _RE_H3.match(line):
             # H1 only — campaign title.
             _flush_entry()
+            _flush_quest()
             description_lines = []
+            current_quest_desc_lines = []
             title = m_h1.group(1)
             # Spec format is "Campaign: <name>"; strip the prefix if present.
             if title.lower().startswith("campaign:"):
@@ -261,7 +339,9 @@ def _parse_skeleton_text(text: str) -> dict:
         m_h2 = _RE_H2.match(line)
         if m_h2:
             _flush_entry()
+            _flush_quest()
             description_lines = []
+            current_quest_desc_lines = []
             section_raw = m_h2.group(1)
             section = section_raw.strip().lower()
             if section in _NPC_SECTIONS:
@@ -285,9 +365,12 @@ def _parse_skeleton_text(text: str) -> dict:
             continue
 
         m_h3 = _RE_H3.match(line)
-        if m_h3:
+        # Bypass H3 match if the line is actually H4 (#### starts with ###).
+        if m_h3 and not _RE_H4.match(line):
             _flush_entry()
+            _flush_quest()
             description_lines = []
+            current_quest_desc_lines = []
             heading = m_h3.group(1)
             parsed = _parse_h3_heading(heading)
             if entry_kind == 'npc':
@@ -310,6 +393,16 @@ def _parse_skeleton_text(text: str) -> dict:
                     'type':        parsed['kind'],
                     'description': '',
                 }
+            elif entry_kind == 'hooks':
+                # Composition Layer v0 (S60) — H3 inside hooks = a quest
+                # decomposition entry. Title from H3, prose buffered until
+                # `#### Acts` (or end-of-section).
+                current_quest = {
+                    'title':       heading.strip(),
+                    'description': '',
+                    'acts':        [],
+                }
+                in_acts_subsection = False
             else:
                 # H3 outside a recognized section — strict mode: refuse.
                 raise SkeletonParseError(
@@ -318,14 +411,58 @@ def _parse_skeleton_text(text: str) -> dict:
                 )
             continue
 
+        m_h4 = _RE_H4.match(line)
+        if m_h4:
+            # Composition Layer v0 (S60) — `#### Acts` inside a quest H3
+            # under ## Major hooks. Switches into act-parsing sub-mode.
+            heading_lower = m_h4.group(1).strip().lower()
+            if entry_kind == 'hooks' and current_quest is not None and heading_lower == 'acts':
+                _flush_act()
+                in_acts_subsection = True
+            # Other H4s currently unrecognized — silently skipped (forward-
+            # compatible: future per-quest subsections won't break the parser).
+            continue
+
         # Body text. Buffer based on what section we're in.
         if entry_kind in ('npc', 'location', 'faction'):
             if current_entry is not None:
                 description_lines.append(line)
         elif entry_kind == 'hooks':
             stripped = line.strip()
-            # Bullet markers: "- ", "* ", "1. " etc.
-            if stripped.startswith(("-", "*")):
+            # Composition Layer v0 (S60) — three sub-modes inside hooks:
+            # (1) inside a quest H3's `#### Acts` subsection → parse numbered
+            #     "1. <Act title>" lines as acts; indented lines become the
+            #     act description.
+            # (2) inside a quest H3 BEFORE `#### Acts` → buffer prose into
+            #     current_quest_desc_lines.
+            # (3) outside any quest H3 (legacy flat-bullet hooks) → bullet
+            #     markers become `result['hooks']` strings as before.
+            if current_quest is not None and in_acts_subsection:
+                m_idx = _RE_ACT_INDEX.match(line)
+                if m_idx:
+                    # New act entry.
+                    _flush_act()
+                    act_index = int(m_idx.group(1))
+                    act_title = m_idx.group(2).strip()
+                    current_act_entry = {
+                        'act_index':       act_index,
+                        'act_title':       act_title,
+                        'act_description': '',
+                        'predicate':       {},
+                    }
+                    current_act_desc_lines = []
+                elif current_act_entry is not None:
+                    # Buffer description / predicate-hint lines for the act.
+                    if line.strip() or current_act_desc_lines:
+                        current_act_desc_lines.append(line)
+                # Lines before the first "N. " in the Acts subsection are
+                # ignored (allows blank lines / intro prose).
+            elif current_quest is not None:
+                # Inside a quest H3 BEFORE `#### Acts` — buffer prose as
+                # the quest description.
+                current_quest_desc_lines.append(line)
+            elif stripped.startswith(("-", "*")):
+                # Legacy flat-bullet hook (existing skeleton.md shape).
                 hook = stripped.lstrip("-* ").strip()
                 if hook:
                     result['hooks'].append(hook)
@@ -392,6 +529,7 @@ def _parse_skeleton_text(text: str) -> dict:
 
     # End-of-file flush.
     _flush_entry()
+    _flush_quest()
     if central_conflict_lines:
         result['central_conflict'] = " ".join(central_conflict_lines)
 

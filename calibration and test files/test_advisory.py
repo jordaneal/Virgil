@@ -39,9 +39,21 @@ def test_advisory_prompt_forbids_avrae_emission():
 
 
 def test_advisory_prompt_says_ooc_not_narration():
+    """S65 Fix 4 — verify the hard-fork framing makes it clear this is
+    an out-of-fiction channel. The literal 'OOC' acronym was retired in
+    favor of explicit phrasing ('not in-character', 'NOT speaking to a
+    player', 'operator-facing not in-fiction'). The intent is preserved
+    structurally — the prompt must clearly establish OOC posture without
+    relying on a single acronym."""
     p = orch.ADVISORY_SYSTEM_PROMPT
-    assert 'OOC' in p
-    assert 'not in-character' in p or 'out-of-character' in p
+    # Must clearly establish out-of-fiction posture
+    p_lower = p.lower()
+    assert 'not in-character' in p_lower or 'out-of-character' in p_lower, \
+        "ADVISORY_SYSTEM_PROMPT must mark itself as not-in-character"
+    # Must clarify this is an aside / OOC channel (not gameplay narration)
+    assert 'aside' in p_lower or 'operator-facing' in p_lower or 'not in-fiction' in p_lower
+    # Must explicitly forbid narrating scene events
+    assert 'do not narrate' in p_lower or 'not narrate scene' in p_lower
 
 
 def test_advisory_prompt_warns_against_state_mutation():
@@ -53,10 +65,13 @@ def test_advisory_prompt_warns_against_state_mutation():
 
 def test_build_context_full_state():
     campaign = {'id': 1, 'name': 'Cinderhollow', 'tone': 'noir'}
+    # Ship 2 (S39) — `location` freetext column was dropped; reads route
+    # through `location_label` (FK-derived from dnd_locations). Pre-S65
+    # this fixture passed `location: 'Old Mill'` and the advisory builder
+    # silently dropped it (test was checking a stale field shape).
     scene = {
         'mode': 'combat',
-        'location': 'Old Mill',
-        'focus': 'goblins ambush',
+        'location_label': 'Old Mill',
         'last_player_action': 'Maelin draws her bow.',
     }
     active_turn = {'character_name': 'Maelin', 'controller_id': 'u1', 'round': 2}
@@ -137,7 +152,10 @@ def test_build_context_empty_campaign():
         pending_loot=None,
     )
     assert 'Campaign: (none active)' in out
-    assert '(no bound character)' in out
+    # S65 Fix 4 — phrasing changed from "Asking player's character" to
+    # "Bound character" under the role-as-DM framing. The "(none)" sentinel
+    # remains; tests now assert on the new phrasing.
+    assert 'Bound character: (none)' in out
     assert 'Mode: (no scene started)' in out
     assert 'Inventory: (empty)' in out
 

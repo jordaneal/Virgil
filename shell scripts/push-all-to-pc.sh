@@ -185,6 +185,18 @@ if [ -d /home/jordaneal/virgil-docs/_trash ]; then
     "${SSH_TARGET}:${PC_BASE}/_trash/"
 fi
 
+# 3f) virgil-docs/planner-scratch/ -> Virgil Project/planner-scratch/
+#     Active planning/handoff/findings docs. Canonical PC location is root-level
+#     planner-scratch/, NOT under text files/. Added 2026-05-14 after S65.A
+#     wrong-path slip (was rsyncing to text files/planner-scratch/).
+if [ -d /home/jordaneal/virgil-docs/planner-scratch ]; then
+  echo "==> virgil-docs/planner-scratch/ -> Virgil Project/planner-scratch/"
+  run_rsync $RSYNC \
+    "${COMMON_EXCLUDES[@]}" \
+    /home/jordaneal/virgil-docs/planner-scratch/ \
+    "${SSH_TARGET}:${PC_BASE}/planner-scratch/"
+fi
+
 # 4) virgil-docs/refs/ -> Virgil Project/text files/refs/
 #    Reference material (Avrae Command List, etc.).
 if [ -d /home/jordaneal/virgil-docs/refs ]; then
