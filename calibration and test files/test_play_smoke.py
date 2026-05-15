@@ -77,11 +77,11 @@ def _run_play_handler(interaction, scene=None):
     import discord_dnd_bot as bot_mod
 
     # Discord environment + LLM externals all mocked.
+    # S67: update_scene retired from bot_mod (F-016 closure) — patch dropped.
     with mock.patch.object(bot_mod, 'is_dm_or_creator', return_value=True), \
          mock.patch.object(bot_mod, 'get_channel', return_value=mock.MagicMock()), \
          mock.patch.object(bot_mod, 'dm_respond', return_value='Opening narration body.'), \
          mock.patch.object(bot_mod, 'chroma_store'), \
-         mock.patch.object(bot_mod, 'update_scene'), \
          mock.patch.object(bot_mod, 'init_scene_state'):
         # Build a narration_ch with an async typing() context + send()
         narration_ch = mock.MagicMock()
@@ -124,10 +124,10 @@ def test_play_handler_calls_dm_respond_with_scene_text():
         captured_action.append(action)
         return 'opening'
 
+    # S67: update_scene retired from bot_mod (F-016 closure) — patch dropped.
     with mock.patch.object(bot_mod, 'is_dm_or_creator', return_value=True), \
          mock.patch.object(bot_mod, 'dm_respond', side_effect=_spy_dm_respond), \
          mock.patch.object(bot_mod, 'chroma_store'), \
-         mock.patch.object(bot_mod, 'update_scene'), \
          mock.patch.object(bot_mod, 'init_scene_state'):
         narration_ch = mock.MagicMock()
         narration_ch.typing = mock.MagicMock()

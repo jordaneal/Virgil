@@ -30,6 +30,7 @@ import sys
 import asyncio
 import datetime
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -41,7 +42,7 @@ sys.path.insert(0, '/home/jordaneal/scripts')
 from dnd_engine import (
     db_init, chroma_init, chroma_store, dm_respond,
     get_active_campaign, get_characters, get_character_by_controller,
-    create_campaign, bind_character, update_scene, list_campaigns,
+    create_campaign, bind_character, list_campaigns,
     campaign_set_status, campaign_delete_cascade,
     init_scene_state, get_scene_state, set_scene_mode,
     clock_create, clock_tick, clock_untick, clock_reset, clock_delete, get_clocks,
@@ -70,11 +71,13 @@ from dnd_engine import (
     phantom_location_candidates,
     world_health_report,
     consequence_list_for_command,
-    add_item, get_inventory,
+    add_item, get_inventory, remove_item, PARTY_STASH_BUCKET,
     get_pending_loot,
     advance_time, parse_elapsed, PHASES,
+    update_campaign_premise, is_bootstrap_complete,
     log,
 )
+from skeleton_writer import skeleton_md_append_element
 from cloud_router import route as cloud_route
 from commands_doc_generator import update_commands_doc
 import avrae_listener as al
@@ -2984,9 +2987,82 @@ async def _extract_and_persist_world(campaign_id, narration, guild=None,
         log(f"npc_location_resolve: campaign={campaign_id} "
             f"resolved=[{', '.join(location_resolution_log)}]")
 
+    # S68 N-4 — pronoun lock pass on first narration mention.
+    # For each NPC just extracted/mentioned, if pronouns column is still
+    # empty, scan a window around the NPC name in the narration for the
+    # canonical pronoun set. First-occurrence wins.
+    try:
+        _lock_npc_pronouns_from_narration(campaign_id, narration, npcs)
+    except Exception as e:
+        log(f"npc_pronoun_live_lock: error campaign={campaign_id} err={e!r}")
+
     _emit_npc_health(campaign_id)
     _emit_phantom_candidates(campaign_id)
     _emit_world_health(campaign_id)
+
+
+def _lock_npc_pronouns_from_narration(campaign_id: int, narration: str,
+                                       npcs: list) -> int:
+    """S68 N-4 — scan narration for pronouns near each NPC name; lock first
+    occurrence via `npc_pronouns_set` if `pronouns` is currently empty.
+
+    Returns count of NPCs locked this call. Idempotent — NPCs with already-
+    locked pronouns are skipped.
+
+    Per N-10 v0.1 forward-coupling: bootstrap-NPCs carry pronouns in first
+    sentence of description (backfill picks those up at engine init); this
+    pass handles emergent NPCs introduced in narration without pre-set
+    pronouns.
+    """
+    from dnd_engine import npc_pronouns_set, npc_pronouns_get, npc_get_by_name
+    from dnd_engine import extract_pronouns_from_text
+    if not narration or not npcs:
+        return 0
+    locked = 0
+    for n in npcs:
+        name = (n.get('name') or '').strip()
+        if not name:
+            continue
+        try:
+            existing_row = npc_get_by_name(campaign_id, name)
+        except Exception:
+            continue
+        if not existing_row:
+            continue
+        npc_id = existing_row['id']
+        # Skip if already locked
+        if (existing_row.get('pronouns') or '').strip():
+            continue
+        # Find a window of ~200 chars around the first mention of the NPC
+        # name in narration and extract pronouns from that window.
+        lower_narration = narration.lower()
+        lower_name = name.lower()
+        idx = lower_narration.find(lower_name)
+        if idx < 0:
+            # NPC parsed but name doesn't appear verbatim — try first token
+            first_token = name.split()[0].lower() if name.split() else lower_name
+            idx = lower_narration.find(first_token)
+        if idx < 0:
+            continue
+        window_start = max(0, idx - 200)
+        window_end = min(len(narration), idx + len(name) + 300)
+        window = narration[window_start:window_end]
+        canonical, conflicts = extract_pronouns_from_text(window)
+        if not canonical:
+            continue
+        ok = npc_pronouns_set(npc_id, canonical)
+        if ok:
+            locked += 1
+            log(f"npc_pronoun_locked: campaign={campaign_id} "
+                f"npc_id={npc_id} name={name!r} pronouns={canonical!r} "
+                f"source=narration")
+            if conflicts:
+                log(f"npc_pronoun_conflict: campaign={campaign_id} "
+                    f"npc_id={npc_id} name={name!r} "
+                    f"locked={canonical!r} also_found={conflicts}")
+    if locked:
+        log(f"npc_pronoun_live_lock: campaign={campaign_id} locked={locked}")
+    return locked
 
 
 def _emit_npc_health(campaign_id):
@@ -3448,7 +3524,15 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
             response = _strip_dc_from_llm_emit(response)
 
         chroma_store(campaign['id'], 'dm', response)
-        update_scene(campaign['id'], f"Last actions: {combined_action[:200]} | DM: {response[:200]}")
+        # S67 Fix 2 Phase B (F-016 close) — dnd_campaigns.current_scene is no
+        # longer written. The LLM-narration → self-summary loop (4/4 §76
+        # contamination surface, unmitigated) is closed. Scene-detail memory
+        # flows via: (a) authoritative SCENE STATE block (structured
+        # fields), (b) chroma RELEVANT PAST EVENTS (distance-cutoff mitigated),
+        # (c) last_dm_response for signal extraction (not prose re-injection).
+        # The `current_scene` column stays in schema for now (cleanup deferred
+        # to a post-Tier-1 schema sweep); the read paths in build_dm_context
+        # and dm_respond's scene_blurb were redirected to last_dm_response.
 
         response_md = (response
                        .replace('<b>', '**').replace('</b>', '**')
@@ -4912,7 +4996,9 @@ async def play(interaction: discord.Interaction, scene: str = None):
         )
 
     chroma_store(campaign['id'], 'dm', opening)
-    update_scene(campaign['id'], opening[:500])
+    # S67 Fix 2 Phase B — current_scene write retired. /play's opening
+    # narration lands in chroma (for retrieval) and last_dm_response (via
+    # dm_respond's persist call) — no need for the separate prose-snapshot.
 
     opening_md = opening.replace('<b>', '**').replace('</b>', '**').replace('<i>', '*').replace('</i>', '*')
     body = opening_md[:4000]
@@ -5179,14 +5265,30 @@ async def travel(interaction: discord.Interaction,
     # advance_time(); it still flows into the TRAVEL_TRANSITION block as
     # flavor (existing behavior preserved). Soft-fail per §59 — a
     # parse/advance failure must never block the narration call.
+    #
+    # S66 Fix 1 — floor-at-one-phase rule. Any /travel call advances at
+    # least one phase. Parser returns (0,0) for sub-phase durations
+    # ('5 minutes') and None for unparseable input ('banana'); both
+    # floor to (0, 1). Embed below reports the ACTUAL applied delta
+    # rather than echoing raw input (the pre-S66 "Midday → Afternoon
+    # despite '1 hour' input" surprise was a truthfulness gap, not a
+    # math bug — the parser already returned (0,1) for '1 hour', but
+    # the user never saw that.)
+    parsed = parse_elapsed(elapsed) or (0, 0)
+    days_d, phase_d = parsed
+    floor_applied = False
+    if days_d == 0 and phase_d == 0:
+        days_d, phase_d = 0, 1
+        floor_applied = True
+        log(f"/travel: floor-at-1-phase applied campaign={campaign['id']} "
+            f"elapsed={elapsed!r}")
+    ta = None
     try:
-        parsed = parse_elapsed(elapsed)
-        if parsed is not None and parsed != (0, 0):
-            advance_time(
-                campaign['id'], parsed[0], parsed[1],
-                source='travel',
-                source_detail=f"{dest_canonical}; elapsed={elapsed}",
-            )
+        ta = advance_time(
+            campaign['id'], days_d, phase_d,
+            source='travel',
+            source_detail=f"{dest_canonical}; elapsed={elapsed}",
+        )
     except Exception as e:
         log(f"/travel: advance_time error: {e!r}")
 
@@ -5222,9 +5324,28 @@ async def travel(interaction: discord.Interaction,
     synthetic_action = f"The party travels to {dest_canonical}."
 
     # Acknowledge to player immediately. The DM call may take a few seconds.
+    # S66 Fix 1C — truthful embed. Report the ACTUAL applied delta so the
+    # operator sees the phase math, not just the elapsed input string.
+    if ta:
+        delta_parts = []
+        if ta.days_delta:
+            delta_parts.append(f"{ta.days_delta}d")
+        if ta.resolved_phase_delta:
+            delta_parts.append(
+                f"{ta.resolved_phase_delta} phase"
+                f"{'s' if ta.resolved_phase_delta != 1 else ''}"
+            )
+        delta_str = " + ".join(delta_parts) or "no change"
+        floor_note = " — defaulted to 1 phase" if floor_applied else ""
+        timing = (
+            f" — advanced {delta_str} "
+            f"({ta.before_phase} → {ta.after_phase}){floor_note}"
+        )
+    else:
+        timing = ""
     await interaction.response.send_message(
         f"{E.get('ok', '✅')} Travel: **{origin_name}** → **{dest_canonical}** "
-        f"({elapsed}). The DM is opening the arrival scene...",
+        f"(input: `{elapsed}`){timing}. The DM is opening the arrival scene...",
         ephemeral=True
     )
 
@@ -5749,26 +5870,70 @@ async def _do_quest_deliver(interaction: discord.Interaction, campaign: dict,
         )
         return
     # §11.6 (d) hybrid: aside post + auto-inventory.
+    # S66 Fix 2 (F-031 close) — quest rewards land in PARTY_STASH_BUCKET
+    # (__party__), NOT in an empty-string bucket (the pre-S66 bug — empty
+    # character_name made add_item return action='invalid' silently, and
+    # the inv_lines below would falsely report success). The bucket is a
+    # party-shared sentinel; /inventory surfaces it separately from
+    # individual character inventories.
     reward = result.get('reward_summary', '') or '(unspecified)'
     title = result.get('title', f'#{quest_id}')
     parsed_items = _parse_reward_summary_for_inventory(
         result.get('reward_summary', '')
     )
     inv_lines = []
+    inv_failed = []
     for item in parsed_items:
         try:
-            add_item(campaign['id'], '', item['name'], item['quantity'])
-            inv_lines.append(f"  + {item['name']} ×{item['quantity']}")
+            add_result = add_item(
+                campaign['id'], PARTY_STASH_BUCKET,
+                item['name'], item['quantity']
+            )
+            action = (add_result or {}).get('action', 'unknown')
+            if action in ('inserted', 'incremented'):
+                inv_lines.append(
+                    f"  + {item['name']} ×{item['quantity']} "
+                    f"→ party stash ({action})"
+                )
+                log(f"quest_delivered: campaign={campaign['id']} "
+                    f"quest_id={quest_id} item={item['name']!r} "
+                    f"qty={item['quantity']} party_stash=true "
+                    f"add_item_result={action}")
+            else:
+                inv_failed.append(
+                    f"  ! {item['name']} ×{item['quantity']} "
+                    f"(add_item returned action={action})"
+                )
+                log(f"quest_delivered: campaign={campaign['id']} "
+                    f"quest_id={quest_id} item={item['name']!r} "
+                    f"qty={item['quantity']} party_stash=true "
+                    f"add_item_result={action} ERROR")
         except Exception as e:
             log(f"quest_deliver_inventory_add: error item={item!r} err={e!r}")
-            inv_lines.append(f"  ! {item['name']} ×{item['quantity']} (add failed: {e})")
+            inv_failed.append(
+                f"  ! {item['name']} ×{item['quantity']} (add failed: {e})"
+            )
     aside_text = (
         f"**[REWARD READY]** Quest #{quest_id} delivered: **{title}**.\n"
         f"Reward: {reward}\n"
     )
+    # S66 Fix 2 — truthful aside. Success and failure are reported
+    # separately so the operator can't be misled into thinking items
+    # landed when they didn't (the pre-S66 bug — empty bucket made every
+    # add_item silently return 'invalid', but the operator saw "+item"
+    # lines anyway).
     if inv_lines:
-        aside_text += f"\nAuto-added to inventory:\n" + "\n".join(inv_lines) + "\n"
-    else:
+        aside_text += (
+            f"\n**Auto-added to party stash:**\n"
+            + "\n".join(inv_lines) + "\n"
+        )
+    if inv_failed:
+        aside_text += (
+            f"\n**⚠ Inventory add FAILED for:**\n"
+            + "\n".join(inv_failed) + "\n"
+            f"_(Check `add_item` logs; reward may need manual `/giveitem`.)_\n"
+        )
+    if not inv_lines and not inv_failed:
         aside_text += f"\n_(No structured items parsed; reward stays narrative.)_\n"
     # Suggested narration line for operator paste (§11.6 (b) seed).
     aside_text += (
@@ -6147,6 +6312,775 @@ async def quest_act_add_cmd(interaction: discord.Interaction,
 
 
 bot.tree.add_command(quest_group)
+
+
+# ═════════════════════════════════════════════════════════
+# N-10 Canon Bootstrap Bot v0 — slash surface + session state + dispatch.
+# §1b sixth project instance. Bot proposes via #dm-aside cards; operator
+# approves via `/bootstrap accept` slash; engine writes via existing §17
+# single-writers (npc_upsert / quest_add / quest_act_upsert / location_upsert)
+# + skeleton_md_append_element (new single-writer for skeleton.md file).
+# Per CANON_BOOTSTRAP_BOT_V0_SPEC.md LOCKED + REVIEW.md §11.1–§11.12.
+# ═════════════════════════════════════════════════════════
+
+
+@dataclass
+class BootstrapState:
+    """Process-local in-memory session per spec §3.2.
+
+    NOT persisted. Cleared on `/bootstrap end`, `/bootstrap accept` of the
+    final card, or process restart. State is per-campaign; one active
+    session at a time.
+    """
+    campaign_id: int
+    premise: str
+    sequence_pointer: int = 0
+    sequence_plan: list = field(default_factory=lambda: list(
+        orch.BOOTSTRAP_CARD_SEQUENCE_V0
+    ))
+    approved_elements: list = field(default_factory=list)
+    skipped_elements: list = field(default_factory=list)
+    current_proposal: dict | None = None
+    current_card_type: str | None = None
+    rerolls_for_current: int = 0
+    started_at: str = ''
+
+
+_bootstrap_session: dict[int, BootstrapState] = {}
+
+
+# N-10 v0.1 — operator-friendly field aliases per card type. Operator types
+# `name:"X"` expecting "the displayed name" but the actual canonical key
+# differs per card type. Without normalization, the override stores
+# `fields['name']='X'` and `_commit_proposal` reads `fields.get('canonical_name')`
+# — the override is silently ignored. Per playtest evidence (post-N-10 ship,
+# 2026-05-14T15:51 Grahn scenario): `/bootstrap manual name:"Grahn"` on an
+# NPC card produced `dnd_npcs.canonical_name='Gundrik Ironfist'` (the LLM's
+# untouched draft). This map fixes the cascade.
+
+_BOOTSTRAP_FIELD_ALIASES = {
+    'faction': {
+        # faction card uses 'name' canonically; alias is identity.
+        'name': 'name',
+    },
+    'npc_dispatcher': {
+        'name':           'canonical_name',
+        'canonical_name': 'canonical_name',
+    },
+    'location': {
+        'name':           'canonical_name',
+        'canonical_name': 'canonical_name',
+    },
+    'quest': {
+        'name':  'title',
+        'title': 'title',
+    },
+    'quest_act': {
+        'name':      'act_title',
+        'title':     'act_title',
+        'act_title': 'act_title',
+    },
+}
+
+# Name-class canonical keys per card type — used to detect when the operator
+# overrode a name and trigger the prose-residual warning.
+_BOOTSTRAP_NAME_CLASS_CANONICAL = {
+    'faction':         {'name'},
+    'npc_dispatcher':  {'canonical_name'},
+    'location':        {'canonical_name'},
+    'quest':           {'title'},
+    'quest_act':       {'act_title'},
+}
+
+
+def _normalize_bootstrap_field_key(card_type: str, key: str) -> str:
+    """Map an operator-supplied field name to the canonical field key for
+    the current card type. Unknown keys pass through unchanged so operator
+    can still override less-common fields directly.
+
+    Per N-10 v0.1 patch.
+    """
+    aliases = _BOOTSTRAP_FIELD_ALIASES.get(card_type) or {}
+    return aliases.get(key, key)
+
+
+def _bootstrap_state_to_dict(state: BootstrapState) -> dict:
+    """Serialize to the dict shape orch.compute_bootstrap_card_directive
+    expects. Pure read of process-local state."""
+    return {
+        'premise': state.premise,
+        'sequence_pointer': state.sequence_pointer,
+        'sequence_plan': state.sequence_plan,
+        'approved_elements': state.approved_elements,
+        'rerolls_for_current': state.rerolls_for_current,
+    }
+
+
+def _format_bootstrap_card(state: BootstrapState, proposal: dict) -> str:
+    """Render a #dm-aside card per spec §4.2. Plain Discord message; ≤2000 chars."""
+    fields = proposal.get('fields') or {}
+    card_type = proposal.get('card_type', '?')
+    seq_index = state.sequence_pointer + 1
+    seq_total = len(state.sequence_plan)
+    justification = (proposal.get('justification') or '').strip()
+
+    type_label_by = {
+        'faction': 'FACTION',
+        'npc_dispatcher': 'DISPATCHER NPC',
+        'quest': 'QUEST',
+        'quest_act': 'QUEST ACT',
+        'location': 'LOCATION',
+    }
+    label = type_label_by.get(card_type, card_type.upper())
+
+    name = (fields.get('name') or fields.get('canonical_name')
+            or fields.get('title') or '?').strip()
+
+    body_lines = [
+        f"**[BOOTSTRAP — {label} CARD {seq_index}/{seq_total}]**",
+        f"Proposed: **{name}**",
+        "",
+    ]
+
+    if card_type == 'faction':
+        body_lines.append(f"Goal: {fields.get('goal', '?')}")
+        body_lines.append(f"Pressure: {fields.get('pressure_shape', '?')}")
+        body_lines.append(f"Engagement signals: {fields.get('engagement_signals', '?')}")
+    elif card_type == 'npc_dispatcher':
+        body_lines.append(f"Role: {fields.get('role', '?')} ({fields.get('pronouns', '?')})")
+        body_lines.append(f"{fields.get('description', '?')}")
+        if fields.get('location_name'):
+            body_lines.append(f"Location: {fields['location_name']}")
+        if fields.get('associated_faction_name'):
+            body_lines.append(f"Faction: {fields['associated_faction_name']}")
+    elif card_type == 'quest':
+        body_lines.append(f"Offered by: **{fields.get('offer_npc_name', '?')}**")
+        body_lines.append(f"_Summary:_ {fields.get('summary', '?')}")
+        body_lines.append(f"Reward: {fields.get('reward_summary', '?')}")
+        if fields.get('associated_faction_name'):
+            body_lines.append(f"Faction: {fields['associated_faction_name']}")
+    elif card_type == 'quest_act':
+        body_lines.append(f"For quest: **{fields.get('quest_title', '?')}**")
+        body_lines.append(f"Act {fields.get('act_index', '?')}: {fields.get('act_title', '?')}")
+        body_lines.append(f"{fields.get('act_description', '?')}")
+        pred = fields.get('transition_predicate') or {}
+        pred_parts = []
+        if pred.get('scene_count_threshold'):
+            pred_parts.append(f"scenes ≥ {pred['scene_count_threshold']}")
+        if pred.get('location_name'):
+            pred_parts.append(f"at location \"{pred['location_name']}\"")
+        if pred_parts:
+            body_lines.append(f"Transition: {', '.join(pred_parts)}")
+    elif card_type == 'location':
+        loc_type = fields.get('type', '?')
+        body_lines.append(f"Type: {loc_type}")
+        body_lines.append(f"{fields.get('description', '?')}")
+        if fields.get('parent_location_name'):
+            body_lines.append(f"Inside: {fields['parent_location_name']}")
+        if fields.get('starting_location'):
+            body_lines.append("**Starting location for the party.**")
+
+    if justification:
+        body_lines.append("")
+        body_lines.append(f"_Justification:_ {justification}")
+
+    body_lines.append("")
+    body_lines.append("— `/bootstrap accept` to write + advance")
+    body_lines.append("— `/bootstrap skip` to drop + advance")
+    body_lines.append("— `/bootstrap reroll` to regenerate")
+    body_lines.append("— `/bootstrap manual <field>:\"<value>\"` to override")
+
+    body = "\n".join(body_lines)
+    # 2000-char hard cap per R3
+    if len(body) > 1950:
+        body = body[:1950] + "\n…[truncated]"
+    return body
+
+
+async def _dispatch_bootstrap_card(guild, state: BootstrapState,
+                                     reroll_hint: str = '') -> bool:
+    """Generate next card proposal + post to #dm-aside. Returns True if a
+    card was successfully dispatched, False on error / sequence end."""
+    next_type, seq_signals = orch.compute_bootstrap_sequence_directive(
+        _bootstrap_state_to_dict(state)
+    )
+    log(orch.bootstrap_sequence_log_summary(seq_signals))
+
+    if next_type is None:
+        await _post_dm_aside(
+            guild,
+            f"{E.get('ok', '✅')} **[BOOTSTRAP COMPLETE]** "
+            f"All cards processed. Run `/play` to begin the campaign.\n"
+            f"Approved: {len(state.approved_elements)} · "
+            f"Skipped: {len(state.skipped_elements)}"
+        )
+        log(f"bootstrap_session_completed: campaign={state.campaign_id} "
+            f"elements_approved={len(state.approved_elements)} "
+            f"elements_skipped={len(state.skipped_elements)}")
+        _bootstrap_session.pop(state.campaign_id, None)
+        return False
+
+    state.current_card_type = next_type
+    # N-10 v0.1 — pass prior_proposal so the reroll directive can extract
+    # an archetype hint and ask for a meaningfully different shape.
+    prior_proposal_for_hint = (
+        state.current_proposal if state.rerolls_for_current > 0 else None
+    )
+    proposal, card_signals = await asyncio.to_thread(
+        orch.compute_bootstrap_card_directive,
+        _bootstrap_state_to_dict(state), next_type,
+        {'id': state.campaign_id}, reroll_hint, prior_proposal_for_hint
+    )
+    log(orch.bootstrap_card_log_summary(card_signals))
+
+    if proposal is None:
+        await _post_dm_aside(
+            guild,
+            f"{E.get('facepalm', '🤦')} **[BOOTSTRAP CARD ERROR]** "
+            f"Couldn't generate a {next_type} proposal "
+            f"(reason: {card_signals.get('reason', 'unknown')}). "
+            f"Try `/bootstrap reroll` to retry, `/bootstrap skip` to advance "
+            f"past this card, or `/bootstrap end` to close the session."
+        )
+        log(f"bootstrap_card_dispatch_failed: campaign={state.campaign_id} "
+            f"card_type={next_type} reason={card_signals.get('reason')}")
+        # Hold the failed state so operator can reroll/skip
+        state.current_proposal = None
+        return False
+
+    state.current_proposal = proposal
+    log(f"bootstrap_card_proposed: campaign={state.campaign_id} "
+        f"card_type={next_type} "
+        f"element_name={(proposal['fields'].get('name') or proposal['fields'].get('canonical_name') or proposal['fields'].get('title') or proposal['fields'].get('act_title') or '?')!r} "
+        f"sequence_index={state.sequence_pointer} "
+        f"reroll_count={state.rerolls_for_current} "
+        f"prior_archetype_hint={1 if card_signals.get('prior_archetype_hint') else 0}")
+
+    await _post_dm_aside(guild, _format_bootstrap_card(state, proposal))
+    return True
+
+
+def _resolve_npc_id_for_quest(campaign_id: int, npc_name: str):
+    """Find a previously-bootstrapped NPC's id by canonical name. Returns
+    int or None."""
+    if not npc_name:
+        return None
+    try:
+        row = npc_get_by_name(campaign_id, npc_name)
+        if row:
+            return row['id']
+    except Exception:
+        pass
+    return None
+
+
+def _resolve_location_id(campaign_id: int, location_name: str):
+    """Find a previously-bootstrapped location's id by canonical name."""
+    if not location_name:
+        return None
+    try:
+        row = location_get_by_name(campaign_id, location_name)
+        if row:
+            return row['id']
+    except Exception:
+        pass
+    return None
+
+
+def _resolve_quest_id_by_title(campaign_id: int, quest_title: str):
+    """Find a quest id by its title (case-insensitive, whitespace-normalized).
+    Returns int or None."""
+    if not quest_title:
+        return None
+    try:
+        norm_target = ' '.join(quest_title.split()).lower()
+        for q in get_all_quests(campaign_id) or []:
+            qt = ' '.join((q.get('title') or '').split()).lower()
+            if qt == norm_target:
+                return q.get('id')
+    except Exception:
+        pass
+    return None
+
+
+def _commit_proposal(state: BootstrapState, campaign: dict) -> tuple[bool, str]:
+    """Apply current proposal to canonical tables + skeleton.md. Returns
+    (success, status_msg) for operator-facing rendering."""
+    proposal = state.current_proposal
+    if not proposal:
+        return False, "no_current_proposal"
+
+    card_type = proposal['card_type']
+    fields = proposal['fields']
+    campaign_id = state.campaign_id
+
+    try:
+        if card_type == 'faction':
+            # §11.8 LOCKED — factions live in skeleton.md only at v0. No
+            # canonical table write (dnd_factions deferred to S69).
+            ok, msg = skeleton_md_append_element(
+                campaign_id, 'faction',
+                {**fields, 'name': fields.get('name')},
+                campaign_name=campaign.get('name', ''),
+                premise=state.premise,
+            )
+            return ok, f"faction:{msg}"
+
+        if card_type == 'npc_dispatcher':
+            # Canonical write via npc_upsert
+            location_id = _resolve_location_id(campaign_id,
+                                                 fields.get('location_name') or '')
+            result = npc_upsert(
+                campaign_id,
+                fields.get('canonical_name', ''),
+                role=fields.get('role', ''),
+                location_id=location_id,
+                description=fields.get('description', ''),
+                origin_excerpt='',
+                skeleton_origin=True,
+            )
+            if result is None:
+                return False, "npc_upsert_refused"
+            npc_id, _was_new = result
+            # Skeleton.md append (soft-fail)
+            sk_ok, sk_msg = skeleton_md_append_element(
+                campaign_id, 'npc',
+                {**fields, 'name': fields.get('canonical_name')},
+                campaign_name=campaign.get('name', ''),
+                premise=state.premise,
+            )
+            return True, f"npc:inserted id={npc_id} skeleton={sk_msg if sk_ok else 'failed'}"
+
+        if card_type == 'quest':
+            npc_id = _resolve_npc_id_for_quest(campaign_id,
+                                                 fields.get('offer_npc_name') or '')
+            quest_id = quest_add(
+                campaign_id,
+                fields.get('title', ''),
+                summary=fields.get('summary', ''),
+                given_by=fields.get('offer_npc_name', ''),
+                reward_summary=fields.get('reward_summary', ''),
+                skeleton_origin=1,
+            )
+            # Set offer_npc_id if NPC was resolved
+            if npc_id is not None and quest_id is not None:
+                try:
+                    quest_offer(campaign_id, quest_id,
+                                  offer_npc_id=npc_id,
+                                  offered_turn=get_turn_counter(campaign_id))
+                except Exception as e:
+                    log(f"bootstrap: quest_offer side-effect failed: {e!r}")
+            sk_ok, sk_msg = skeleton_md_append_element(
+                campaign_id, 'quest',
+                {**fields, 'name': fields.get('title')},
+                campaign_name=campaign.get('name', ''),
+                premise=state.premise,
+            )
+            return True, f"quest:inserted id={quest_id} skeleton={sk_msg if sk_ok else 'failed'}"
+
+        if card_type == 'quest_act':
+            quest_id = _resolve_quest_id_by_title(campaign_id,
+                                                    fields.get('quest_title') or '')
+            if quest_id is None:
+                return False, "quest_not_found_for_act"
+            pred = fields.get('transition_predicate') or {}
+            # Map operator-friendly location_name → location_id JSON if resolvable
+            pred_json_obj = {}
+            if pred.get('scene_count_threshold'):
+                pred_json_obj['scene_count_threshold'] = int(pred['scene_count_threshold'])
+            if pred.get('location_name'):
+                loc_id = _resolve_location_id(campaign_id, pred['location_name'])
+                if loc_id is not None:
+                    pred_json_obj['location_id'] = loc_id
+                else:
+                    pred_json_obj['location_name'] = pred['location_name']
+            import json as _json
+            act_id, _was_new = quest_act_upsert(
+                campaign_id, quest_id,
+                act_index=int(fields.get('act_index') or 1),
+                act_title=fields.get('act_title', ''),
+                act_description=fields.get('act_description', ''),
+                transition_predicate_json=_json.dumps(pred_json_obj),
+                skeleton_origin=1,
+            )
+            sk_ok, sk_msg = skeleton_md_append_element(
+                campaign_id, 'quest_act',
+                {
+                    'quest_title': fields.get('quest_title'),
+                    'name': fields.get('act_title'),  # for parser
+                    'act_index': int(fields.get('act_index') or 1),
+                    'act_title': fields.get('act_title'),
+                    'act_description': fields.get('act_description'),
+                    'transition_predicate': pred,
+                },
+                campaign_name=campaign.get('name', ''),
+                premise=state.premise,
+            )
+            return True, f"quest_act:inserted id={act_id} skeleton={sk_msg if sk_ok else 'failed'}"
+
+        if card_type == 'location':
+            parent_id = _resolve_location_id(campaign_id,
+                                              fields.get('parent_location_name') or '')
+            loc_id = location_upsert(
+                campaign_id,
+                fields.get('canonical_name', ''),
+                type=fields.get('type', '') or '',
+                parent_location_id=parent_id,
+                description=fields.get('description', ''),
+                origin_excerpt='',
+                skeleton_origin=True,
+            )
+            if loc_id is None:
+                return False, "location_upsert_refused"
+            # Set as current_location if starting_location=True
+            if fields.get('starting_location'):
+                try:
+                    set_current_location(campaign_id, loc_id)
+                except Exception as e:
+                    log(f"bootstrap: set_current_location failed: {e!r}")
+            sk_ok, sk_msg = skeleton_md_append_element(
+                campaign_id, 'location',
+                {**fields, 'name': fields.get('canonical_name')},
+                campaign_name=campaign.get('name', ''),
+                premise=state.premise,
+            )
+            return True, f"location:inserted id={loc_id} skeleton={sk_msg if sk_ok else 'failed'}"
+
+        return False, f"unknown_card_type:{card_type}"
+    except Exception as e:
+        log(f"bootstrap commit_proposal error: card_type={card_type} err={e!r}")
+        return False, f"exception:{e!r}"
+
+
+# ─── /bootstrap slash group ───────────────────────────────
+
+bootstrap_group = app_commands.Group(
+    name='bootstrap',
+    description='[DM] Canon Bootstrap Bot v0 — propose campaign canon from a premise.'
+)
+
+
+@bootstrap_group.command(
+    name='begin',
+    description='[DM] Open a bootstrap session from a 2-3 sentence premise.'
+)
+@app_commands.describe(
+    premise='2-3 sentences: genre, setting, character role, what\'s pressuring the world.'
+)
+async def bootstrap_begin_cmd(interaction: discord.Interaction, premise: str):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message(
+            "DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign. Run `/newcampaign` first.", ephemeral=True)
+        return
+    cid = campaign['id']
+    premise_clean = (premise or '').strip()
+    if not premise_clean:
+        await interaction.response.send_message(
+            "Premise is required. Example: "
+            "`/bootstrap begin premise:\"Grimdark frontier mining town, "
+            "hexcrawl, the mine collapsed and something climbed out.\"`",
+            ephemeral=True)
+        return
+    if is_bootstrap_complete(cid):
+        await interaction.response.send_message(
+            f"{E.get('facepalm', '🤦')} Campaign **{campaign['name']}** is "
+            f"already bootstrap-complete (premise set + skeleton_origin "
+            f"elements exist). Re-bootstrap not supported at v0 — file v1.x "
+            f"expansion-mode candidate after live signal.",
+            ephemeral=True)
+        return
+    # Persist premise
+    update_campaign_premise(cid, premise_clean)
+    # Open in-memory session
+    import datetime as _dt
+    state = BootstrapState(
+        campaign_id=cid,
+        premise=premise_clean,
+        started_at=_dt.datetime.now().isoformat(timespec='seconds'),
+    )
+    _bootstrap_session[cid] = state
+    log(f"bootstrap_session_opened: campaign={cid} "
+        f"premise_chars={len(premise_clean)} sequence_total={len(state.sequence_plan)}")
+    await interaction.response.send_message(
+        f"{E.get('ok', '✅')} Bootstrap session opened for **{campaign['name']}**. "
+        f"Watch #dm-aside for the first card. Premise stored "
+        f"({len(premise_clean)} chars). Sequence: "
+        f"{len(state.sequence_plan)} cards — `/bootstrap status` for "
+        f"progress, `/bootstrap end` to close.",
+        ephemeral=True)
+    # Fire first card
+    await _dispatch_bootstrap_card(interaction.guild, state)
+
+
+@bootstrap_group.command(
+    name='accept',
+    description='[DM] Approve the current bootstrap card; write canon + advance.'
+)
+async def bootstrap_accept_cmd(interaction: discord.Interaction):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message(
+            "DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign.", ephemeral=True)
+        return
+    state = _bootstrap_session.get(campaign['id'])
+    if not state:
+        await interaction.response.send_message(
+            "No active bootstrap session. Run `/bootstrap begin premise:\"...\"`.",
+            ephemeral=True)
+        return
+    if not state.current_proposal:
+        await interaction.response.send_message(
+            "No card to accept. Try `/bootstrap reroll` or `/bootstrap skip`.",
+            ephemeral=True)
+        return
+
+    ok, msg = _commit_proposal(state, campaign)
+    if ok:
+        # Snapshot the approved element for downstream context
+        state.approved_elements.append({
+            'card_type': state.current_proposal['card_type'],
+            'fields': state.current_proposal['fields'],
+            'justification': state.current_proposal.get('justification', ''),
+        })
+        log(f"bootstrap_card_approved: campaign={state.campaign_id} "
+            f"card_type={state.current_proposal['card_type']} "
+            f"sequence_index={state.sequence_pointer} write_status={msg}")
+        state.current_proposal = None
+        state.rerolls_for_current = 0
+        state.sequence_pointer += 1
+        await interaction.response.send_message(
+            f"{E.get('ok', '✅')} Accepted ({msg}). Advancing…",
+            ephemeral=True)
+        await _dispatch_bootstrap_card(interaction.guild, state)
+    else:
+        log(f"bootstrap_card_approve_failed: campaign={state.campaign_id} "
+            f"reason={msg}")
+        await interaction.response.send_message(
+            f"{E.get('facepalm', '🤦')} Couldn't commit proposal: {msg}. "
+            f"Try `/bootstrap reroll` for a different draft, "
+            f"`/bootstrap skip` to advance past this card, or "
+            f"`/bootstrap manual <field>:\"<value>\"` to override.",
+            ephemeral=True)
+
+
+@bootstrap_group.command(
+    name='skip',
+    description='[DM] Skip the current bootstrap card without writing canon; advance.'
+)
+async def bootstrap_skip_cmd(interaction: discord.Interaction):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message(
+            "DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign.", ephemeral=True)
+        return
+    state = _bootstrap_session.get(campaign['id'])
+    if not state:
+        await interaction.response.send_message(
+            "No active bootstrap session.", ephemeral=True)
+        return
+    skipped_type = state.current_card_type or '?'
+    state.skipped_elements.append({
+        'card_type': skipped_type,
+        'fields': (state.current_proposal or {}).get('fields'),
+    })
+    log(f"bootstrap_card_skipped: campaign={state.campaign_id} "
+        f"card_type={skipped_type} sequence_index={state.sequence_pointer}")
+    state.current_proposal = None
+    state.rerolls_for_current = 0
+    state.sequence_pointer += 1
+    await interaction.response.send_message(
+        f"{E.get('ok', '✅')} Skipped {skipped_type}. Advancing…",
+        ephemeral=True)
+    await _dispatch_bootstrap_card(interaction.guild, state)
+
+
+@bootstrap_group.command(
+    name='reroll',
+    description='[DM] Regenerate the current card with a different shape (soft reroll, unlimited).'
+)
+async def bootstrap_reroll_cmd(interaction: discord.Interaction):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message(
+            "DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign.", ephemeral=True)
+        return
+    state = _bootstrap_session.get(campaign['id'])
+    if not state:
+        await interaction.response.send_message(
+            "No active bootstrap session.", ephemeral=True)
+        return
+    state.rerolls_for_current += 1
+    log(f"bootstrap_card_reroll: campaign={state.campaign_id} "
+        f"card_type={state.current_card_type} "
+        f"reroll_count={state.rerolls_for_current}")
+    await interaction.response.send_message(
+        f"{E.get('ok', '✅')} Rerolling (#{state.rerolls_for_current})…",
+        ephemeral=True)
+    await _dispatch_bootstrap_card(interaction.guild, state,
+                                     reroll_hint='Reroll number {}'.format(
+                                         state.rerolls_for_current))
+
+
+@bootstrap_group.command(
+    name='manual',
+    description='[DM] Override one or more fields on the current card before accepting.'
+)
+@app_commands.describe(
+    overrides='Space-separated overrides like name:"Eldrin Stormbow" role:"village herald"'
+)
+async def bootstrap_manual_cmd(interaction: discord.Interaction, overrides: str):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message(
+            "DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign.", ephemeral=True)
+        return
+    state = _bootstrap_session.get(campaign['id'])
+    if not state or not state.current_proposal:
+        await interaction.response.send_message(
+            "No active card to override. Run `/bootstrap begin` first.",
+            ephemeral=True)
+        return
+    # Parse overrides shape: `field:"value" field2:"value2"` — quoted values
+    # tolerated; unquoted single-word values also OK.
+    import re as _re
+    parsed_pairs = _re.findall(
+        r'(\w+)\s*:\s*(?:"([^"]*)"|(\S+))', overrides or ''
+    )
+    if not parsed_pairs:
+        await interaction.response.send_message(
+            "Couldn't parse overrides. Format: "
+            "`/bootstrap manual overrides:'name:\"Eldrin\" role:\"herald\"'`",
+            ephemeral=True)
+        return
+    # N-10 v0.1 — normalize operator-friendly field aliases to canonical keys
+    # per card type before storing into fields. Without this, `name:"X"` on
+    # an NPC card silently doesn't propagate to canonical_name and the
+    # commit-time write uses the LLM's untouched draft.
+    card_type = state.current_card_type or ''
+    name_class_canonical = _BOOTSTRAP_NAME_CLASS_CANONICAL.get(card_type, set())
+    applied = []
+    touched_name_class = False
+    for key, quoted, unquoted in parsed_pairs:
+        val = quoted if quoted else unquoted
+        normalized_key = _normalize_bootstrap_field_key(card_type, key)
+        state.current_proposal['fields'][normalized_key] = val
+        if normalized_key in name_class_canonical:
+            touched_name_class = True
+        # Always log normalized vs original so the alias mapping is observable
+        log(f"bootstrap_manual_override: campaign={state.campaign_id} "
+            f"card_type={card_type} original_key={key!r} "
+            f"normalized_key={normalized_key!r} value={val!r}")
+        if normalized_key != key:
+            applied.append(f"{key}→{normalized_key}={val!r}")
+        else:
+            applied.append(f"{key}={val!r}")
+    # Re-post the card with overrides applied
+    await _post_dm_aside(interaction.guild,
+                          _format_bootstrap_card(state, state.current_proposal))
+    residual_warning = ""
+    if touched_name_class:
+        residual_warning = (
+            "\n⚠ Description and justification may still reference the prior "
+            "name. Run `/bootstrap reroll` if you want the prose regenerated "
+            "with the new name."
+        )
+    await interaction.response.send_message(
+        f"{E.get('ok', '✅')} Override applied ({', '.join(applied)}). "
+        f"Card re-posted; `/bootstrap accept` to commit or `/bootstrap reroll` "
+        f"to regenerate.{residual_warning}",
+        ephemeral=True)
+
+
+@bootstrap_group.command(
+    name='status',
+    description='[DM] Show current bootstrap session progress.'
+)
+async def bootstrap_status_cmd(interaction: discord.Interaction):
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign.", ephemeral=True)
+        return
+    state = _bootstrap_session.get(campaign['id'])
+    if not state:
+        # Check if already bootstrap-complete
+        if is_bootstrap_complete(campaign['id']):
+            await interaction.response.send_message(
+                f"Campaign **{campaign['name']}** is bootstrap-complete. "
+                f"No active session.",
+                ephemeral=True)
+        else:
+            await interaction.response.send_message(
+                "No active bootstrap session. Run "
+                "`/bootstrap begin premise:\"...\"`.",
+                ephemeral=True)
+        return
+    lines = [
+        f"**Bootstrap session** for **{campaign['name']}** "
+        f"(started {state.started_at})",
+        f"Premise: {state.premise[:200]}"
+        + ("…" if len(state.premise) > 200 else ""),
+        f"Sequence: {state.sequence_pointer + 1}/{len(state.sequence_plan)} "
+        f"(current: {state.current_card_type or 'awaiting next'})",
+        f"Approved: {len(state.approved_elements)} · "
+        f"Skipped: {len(state.skipped_elements)} · "
+        f"Rerolls on current: {state.rerolls_for_current}",
+    ]
+    await interaction.response.send_message("\n".join(lines), ephemeral=True)
+
+
+@bootstrap_group.command(
+    name='end',
+    description='[DM] Close the bootstrap session early; keep whatever\'s been approved.'
+)
+async def bootstrap_end_cmd(interaction: discord.Interaction):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message(
+            "DM or campaign owner only.", ephemeral=True)
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign.", ephemeral=True)
+        return
+    state = _bootstrap_session.pop(campaign['id'], None)
+    if not state:
+        await interaction.response.send_message(
+            "No active bootstrap session.", ephemeral=True)
+        return
+    log(f"bootstrap_session_completed: campaign={state.campaign_id} "
+        f"elements_approved={len(state.approved_elements)} "
+        f"elements_skipped={len(state.skipped_elements)} reason=operator_end")
+    await interaction.response.send_message(
+        f"{E.get('ok', '✅')} Bootstrap session closed. "
+        f"Approved: {len(state.approved_elements)} · "
+        f"Skipped: {len(state.skipped_elements)}. "
+        f"Canonical state preserves whatever was approved.",
+        ephemeral=True)
+
+
+bot.tree.add_command(bootstrap_group)
 
 
 # ─────────────────────────────────────────────────────────
@@ -6726,20 +7660,41 @@ async def inventory_cmd(interaction: discord.Interaction, character: str = ''):
         target_name = bound['name']
 
     rows = get_inventory(campaign['id'], target_name)
-    if not rows:
+    # S66 Fix 2C — surface party stash alongside the character's inventory
+    # so quest-delivery and loot auto-claim rewards are visible. The
+    # bucket is __party__ (PARTY_STASH_BUCKET), not a bound character.
+    party_rows = get_inventory(campaign['id'], PARTY_STASH_BUCKET)
+
+    if not rows and not party_rows:
         await interaction.response.send_message(
-            f"**{target_name}**'s inventory: _Empty._", ephemeral=True
+            f"**{target_name}**'s inventory: _Empty._ (Party stash also empty.)",
+            ephemeral=True
         )
         return
 
     lines = [f"**{target_name}**'s inventory:"]
-    for r in rows:
-        item = r['item_name']
-        qty = r['quantity']
-        if qty and qty > 1:
-            lines.append(f"- {item} (×{qty})")
-        else:
-            lines.append(f"- {item}")
+    if rows:
+        for r in rows:
+            item = r['item_name']
+            qty = r['quantity']
+            if qty and qty > 1:
+                lines.append(f"- {item} (×{qty})")
+            else:
+                lines.append(f"- {item}")
+    else:
+        lines.append("_(empty)_")
+
+    if party_rows:
+        lines.append("")
+        lines.append("**Party stash** (quest rewards + loot):")
+        for r in party_rows:
+            item = r['item_name']
+            qty = r['quantity']
+            if qty and qty > 1:
+                lines.append(f"- {item} (×{qty})")
+            else:
+                lines.append(f"- {item}")
+
     await interaction.response.send_message("\n".join(lines), ephemeral=True)
 
 
@@ -6792,6 +7747,102 @@ async def giveitem_cmd(interaction: discord.Interaction,
         f"{verb}: **{char_clean}** — {result['item_name']}{qty_clause}",
         ephemeral=True,
     )
+
+
+# S66 Fix 3C — refusal surface for auto-claimed loot. Default is YOU GET
+# THE LOOT (Fix 3B auto-claims at mark_loot_surfaced); operator uses
+# /loot drop <item> to remove items the party doesn't want. Aligns with
+# how tabletop play works: loot from combat is presumed-taken unless
+# someone says otherwise.
+async def _party_stash_autocomplete(
+    interaction: discord.Interaction,
+    current: str,
+) -> list[app_commands.Choice[str]]:
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        return []
+    try:
+        rows = get_inventory(campaign['id'], PARTY_STASH_BUCKET)
+    except Exception:
+        return []
+    needle = (current or '').lower()
+    return [
+        app_commands.Choice(name=r['item_name'][:100], value=r['item_name'])
+        for r in rows
+        if needle in r['item_name'].lower()
+    ][:25]
+
+
+@bot.tree.command(
+    name='loot',
+    description='[DM] Drop an item from the party stash (refuse auto-claimed loot).',
+)
+@app_commands.describe(
+    item='Item name to drop from the party stash (autocompletes from current stash).',
+    quantity='How many to drop. Default 1.',
+)
+@app_commands.autocomplete(item=_party_stash_autocomplete)
+async def loot_drop_cmd(interaction: discord.Interaction,
+                        item: str, quantity: int = 1):
+    if not is_dm_or_creator(interaction):
+        await interaction.response.send_message(
+            "DM or campaign owner only.", ephemeral=True
+        )
+        return
+    campaign = get_active_campaign(str(interaction.guild_id))
+    if not campaign:
+        await interaction.response.send_message(
+            "No active campaign.", ephemeral=True
+        )
+        return
+    item_clean = (item or '').strip()
+    if not item_clean:
+        await interaction.response.send_message(
+            "Item name must be non-empty.", ephemeral=True
+        )
+        return
+    if quantity is None or quantity <= 0:
+        await interaction.response.send_message(
+            "Quantity must be a positive integer.", ephemeral=True
+        )
+        return
+
+    result = remove_item(campaign['id'], PARTY_STASH_BUCKET,
+                         item_clean, quantity=quantity)
+    action = result.get('action')
+    log(f"loot_dropped: campaign={campaign['id']} "
+        f"item={result.get('item_name')!r} qty={quantity} "
+        f"action={action}")
+
+    if action == 'removed':
+        await interaction.response.send_message(
+            f"{E['ok']} Dropped from party stash: **{result['item_name']}** "
+            f"(all of them). Narrate leaving it behind in the next turn.",
+            ephemeral=True
+        )
+    elif action == 'decremented':
+        await interaction.response.send_message(
+            f"{E['ok']} Dropped from party stash: **{result['item_name']}** "
+            f"×{quantity} (now ×{result['quantity_now']}).",
+            ephemeral=True
+        )
+    elif action == 'not_found':
+        await interaction.response.send_message(
+            f"{E['facepalm']} No `{item_clean}` in party stash. "
+            f"Check `/inventory` for what's actually there.",
+            ephemeral=True
+        )
+    elif action == 'insufficient':
+        await interaction.response.send_message(
+            f"{E['facepalm']} Party stash only has ×{result['quantity_now']} "
+            f"of **{result['item_name']}** — can't drop {quantity}.",
+            ephemeral=True
+        )
+    else:
+        await interaction.response.send_message(
+            f"{E['facepalm']} Invalid item or quantity. (action={action})",
+            ephemeral=True
+        )
 
 
 async def _hydrate_npc_autocomplete(

@@ -2590,9 +2590,12 @@ def compute_loot_directive(pending_loot: list[dict]) -> tuple:
         "The list in this block supersedes any prior narration and is the "
         "current ground truth.\n\n"
         f"{coin_line}\n\n"
-        "Do NOT auto-add items to inventory. Surface them for the player "
-        "to claim or leave — the player will use /giveitem or claim "
-        "narratively."
+        "S66 Fix 3 — these items are AUTO-CLAIMED into the party stash by "
+        "the engine after this narration is posted. Narrate the discovery "
+        "naturally (\"you scavenge the bodies and find a rusty shortsword "
+        "and a crude bow\"). Do NOT instruct the player to /giveitem — "
+        "items already land in the party stash; the operator uses "
+        "`/loot drop <item>` to refuse anything the party doesn't want."
     )
     signals['fired'] = True
     signals['total_coin_summary'] = summary
@@ -4836,4 +4839,654 @@ def composition_directive_log_summary(signals: dict) -> str:
         f"current_act_id={signals.get('current_act_id', 'none')} "
         f"act_index={signals.get('current_act_index', 'none')} "
         f"quest_id={signals.get('quest_id', 'none')}"
+    )
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# N-10 CANON BOOTSTRAP BOT v0 — §59 siblings #16 + #17
+# §1b sixth project instance (joins SRD/NPC-state-sync/Quest/Composition)
+# Per CANON_BOOTSTRAP_BOT_V0_SPEC.md LOCKED + REVIEW.md decisions §11.1–§11.12
+# ═════════════════════════════════════════════════════════════════════════
+
+# ─────────────────────────────────────────────────────────
+# Card sequence — locked per §11.11 (factions → NPCs → quests → acts → locations)
+# ─────────────────────────────────────────────────────────
+
+BOOTSTRAP_CARD_SEQUENCE_V0 = (
+    # 1 faction (operator can /bootstrap skip if no faction wanted)
+    'faction',
+    # 2 dispatcher NPCs
+    'npc_dispatcher', 'npc_dispatcher',
+    # 3 quests (one per dispatcher typical; operator can skip)
+    'quest', 'quest', 'quest',
+    # 2 quest acts per quest (Composition Layer §1.E precedent — at least one
+    # act per quest with predicate for transition gating). v0 ships 2 acts per
+    # quest to keep card count tight; operator can /bootstrap skip extras.
+    'quest_act', 'quest_act',
+    # 2 locations beyond starting location
+    'location', 'location',
+)
+# Total: 11 cards. Operator can /bootstrap skip any or /bootstrap end early.
+# Card counts tunable post-playtest per spec §1.D.
+
+
+BOOTSTRAP_CARD_TYPES = (
+    'faction', 'npc_dispatcher', 'quest', 'quest_act', 'location',
+)
+
+
+# ─────────────────────────────────────────────────────────
+# Corpus signal substrate (R5 mapping; hand-curated from findings)
+# Per spec §5 + R5 — fixed-constant strings injected into bot directive's
+# prompt as `=== CORPUS SIGNAL ===` block. NO live corpus pull at v0.
+# ─────────────────────────────────────────────────────────
+
+_BOOTSTRAP_SIGNAL_FACTION = (
+    "From CRD3 corpus findings: factions express pressure through temporal "
+    "framings ('by week's end', 'before the festival', 'until the eclipse'). "
+    "Faction-action manifestations track to encounter-cadence triggers: "
+    "NPC-hostility transitions (~36% of player_action_escalation events) "
+    "and environmental materialization. Factions move the world between "
+    "compression boundaries — location departures and scene retirements often "
+    "correlate with faction-state shifts. Author a faction with a goal short "
+    "enough to fit in one sentence, a pressure that names what's pushing them, "
+    "and engagement signals that hint at how their action would show up in play."
+)
+
+_BOOTSTRAP_SIGNAL_NPC = (
+    "From CRD3 corpus findings (Loot/Reward, NPC-voice routing 36.8%): NPCs "
+    "are the primary quest-offer voicers in real-DM play. A dispatcher NPC "
+    "should feel like a person who would plausibly hand the party an ask — a "
+    "guild master, a village herald, a worried priest, a scarred merchant. "
+    "First-impression details (voice quirk, calloused hands, a half-finished "
+    "tankard) carry the character forward better than catalogued stats. "
+    "Pronouns belong in the first sentence of the description per N-10 §11.9 "
+    "(N-4 anti-drift rail ships later)."
+)
+
+_BOOTSTRAP_SIGNAL_QUEST = (
+    "From CRD3 corpus findings (Loot/Reward): quest rewards cluster at "
+    "structured magnitudes — coin (gp/sp/cp), faction reputation tokens, "
+    "named items. Reward magnitudes scale with quest scope: patrol-level "
+    "(~25-50gp + reputation token), exploration-level (~75-150gp + named "
+    "item), arc-anchor (~200-500gp + faction favor + named item or boon). "
+    "Rewards arrive after tension — the quest's payoff lands when the risk "
+    "has been earned, not before. Author summary in DM-prose; structure the "
+    "reward_summary as 'Ngp + faction reputation + named item' so the "
+    "engine-side parser can split it for inventory auto-add."
+)
+
+_BOOTSTRAP_SIGNAL_QUEST_ACT = (
+    "From CRD3 corpus findings (Encounter Cadence + Compression Cadence): "
+    "quest acts often align with combat-cadence beats — an early-act "
+    "exploration phase, a mid-act tension or encounter phase, a late-act "
+    "resolution. Act boundaries match compression boundaries (scene "
+    "retirements, location departures, NPC dismissals). Transition predicates "
+    "at v0 use a narrow vocabulary: scene_count_threshold (an integer of "
+    "scenes elapsed in the current act) and location_name (presence at a "
+    "specific location triggers the next act). Author act descriptions short "
+    "enough to fit in one sentence; let the predicate carry the transition "
+    "logic."
+)
+
+_BOOTSTRAP_SIGNAL_LOCATION = (
+    "From CRD3 corpus findings (Time-Mention): locations carry time-of-day "
+    "flavor that grounds narration ('amber lanterns of evening', 'mist-curled "
+    "morning stones'). A location description should evoke one or two sensory "
+    "anchors a player would notice on arrival. Parent_location_name lets you "
+    "nest places hierarchically (a tavern inside a town); use it when the "
+    "place is contained-within rather than adjacent-to."
+)
+
+_BOOTSTRAP_CORPUS_SIGNAL_BY_TYPE = {
+    'faction':         _BOOTSTRAP_SIGNAL_FACTION,
+    'npc_dispatcher':  _BOOTSTRAP_SIGNAL_NPC,
+    'quest':           _BOOTSTRAP_SIGNAL_QUEST,
+    'quest_act':       _BOOTSTRAP_SIGNAL_QUEST_ACT,
+    'location':        _BOOTSTRAP_SIGNAL_LOCATION,
+}
+
+
+# ─────────────────────────────────────────────────────────
+# Per-card-type JSON schema spec rendered into the LLM directive
+# ─────────────────────────────────────────────────────────
+
+_BOOTSTRAP_SCHEMA_BY_TYPE = {
+    'faction': (
+        'Required JSON shape:\n'
+        '{\n'
+        '  "name": "<≤80 chars>",\n'
+        '  "goal": "<one sentence, ≤200 chars>",\n'
+        '  "pressure_shape": "<≤120 chars — what\'s pushing them>",\n'
+        '  "engagement_signals": "<≤200 chars — how their action shows up>",\n'
+        '  "description": "<≤300 chars optional descriptive prose>",\n'
+        '  "type": "<short type tag, e.g. \'guild\', \'cult\', \'merchants\'>",\n'
+        '  "justification": "<ONE sentence explaining how this fits the premise>"\n'
+        '}'
+    ),
+    'npc_dispatcher': (
+        'Required JSON shape:\n'
+        '{\n'
+        '  "canonical_name": "<≤80 chars>",\n'
+        '  "role": "<≤60 chars role label, e.g. \'guild master\'>",\n'
+        '  "pronouns": "<≤30 chars, e.g. \'she/her\', \'they/them\'>",\n'
+        '  "description": "<≤500 chars; MUST include pronouns in first sentence>",\n'
+        '  "location_name": "<≤80 chars; may match an approved location OR null>",\n'
+        '  "associated_faction_name": "<≤80 chars; must match a prior approved faction OR null>",\n'
+        '  "justification": "<ONE sentence explaining how this NPC fits the premise>"\n'
+        '}'
+    ),
+    'quest': (
+        'Required JSON shape:\n'
+        '{\n'
+        '  "title": "<≤100 chars>",\n'
+        '  "summary": "<≤500 chars DM-prose; the ask>",\n'
+        '  "offer_npc_name": "<≤80 chars; MUST match a prior approved NPC>",\n'
+        '  "reward_summary": "<≤200 chars; structured shape preferred: '
+        '\'50gp + Stoneforge reputation + silver dagger\'>",\n'
+        '  "associated_faction_name": "<≤80 chars; OR null if independent>",\n'
+        '  "justification": "<ONE sentence explaining how this quest fits the premise>"\n'
+        '}'
+    ),
+    'quest_act': (
+        'Required JSON shape:\n'
+        '{\n'
+        '  "quest_title": "<≤100 chars; MUST match a prior approved quest>",\n'
+        '  "act_index": <1-based integer, sequential within the quest>,\n'
+        '  "act_title": "<≤100 chars>",\n'
+        '  "act_description": "<≤500 chars; what this act covers>",\n'
+        '  "transition_predicate": {\n'
+        '    "scene_count_threshold": <integer, optional>,\n'
+        '    "location_name": "<location name, optional>"\n'
+        '  },\n'
+        '  "justification": "<ONE sentence explaining how this act fits the quest>"\n'
+        '}'
+    ),
+    'location': (
+        'Required JSON shape:\n'
+        '{\n'
+        '  "canonical_name": "<≤80 chars>",\n'
+        '  "type": "<≤60 chars, e.g. \'town\', \'tavern\', \'forest\', \'ruin\'>",\n'
+        '  "parent_location_name": "<≤80 chars; must match prior approved location OR null>",\n'
+        '  "description": "<≤500 chars; sensory + atmospheric>",\n'
+        '  "starting_location": <boolean, true iff this is where the party begins>,\n'
+        '  "justification": "<ONE sentence explaining how this location fits the premise>"\n'
+        '}'
+    ),
+}
+
+
+BOOTSTRAP_SYSTEM_PROMPT = (
+    "You are the canon-bootstrap assistant for a Dungeons & Dragons 5e "
+    "campaign. The DM has given you a premise; your job is to propose ONE "
+    "structured canon element at a time, matching the schema for the "
+    "current card type.\n"
+    "\n"
+    "Output ONLY a JSON object matching the requested schema — no prose, "
+    "no markdown fence, no explanation outside the JSON. Field values are "
+    "operator-readable prose (plain text, no Markdown decoration inside).\n"
+    "\n"
+    "HARD CONSTRAINTS:\n"
+    "- Element name MUST NOT duplicate any prior-approved name (case-"
+    "insensitive). Re-using a name is a fatal error.\n"
+    "- FK references (offer_npc_name, parent_location_name, quest_title, "
+    "associated_faction_name) MUST match a prior-approved canon element OR "
+    "be null.\n"
+    "- Stay consistent with the premise and prior-approved canon. Don't "
+    "introduce contradictions.\n"
+    "- The justification field is ONE sentence explaining how this element "
+    "fits the premise. No paragraphs.\n"
+)
+
+
+# ─────────────────────────────────────────────────────────
+# §59 sibling #16 — compute_bootstrap_sequence_directive (pure)
+# ─────────────────────────────────────────────────────────
+
+def compute_bootstrap_sequence_directive(bootstrap_state: dict) -> tuple:
+    """Decide which card type fires next based on bootstrap session state.
+
+    Pure function over bootstrap_state. No DB reads, no LLM call.
+
+    Returns:
+        (next_card_type: str | None, signals: dict)
+
+    next_card_type is None when the sequence is exhausted (session complete).
+    signals carries telemetry per §59 contract (always-fire log line in caller).
+
+    Per §11.11 LOCKED — sequence is factions → NPCs → quests → acts →
+    locations, fixed at BOOTSTRAP_CARD_SEQUENCE_V0.
+    """
+    plan = bootstrap_state.get('sequence_plan') or list(BOOTSTRAP_CARD_SEQUENCE_V0)
+    pointer = int(bootstrap_state.get('sequence_pointer') or 0)
+
+    if pointer >= len(plan):
+        signals = {
+            'fired': 0,
+            'sequence_index': pointer,
+            'sequence_total': len(plan),
+            'remaining_in_sequence': 0,
+            'reason': 'sequence_exhausted',
+        }
+        return (None, signals)
+
+    card_type = plan[pointer]
+    if card_type not in BOOTSTRAP_CARD_TYPES:
+        signals = {
+            'fired': 0,
+            'sequence_index': pointer,
+            'sequence_total': len(plan),
+            'remaining_in_sequence': max(0, len(plan) - pointer),
+            'reason': f'invalid_card_type:{card_type}',
+        }
+        return (None, signals)
+
+    signals = {
+        'fired': 1,
+        'card_type': card_type,
+        'sequence_index': pointer,
+        'sequence_total': len(plan),
+        'remaining_in_sequence': max(0, len(plan) - pointer - 1),
+        'reason': 'ok',
+    }
+    return (card_type, signals)
+
+
+def bootstrap_sequence_log_summary(signals: dict) -> str:
+    """Compact telemetry per §59 always-fire contract."""
+    if not signals:
+        return "bootstrap_sequence: fired=0 reason=no_signals"
+    return (
+        f"bootstrap_sequence: fired={signals.get('fired', 0)} "
+        f"card_type={signals.get('card_type', 'none')} "
+        f"index={signals.get('sequence_index', '?')} "
+        f"total={signals.get('sequence_total', '?')} "
+        f"remaining={signals.get('remaining_in_sequence', '?')} "
+        f"reason={signals.get('reason', 'unknown')}"
+    )
+
+
+# ─────────────────────────────────────────────────────────
+# §59 sibling #17 — compute_bootstrap_card_directive (LLM call)
+# §1b sixth-instance — bot proposes via #dm-aside, deterministic validator,
+# DM approves via /bootstrap accept slash, engine writes via existing
+# §17 single-writers (npc_upsert, quest_add, quest_act_upsert,
+# location_upsert) + skeleton_md_append_element.
+# ─────────────────────────────────────────────────────────
+
+def _format_approved_summary(approved_elements: list) -> str:
+    """Render prior-approved elements as compact context for the LLM prompt."""
+    if not approved_elements:
+        return (
+            "Factions: (none)\n"
+            "NPCs: (none)\n"
+            "Quests: (none)\n"
+            "Acts: (none)\n"
+            "Locations: (none)"
+        )
+    by_type = {
+        'faction': [], 'npc_dispatcher': [], 'quest': [],
+        'quest_act': [], 'location': [],
+    }
+    for el in approved_elements:
+        t = el.get('card_type')
+        fields = el.get('fields') or {}
+        name = (fields.get('name') or fields.get('canonical_name')
+                or fields.get('title') or '<unnamed>')
+        if t == 'faction':
+            by_type['faction'].append(name)
+        elif t == 'npc_dispatcher':
+            role = fields.get('role') or ''
+            by_type['npc_dispatcher'].append(f"{name} ({role})" if role else name)
+        elif t == 'quest':
+            offer = fields.get('offer_npc_name') or '?'
+            by_type['quest'].append(f"{name} (offered by {offer})")
+        elif t == 'quest_act':
+            quest = fields.get('quest_title') or '?'
+            idx = fields.get('act_index') or '?'
+            by_type['quest_act'].append(f"\"{quest}\" Act {idx}: {name}")
+        elif t == 'location':
+            by_type['location'].append(name)
+    def line(label, items):
+        return f"{label}: {', '.join(items) if items else '(none)'}"
+    return "\n".join([
+        line("Factions", by_type['faction']),
+        line("NPCs", by_type['npc_dispatcher']),
+        line("Quests", by_type['quest']),
+        line("Acts", by_type['quest_act']),
+        line("Locations", by_type['location']),
+    ])
+
+
+def _validate_proposal(card_type: str, fields: dict,
+                        approved_elements: list) -> tuple[bool, str]:
+    """Deterministic validator per §1b suggester pattern. Confirms the
+    LLM-output proposal is safe to dispatch as a card.
+
+    Returns (ok, reason). reason is empty on success.
+    """
+    if not isinstance(fields, dict):
+        return False, f"fields_not_dict:{type(fields).__name__}"
+
+    # Required field per card type
+    required = {
+        'faction':         ('name', 'goal', 'pressure_shape', 'engagement_signals'),
+        'npc_dispatcher':  ('canonical_name', 'role', 'pronouns', 'description'),
+        'quest':           ('title', 'summary', 'offer_npc_name', 'reward_summary'),
+        'quest_act':       ('quest_title', 'act_index', 'act_title', 'act_description'),
+        'location':        ('canonical_name', 'description'),
+    }
+    for key in required.get(card_type, ()):
+        val = fields.get(key)
+        if val is None or (isinstance(val, str) and not val.strip()):
+            return False, f"missing_field:{key}"
+
+    # Length caps (bounded; per spec §5)
+    caps = {
+        'name': 80, 'canonical_name': 80, 'title': 100, 'quest_title': 100,
+        'act_title': 100, 'role': 60, 'pronouns': 30, 'type': 60,
+        'goal': 200, 'pressure_shape': 120, 'engagement_signals': 200,
+        'description': 500, 'summary': 500, 'act_description': 500,
+        'reward_summary': 200, 'location_name': 80,
+        'associated_faction_name': 80, 'parent_location_name': 80,
+        'justification': 400,
+    }
+    for key, cap in caps.items():
+        val = fields.get(key)
+        if isinstance(val, str) and len(val) > cap:
+            return False, f"field_too_long:{key}({len(val)}>{cap})"
+
+    # Name uniqueness within session (case-insensitive)
+    name_field = (
+        fields.get('name') or fields.get('canonical_name')
+        or fields.get('title') or ''
+    ).strip().lower()
+    for el in approved_elements:
+        if el.get('card_type') != card_type:
+            continue
+        prior_fields = el.get('fields') or {}
+        prior = (prior_fields.get('name') or prior_fields.get('canonical_name')
+                 or prior_fields.get('title') or '').strip().lower()
+        if prior and prior == name_field:
+            return False, f"duplicate_name:{name_field}"
+
+    # FK existence: any field that references a prior approved element must
+    # match one (or be null).
+    fk_checks = []
+    if card_type == 'npc_dispatcher':
+        loc_ref = (fields.get('location_name') or '').strip()
+        if loc_ref:
+            fk_checks.append(('location', loc_ref))
+        fac_ref = (fields.get('associated_faction_name') or '').strip()
+        if fac_ref:
+            fk_checks.append(('faction', fac_ref))
+    elif card_type == 'quest':
+        npc_ref = (fields.get('offer_npc_name') or '').strip()
+        if npc_ref:
+            fk_checks.append(('npc_dispatcher', npc_ref))
+        else:
+            return False, 'missing_field:offer_npc_name'
+        fac_ref = (fields.get('associated_faction_name') or '').strip()
+        if fac_ref:
+            fk_checks.append(('faction', fac_ref))
+    elif card_type == 'quest_act':
+        quest_ref = (fields.get('quest_title') or '').strip()
+        if quest_ref:
+            fk_checks.append(('quest', quest_ref))
+        # Validate act_index is positive int
+        try:
+            idx = int(fields.get('act_index'))
+            if idx < 1:
+                return False, f"act_index_not_positive:{idx}"
+        except (TypeError, ValueError):
+            return False, 'act_index_not_integer'
+    elif card_type == 'location':
+        par_ref = (fields.get('parent_location_name') or '').strip()
+        if par_ref:
+            fk_checks.append(('location', par_ref))
+
+    for fk_type, fk_name in fk_checks:
+        fk_target = fk_name.strip().lower()
+        found = False
+        for el in approved_elements:
+            if el.get('card_type') != fk_type:
+                continue
+            prior_fields = el.get('fields') or {}
+            prior = (prior_fields.get('name') or prior_fields.get('canonical_name')
+                     or prior_fields.get('title') or '').strip().lower()
+            if prior == fk_target:
+                found = True
+                break
+        if not found:
+            return False, f"fk_unresolved:{fk_type}:{fk_name}"
+
+    return True, ''
+
+
+def _extract_json_object(text: str):
+    """Pull a JSON object out of LLM output. Returns dict | None."""
+    import json
+    import re as _re
+    body = (text or "").strip()
+    if body.startswith("```"):
+        body = _re.sub(r"^```(?:json)?\s*", "", body)
+        body = _re.sub(r"\s*```$", "", body)
+    m = _re.search(r"\{.*\}", body, _re.DOTALL)
+    if not m:
+        return None
+    try:
+        parsed = json.loads(m.group(0))
+    except (json.JSONDecodeError, ValueError):
+        return None
+    if not isinstance(parsed, dict):
+        return None
+    return parsed
+
+
+def _extract_prior_archetype_hint(prior_proposal: dict | None,
+                                    card_type: str) -> str:
+    """N-10 v0.1 patch — cheap heuristic to extract archetype from the prior
+    rejected proposal so the reroll prompt can ask for a meaningfully
+    different shape (not just renamed-same-archetype).
+
+    Per playtest evidence (post-N-10 ship, 2026-05-14): operator rerolled
+    NPC card three times and got Gorin → Gorm → Gundrik — same dwarf-miner
+    archetype with mild name variation. Hint anchors "do something different."
+
+    Returns an empty string when no prior proposal exists or no archetype
+    signal can be extracted.
+    """
+    if not prior_proposal:
+        return ''
+    fields = prior_proposal.get('fields') or {}
+    if card_type == 'npc_dispatcher':
+        role = (fields.get('role') or '').strip()
+        prior_name = (fields.get('canonical_name')
+                      or fields.get('name') or '').strip()
+        if role:
+            return (f"Previous draft used the role '{role}'"
+                    + (f" (name '{prior_name}')" if prior_name else '')
+                    + ". Generate a meaningfully DIFFERENT archetype this "
+                      "time — different role, different background, different "
+                      "cultural origin or species if applicable. The operator "
+                      "rejected the prior shape, not just the prior details.")
+    elif card_type == 'faction':
+        ftype = (fields.get('type') or '').strip()
+        prior_name = (fields.get('name') or '').strip()
+        if ftype or prior_name:
+            return (f"Previous draft proposed a '{ftype or 'unspecified'}' "
+                    f"faction"
+                    + (f" called '{prior_name}'" if prior_name else '')
+                    + ". Try a different faction shape — different type, "
+                      "different goal-flavor, different cultural axis.")
+    elif card_type == 'quest':
+        prior_title = (fields.get('title') or '').strip()
+        if prior_title:
+            return (f"Previous draft was titled '{prior_title}'. Try a "
+                    "meaningfully different quest shape — different verb "
+                    "(investigate vs escort vs ambush vs deliver), different "
+                    "stakes scale, different solution path.")
+    elif card_type == 'quest_act':
+        prior_title = (fields.get('act_title') or '').strip()
+        if prior_title:
+            return (f"Previous draft act was '{prior_title}'. Try a "
+                    "meaningfully different beat — different mode "
+                    "(exploration / combat / social), different escalation.")
+    elif card_type == 'location':
+        ltype = (fields.get('type') or '').strip()
+        prior_name = (fields.get('canonical_name')
+                      or fields.get('name') or '').strip()
+        if ltype:
+            return (f"Previous draft was a '{ltype}'"
+                    + (f" called '{prior_name}'" if prior_name else '')
+                    + ". Try a different location type — different scale, "
+                      "different cultural context.")
+    return ''
+
+
+def compute_bootstrap_card_directive(bootstrap_state: dict, card_type: str,
+                                       campaign_data: dict,
+                                       reroll_hint: str = '',
+                                       prior_proposal: dict | None = None) -> tuple:
+    """Generate a card proposal for the bootstrap session.
+
+    Inputs:
+      bootstrap_state: {
+        'premise': str,
+        'sequence_pointer': int,
+        'sequence_plan': list[str],
+        'approved_elements': list[dict],  # each {card_type, fields, justification}
+      }
+      card_type: one of BOOTSTRAP_CARD_TYPES
+      campaign_data: {'id': int, 'name': str, ...}
+      reroll_hint: optional string appended to prompt on /bootstrap reroll
+
+    Returns:
+      (proposal: dict | None, signals: dict)
+
+    proposal shape: {'card_type', 'fields', 'justification'} or None on
+    LLM error / validation failure.
+
+    Soft-fail per §59 — on LLM error, returns (None, signals_with_reason).
+    Caller dispatches a [BOOTSTRAP CARD ERROR] aside on None per spec §4.1.
+    """
+    started = time.monotonic()
+    signals = {
+        'fired': 0,
+        'card_type': card_type,
+        'sequence_index': bootstrap_state.get('sequence_pointer'),
+        'approved_count': len(bootstrap_state.get('approved_elements') or []),
+        'reroll_count': int(bootstrap_state.get('rerolls_for_current') or 0),
+        'llm_latency_ms': 0,
+        'reason': 'unknown',
+        'chars': 0,
+    }
+
+    if card_type not in BOOTSTRAP_CARD_TYPES:
+        signals['reason'] = f'invalid_card_type:{card_type}'
+        return (None, signals)
+
+    premise = (bootstrap_state.get('premise') or '').strip()
+    if not premise:
+        signals['reason'] = 'no_premise'
+        return (None, signals)
+
+    schema = _BOOTSTRAP_SCHEMA_BY_TYPE.get(card_type, '')
+    corpus_signal = _BOOTSTRAP_CORPUS_SIGNAL_BY_TYPE.get(card_type, '')
+    approved_summary = _format_approved_summary(
+        bootstrap_state.get('approved_elements') or []
+    )
+
+    reroll_block = ''
+    archetype_hint = ''
+    if reroll_hint or signals['reroll_count'] > 0 or prior_proposal:
+        # N-10 v0.1 — extract prior-archetype anchor so the reroll prompt
+        # produces a meaningfully different shape (not renamed-same-archetype).
+        archetype_hint = _extract_prior_archetype_hint(prior_proposal, card_type)
+        signals['prior_archetype_hint'] = bool(archetype_hint)
+        reroll_block = (
+            "\n\n=== REROLL HINT ===\n"
+            "The operator rejected the previous proposal for this card and "
+            "wants a different shape. Produce a meaningfully distinct proposal — "
+            "different name, different angle, fresh tonal note. Do not repeat "
+            "the prior draft.\n"
+            + (archetype_hint + "\n" if archetype_hint else '')
+            + (reroll_hint.strip() + "\n" if reroll_hint else '')
+        )
+
+    user_prompt = (
+        f"=== CAMPAIGN PREMISE ===\n{premise}\n\n"
+        f"=== APPROVED CANON SO FAR ===\n{approved_summary}\n\n"
+        f"=== CORPUS SIGNAL ===\n{corpus_signal}\n\n"
+        f"=== CARD TYPE ===\n{card_type}\n\n"
+        f"=== TASK ===\n"
+        f"Propose ONE {card_type} element consistent with the premise and "
+        f"prior-approved canon.\n\n"
+        f"{schema}"
+        f"{reroll_block}"
+    )
+
+    # Import lazily — keeps dnd_orchestration importable without cloud_router
+    # in test environments that stub the LLM call.
+    try:
+        from cloud_router import route
+    except Exception as e:
+        signals['reason'] = f'router_import_error:{e!r}'
+        signals['llm_latency_ms'] = int((time.monotonic() - started) * 1000)
+        return (None, signals)
+
+    raw_response = ""
+    try:
+        response, _provider = route(
+            messages=[{"role": "user", "content": user_prompt}],
+            task_type="extraction",
+            system_prompt=BOOTSTRAP_SYSTEM_PROMPT,
+        )
+        raw_response = response or ""
+    except Exception as e:
+        signals['reason'] = f'router_call_error:{e!r}'
+        signals['llm_latency_ms'] = int((time.monotonic() - started) * 1000)
+        return (None, signals)
+
+    signals['llm_latency_ms'] = int((time.monotonic() - started) * 1000)
+    signals['chars'] = len(raw_response)
+
+    parsed = _extract_json_object(raw_response)
+    if parsed is None:
+        signals['reason'] = 'parse_failed'
+        return (None, signals)
+
+    # Pull justification out separately
+    justification = (parsed.pop('justification', '') or '').strip()
+
+    ok, reason = _validate_proposal(card_type, parsed,
+                                     bootstrap_state.get('approved_elements') or [])
+    if not ok:
+        signals['reason'] = f'validation_failed:{reason}'
+        return (None, signals)
+
+    proposal = {
+        'card_type': card_type,
+        'fields': parsed,
+        'justification': justification,
+    }
+    signals['fired'] = 1
+    signals['reason'] = 'ok'
+    return (proposal, signals)
+
+
+def bootstrap_card_log_summary(signals: dict) -> str:
+    """Compact telemetry per §59 always-fire contract."""
+    if not signals:
+        return "bootstrap_card: fired=0 reason=no_signals"
+    return (
+        f"bootstrap_card_directive: fired={signals.get('fired', 0)} "
+        f"card_type={signals.get('card_type', 'none')} "
+        f"sequence_index={signals.get('sequence_index', '?')} "
+        f"approved_count={signals.get('approved_count', '?')} "
+        f"reroll_count={signals.get('reroll_count', 0)} "
+        f"prior_archetype_hint={1 if signals.get('prior_archetype_hint') else 0} "
+        f"chars={signals.get('chars', 0)} "
+        f"latency_ms={signals.get('llm_latency_ms', 0)} "
+        f"reason={signals.get('reason', 'unknown')}"
     )

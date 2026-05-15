@@ -33,6 +33,13 @@ Slash commands work in any channel. Player-facing commands respond ephemerally
 
 - `/advance [days] [phases] [set_phase]` — Manually advance the campaign clock (days and/or phases).
 - `/archived` — List archived (soft-deleted) campaigns for this server.
+- `/bootstrap accept` — Approve the current bootstrap card; write canon + advance.
+- `/bootstrap begin <premise>` — Open a bootstrap session from a 2-3 sentence premise.
+- `/bootstrap end` — Close the bootstrap session early; keep whatever's been approved.
+- `/bootstrap manual <overrides>` — Override one or more fields on the current card before accepting.
+- `/bootstrap reroll` — Regenerate the current card with a different shape (soft reroll, unlimited).
+- `/bootstrap skip` — Skip the current bootstrap card without writing canon; advance.
+- `/bootstrap status` — Show current bootstrap session progress.
 - `/campaigns` — List active and inactive campaigns. Use /archived to see archived ones.
 - `/clock create <name> <capacity>` — Create a new progress clock.
 - `/clock delete <name>` — Remove a clock entirely.
@@ -48,6 +55,7 @@ Slash commands work in any channel. Player-facing commands respond ephemerally
 - `/encounter <type>` — Start a stealth, social, or trap encounter (sets mode + spawns clocks).
 - `/giveitem <character> <item> [quantity]` — Give an item to a character.
 - `/hydrate <npc> <cr>` — Set NPC combat stats from a CR band.
+- `/loot <item> [quantity]` — Drop an item from the party stash (refuse auto-claimed loot).
 - `/mode <mode>` — Manually set the scene mode (combat/exploration/social/travel/downtime).
 - `/newcampaign <name> [tone]` — Start a new campaign for this server.
 - `/nudge <player>` — Prompt a player to act in-character.

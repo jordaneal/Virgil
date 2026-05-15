@@ -15,19 +15,18 @@ adjudication, and meaningful long-term memory.
 
   - **F-021** ✅ CLOSED S65 (2026-05-14) — `/play` slash command referenced undefined `seed` variable → NameError on
     every invocation. Patched via local var `_seed_text = scene or ''`; 6 smoke tests added including AST regression guard.
-  - **F-031** — `/quest deliver` calls `add_item(campaign, '', ...)` with empty character_name;
-    `add_item` returns 'invalid' silently; #dm-aside falsely reports items added. Quest rewards
-    are vapor. ~5-line fix.
-  - **F-035** — Combat loot surfaces in narration but never auto-claims into inventory; players
-    must manually claim each item via /giveitem. Most loot is forgotten. Auto-claim refactor.
+  - **F-031** ✅ CLOSED S66 (2026-05-14) — `/quest deliver` called `add_item(campaign, '', ...)` with empty character_name;
+    `add_item` returned 'invalid' silently; #dm-aside falsely reported items added. Patched via PARTY_STASH_BUCKET sentinel + truthful aside.
+  - **F-035** ✅ CLOSED S66 (2026-05-14) — Combat loot surfaced in narration but never auto-claimed.
+    Patched: `mark_loot_surfaced` now auto-claims structured items into party stash; `/loot drop <item>` refusal slash.
 
 ### Three structural risks that compound dangerously over six months:
 
-  - **F-026** — No SQLite WAL mode, no scheduled backup. One mount failure loses the campaign.
+  - **F-026** ✅ CLOSED S67 (2026-05-14) — No SQLite WAL mode, no scheduled backup. Patched: WAL pragma + nightly systemd timer + 30d retention + restore drill verified.
   - **F-013** — Chroma session corpus grows unbounded; long-campaign retrieval pollutes with stale
     matches. The "world remembers" promise erodes over months.
-  - **F-016** — `campaign.current_scene` is an uncovered §76 recursive-hallucination memory loop.
-    Ship 2 closed similar surfaces on dnd_scene_state but missed this one.
+  - **F-016** ✅ CLOSED S67 (2026-05-14) — `campaign.current_scene` was an uncovered §76 recursive-hallucination memory loop.
+    Patched: writes retired, prompt block deleted, `scene_blurb` reader redirected to `last_dm_response`. §76 audit also found 3 mitigated 4/4 surfaces; Phase C deferred to S67.1.
 
 ### Three multiplayer-collaboration blockers:
 
@@ -55,7 +54,7 @@ an otherwise-disciplined system. **Nothing here suggests "rewrite"; everything s
 
 ### Three-tier recommended ship sequence:
 
-  - **Sprint (3 days):** ~~F-021~~ (closed S65) + F-031 + F-035 + F-026 + F-016 — close the P0 surface.
+  - **Sprint (3 days):** ~~F-021~~ (closed S65) + ~~F-031~~ (closed S66) + ~~F-035~~ (closed S66) + ~~F-026~~ (closed S67) + ~~F-016~~ (closed S67) — **Tier 1 sprint COMPLETE.** Six P0 fixes shipped across S65→S65.1→S66→S67.
   - **Two weeks:** F-006 + ~~F-008~~ (closed S65.1) + F-025 + F-056 — multiplayer + advisory→binding + failure-bite.
   - **Quarter:** F-028 (factions) + F-036 (item metadata) + F-011 (consequence demotion) + X-001
     (directive registry) + X-006 (entity base class) — long-campaign integrity + extensibility.
@@ -360,7 +359,19 @@ Priority bucket of three levels (`urgent / normal / low`) doesn't help: long cam
 
 ---
 
-### F-016 — campaign.current_scene is an uncovered §76 recursive-hallucination memory loop [P0]
+### F-016 — campaign.current_scene is an uncovered §76 recursive-hallucination memory loop [P0] ✅ CLOSED S67 (2026-05-14)
+
+**STATUS: CLOSED.** Patched in S67 Fix 2 Phase B.
+- All 3 LLM-narration write sites retired: `_dm_respond_and_post` line 3451, `/play` line 4915, `init_end_buffer_reset` line 1687.
+- `=== CURRENT SCENE ===` prompt block deleted entirely from `build_dm_context` (the S44 combat-mode suppression is now generalized to all modes).
+- `scene_blurb` reader (knowledge_search query input) redirected to `last_dm_response[:200]`.
+- `update_scene` removed from `discord_dnd_bot.py` imports.
+- `current_scene` column preserved in schema for back-compat (cleanup deferred to post-Tier-1 schema sweep); `get_active_campaign` still returns the dict key but production code no longer reads it.
+- 15 adversarial verify tests assert AST/source/behavioral closure: zero `update_scene` call sites, no `=== CURRENT SCENE ===` in live code, `current_scene` stays empty across multi-turn flow.
+- See `planner-scratch/S67_handoff.md` §Fix 2 Phase B for full close shape + rollback procedure.
+- **§76 audit found 3 additional 4/4 surfaces** (consequences.summary, npcs.description fold, chroma DM-stores) all mitigated; Phase C closure HALTed per plan blast-radius budget → filed for S67.1. See `planner-scratch/S67_phase76_audit.md`.
+
+---
 
 **Issue.** `_dm_respond_and_post` (discord_dnd_bot.py:3426) writes `update_scene(campaign['id'], f"Last actions: {combined_action[:200]} | DM: {response[:200]}")` after every turn. `build_dm_context` reads this back as `=== CURRENT SCENE ===` (dnd_engine.py:6376). The four-property §76 test all pass: LLM-writable (the response content is the LLM's prior narration, persisted into current_scene), persisted (yes — `dnd_campaigns.current_scene` survives restarts), retrieved (yes — top-of-prompt-band), narratively inferential (yes — the LLM treats prior-narration self-summary as canonical scene framing).
 
@@ -558,7 +569,15 @@ Priority bucket of three levels (`urgent / normal / low`) doesn't help: long cam
 
 ---
 
-### F-026 — No WAL mode, no scheduled backup; six-month campaigns are one mount failure from gone [P0]
+### F-026 — No WAL mode, no scheduled backup; six-month campaigns are one mount failure from gone [P0] ✅ CLOSED S67 (2026-05-14)
+
+**STATUS: CLOSED.** Patched in S67 Fix 1.
+- **Phase A (WAL):** `dnd_engine.db_init` now sets `PRAGMA journal_mode=WAL` + `wal_autocheckpoint=1000` + `synchronous=NORMAL` at engine init. WAL mode is database-level (persists). Boot log emits `wal_init: journal_mode=wal ...` for verification.
+- **Phase B (scheduled backup):** `~/.config/systemd/user/virgil-backup.timer` fires nightly at 03:30 PDT (`OnCalendar=*-*-* 03:30:00 Persistent=true`). Service runs `scripts/virgil_backup.sh` which: (1) `sqlite3 .backup` (safe against live WAL DB), (2) `PRAGMA integrity_check` (fails non-zero on corruption), (3) 30-day rolling retention (preserves session preship snapshots), (4) background `push-all-to-pc.sh` (PC mirror within minutes via tailnet rsync). Manual snapshot verified live at S67 ship time.
+- **Phase C (restore drill):** drilled against a live nightly snapshot; integrity_check=ok, schema = 25 tables, spot-checks on dnd_campaigns/dnd_quests/dnd_scene_state all readable. Documented in `planner-scratch/restore_drill.md` (9-step procedure with fallback on schema mismatch).
+- See `planner-scratch/S67_handoff.md` §Fix 1 for full close shape + rollback procedure.
+
+---
 
 **Issue.** `DB_PATH = Path('/mnt/virgil_storage/virgil.db')` is a single SQLite file. No `PRAGMA journal_mode=WAL` set anywhere. No automated backup (crontab is empty). Manual backup via `push-all-to-pc.sh` rsync to PC over Tailnet — operator-triggered. The single archive in `/mnt/virgil_storage/archive/` is 16 days old. `lost+found` directory exists in storage root (filesystem has experienced fsck recovery in the past).
 
@@ -678,7 +697,17 @@ THE_GOAL: long campaigns and seamless multiplayer. Restart-induced ephemeral-los
 
 ---
 
-### F-031 — Quest delivery `_do_quest_deliver` silently fails to add items to inventory [P0 — CRITICAL]
+### F-031 — Quest delivery `_do_quest_deliver` silently fails to add items to inventory [P0 — CRITICAL] ✅ CLOSED S66 (2026-05-14)
+
+**STATUS: CLOSED.** Patched in S66 Fix 2.
+- `PARTY_STASH_BUCKET = '__party__'` sentinel constant introduced in `dnd_engine.py`.
+- `_do_quest_deliver` now passes the sentinel to `add_item` (not empty string).
+- `add_item` return value captured; success/failure rendered truthfully in `#dm-aside` via separate `inv_lines`/`inv_failed` arrays.
+- `/inventory` surfaces the party stash section alongside per-character inventories.
+- 28 adversarial verify tests assert: PARTY_STASH_BUCKET present, empty-string regression preserved (still returns 'invalid'), party-stash auto-claim succeeds, re-delivery increments, cross-campaign isolation, /loot drop removes from stash.
+- See `planner-scratch/S66_handoff.md` §Fix 2 for full close shape + rollback procedure.
+
+---
 
 **Issue.** `_do_quest_deliver` (discord_dnd_bot.py:5704) parses the quest's reward_summary into items and attempts to add them to inventory:
 ```python
@@ -789,7 +818,19 @@ The import check would have caught F-021's NameError at deploy time (NameError r
 
 ---
 
-### F-035 — Loot surfaces once in narration then evaporates; no auto-claim, no second chance [P0]
+### F-035 — Loot surfaces once in narration then evaporates; no auto-claim, no second chance [P0] ✅ CLOSED S66 (2026-05-14)
+
+**STATUS: CLOSED.** Patched in S66 Fix 3.
+- At `mark_loot_surfaced` time in `dm_respond`, each `dnd_loot_pending` row's `items` list is iterated and `add_item(PARTY_STASH_BUCKET, ...)` fires per item.
+- `compute_loot_directive` narration rewritten: items are auto-claimed by the engine; operator uses `/loot drop <item>` to refuse.
+- New `/loot drop` slash command with autocomplete from current party stash.
+- Coin (gp/sp/cp) is NOT auto-claimed into inventory — stays in `mechanical_hints.py`'s domain via `!game coin +Nxx` hints to Avrae.
+- `loot_auto_claimed` telemetry per-fire with creature + item + add_item_result.
+- 26 adversarial verify tests assert: structured combat loot auto-claims, coin stays out of inventory, empty-pending no-op, /loot drop removes correctly, cross-campaign isolation, double-combat handled cleanly.
+- LLM-narrative loot extraction (ad-hoc chest contents, found items) is filed as **N-5** follow-up (uses N-1 hint-extractor pattern); F-035 core (structured combat loot) is fully closed.
+- See `planner-scratch/S66_handoff.md` §Fix 3 for full close shape + rollback procedure.
+
+---
 
 **Issue.** The loot pipeline is: combatant dies → `enqueue_loot_for_defeats` writes to `dnd_loot_pending` → `compute_loot_directive` injects into next narration → `mark_loot_surfaced` flips `surfaced=1` after LLM call. **There is no auto-claim into inventory.** The loot directive body explicitly says "the player will use /giveitem or claim through narration" — but `/giveitem` requires the DM to remember and manually invoke it for each item, with the correct character name and item name.
 

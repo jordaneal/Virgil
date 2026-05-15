@@ -315,6 +315,20 @@ def db_init():
         # structural commands (/quest, /clock, /encounter, /companion, /mode)
         # without needing manage_guild — solves the solo-as-DM friction.
         conn.execute("ALTER TABLE dnd_campaigns ADD COLUMN created_by_user_id TEXT DEFAULT ''")
+    if 'premise' not in cols:
+        # N-10 Canon Bootstrap Bot v0 (§11.1 locked). Operator-written via
+        # `/bootstrap premise:"..."`. Rendered in build_dm_context at low-
+        # tactical-band placement (§11.6). Operator-written so §76 3/4 max —
+        # NOT LLM-writable. Single writer: `update_campaign_premise`.
+        conn.execute("ALTER TABLE dnd_campaigns ADD COLUMN premise TEXT DEFAULT ''")
+
+    # S68 N-4 — NPC pronoun lock. Anti-drift rail closes the gender-drift
+    # surface observed at S64 (baker gender flipped across turns). Locked
+    # on first-occurrence narration mention OR backfilled from existing
+    # description prose at engine init. Single writer: `npc_pronouns_set`.
+    npc_cols = [r[1] for r in conn.execute("PRAGMA table_info(dnd_npcs)").fetchall()]
+    if 'pronouns' not in npc_cols:
+        conn.execute("ALTER TABLE dnd_npcs ADD COLUMN pronouns TEXT DEFAULT ''")
 
     # Phase 6 (Session 15): identity reconciliation columns on dnd_characters.
     # canonical_name = canonicalize_actor_name(name) for cross-system matching.
@@ -838,11 +852,42 @@ def db_init():
     except Exception as _e:
         log(f"fk_cascade_init: error={_e!r}")
 
+    # S67 Fix 1A — WAL mode for crash durability and concurrent read/write.
+    # WAL is a database-level pragma (persists across connections, unlike
+    # foreign_keys which is per-connection). Set once at init; subsequent
+    # opens automatically use it. Survives bot SIGKILL: WAL recovery
+    # replays the journal on next open, no corruption.
+    try:
+        _wal_conn = sqlite3.connect(DB_PATH)
+        _new_mode = _wal_conn.execute(
+            "PRAGMA journal_mode=WAL"
+        ).fetchone()[0]
+        # Tune WAL for typical bot workload: small autocheckpoint keeps
+        # the WAL file from growing unbounded between vacuums.
+        _wal_conn.execute("PRAGMA wal_autocheckpoint=1000")
+        # Synchronous=NORMAL is the recommended pairing with WAL — full
+        # safety with materially lower fsync cost than FULL.
+        _wal_conn.execute("PRAGMA synchronous=NORMAL")
+        _wal_conn.close()
+        log(f"wal_init: journal_mode={_new_mode} "
+            f"wal_autocheckpoint=1000 synchronous=NORMAL")
+    except Exception as _e:
+        log(f"wal_init: error={_e!r}")
+
+    # S68 N-4 — one-shot backfill pass for dnd_npcs.pronouns. Idempotent:
+    # rows with non-empty pronouns skipped. Bootstrap-NPCs (N-10 v0.1) carry
+    # pronouns in first sentence of description by design; the extractor
+    # prioritizes first-sentence parse before broader scan.
+    try:
+        npc_pronouns_backfill_pass()
+    except Exception as _e:
+        log(f"npc_pronoun_backfill: error={_e!r}")
+
 
 def get_active_campaign(guild_id: str):
     conn = sqlite3.connect(DB_PATH)
     row = conn.execute(
-        "SELECT id, name, current_scene, world_notes, tone FROM dnd_campaigns "
+        "SELECT id, name, current_scene, world_notes, tone, premise FROM dnd_campaigns "
         "WHERE status='active' AND guild_id=? ORDER BY id DESC LIMIT 1",
         (guild_id,)
     ).fetchone()
@@ -852,9 +897,228 @@ def get_active_campaign(guild_id: str):
             'id': row[0], 'name': row[1],
             'current_scene': row[2], 'world_notes': row[3],
             'tone': row[4] or '',
+            'premise': row[5] or '',  # N-10: operator-written via /bootstrap
             'guild_id': guild_id
         }
     return None
+
+
+def update_campaign_premise(campaign_id: int, premise: str) -> bool:
+    """N-10 single writer for dnd_campaigns.premise (§17 + §11.1 lock).
+
+    Operator-written; LLM never writes here. Per §76 3/4 (operator-written,
+    persisted, retrieved by main prompt at low-tactical-band, narratively
+    inferential — but NOT LLM-writable, so 3/4 max, safe).
+
+    Returns True if a row was updated; False if no campaign matches.
+    """
+    if premise is None:
+        premise = ''
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        cur = conn.execute(
+            "UPDATE dnd_campaigns SET premise=? WHERE id=?",
+            (premise[:2000], campaign_id)
+        )
+        updated = cur.rowcount > 0
+        conn.commit()
+    finally:
+        conn.close()
+    if updated:
+        log(f"campaign_premise_set: campaign={campaign_id} chars={len(premise)}")
+    else:
+        log(f"campaign_premise_set: campaign={campaign_id} no_match")
+    return updated
+
+
+# ─────────────────────────────────────────────────────────
+# S68 N-4 — NPC pronoun lock
+# Anti-drift rail. Pronouns extracted from prose (backfill) or live narration
+# (lock-on-first-mention), then surfaced in NPCs IN CONTEXT block + held as
+# invariant in narration directive. Closes S64 baker-gender-drift surface.
+# §17 single writer for dnd_npcs.pronouns column.
+# ─────────────────────────────────────────────────────────
+
+# Pronoun signatures — order matters for first-occurrence wins.
+# Each tuple: (canonical_form, regex pattern matching any token in the set).
+# Canonical form is what gets stored + rendered (e.g., "she/her", "they/them").
+_PRONOUN_SETS = (
+    ('she/her',   re.compile(r"\b(she|her|hers|herself)\b", re.IGNORECASE)),
+    ('he/him',    re.compile(r"\b(he|him|his|himself)\b", re.IGNORECASE)),
+    ('they/them', re.compile(r"\b(they|them|their|theirs|themself|themselves)\b", re.IGNORECASE)),
+    ('xe/xem',    re.compile(r"\b(xe|xem|xyr|xyrs|xemself)\b", re.IGNORECASE)),
+    ('ze/hir',    re.compile(r"\b(ze|hir|hirs|hirself|zir|zirs)\b", re.IGNORECASE)),
+    ('it/its',    re.compile(r"\b(it|its|itself)\b", re.IGNORECASE)),
+)
+
+
+def extract_pronouns_from_text(text: str) -> tuple[str, list[str]]:
+    """N-4 — extract first-occurrence pronoun set from prose text.
+
+    Returns (canonical_pronouns, conflicts_detected) where:
+      canonical_pronouns: 'she/her' / 'he/him' / 'they/them' / ... / ''
+      conflicts_detected: list of additional pronoun-set forms also present
+        in the text (for `npc_pronoun_conflict:` warnings).
+
+    First-occurrence wins. Conflicts are reported but do NOT change the
+    locked value — the first signal in the text is canonical.
+    """
+    if not text or not isinstance(text, str):
+        return ('', [])
+
+    # Find earliest match position per pronoun set
+    earliest_pos = -1
+    canonical = ''
+    other_matches = []
+    for form, rx in _PRONOUN_SETS:
+        m = rx.search(text)
+        if not m:
+            continue
+        pos = m.start()
+        if earliest_pos == -1 or pos < earliest_pos:
+            if canonical:
+                other_matches.append(canonical)
+            earliest_pos = pos
+            canonical = form
+        else:
+            if form != canonical:
+                other_matches.append(form)
+    return (canonical, other_matches)
+
+
+def npc_pronouns_set(npc_id: int, pronouns: str) -> bool:
+    """N-4 §17 single writer for dnd_npcs.pronouns.
+
+    Returns True if a row was updated. First-occurrence wins per N-4 lock
+    semantics: the canonical pronoun set, once stored, is the locked
+    canonical reference. Caller's responsibility to only call when pronouns
+    is currently empty (idempotency at caller layer).
+    """
+    if not pronouns:
+        return False
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        cur = conn.execute(
+            "UPDATE dnd_npcs SET pronouns=? WHERE id=?",
+            (pronouns.strip()[:30], npc_id)
+        )
+        updated = cur.rowcount > 0
+        conn.commit()
+    finally:
+        conn.close()
+    return updated
+
+
+def npc_pronouns_get(npc_id: int) -> str:
+    """Read pronouns for an NPC. Returns '' if unset or row missing."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute(
+            "SELECT pronouns FROM dnd_npcs WHERE id=?",
+            (npc_id,)
+        ).fetchone()
+    finally:
+        conn.close()
+    if not row:
+        return ''
+    return (row[0] or '').strip()
+
+
+def npc_pronouns_backfill_pass() -> dict:
+    """N-4 Phase B — one-shot backfill at engine init.
+
+    Scans every dnd_npcs row with pronouns='' and attempts to extract
+    pronouns from the description's FIRST SENTENCE (per N-10 v0.1 forward-
+    coupling — bootstrap-NPCs author pronouns into first sentence by design).
+    Falls back to scanning the whole description if first-sentence parse
+    yields nothing. Idempotent: re-running on a row with non-empty pronouns
+    skips the row.
+
+    Returns telemetry dict: {scanned, locked, conflicts, skipped}.
+    Logs `npc_pronoun_locked:` per successful lock and `npc_pronoun_conflict:`
+    per ambiguous case.
+    """
+    stats = {'scanned': 0, 'locked': 0, 'conflicts': 0, 'skipped_empty': 0}
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            "SELECT id, campaign_id, canonical_name, description "
+            "FROM dnd_npcs WHERE pronouns IS NULL OR pronouns=''"
+        ).fetchall()
+    finally:
+        conn.close()
+
+    for r in rows:
+        stats['scanned'] += 1
+        desc = (r['description'] or '').strip()
+        if not desc:
+            stats['skipped_empty'] += 1
+            continue
+        # First-sentence parse priority (N-10 v0.1 forward-coupling)
+        first_sentence = desc.split('.', 1)[0]
+        canonical, conflicts = extract_pronouns_from_text(first_sentence)
+        if not canonical:
+            # Fall back to whole-description scan
+            canonical, conflicts = extract_pronouns_from_text(desc)
+        if not canonical:
+            stats['skipped_empty'] += 1
+            continue
+        ok = npc_pronouns_set(r['id'], canonical)
+        if ok:
+            stats['locked'] += 1
+            log(f"npc_pronoun_locked: campaign={r['campaign_id']} "
+                f"npc_id={r['id']} name={r['canonical_name']!r} "
+                f"pronouns={canonical!r} source=backfill")
+            if conflicts:
+                stats['conflicts'] += 1
+                log(f"npc_pronoun_conflict: campaign={r['campaign_id']} "
+                    f"npc_id={r['id']} name={r['canonical_name']!r} "
+                    f"locked={canonical!r} also_found={conflicts}")
+    if stats['scanned']:
+        log(f"npc_pronoun_backfill: scanned={stats['scanned']} "
+            f"locked={stats['locked']} conflicts={stats['conflicts']} "
+            f"skipped_empty={stats['skipped_empty']}")
+    return stats
+
+
+def is_bootstrap_complete(campaign_id: int) -> bool:
+    """N-10 §11.5 — bootstrap-complete detection signal.
+
+    Campaign is bootstrap-complete iff:
+      (a) `dnd_campaigns.premise` is non-empty, AND
+      (b) any skeleton_origin=1 row exists in dnd_npcs / dnd_quests /
+          dnd_quest_acts / dnd_locations for this campaign.
+
+    Either signal absent → not complete. Both present → complete; `/bootstrap`
+    re-run errors per §11.5. v1.x expansion-mode candidate is filed.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        # (a) premise non-empty
+        row = conn.execute(
+            "SELECT premise FROM dnd_campaigns WHERE id=?",
+            (campaign_id,)
+        ).fetchone()
+        if row is None:
+            return False
+        if not (row[0] or '').strip():
+            return False
+        # (b) any skeleton_origin=1 row in canon tables. dnd_quest_acts has
+        # no campaign_id column (joined via quest_id per Composition Layer
+        # v0 §1.C); we don't include it in the OR — a bootstrapped quest is
+        # the parent signal for any acts created under it.
+        counts = conn.execute(
+            "SELECT "
+            "(SELECT COUNT(*) FROM dnd_npcs WHERE campaign_id=? AND skeleton_origin=1) "
+            "+ (SELECT COUNT(*) FROM dnd_quests WHERE campaign_id=? AND skeleton_origin=1) "
+            "+ (SELECT COUNT(*) FROM dnd_locations WHERE campaign_id=? AND skeleton_origin=1)",
+            (campaign_id, campaign_id, campaign_id)
+        ).fetchone()
+        total = int(counts[0] or 0)
+        return total > 0
+    finally:
+        conn.close()
 
 
 def get_characters(campaign_id: int):
@@ -1662,7 +1926,10 @@ def reset_narrative_buffers_on_combat_exit(campaign_id: int) -> None:
     the rest-event path remains a candidate follow-up if drift surfaces
     there.
     """
-    update_scene(campaign_id, _INIT_END_CLOSEOUT_SCENE)
+    # S67 Fix 2 Phase B — current_scene sentinel write retired. The S45
+    # closeout-buffer-reset relies on last_dm_response + last_player_action
+    # to neutralize stale narrative context; the current_scene sentinel was
+    # redundant (no remaining readers post-Phase B).
     update_last_dm_response(campaign_id, _INIT_END_CLOSEOUT_DM)
     update_scene_state(campaign_id, last_player_action=_INIT_END_CLOSEOUT_PLAYER)
     log(f"init_end_buffer_reset: campaign={campaign_id}")
@@ -2444,6 +2711,14 @@ def _normalize_item_name(item_name: str) -> str:
     return ' '.join(item_name.lower().split())
 
 
+# S66 Fix 2 — party-stash sentinel. Quest-delivery rewards and other
+# party-shared items use this bucket instead of an individual character
+# name. Multiplayer-safe: doesn't arbitrarily pick "first bound player"
+# (per GPT 1/3 review concern). The double-underscore prefix prevents
+# collision with real PC names.
+PARTY_STASH_BUCKET = '__party__'
+
+
 def add_item(campaign_id: int, character_name: str, item_name: str,
              quantity: int = 1, metadata: str | None = None) -> dict:
     """Add `quantity` of `item_name` to (campaign, character)'s inventory.
@@ -2461,6 +2736,10 @@ def add_item(campaign_id: int, character_name: str, item_name: str,
 
     Single writer for inventory inserts + quantity-up. Refuses non-positive
     quantities (returns action='invalid' with quantity_now=None).
+
+    S66 Fix 2 — pass PARTY_STASH_BUCKET ('__party__') as character_name
+    for party-shared rewards (quest-delivery, loot auto-claim). The
+    sentinel is a regular non-empty string; no validation change needed.
     """
     if quantity is None or quantity <= 0:
         return {'item_name': _normalize_item_name(item_name),
@@ -3835,13 +4114,16 @@ def _npc_row_to_dict(row) -> dict:
         'init_mod':        row[17] if len(row) > 17 else None,
         'cr_str':          row[18] if len(row) > 18 else None,
         'avrae_source':    row[19] if len(row) > 19 else None,
+        # S68 N-4 pronoun lock — empty string when not yet locked.
+        'pronouns':        (row[20] if len(row) > 20 else None) or '',
     }
 
 
 _NPC_COLS = ("id, campaign_id, canonical_name, aliases, role, location_id, "
              "description, skeleton_origin, mention_count, origin_excerpt, "
              "first_mentioned, last_mentioned, "
-             "hp_max, ac, attack_bonus, damage_dice, save_bonus, init_mod, cr_str, avrae_source")
+             "hp_max, ac, attack_bonus, damage_dice, save_bonus, init_mod, cr_str, avrae_source, "
+             "pronouns")
 
 
 def npc_upsert(campaign_id: int, name: str, role: str = '',
@@ -4306,6 +4588,46 @@ def get_recently_active_npcs(campaign_id: int, limit: int = 6,
                 (campaign_id, int(location_id), max(1, int(limit)))
             ).fetchall()
         return [r[0] for r in rows if r and r[0]]
+    finally:
+        conn.close()
+
+
+def get_recently_active_npcs_detail(campaign_id: int, limit: int = 6,
+                                       location_id: int = None) -> list[dict]:
+    """S68 N-4 — return up to `limit` NPCs with canonical_name + pronouns.
+
+    Sibling of get_recently_active_npcs (which returns names only). Used by
+    build_dm_context to render the NPCs IN CONTEXT block with pronoun
+    annotations. Same ordering + location-filter semantics as the names-only
+    helper.
+
+    Returns list of dicts: [{'name': str, 'pronouns': str}, ...]. Pronouns
+    is '' when not yet locked; caller may choose to omit the annotation in
+    that case.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        if location_id is None:
+            rows = conn.execute(
+                "SELECT canonical_name, pronouns FROM dnd_npcs "
+                "WHERE campaign_id=? "
+                "ORDER BY last_mentioned DESC, id DESC "
+                "LIMIT ?",
+                (campaign_id, max(1, int(limit)))
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT canonical_name, pronouns FROM dnd_npcs "
+                "WHERE campaign_id=? AND location_id=? "
+                "ORDER BY last_mentioned DESC, id DESC "
+                "LIMIT ?",
+                (campaign_id, int(location_id), max(1, int(limit)))
+            ).fetchall()
+        return [
+            {'name': r['canonical_name'], 'pronouns': (r['pronouns'] or '').strip()}
+            for r in rows if r['canonical_name']
+        ]
     finally:
         conn.close()
 
@@ -6336,16 +6658,28 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
             log(f"npcs_in_context: campaign={campaign['id']} count=0 "
                 f"location_filtered=0 reason=combat_narration_suppressed")
         else:
-            recent_npcs = get_recently_active_npcs(
+            # S68 N-4 — render pronouns inline so the LLM has the canonical
+            # pronoun reference visible per NPC. Anti-drift rail (instruction-
+            # side) below references this block.
+            recent_npcs_detail = get_recently_active_npcs_detail(
                 campaign['id'], limit=6, location_id=_scope_loc
             )
+            recent_npcs = [d['name'] for d in recent_npcs_detail]
             log(f"npcs_in_context: campaign={campaign['id']} "
-                f"count={len(recent_npcs)} "
-                f"location_filtered={1 if _scope_loc else 0}")
-            recent_npcs_line = (
-                f"Recently active NPCs: {', '.join(recent_npcs)}\n"
-                if recent_npcs else ""
-            )
+                f"count={len(recent_npcs_detail)} "
+                f"location_filtered={1 if _scope_loc else 0} "
+                f"pronouns_locked={sum(1 for d in recent_npcs_detail if d['pronouns'])}")
+            if recent_npcs_detail:
+                annotated = [
+                    f"{d['name']} ({d['pronouns']})" if d['pronouns']
+                    else d['name']
+                    for d in recent_npcs_detail
+                ]
+                recent_npcs_line = (
+                    f"Recently active NPCs: {', '.join(annotated)}\n"
+                )
+            else:
+                recent_npcs_line = ""
         _loc_label = scene_state.get('location_label') or ''
         _loc_render = _loc_label if _loc_label else '(between locations)'
         # S51 — every-turn time signal. compute_time_directive only fires on
@@ -6397,24 +6731,34 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
         if companions_block:
             companions_section = f"\n\n{companions_block}"
 
-    # Ship S44 verify-pass-3: `=== CURRENT SCENE ===` carries
-    # `campaign.current_scene` which is a rolling-narration buffer written
-    # after every _dm_respond_and_post (discord_dnd_bot.py:2757 ish:
-    # `update_scene(campaign_id, f"Last actions: {combined_action[:200]} |
-    # DM: {response[:200]}")`). For combat narration triggers, this means
-    # the prior round's narration text is re-injected as "current scene
-    # context" on the next round-start — the residual stale-narrative bleed
-    # source surfaced in S44 verify-pass-3. Suppress entirely during combat
-    # narration; the authoritative scene state comes from the SCENE STATE
-    # block (Ship 2 canon) + the combat narration directive (transition
-    # context carries the roster).
-    current_scene_text = (
-        "" if suppress_for_combat_narration
-        else (campaign.get('current_scene') or 'The adventure is just beginning.')
-    )
-    current_scene_section = (
-        f"\n\n=== CURRENT SCENE ===\n{current_scene_text}"
-        if current_scene_text else ""
+    # S67 Fix 2 Phase B (F-016 close) — `=== CURRENT SCENE ===` block
+    # retired. Pre-S67, this block injected `campaign.current_scene` —
+    # a self-summarized rolling-narration buffer written every turn from
+    # the LLM's prior response. That was the unmitigated 4/4 §76
+    # contamination surface (LLM-writable + persisted + retrieved +
+    # narratively inferential, with NO rate-limit / similarity-gate
+    # mitigation). S44 verify-pass-3 already suppressed it for combat
+    # narration; S67 retires it across all modes. Scene-detail memory
+    # now flows via: (a) authoritative SCENE STATE block (structured
+    # fields), (b) chroma RELEVANT PAST EVENTS (distance-cutoff 0.5
+    # mitigated), (c) skeleton-loaded canon. The `current_scene` column
+    # stays in schema for now (cleanup deferred to post-Tier-1 schema
+    # sweep); no remaining readers in production.
+    current_scene_section = ""
+
+    # N-10 Canon Bootstrap Bot v0 (§11.6 LOCKED) — premise renders at
+    # low-tactical-band placement (between companions framing and
+    # operational state). Operator-written via `/bootstrap premise:"..."`;
+    # NOT LLM-writable (§17 single writer is `update_campaign_premise`).
+    # §76 audit: operator-written → 3/4 max, safe. Standing campaign-level
+    # framing for every narration call. Suppressed during combat-narration
+    # render (§77 information-side suppression — premise prose is
+    # storytelling-context, not combat-mechanical context).
+    _premise = (campaign.get('premise') or '').strip() if campaign else ''
+    premise_section = (
+        ""
+        if (suppress_for_combat_narration or not _premise)
+        else f"\n\n=== CAMPAIGN PREMISE ===\n{_premise}"
     )
 
     return f"""You are the Dungeon Master for a D&D 5th Edition campaign called "{campaign['name']}".{arbitration_section}{resolution_section}
@@ -6423,7 +6767,7 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
 {tone}
 
 === PARTY ===
-{char_summaries}{companions_section}{current_scene_section}{mode_block}{scene_state_section}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{active_quest_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}{scene_lifecycle_block}
+{char_summaries}{companions_section}{premise_section}{current_scene_section}{mode_block}{scene_state_section}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{active_quest_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}{scene_lifecycle_block}
 
 === HOW THIS GAME WORKS ===
 
@@ -6529,7 +6873,8 @@ These lines reflect state that already exists; they do not create it.
 6. PLAYER ATTEMPTS, NOT OUTCOMES. Players declare what they try; the world decides what happens. The player CANNOT author scene physics, NPC reactions, or success conditions through declaration alone.
    (a) OUTCOME DICTATION — If the player narrates the result of an uncertain action ("I take the steering wheel off and leave", "I pick the lock easily", "I convince him to help me"), treat the verbs as ATTEMPTS, not facts. The action's outcome is decided by the ROLL DIRECTIVE and the world, not by the player's wording. Never echo "you manage to" or "the action feels easy" or any phrase that grants success the directive did not authorize. If the directive says NO ROLL but the action is non-trivial, describe the friction (mechanical complexity, time required, who notices) rather than narrating a clean success.
    (b) IMPOSSIBLE ACTIONS — If the player declares a capability the character does not have ("I fly", "I teleport", "I cast a spell I don't know", "I one-shot the dragon"), do NOT silently rewrite the action into something plausible. Interrupt in narration: state directly that the character cannot do this, briefly explain why ("you have no means of flight"), and ask what they want to do instead. Do not invent a workaround for them.
-   (c) CONTRADICTING ESTABLISHED SCENE — If the player's declaration contradicts a fact already in scene state (door position, NPC location, object placement, environmental constraint), the SCENE WINS. Describe the friction the contradiction creates ("the door is on the rear-passenger side, not the driver's — you'd have to climb over the console") and let the player adapt. Do not rewrite the scene to match the player's assumption.{arbitration_hardstop_section}{resolution_hardstop_section}"""
+   (c) CONTRADICTING ESTABLISHED SCENE — If the player's declaration contradicts a fact already in scene state (door position, NPC location, object placement, environmental constraint), the SCENE WINS. Describe the friction the contradiction creates ("the door is on the rear-passenger side, not the driver's — you'd have to climb over the console") and let the player adapt. Do not rewrite the scene to match the player's assumption.
+7. NPC PRONOUN LOCK. NPCs in the "Recently active NPCs" line carry their canonical pronouns in parentheses (e.g., "Grahn (he/him)", "Lira (she/her)"). You MUST use ONLY the locked pronouns for each NPC throughout your response. If the line shows "Grahn (he/him)", use he/him/his for Grahn — never she/her, never they/them. Pronoun drift across turns is the failure mode this rule closes (S64 baker scenario: baker gender flipped across turns). When the parenthetical is absent, the NPC's pronouns are not yet locked — the first narration mention will set them; pick a pronoun set that fits the character and stay consistent for the rest of this turn.{arbitration_hardstop_section}{resolution_hardstop_section}"""
 
 
 def parse_auto_execute(response: str):
@@ -7188,7 +7533,13 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         log(f"dm_respond: time directive failed: {e}")
         time_text = ""
 
-    scene_blurb = (campaign.get('current_scene') or '')[:200]
+    # S67 Fix 2 Phase B — read redirect. Pre-S67 this pulled from
+    # `campaign.current_scene` (the closed contamination surface). The
+    # blurb feeds multi_query_knowledge_search for CRD3/FIREBALL exemplar
+    # retrieval (embedding query, not prompt prose) — fall back to
+    # `last_dm_response` which carries verbatim prior narration without
+    # the self-summary contamination layer.
+    scene_blurb = ((scene_state or {}).get('last_dm_response') or '')[:200]
     avrae_summary = ""
     if avrae_events:
         bits = []
@@ -7566,17 +7917,49 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         # re-fires. Marks happen regardless of whether the LLM actually
         # narrated the loot — it had the directive in the prompt; we don't
         # second-guess the narrative outcome.
+        #
+        # S66 Fix 3 (F-035 close) — at surface-and-clear time, ALSO
+        # auto-add each structured item to PARTY_STASH_BUCKET inventory.
+        # Pre-S66 the loot directive explicitly said "the player will use
+        # /giveitem or claim narratively" — but the DM rarely remembered,
+        # so 80% of loot evaporated. Now: default is YOU GET THE LOOT;
+        # operator uses `/loot drop <item>` (Fix 3C) to refuse.
+        # Coin (coin_amount/coin_denom) is NOT auto-claimed — that's
+        # Avrae's domain via `!game coin +Nxx` hints already emitted by
+        # mechanical_hints.py.
         if (loot_signals.get('fired')
                 and response and response.strip()
                 and pending_loot_rows):
             try:
                 surfaced_n = 0
+                auto_claimed_items = 0
                 for _row in pending_loot_rows:
                     rid = _row.get('id')
                     if rid is not None:
                         mark_loot_surfaced(rid)
                         surfaced_n += 1
-                log(f"loot_surfaced: campaign={campaign['id']} count={surfaced_n}")
+                    # Auto-claim items into party stash
+                    for item_name in (_row.get('items') or []):
+                        if not item_name or not item_name.strip():
+                            continue
+                        try:
+                            add_res = add_item(
+                                campaign['id'], PARTY_STASH_BUCKET,
+                                item_name.strip(), 1
+                            )
+                            action = (add_res or {}).get('action', 'unknown')
+                            log(f"loot_auto_claimed: campaign={campaign['id']} "
+                                f"creature={_row.get('creature')!r} "
+                                f"item={item_name!r} qty=1 "
+                                f"add_item_result={action}")
+                            if action in ('inserted', 'incremented'):
+                                auto_claimed_items += 1
+                        except Exception as ex_a:
+                            log(f"loot_auto_claimed: error "
+                                f"campaign={campaign['id']} "
+                                f"item={item_name!r} err={ex_a!r}")
+                log(f"loot_surfaced: campaign={campaign['id']} "
+                    f"count={surfaced_n} items_auto_claimed={auto_claimed_items}")
             except Exception as ex:
                 log(f"loot surface-and-clear error: {ex}")
         try:
