@@ -88,7 +88,7 @@ Four architectural primitives shipped between S52-S68 + N-10 post-S68.
 
 Eleven fixes shipped across four sessions (S65, S65.1, S66, S67). Front-door bugs, world-state-responds layer, durability + §76 audit. Standing practices adopted: pre-ship snapshot, per-fix rollback notes, sequential commits with atomic test verify, feature-disable switches.
 
-§76 audit at S67 surfaced 3 NEW 4/4 surfaces (consequences.summary, npcs.description fold, chroma DM-stores). Initial classification ("mitigated by promotion gates / distance cutoffs") was insufficient — Phase C HALTED, filed for S67.1. S72.1 audit re-classified under proposed 6-property test: S1+S2 mitigated (4/6 + 4-5/6), S3 6/6-full surface. **S72.2 closure shipped**: Path B-structural on chroma DM-stores (read-side filter `role='user'` only at `chroma_search`); §76 main entry promoted to formal 6-property framing; §76.1 (rate-unlimited write) + §76.2 (verbatim re-injection) anchored as formal sub-clauses. ROADMAP item 6 retired.
+§76 audit at S67 surfaced 3 NEW 4/4 surfaces (consequences.summary, npcs.description fold, chroma DM-stores) — mitigated by promotion gates / distance cutoffs. Phase C HALTED per blast-radius budget. Filed for S67.1 hygiene close.
 
 ### D&D-specific Inversion v0 application
 
@@ -105,11 +105,10 @@ Inversion v0 Phase 1 dispatched at S70; Phase 2 review pass at S71; Phase 3 impl
 The doctrine numbers are stable for cross-reference. Load-bearing across workloads:
 
 - **§1a** — LLM never decides binding state. Substrate-level invariant; surface varies per workload (slash + Avrae for D&D; slash + calendar/email API for butler; slash + form-submit for web).
-- **§1a.x** — Deterministic-gate authority via narration-detection (sub-numbered under §1a per §14.1 precedent). Closed-vocab parser producing high-confidence structured signal from narration is equivalent to operator-typed slash for §1a's binding-decision restriction. ANCHORED at S73 Inversion v0 Phase 3a (quest-acceptance narration-detection parser). Four prerequisites per DOCTRINE.md §1a.x.
-- **§1b** — Validated-suggester pattern. Substrate-level. Six anchored project instances post-S73 per DOCTRINE.md §1b running-list (Track 6 #5.1 → NPC State-Sync → Quest Layer v0.1 → Composition Layer v0 → N-10 Canon Bootstrap → Inversion v0 Phase 3a quest-acceptance narration-detection). The pattern generalizes to butler reminder/task proposals.
+- **§1b** — Validated-suggester pattern. Substrate-level. Six anchored project instances post-N-10; the pattern generalizes to butler reminder/task proposals.
 - **§17** — Single write paths per field. Substrate-level.
-- **§59** — Pure-function sibling pattern. Each `compute_*_directive` / `compute_*_suggester` / `render_*` / `build_*_context` / `compute_setup_plan` is a separable pure function. 23 instances at S72.1 audit (21 in `dnd_orchestration.py`, 1 in `dnd_engine.py` (`build_dm_context`), 1 in `discord_dnd_bot.py` (`compute_setup_plan` — S23 #3 first non-orchestration sibling)); D&D-specific application of substrate's pure-function discipline. Naming-convention drift surfaced at audit: `compute_*_directive` and `compute_*_suggester` dominate (directive emits prompt-block text + signal dict; suggester emits proposal candidate or None + signal dict); `render_*` siblings emit text + structural metadata (state-footer, resolution-block); `build_*_context` siblings assemble full prompt context from multiple inputs.
-- **§76** — Recursive-hallucination memory loop / 4-property contamination test (LLM-writable + persisted + retrieved + narratively-inferential) PLUS 6-property urgency test (§76.1 rate-unlimited write + §76.2 verbatim re-injection) for closure-shape classification. Substrate-level; applies anywhere LLM output writes to persisted retrievable state. **6-property test mandatory** for all 4/4 surface audits post-S72.2 (running 4-property test alone risks misclassifying 6/6 surfaces as mitigated). Four anchored project instances (S22/S32/S36/S39 → S67.1 cluster of three → S72.2 chroma closure).
+- **§59** — Pure-function sibling pattern. Each `compute_*_directive` is a separable pure function. 17 instances at S70; D&D-specific application of substrate's pure-function discipline.
+- **§76** — Four-property recursive-hallucination test. Substrate-level; applies anywhere LLM output writes to persisted retrievable state. Two new property candidates filed post-S67 audit (rate-unlimited write, verbatim re-injection).
 - **§77** — Atmospheric continuity (instruction-side enforcement). D&D-specific.
 - **§78** — Four-layer enforcement composition. D&D-specific to combat boundary handling.
 - **§F-59** — Bot→Avrae prohibition. D&D-specific; substrate-level generalization: bot doesn't auto-execute external-system mutations without operator approval.
@@ -185,10 +184,8 @@ None of this is committed architecture. Filing reflects the substrate's intended
 - Telegram butler operational (transitioned from OpenClaw)
 - virgildm.com operational (D&D bot onboarding)
 - Discord D&D bot operational with full F-54 motion-system stack
-- 23 §59 sibling instances (D&D workload; 21 in `dnd_orchestration.py` + 1 in `dnd_engine.py` + 1 in `discord_dnd_bot.py` — per S72.1 audit; quest-acceptance parser at S73 is closed-vocab parser, NOT §59 sibling shape)
-- 6 §1b anchored instances (substrate-level pattern, D&D applications; sixth instance = S73 Inversion v0 Phase 3a quest-acceptance narration-detection)
-- §1a.x anchored at S73 (deterministic-gate authority via narration-detection; sub-numbered extension per §14.1 precedent)
-- Inversion v0 Phase 3a shipped at S73: closed-vocab quest-acceptance parser + `#dm-aside` suggester card + `dnd_npc_commitments` schema (N-3.1 fold-in skeleton) + per-fire JSONL telemetry + feature-disable switch + 141 closed-loop tests green
+- 17 §59 sibling instances (D&D workload)
+- 6 §1b anchored instances (substrate-level pattern, D&D applications)
 - 8 new tables shipped post-mandate (D&D)
 - 47 slash commands per S70 Inversion Phase 1 recon (D&D; Inversion arc trimming this materially)
 - Tier 1 cleanup closed at S67

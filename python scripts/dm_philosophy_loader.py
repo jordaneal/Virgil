@@ -21,7 +21,10 @@ Priority placement:
   State outranks policy as input.
 
 File layout:
-  /home/jordaneal/scripts/dm_philosophy.md
+  /home/jordaneal/virgil-docs/DM_PHILOSOPHY.md
+  (Moved from ~/scripts/ at S73.5 — canonical now lives with the other
+  canon docs in ~/virgil-docs/, allowing PC push-docs to roundtrip
+  natively without symlinks or special-case routing.)
 
 Format:
   Free-form markdown. The whole file body is injected verbatim into the
@@ -42,7 +45,7 @@ from pathlib import Path
 from dnd_engine import log
 
 
-PHILOSOPHY_PATH = Path("/home/jordaneal/scripts/dm_philosophy.md")
+PHILOSOPHY_PATH = Path("/home/jordaneal/virgil-docs/DM_PHILOSOPHY.md")
 
 # Cap injection size — large philosophy docs would crowd out scene state
 # and history. 6000 chars matches skeleton's max_chars default. The doc

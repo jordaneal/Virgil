@@ -18,7 +18,7 @@ Both ends of the tailnet sync. PC is the archive/work surface; server is the can
 │   ├── *.sh                          # ops scripts (push-all-to-pc.sh, sentinel.sh, deploy.sh,
 │   │                                 #   data_cache.sh, cleanup_for_avrae.sh)
 │   ├── test_*.py / calibrate_*.py    # green-test + calibration files (~40 files)
-│   ├── dm_philosophy.md              # canonical source — symlinked from ../virgil-docs/
+│   │                                 # (DM_PHILOSOPHY.md formerly lived here; moved to ../virgil-docs/ at S73.5 so it roundtrips via push-docs like every other canon doc)
 │   ├── campaigns/<id>/skeleton.md    # per-campaign authored canon
 │   └── .env                          # secrets — NEVER push, NEVER commit
 │
@@ -26,7 +26,7 @@ Both ends of the tailnet sync. PC is the archive/work surface; server is the can
 │   ├── (root .md)                    # canon + active cycle + server-only (BUG_1_SPEC):
 │   │                                 #   THE_GOAL, WORKING_WITH_CLAUDE, VIRGIL_MASTER, DOCTRINE,
 │   │                                 #   FAILURES, ROADMAP, SESSIONS, WHY, COMMANDS, DIR (this file),
-│   │                                 #   dm_philosophy.md (SYMLINK -> ../scripts/dm_philosophy.md),
+│   │                                 #   DM_PHILOSOPHY.md (canonical here as of S73.5 — loader reads from virgil-docs/),
 │   │                                 #   tests-to-run-post-session.md, MULTIPLAYER_FIXES.md (active plan),
 │   │                                 #   S32_MULTIPLAYER_PLAYTEST_FINDINGS.md (active evidence),
 │   │                                 #   RESOLUTION_BINDING_SPEC.md (current ship, locked),
@@ -60,7 +60,7 @@ Both ends of the tailnet sync. PC is the archive/work surface; server is the can
 ```
 
 **Notes:**
-- `scripts/dm_philosophy.md` is the canonical source; `virgil-docs/dm_philosophy.md` is a symlink. PC has a regular-file copy in `text files/` which `push-docs` excludes (otherwise the symlink gets clobbered).
+- `virgil-docs/DM_PHILOSOPHY.md` is the canonical source — loaded by `dm_philosophy_loader.py` at every DM turn (mtime-cached). It roundtrips through `push-all-to-pc.sh` step 3 (downward) and `push-docs` (upward) like every other canon doc. No symlink, no special-case routing. (Originally `dm_philosophy.md` at `~/scripts/`; renamed ALL CAPS at S73.4; relocated to `~/virgil-docs/` at S73.5 to retire the cross-folder hybrid.)
 - `~/.env` and any campaign skeleton secrets must never be pushed via bulk sync. `push-all-to-pc.sh` routes by file pattern and doesn't touch `.env`.
 - `corpus_builder/locks/` and `corpus_builder/logs/` are server-side runtime state. `pull-corpus` excludes them.
 - `BUG_1_SPEC.md` is server-only by convention — it doesn't have a PC counterpart and isn't pushed.
@@ -77,7 +77,7 @@ Virgil Project/
 ├── text files/                       # canon + active cycle + server-only .md from ~/virgil-docs/ root
 │   │                                 #   (THE_GOAL, WORKING_WITH_CLAUDE, VIRGIL_MASTER, DOCTRINE,
 │   │                                 #   FAILURES, ROADMAP, SESSIONS, WHY, COMMANDS, DIR,
-│   │                                 #   dm_philosophy.md, tests-to-run-post-session.md,
+│   │                                 #   DM_PHILOSOPHY.md, tests-to-run-post-session.md,
 │   │                                 #   MULTIPLAYER_FIXES.md, S32_MULTIPLAYER_PLAYTEST_FINDINGS.md,
 │   │                                 #   MULTIPLAYER_VERIFY_DEFERRED.md)
 │   └── refs/                         # mirror of ~/virgil-docs/refs/
@@ -136,9 +136,8 @@ Virgil Project/
 - `~/scripts/*.py` (excl. test_/calibrate_) → `python scripts/`
 - `~/scripts/*.sh` → `shell scripts/`
 - `~/scripts/test_*.py` + `calibrate_*.py` → `calibration and test files/`
-- `~/scripts/dm_philosophy.md` → `text files/`
 - `~/scripts/campaigns/` → `campaigns/`
-- `~/virgil-docs/*.md` (root-level, excl. dm_philosophy.md, *_SPEC.md, *_REVIEW.md) → `text files/`  (step 3)
+- `~/virgil-docs/*.md` (root-level, excl. *_SPEC.md, *_REVIEW.md) → `text files/`  (step 3 — includes DM_PHILOSOPHY.md as of S73.5)
 - `~/virgil-docs/*_SPEC.md` + `*_REVIEW.md` (root-level only) → `specs/`  (step 3b — picks up BUG_1_SPEC.md and any active-ship SPEC like RESOLUTION_BINDING_SPEC.md)
 - `~/virgil-docs/specs/` → `specs/`  (step 3c — shipped specs and their REVIEW companions, post-May-11 reorg)
 - `~/virgil-docs/research/` → `research/`  (step 3d — one-off research outputs)
@@ -151,7 +150,7 @@ Virgil Project/
 
 | Trigger | Mechanism | Routing |
 |---|---|---|
-| `push-docs` (PC alias) | rsync from PC | PC `text files/` → server `~/virgil-docs/` (excl. `dm_philosophy.md`) |
+| `push-docs` (PC alias) | rsync from PC | PC `text files/` → server `~/virgil-docs/` (DM_PHILOSOPHY.md included as of S73.5 — no special exclude needed) |
 | `push-corpus` (PC alias) | rsync from PC | PC `corpus/` → server `~/corpus_builder/` (excl. `specs/`) |
 
 PC has no per-file push aliases anymore; bulk sync via `push-docs` / `push-corpus`, or single-file rsync for ad-hoc pushes.

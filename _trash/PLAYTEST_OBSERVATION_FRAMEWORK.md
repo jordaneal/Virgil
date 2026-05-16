@@ -1,0 +1,266 @@
+# Post-Ship-3 Playtest Observation Framework
+
+**Status:** Captured S37 while fresh. Pre-Ship-2 spec drafting. Used post-Ship-3 to ground the playtest phase that gates further architectural work. Revised S46 — telemetry verification recon + clarification-rate merge + pure-operational rate + emergent-canon pinning + Tier 0/1-3 alignment + `verifier_error` sentinel integration. Revised S52 — §5.2 telemetry fold: five new primitives from S48 + S49 + S50 cleanup arc (RollBuffer drains at init-end + rest boundaries; COMBAT_END layer-4 render-vs-marker branch; beat counter increment).
+
+**Trigger:** S37 external review (ChatGPT + Gemini) named what playtest should actually measure. Both reviews converged on the same point: the project has crossed the threshold where player-experience data becomes trustworthy. The transition from "build the system" to "discover the game inside it" gates everything that comes next architecturally. This doc captures the metric framework so playtest doesn't default to "did it feel fast / did it feel fun" — those questions don't produce actionable architectural signal.
+
+---
+
+## §1. What this doc is for
+
+After Ships 2 and 3 land, the multiplayer-fixes plan enters an extensive playtest phase. The purpose isn't validation ("does it work?") — it's discovery ("what kind of game emerges from this?"). The metrics below define what to look for so the playtest produces evidence that writes the next spec.
+
+This is not a checklist. It's a sensitivity training — knowing in advance what's worth noticing during play, what to capture in session notes, what to grep journal logs for afterward.
+
+---
+
+## §2. Combat-specific metrics (per ChatGPT S37 review)
+
+Playtest combat is the load-bearing observation surface. The hybrid combat reference design (`HYBRID_COMBAT_NOTES.md` v3) earns or doesn't earn its architectural ambition based on what these metrics reveal.
+
+### §2.1 Time between meaningful decisions
+**What:** Wall-clock time from one player-input-that-matters to the next player-input-that-matters per PC.
+
+**Capture:** Note timestamps when a player meaningfully decides something (declare attack, choose target, spend resource, react to event). The gaps are the metric. Off-turn waiting that isn't engaged with the scene counts toward the gap.
+
+**Threshold of concern:** If average gaps exceed 2-3 minutes regularly, combat momentum is at risk. Tabletop tolerates 30-second hesitation gaps; Discord magnifies them to multiple minutes through tab-out behavior.
+
+**Architectural implication if observed:** Dumb combat (HCN Tier 1-3 — standard Avrae init + LLM narration) is insufficient. Some form of interaction compression is needed — declaration windows, parallel actions, structured beat resolution from `HYBRID_COMBAT_NOTES.md` §5 candidates.
+
+### §2.2 Off-turn engagement
+**What:** Do players stay emotionally engaged with the scene when it's not their turn, or do they mentally tab out?
+
+**Capture:** Watch for off-turn players' presence in chat (reactions, comments, banter about the scene). Silence on off-turn is the warning sign. Compare to Avrae-init turn-by-turn cadence vs LLM-narration density.
+
+**Threshold of concern:** If off-turn players consistently disengage within 2-3 turns, the system has lost them. Multiplayer combat is failing as a shared experience.
+
+**Architectural implication if observed:** Narrative wrapping needs to address off-turn engagement — pulling other PCs into the scene narratively, surfacing what their characters are noticing/feeling. Or interaction compression so off-turn periods are shorter. Probably both.
+
+### §2.3 Clarification rate (merged from prior §2.3 + §2.4)
+**What:** How often players have to stop the flow to ask about state ("who's bloodied?", "is the archer still up?") or affordances ("can I do X?", "what's my AC again?"). Both signal that the state surface and/or affordance surface isn't carrying.
+
+**Capture:** Count clarification messages per combat scene. Tag each with one of:
+- `state` — question about current state (HP, conditions, turn order, location)
+- `affordance` — question about available action or rule applicability
+- `both` — question that spans state and affordance (default this tag when uncertain; the boundary is fuzzy by design)
+
+Compare combat-scene rate to exploration-scene rate.
+
+**Threshold of concern:** Combat clarification rate >1 per scene, or combat rate ≥3× exploration rate.
+
+**Architectural implication if observed:**
+- High `state` tag share — footer + Avrae embeds insufficient; consider Beat Card / Turn Card surface (HCN §5 candidate).
+- High `affordance` tag share — LLM narration is unclear about what player can do; prompt-side fix likely.
+- High `both` — interaction compression may be needed (HCN §5 candidates earn closer look).
+
+### §2.4 Pure-operational message rate
+**What:** Fraction of in-character player messages that are pure-operational — mechanical commands or templates with no narration ("I attack with my sword, +5 vs AC 14" or just "!attack goblin -t goblinchief"). The failure mode this targets: Ship A's directive-emit shaping players toward dice-rolling behavior at the cost of dramatic agency.
+
+**Capture:** Sample 20 player messages mid-combat. Tag each as:
+- `pure-operational` — mechanical content only, no narration
+- `narrative-bearing` — any narration present (mixed messages count here; the metric is binary on "does narration exist")
+
+**Threshold of concern:** Pure-operational rate >25% of in-combat player messages.
+
+**Architectural implication if observed:** Ship A's emit template is shaping behavior — players are bypassing narration to type the command directly. Possible levers: prompt-side encouragement, B2.1-style narration mandate strengthening, or accept the shape (some players prefer mechanical voice). Tier 0 (skill challenge) probably produces more dramatic; Tiers 1-3 (standard init) probably produce more operational. Goal is roughly balanced.
+
+### §2.5 Momentum collapse frequency
+**What:** How often does a combat scene lose narrative momentum — players stop engaging, conversation dies, the scene drags?
+
+**Capture:** Note each scene where energy demonstrably drops. Try to identify what caused it (long pause, confusing event, off-turn drift, etc.).
+
+**Threshold of concern:** Multiple collapses per session means the cadence is wrong.
+
+**Architectural implication if observed:** Could be reaction-prompt overload, could be state confusion, could be turn-serialization too slow. The cause matters for the fix.
+
+---
+
+## §3. Novelty / repetition metrics (per ChatGPT S37 reframe)
+
+ChatGPT's S37 reframe: **novelty is a simulation-depth problem, not a content-generation problem.** Players forgive surface repetition if outcomes differ, stakes evolve, factions react, relationships persist, economies shift, prior actions echo forward. Players become bored if the world resets emotionally, NPCs lack continuity, consequences evaporate, threats feel disconnected, scenes exist in isolation.
+
+The metrics below test which side of that distinction Virgil's current architecture lands on.
+
+### §3.1 Cross-session causality echoes
+**What:** Do events from session N affect session N+1+? Specifically: does the bot surface emergent canon (parser-extracted NPCs, locations, consequences) from prior sessions without operator re-mention?
+
+**Capture:** For each scene, count:
+- Recall opportunities (NPC re-encounters, location revisits, faction references, prior-decision callbacks) where the operator did NOT mention the entity/event in current scene input
+- Recall successes — bot surfaced the prior-session detail unprompted
+- Recall failures — opportunity passed unnoticed
+
+Distinguish two sources:
+- **Authored canon** (skeleton.md, `skeleton_origin=1` rows) — surfacing is by design; not the load-bearing signal
+- **Emergent canon** (parser-extracted, `skeleton_origin=0` rows) — surfacing is the architectural test of cross-session causality
+
+Report emergent-canon recall rate (successes / opportunities) per session.
+
+**Threshold of concern:** Emergent recall rate <30% across sessions where opportunities exist. Indicates parser-emergent canon isn't carrying — retrieval, scene-state, or prompt-context layers aren't surfacing the right rows.
+
+**Architectural implication if observed:** Motion-systems thread (F-54) becomes load-bearing for emergent-canon persistence depth. NPC state-sync (Ship 3) extension to relationship/attitude state, consequence layer deepening, or scene-state retrieval tuning.
+
+### §3.2 NPC continuity
+**What:** When the party meets an NPC twice across sessions, does the NPC remember the prior encounter? Is their attitude shifted by past interactions?
+
+**Capture:** Specific re-encounter moments. Tag as "remembered correctly," "remembered with drift," "forgotten."
+
+**Threshold of concern:** If "forgotten" is common, NPC persistence depth is insufficient. If "remembered with drift" is common, the canon discipline (Ship 2 etc.) isn't extending to relationship state.
+
+**Architectural implication if observed:** NPC state-sync (Ship 3) and scene state canon (Ship 2) may need extension to relationship/attitude state. Or the consequence layer (S16) needs deeper NPC-attached state.
+
+### §3.3 Faction motion
+**What:** Do off-screen entities (factions, rival NPCs, regional powers) change over time in response to or independent of the party's actions?
+
+**Capture:** Watch for moments where the world shows it's been moving without the party. The bandit gang has consolidated. The merchant guild has expanded. The political situation in town has shifted.
+
+**Threshold of concern:** If the world only changes when the party touches it, faction simulation is absent and the long-term boredom risk is high.
+
+**Architectural implication if observed:** Faction simulation is a real ship, not a candidate. Multi-quarter arc per Gemini's framing.
+
+### §3.4 Encounter recontextualization
+**What:** Does a "generic goblin ambush" feel different at session 1 vs session 20 because of accumulated context?
+
+**Capture:** Subjective but observable. Note encounters that feel mechanical-only vs encounters that carry narrative weight from prior events.
+
+**Threshold of concern:** If session-20 encounters feel as flat as session-1 encounters, encounter memory is insufficient.
+
+**Architectural implication if observed:** Encounter memory + causality systems become priority. ChatGPT's "the same goblin ambush can feel completely different 40 sessions later" depends on this layer.
+
+### §3.5 Pacing fatigue
+**What:** Around session 3-5, does engagement drop because the scenes feel similar even though events differ?
+
+**Capture:** Self-observation. Note when interest wanes vs when it stays high. What was happening at each?
+
+**Threshold of concern:** Early pacing fatigue means surface-level variation is exhausted before systemic depth has accumulated.
+
+**Architectural implication if observed:** Procedural variation systems may help short-term; systemic depth is the long-term fix.
+
+---
+
+## §4. Pacing and content metrics
+
+### §4.1 Session duration before fatigue
+**What:** How long can a session run before all participants are fatigued? Distinguish DM fatigue (cognitive load of running) from player fatigue (cognitive load of engaging).
+
+**Capture:** Note hour marks. Watch for energy drops. Note who fatigues first and what they were doing.
+
+**Threshold of concern:** Sub-2-hour sessions limit the surface area available for emergent stories. 2-4 hours is healthy. 4+ is exceptional and valuable.
+
+### §4.2 Content variety pressure
+**What:** Does the system reach for tropes (goblins, caves, wagons, taverns, bandits, ruins, crystals) at high rate? Does it produce *un*-tropic encounters when prompted?
+
+**Capture:** Tag generated encounters by archetype. Note frequency of repeat archetypes within a session and across sessions.
+
+**Threshold of concern:** If >50% of encounters fall into the trope cluster, statistical gravity is winning. Per ChatGPT, this is fixable via systemic depth (causality recontextualizes tropes) rather than content generation (which is downstream).
+
+### §4.3 DM-side flow
+**What:** When you (Jordan) DM-flag or intervene, does the system absorb your input cleanly or does it fight you? Are the DM-aside surface and slash commands enough?
+
+**Capture:** Note friction points where the DM surface felt insufficient. Note absences — DM tools you reached for that didn't exist.
+
+**Threshold of concern:** Friction here compounds; if DMing is exhausting, sessions can't sustain.
+
+---
+
+## §5. System health metrics (already partially logged)
+
+These exist in journal logs and `world_health:` reporting; playtest is the chance to validate that logged signal matches felt experience. Recon S46 verified each log line's emission shape against production code + 7-day journal samples — corrections folded in below.
+
+### §5.1 Hallucination rate (per Ship 2 + future motion-systems work)
+- `verification:` with `violation_class=roll_outcome_drift` — Ship 1 verifier violation; expected zero post-Ship-A. **Wired but zero fires in 30 days** — treat the format as wired-but-unverified-in-prod. Sibling `directive_resolution_skipped: reason=no_dc` is the expected normal-play emission when DC is absent; not an anomaly.
+- `phantom_candidates:` — places the bot referenced without canonical row. Three emission shapes: `count=0` line omits `candidates=[...]`; `count>0` includes it; error variant `phantom_candidates: error campaign=N err=...` has no `count=`/`threshold=` fields. Greps keying on `count=` will silently miss the error variant.
+- `npc_near_match:` — name fragmentation, Levenshtein ≤2 on insert. **Lacks `campaign=` field** (codebase inconsistency). Pair with sibling `npc_token_prefix_match:` (with `campaign=`) which catches "Lira" + "Lira Songheart" cases that distance ≤2 misses. Both are fragmentation signals; framework treating `npc_near_match` alone misses token-prefix cases.
+- Scene state drift (day_phase mismatches, location flips, time-of-day inconsistencies) — **qualitative capture only; no dedicated telemetry.** Operator observation against `dnd_scene_state` post-hoc. Candidate future telemetry surface if playtest shows drift is common.
+
+### §5.2 State integrity
+- `unconsumed_roll_swept:` — buffer drains expected after Ship A. **Lacks `campaign=` field** (sweep is per-guild). Actor name lowercased.
+- `unexpected_binding_co_occurrence:` — Ship 1 canary; zero fires in 30 days expected (canary fires only on paradox state where both arbitration and resolution blocks are non-empty). Wrapped in try/except.
+- `verification:` with `violation_class=roll_outcome_drift` — see §5.1 above. Nested grep pattern: `verification:.*violation_class=roll_outcome_drift`.
+- `directive_skill_mismatch:` — Ship A wrong-skill aside (Avrae detail mismatch). Wired but zero fires in 30 days.
+- `state_footer:` rendering correctness — anomaly grep for patterns like `active_turn=none` with `mode=combat` outside init-setup (S23 fallback case). **Regexes must be case-insensitive:** `phase` renders proper-case (`Morning`), not lowercase.
+- **Paired-signal note (added S46):** the `[VERIFICATION_FALLBACK]` log line carries the exception repr (human-readable diagnosis); the `verification:` line with `violation_class=verifier_error` carries the standardized parseable fields (grep-friendly classification). Use the pair together: fallback line for "what crashed," verification line for "how often."
+- `init_end_rollbuffer_drained:` (S48, anchored §78.5) — RollBuffer drain at `!init end` boundary. Format: `campaign={N} guild={N} drained_count={N}`. **What it tracks:** count of stale Avrae events drained from in-memory RollBuffer at combat→exploration transition. **Architectural signal:** zero `drained_count` is normal (no rolls landed during combat). Non-zero count is the load-bearing signal — confirms structural protection over pre-S48 serendipity (extraction fallback to `'someone'` kept events out of PC filters). High rate would indicate players are rolling mid-combat without those rolls being consumed by their turns; if rate climbs unexpectedly, audit `buffer.consume` actor-name matching.
+- `rest_event_rollbuffer_drained:` (S49, anchored §78.5) — RollBuffer drain at rest-event boundary, mode-agnostic. Format: `campaign={N} guild={N} drained_count={N} rest_kind={long rest|short rest|rest}`. **What it tracks:** sibling to `init_end_rollbuffer_drained:` at the rest-event surface; `rest_kind` field distinguishes long-rest vs short-rest patterns. **Architectural signal:** zero `drained_count` is normal. `rest_kind` distribution gives operator visibility into playtest patterns — do players favor `!game lr` over `!game sr`? Combat-mode-branch §78 layer-2/4 gaps at `_handle_rest_event` are deferred per observed-friction discipline; if playtest produces visible drift on rests-during-combat (the Apr 30 path), ship dispatches from this evidence.
+- `combat_end_zero_action:` (S50, anchored §78.6) — COMBAT_END dispatched on a 0-action combat (no BLOODIED + no DOWNED beats during combat session). Format: `campaign={N} guild={N} beats=0 deterministic_closeout=1`. **What it tracks:** layer-4 BOUNDARY MARKER branch fired (deterministic neutral closeout, LLM bypassed). **Architectural signal:** rate is operationally interesting — high rate means 0-action combats are common (init begin + end with no rolls between, no enemies engaged). If rate is unexpectedly high, players may be using init for non-combat purposes (initiative-as-skill-check pattern); evidence may justify a separate ship.
+- `combat_end_llm_dispatch:` (S50, anchored §78.6) — COMBAT_END dispatched on a multi-action combat (at least one BLOODIED or DOWNED beat). Format: `campaign={N} guild={N} beats={N}`. **What it tracks:** layer-4 LLM RENDER branch fired (existing S45-F dispatch path, atmospheric closeout via LLM). **Architectural signal:** `beats=N` distribution tracks how many narratable HP-state-transition events occurred per combat — informs whether multi-action combats are mostly 1-beat (single bloodied/downed) or higher. Combined with `combat_end_zero_action:` rate, gives operator a beats-per-combat histogram.
+- `combat_beat_incremented:` (S50, anchored §78.6) — per-dispatch increment of the beat counter, gated to `BLOODIED_THRESHOLD_CROSSED` + `COMBATANT_DOWNED` kinds. Format: `campaign={N} guild={N} kind={BLOODIED_THRESHOLD_CROSSED|COMBATANT_DOWNED} beats={N}`. **What it tracks:** running beat count during combat; `kind` distinguishes bloodied vs downed beats. **Architectural signal:** `kind=BLOODIED_THRESHOLD_CROSSED` vs `kind=COMBATANT_DOWNED` distribution gives raw bloodied-vs-downed ratio across all combats. Useful for tuning HP curves, damage budgets, encounter difficulty calibration during playtest. ROUND_START + COMBAT_END do NOT emit this signal (structurally excluded from increment gate); greps must not assume all dispatch kinds emit it.
+
+### §5.3 Performance
+- `prompt_size:` — total chars per turn; watch for 25k+ correlating with empty-narration. **Per-section breakouts (`system`, `retrieval`, `party`, `scene`, `directives`) do NOT sum to `total`** — `system` is a residual accumulator with overlap/inclusion logic. Don't claim equality.
+- `cloud_router_finish_reason:` — `length` finishes indicate response truncation. **Format inconsistency:** uses `print()` not `log()`, so lacks the `[YYYY-MM-DDTHH:MM:SS]` ISO timestamp prefix every other §5 line carries. Only the systemd journal timestamp prefixes it. Parsers anchored on `[ISO_TS]` will skip this line — use a separate parser branch or grep without ISO anchor.
+- Latency between player input and bot narration — derivable from systemd timestamps post-hoc; no dedicated log line. Operator-observable only.
+
+### §5.4 Inference economy (per Gemini's hardware constraint)
+- 11GB VRAM ceiling on the 1080 Ti — local Qwen has hard limits
+- Cloud calls per turn — extraction parallel calls
+- Total inference time per session — sustainability check
+
+---
+
+## §6. Observation discipline
+
+### §6.1 Capture during play
+- Discord screenshots of moments that surprised — good or bad
+- Note timestamps of friction points; cross-reference journal logs after
+- Capture verbatim NPC dialogue that landed well; capture verbatim narration that felt off
+- Note the room's energy — when did people lean in, when did they tab out
+
+### §6.2 Capture after play
+- Cross-reference timestamps against journal logs
+- Tag observations against the metric framework above
+- Write a session post-mortem under `tests-to-run-post-session.md` or its own doc
+- File specific friction points as ROADMAP candidate items if they suggest a ship
+
+### §6.3 What NOT to do during playtest
+- Do not pause to fix bugs mid-session. Note them, keep playing.
+- Do not change architecture mid-session based on one moment. Watch for patterns.
+- Do not over-tune prompts during play. The current prompt state IS what's being tested.
+- Do not invite the system to be perfect. Invite it to be *informative*.
+
+---
+
+## §7. What the playtest evidence writes
+
+After 3-5 sessions, the evidence should answer:
+
+**Combat layer:**
+- Does dumb combat (HCN Tier 1-3 — standard Avrae init + LLM narration) feel functional in conversational multiplayer?
+- If not, which specific metric (§2.1-§2.5) is failing?
+- What's the minimum interaction-compression intervention that would fix it?
+- Does Tier 0 (skill challenge for trivial conflicts, per HCN §4.1) earn its keep?
+- Null-result outcome is valid: "dumb combat works; ship it as the canonical combat surface; HCN §4-§5 candidates stay shelved permanently."
+
+**Motion-systems layer:**
+- How fast does the world feel "small" without faction motion?
+- What specific causality echoes work, which don't?
+- Does NPC continuity hold across sessions?
+- Which of the F-54 / motion-systems candidates is most load-bearing first?
+
+**Ship 4/5 MVP-test:**
+- Does Finding B (name-resolution drift) actually block play, or is it cosmetic?
+- Does Ship 5 polish address observed friction or speculative concerns?
+- Should either ship defer entirely?
+
+**Whole-system:**
+- Is the project at v1.0 readiness for friends-play?
+- What's the highest-leverage single ship to take it from "functional" to "want-to-play-again"?
+
+The answers write the post-playtest spec. The framework above is what produces those answers.
+
+---
+
+## §8. Update cadence
+
+This doc itself is a candidate-state artifact. After the first playtest session, revise based on what actually got observed vs what this framework predicted would matter. The framework should evolve from anticipated friction to observed friction, same discipline that drives the rest of the project.
+
+---
+
+## §9. Cross-references
+
+- `HYBRID_COMBAT_NOTES.md` v3 — long-term combat architecture reference; playtest evidence is the gate for any of its §4-§5 candidates. Mode A/B nomenclature collapsed in this framework to Tier 0 / Tier 1-3 per HCN v3 §4
+- `MULTIPLAYER_FIXES.md` v3 §5-§8 — Ships 2-5 scope; Ships 4-5 MVP-test scrutiny per S37 reframe
+- `ROADMAP.md` FOOTINGS queue — post-Ship-3 sequence: listener verification → dumb combat → playtest phase → MVP-test 4/5
+- `SESSIONS.md` S37 — origin of this framework's metric set (ChatGPT + Gemini external reviews); S46 — telemetry recon + framework v2 edits
+- `tests-to-run-post-session.md` — operational test scenarios for ships; this doc complements with metric framework for free-play observation
+- `WORKING_WITH_CLAUDE.md` — "evolve from observed friction, not anticipated friction" doctrine governs this framework's evolution
+- `VIRGIL_MASTER.md` — §4 telemetry primitives section is authoritative for log-line shape; §5 of this doc cross-references it

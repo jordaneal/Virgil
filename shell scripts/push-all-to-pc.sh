@@ -95,15 +95,9 @@ run_rsync $RSYNC \
 # next connection attempt.
 sleep 2
 
-# 1d) scripts/dm_philosophy.md -> Virgil Project/text files/
-#     (Live file lives in scripts/ on virgil; on PC it groups with the other docs.)
-echo "==> scripts/dm_philosophy.md -> Virgil Project/text files/"
-run_rsync $RSYNC \
-  "${COMMON_EXCLUDES[@]}" \
-  --include='dm_philosophy.md' \
-  --exclude='*' \
-  /home/jordaneal/scripts/ \
-  "${SSH_TARGET}:${PC_BASE}/text files/"
+# (Former step 1d removed at S73.5 — DM_PHILOSOPHY.md canonical moved to
+# ~/virgil-docs/, now picked up by step 3 alongside the other canon docs.
+# Loader reads from ~/virgil-docs/DM_PHILOSOPHY.md.)
 
 # 2) scripts/campaigns/ -> Virgil Project/campaigns/
 #    Per-campaign skeleton.md and any other authored canon.
@@ -113,14 +107,15 @@ run_rsync $RSYNC \
   /home/jordaneal/scripts/campaigns/ \
   "${SSH_TARGET}:${PC_BASE}/campaigns/"
 
-# 3) virgil-docs/*.md (excluding the dm_philosophy.md symlink, already
-#    covered by step 1 from its real location, AND excluding *_SPEC.md
-#    and *_REVIEW.md files which route to specs/ in step 3b below)
-#    -> Virgil Project/text files/
+# 3) virgil-docs/*.md (excluding *_SPEC.md and *_REVIEW.md files which
+#    route to specs/ in step 3b below) -> Virgil Project/text files/
+#
+# DM_PHILOSOPHY.md flows through this step natively after S73.5 (canonical
+# was moved here from ~/scripts/ so it can roundtrip via push-docs like
+# every other canon doc).
 echo "==> virgil-docs/ (non-spec, non-review md) -> Virgil Project/text files/"
 run_rsync $RSYNC \
   "${COMMON_EXCLUDES[@]}" \
-  --exclude='dm_philosophy.md' \
   --exclude='*_SPEC.md' \
   --exclude='*_REVIEW.md' \
   --exclude='refs/' \
