@@ -57,12 +57,18 @@ Three-way external review (planner + GPT + Gemini) locked direction post-S68 + S
 |---|---|---|---|
 | 1 | ✅ SHIPPED | Conversational-Runtime Inversion v0 Phase 1 (S70) | Spec drafted (42k chars, §1-§14). Six recon items clean, no HALTs. |
 | 2 | ✅ SHIPPED | Inversion v0 Phase 2 review pass (S71) | 12 §11 decisions walked. Confidence: 8 HIGH / 1 MEDIUM-HIGH / 1 MEDIUM / 1 LOW. |
-| 3 | 📋 next | Inversion v0 Phase 3 (implementation) | Sonnet medium per WWC cadence. §11.2 Oracle confirmation in parallel pre-dispatch (LOW provisional lock). |
-| 4 | 📋 next | S69 Causality Engine Path A Phase 3 (implement) | Locked spec amends in-place per Inversion §11.6 lean (a) at Inversion ship; then Phase 3 dispatches against amended locked spec. |
-| 5 | 🔭 | N-3.1 commitment-tracking multi-spec | Folded into Inversion v0 per §11.4 MEDIUM-HIGH lock. F-64 doctrine anchoring walk earns slot at Inversion v0 lock. |
-| 6 | 🔭 | S67.1 §76 hygiene closures | 3 mitigated 4/4 surfaces (consequences.summary, npcs.description fold, chroma DM-stores). Post-arc cleanup. |
-| 7 | 🔭 filed | N-5 narrative-loot, N-6 §1b non-execution, N-7 unidentified-loot, N-8/N-9 channel/Chroma recon | Observed-friction-gated. |
-| 8 | 🧊 parked | N-2 NPC commitment-tracking full scope | Deprioritized if N-3.1 closes pattern (it does, per §11.4 fold-in). |
+| 3 | ✅ SHIPPED | Inversion v0 Phase 3a (S73) | Closed-vocab quest-acceptance parser + suggester card + telemetry + 141 tests. §1a.x ANCHORED. |
+| 4 | ✅ SHIPPED | §1b.1 Clarification Handshake Primitive v0 (S75 sketch → S76 review → S77 implementation) | Aggregator + M-DELAYED in-fiction primary + Layer A/B fallback + 112 new tests. §1b.1 ANCHORED. M-IMMEDIATE rejected with reasoning record. |
+| 5 | ✅ SHIPPED | Inversion v0 Phase 3b (S78) | `transaction_completion_parser` + `loot_drop_parser` register against §1b.1 aggregator. 5 narration-detection surfaces total (quest_accept + tx pre/post + loot player/LLM). M-DELAYED primary path empirically activated. F-64 sixth instance candidate produced. |
+| 6 | ✅ SHIPPED | §F-64 anchoring walk + council + implementation (S79+S80+S81) | F-64 ANCHORED at S81 with 7-instance cluster. §82 CANDIDATE filed (2 instances; deferred). Compliance-failure telemetry instrumented (`directive_compliance_failure` generic event + 2 detector surfaces). Doctrine-graph-proliferation-watch in WWC. |
+| 7 | 📋 next | **Operator-decision** — pick next priority from candidates below | Filed S81 handoff. Four candidates roughly equal-weight: Phase 3c (NPC-commitment-utterance + N-3.1 fold-in); S69 Causality Engine Path A Phase 3; N-4 v1.x (descriptor→name pronoun gap); §F-44 NPC-axis closure (Bishop's bakery). |
+| 7a | 📋 candidate | Inversion v0 Phase 3c — NPC-commitment-utterance + N-3.1 fold-in | Original Phase 3c surface. F-64 instance #7 (LLM price invention) would close at this ship (commitment-tracking is the architectural primitive). |
+| 7b | 📋 candidate | S69 Causality Engine Path A Phase 3 implementation | Locked spec amends in-place per Inversion §11.6 lean (a) at Inversion ship. Phase 3 dispatches against amended locked spec. Atmospheric pressure / rumor system; large ship. |
+| 7c | 📋 candidate | N-4 v1.x descriptor→name pronoun gap | Closes F-64 instance #6 (baker pronoun flip). Small scoped fix; ~1-2 sessions. |
+| 7d | 📋 candidate | §F-44 NPC-axis closure | Bishop's bakery instance compounds existing §F-44 cluster. Location-scoped chroma retrieval + NPC extractor location-aware matching. Two-axis fix; medium scope. |
+| 8 | 🔭 | S67.1 §76 hygiene closures | 3 mitigated 4/4 surfaces (consequences.summary, npcs.description fold, chroma DM-stores). Post-arc cleanup. |
+| 9 | 🔭 filed | N-5 narrative-loot, N-6 §1b non-execution, N-7 unidentified-loot, N-8/N-9 channel/Chroma recon | Observed-friction-gated. |
+| 10 | 🧊 parked | N-2 NPC commitment-tracking full scope | Deprioritized if N-3.1 closes pattern (it does, per §11.4 fold-in). |
 
 ---
 

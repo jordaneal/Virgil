@@ -135,3 +135,149 @@ def _reset_for_tests():
     p = _today_jsonl_path()
     if p.exists():
         os.unlink(p)
+
+
+# ── §1b.1 Clarification Handshake taxonomy (S77) ──────────────────────────────
+#
+# New event types for the clarification primitive. Per S77 dispatch, event
+# names are stable strings; payloads carry parser_domains, parser_confidences,
+# layer, time_to_resolve_ms (where applicable), recursion_iteration.
+#
+# Primary path events:
+#   clarification_in_fiction_fired           — pending flag set, LLM narrates
+#   clarification_in_fiction_resolved        — second-pass HIGH committed
+#   clarification_in_fiction_compliance_failure — LLM narrated action despite
+#                                                  pending directive
+#
+# Fallback path events:
+#   clarification_layer_a_fired              — direct Layer A
+#   clarification_layer_a_fallback_fired     — after in-fiction second-pass
+#   clarification_layer_b_fired              — direct Layer B
+#   clarification_layer_b_fallback_fired     — after in-fiction second-pass
+#
+# Resolution events:
+#   clarification_resolved                   — operator paste or OOC committed
+#   clarification_skipped                    — explicit skip
+#   clarification_expired                    — Layer B timeout, no reply
+#   clarification_recursion_escalated        — Layer B 2nd ambiguous reply
+#   clarification_recursion_manual           — Layer B 3rd ambiguous escalation
+#   clarification_cap_hit                    — per-campaign session cap exceeded
+#   clarification_pending_cleared_no_resolution — pending cleared without commit
+#
+# Calibration telemetry (per GPT post-council Flag 2):
+#   parser_calibration_snapshot              — per-parser fire-rate rolling window
+#   clarification_density_snapshot           — per-scene clarification frequency
+
+
+CLARIFICATION_DOMAIN = 'clarification'
+
+
+def emit_clarification_event(event: str, campaign_id: int,
+                              payload: dict | None = None) -> bool:
+    """Convenience wrapper for §1b.1 clarification events. Always-fire
+    discipline. Domain is fixed to 'clarification'; event names from the
+    taxonomy above.
+    """
+    body = {'campaign_id': campaign_id}
+    if payload:
+        body.update(payload)
+    return emit(event, CLARIFICATION_DOMAIN, body)
+
+
+# ── Calibration snapshots ──────────────────────────────────────────────────
+#
+# Rolling-window counters for per-parser fire rates (calibration drift
+# detection per GPT post-council Flag 1+2). The snapshot fires every N
+# parser invocations; the in-memory counter is per-process (resets on
+# restart) — telemetry consumer aggregates across runs.
+
+_PARSER_INVOCATION_COUNT = 0
+_PARSER_CONFIDENCE_COUNTS: dict[str, dict[str, int]] = {}
+_CALIBRATION_SNAPSHOT_INTERVAL = 50  # per spec; v0.x tunable
+
+
+def record_parser_invocation(domain: str, confidence: str) -> None:
+    """Increment per-parser per-confidence counter; fire calibration
+    snapshot every _CALIBRATION_SNAPSHOT_INTERVAL invocations. Soft-fail
+    — telemetry never blocks parser path."""
+    global _PARSER_INVOCATION_COUNT
+    try:
+        bucket = _PARSER_CONFIDENCE_COUNTS.setdefault(domain, {})
+        bucket[confidence] = bucket.get(confidence, 0) + 1
+        _PARSER_INVOCATION_COUNT += 1
+        if _PARSER_INVOCATION_COUNT % _CALIBRATION_SNAPSHOT_INTERVAL == 0:
+            emit('parser_calibration_snapshot', 'inversion', {
+                'invocations': _PARSER_INVOCATION_COUNT,
+                'per_parser': dict(_PARSER_CONFIDENCE_COUNTS),
+            })
+    except Exception:
+        pass
+
+
+def _reset_calibration_for_tests():
+    """Test-only — clears counters."""
+    global _PARSER_INVOCATION_COUNT
+    _PARSER_INVOCATION_COUNT = 0
+    _PARSER_CONFIDENCE_COUNTS.clear()
+
+
+# ── §82 candidate — Instruction-Side Compliance telemetry (S81) ──────────
+#
+# Generic-with-payload event per S80 council convergent (GPT + Gemini Q6).
+# Single event type accommodates all directive surfaces; directive_name field
+# disambiguates which directive failed compliance. Grep surface preserved:
+#   grep '"directive_name": "central_thread"'
+# works equivalently to per-event-type grep with zero schema coupling.
+#
+# S77's `clarification_in_fiction_compliance_failure` event refactors to fire
+# via this generic surface with `directive_name="pending_clarification"`.
+#
+# Payload shape per dispatch:
+#   directive_name: str       — e.g., "central_thread", "pending_clarification"
+#   severity: 'LOW' | 'MEDIUM' | 'HIGH'
+#   narration_excerpt: str    — capped 200 chars
+#   detector: str             — detection method (e.g., "post_llm_grep")
+#   campaign_id: int
+#   confidence: float         — detector's confidence in violation
+#   directive_intent: str     — what the directive instructed (capped 100 chars)
+
+_NARRATION_EXCERPT_CAP = 200
+_DIRECTIVE_INTENT_CAP = 100
+
+
+def record_directive_compliance_failure(
+    directive_name: str,
+    severity: str,
+    narration_excerpt: str,
+    detector: str,
+    campaign_id: int,
+    confidence: float,
+    directive_intent: str,
+) -> bool:
+    """Record a §82-candidate directive-compliance-failure event. Generic
+    payload shape per S80 council Q6 lock. Single event type — directive_name
+    disambiguates per-directive grep surface without schema coupling.
+
+    severity bands per S81 dispatch:
+      LOW    — detector confidence < 0.5; soft signal worth aggregating
+      MEDIUM — detector confidence 0.5-0.8; actionable empirical signal
+      HIGH   — detector confidence > 0.8; near-certain violation
+
+    Caps:
+      narration_excerpt → 200 chars
+      directive_intent  → 100 chars
+    """
+    if severity not in ('LOW', 'MEDIUM', 'HIGH'):
+        severity = 'MEDIUM'
+    excerpt = (narration_excerpt or '')[:_NARRATION_EXCERPT_CAP]
+    intent = (directive_intent or '')[:_DIRECTIVE_INTENT_CAP]
+    payload = {
+        'directive_name': directive_name,
+        'severity': severity,
+        'narration_excerpt': excerpt,
+        'detector': detector,
+        'campaign_id': campaign_id,
+        'confidence': float(confidence),
+        'directive_intent': intent,
+    }
+    return emit('directive_compliance_failure', 'inversion', payload)

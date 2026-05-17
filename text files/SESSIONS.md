@@ -492,3 +492,209 @@ Path A Phase 2 against `specs/CONVERSATIONAL_RUNTIME_INVERSION_V0_SPEC.md` DRAFT
 **Ship:** Review doc landed. No code, no HALTs. ✅ SHIPPED (Phase 2 of 3).
 
 **Next:** Session 3 = Phase 3 implementation, Sonnet medium per WWC cadence.
+
+---
+
+# Session 77 — §1b.1 Clarification Handshake Primitive v0 Phase 3 implementation (May 16, 2026)
+
+§1b.1 ANCHORED. Three-phase arc closes (S75 sketch → S76 review → S77 implementation). Single-arc ship: Layer A + Layer B + M-DELAYED in-fiction primary path together. Opus medium per WWC conditional bump (context-flag protocol + LLM-prompting language is synthesis-heavy).
+
+**Scope shipped:**
+- `clarification_handshake.py` NEW (~570 lines) — `ClarificationSession`/`ParserResult`/`RouteDecision` dataclasses; `aggregate_parser_outputs` Stage 1 routing; `set/clear/get_pending_clarification` DB single-writer; `build_layer_a_card` / `build_layer_b_question` / `build_layer_b_recursion_card` renderers; `parse_layer_b_reply` closed-vocab parser; `await_layer_b_reply` `bot.wait_for` wrapper; session lifecycle helpers with per-campaign 3-cap.
+- `dnd_engine.py` — schema migration adds `pending_clarification TEXT DEFAULT NULL` to `dnd_scene_state` (idempotent ALTER TABLE per S65 standing practice); `build_dm_context` accepts new `pending_clarification_directive` kwarg, renders block between scene_state_section and char_ctx_section (engine-state directive band); `dm_respond` computes directive via `compute_pending_clarification_directive` from pending metadata and threads it through.
+- `dnd_orchestration.py` — `compute_pending_clarification_directive` added as 22nd in-file / 24th total §59 sibling. MUST/MUST-NOT framing per HARD STOP convention. Marker-summary renderer (`_summarize_markers`) + always-fire log summary.
+- `discord_dnd_bot.py` — pre-LLM hook at `:2727` swaps `_run_quest_acceptance_detection` → `_run_inversion_aggregator` (fans out parsers, normalizes to `ParserResult`, dispatches per Stage 1 route); `_dispatch_clarification_fallback` handles Layer A/B post-routing including listener `bot.wait_for` + recursion; `on_ready` posts restart-preservation notice to `#dm-aside` for campaigns with non-NULL `pending_clarification`. `time` import added (listener timestamp math). `_run_quest_acceptance_detection` retained for fall-through compatibility.
+- `inversion_telemetry.py` — 12 new event types: `clarification_{in_fiction_fired,in_fiction_resolved,in_fiction_compliance_failure,layer_a_fired,layer_a_fallback_fired,layer_b_fired,layer_b_fallback_fired,resolved,skipped,expired,recursion_escalated,recursion_manual,cap_hit,pending_cleared_no_resolution}`. `record_parser_invocation` + `parser_calibration_snapshot` (every-50 rolling-window for drift detection per GPT post-council Flag 1+2).
+- 8 new test files (112 new assertions): `test_clarification_aggregator.py` (12) / `test_clarification_session_state.py` (10) / `test_clarification_layer_a.py` (13) / `test_clarification_layer_b.py` (21) / `test_pending_clarification_directive.py` (17) / `test_clarification_telemetry.py` (13) / `test_clarification_in_fiction.py` (13) / `test_clarification_routing_e2e.py` (13). All green.
+- DOCTRINE.md §1b.1 ANCHORED (sub-clause) with M-IMMEDIATE rejection record + decentralized aggregation lock + §F-59 refinement candidate filed forward. §59 count → 24. §1b instance list unchanged (six anchored; §1b.1 composes across them).
+- VIRGIL_MASTER.md §10 snapshot updated. §59 count 23 → 24. §1b.1 sub-clause line added. S77 ship line added.
+- ROADMAP.md priority queue updated (added Phase 3a S73 row that was missing; added §1b.1 row as ✅ SHIPPED; Phase 3b becomes 📋 next).
+
+**Recon findings (R1-R10):**
+- R1–R8 CLEAN per S75/S76 pre-recon.
+- R9 IMPEDANCE — DM_PHILOSOPHY.md is 5861/6000 chars (139-char headroom); dispatch's ~250-word "On pending clarification" section would overflow and trigger truncation. **Resolved:** dropped static section in favor of dynamic `compute_pending_clarification_directive` (per-turn, only fires when pending). The dynamic directive carries identical operating-policy framing + concrete examples; static section was redundant prompt-budget cost. Architecturally cleaner — directive is state-gated, philosophy is always-on; pending clarification IS state-gated. Per F-60 "filings are starting points, not specs."
+- R10 RESOLVED — `compute_pending_clarification_directive` placed in `dnd_orchestration.py` per §59 family-cohesion lean.
+
+**Architectural correctness fix mid-session:** Initial wrap of quest_acceptance parser into `ParserResult` set `markers_present=bool(matched_verb)`, which would have routed every quest_accept MEDIUM through `IN_FICTION_CLARIFICATION` (M-DELAYED primary) instead of Phase 3a's existing medium-tier suggester. quest_acceptance doesn't surface structural markers (NPC/currency/item refs) at v0 — those come from the Phase 3b transaction + loot-drop parsers. Corrected `markers_present=False` for quest_accept; v0 ship preserves Phase 3a routing for quest_accept while keeping the M-DELAYED scaffold ready for Phase 3b parsers. Comment on the wrap site documents the rationale.
+
+**Regression budget:** 1 caused (test_doctrine_76_four_property_audit needed `pending_clarification` + pre-existing `current_act_id` added to `EXPECTED_CLASSIFICATION` — both (False, True, True, False) → 2/4 clean). FIXED. 4 pre-existing failures observed (test_combat_narration_prompt_purity::test_default_unsuppressed_preserves_current_scene_block / test_init_end_buffer_reset / test_loot_directive / test_mechanical_hints) — file mtimes May 1-11 against engine state from later refactors (e.g., S67 retired `current_scene` block); not caused by S77 changes.
+
+**Single restart deploy:** virgil-discord restarted at 12:51:15 PDT. 28 slash commands synced; chroma 1115 sessions / 740307 knowledge entries loaded; npc_pronoun_backfill scanned 27 / locked 0 (idempotent). No migration errors. Schema add of `pending_clarification` column ran cleanly under SQLite 3.45.1.
+
+**Live verify Scenarios E + F + G deferred to Phase 3b.** v0 ships only quest_accept parser which is verb-only (no structural markers). Scenarios E (cross-domain Layer A) + F (M-DELAYED primary) require the transaction + loot-drop parsers shipping at Phase 3b with `markers_present` signals. Scenario G (compliance-failure telemetry) is mock-tested in `test_clarification_in_fiction.py` end-to-end. v0 verification at deploy: existing quest_accept paths preserved (no regression in Phase 3a behavior).
+
+**§1b.1 ANCHORED at S77 ship.** Council pressure-test record (Oracle/GPT/Gemini three passes) documented in DOCTRINE.md §1b.1 for M-IMMEDIATE rejection with full reasoning. §F-59 refinement candidate ("operator-deliberate-commit" as authority claim with slash-paste + OOC-reply as instantiating surfaces) filed forward to next §F-59-touching ship. Empirical watch surfaces (per-parser calibration + per-scene clarification density + compliance failure tracking) operating in production.
+
+**Doctrinal weight:** First anchor instance under WORKING_WITH_CLAUDE.md Planner-Lead-Architecture Discipline. The §11.13 M-IMMEDIATE → M-DELAYED pivot mid-dispatch (Gemini's third pressure-test pass surfacing Oracle's §1a-defense conflation) demonstrates the discipline's value: filed-forward council reasoning record prevents future re-litigation. **Note:** WORKING_WITH_CLAUDE.md did not yet contain the Planner-Lead-Architecture Discipline section at session start (dispatch referenced it as "already updated" but the file still had only Doc-currency discipline). Doc-currency drift surfaces between dispatch and live state — handoff flags this for planner attention.
+
+**Ship:** ✅ SHIPPED (Phase 3 of 3). All shipped scope tested + deployed. Phase 3b infrastructure ready (aggregator + directive + schema + telemetry + cards + listener). Next session (S78) registers transaction + loot-drop parsers against existing aggregator; live verify Scenarios A + C + E + F at parser surfacing time.
+
+**Next:** Session 78 = Inversion v0 Phase 3b implementation — transaction-completion + loot-drop parsers, register against §1b.1 aggregator's existing `ParserResult` shape with `markers_present` signals. Sonnet medium per WWC default cadence.
+
+---
+
+# Session 78 — Inversion v0 Phase 3b Implementation (May 16, 2026)
+
+§1b.1 M-DELAYED primary path empirically activated. Two new closed-vocab parsers (`transaction_completion_parser`, `loot_drop_parser`) register against the S77 §1b.1 aggregator with full `markers_present` discrimination; post-LLM aggregator surface added. Recon-first per F-60; three architectural questions resolved at recon Phase A before implementation lock. Second anchor instance of Planner-Lead-Architecture Discipline (S77 first).
+
+**Recon Phase A findings (R1-R5):**
+- **R1 CLEAN with drift:** `_COIN_TRANSACTION_VERBS` is 47 verbs, not 18 as S74 documentation cited. The S65.1 baker-scenario hardening expanded coverage. Drift documented; structural implication unchanged.
+- **R2 CLEAN:** N-1 (mechanical_hints) sole consumer is `_attach_hints` at `discord_dnd_bot.py:2806` → DM narration embed bullet-list edit. Isolated surface; LLM-extraction-with-suppression-gate mechanism (NOT §1a.x-disciplined).
+- **R3 RESOLVED — Code's lock: (c) surface-separated.** N-1 stays unchanged (Avrae bookkeeping bullets on narration embed); transaction_completion fires alongside for §1b.1 aggregator routing (#dm-aside clarification surface). Vocabulary overlap is incidental — different mechanisms, different outputs, different consumer surfaces. Preserves S65.1 baker-scenario hardening without retrofit. Open for operator + Oracle confirmation at handoff per dispatch.
+- **R4 IMPEDANCE → RESOLVED:** Post-LLM aggregator surface required. Clean integration point at `_dm_respond_and_post:4251` alongside existing `_attach_hints` post-LLM hook. quest_accept stays pre-LLM-only per S73.1 lesson (LLM paraphrase misses canonical acceptance verbs); transaction_completion + loot_drop register both surfaces.
+- **R5 CLEAN:** All structural-signal accessors (`get_recently_active_npcs`, `get_pending_loot`, `get_inventory`) stable signatures.
+
+Recon report landed at `planner-scratch/PHASE3B_RECON_REPORT.md`.
+
+**Scope shipped:**
+- `transaction_completion_parser.py` NEW (~350 lines). Player-intent + LLM-completion verb sets with full tense + 3rd-person coverage per S73.1 lesson. Phrasals checked first (`pay for` wins over `pay`). 3-tier confidence: HIGH (verb + currency + NPC) / MEDIUM-with-markers (verb + 1-of-{currency,NPC,item}) / MEDIUM-no-markers (verb only) / LOW. Surface-namespaced LRU dedup so pre-LLM and post-LLM don't collide.
+- `loot_drop_parser.py` NEW (~330 lines). Player-intent + LLM-reveal verb sets. Item-class noun vocabulary (sword/potion/etc.) + container noun vocabulary (chest/box/etc., LLM-reveal only). Single-distinctive-token fallback for multi-word pending items (≥4 chars). 3-tier confidence per §1b.1 lock.
+- `discord_dnd_bot.py` — `_run_inversion_aggregator` (pre-LLM) extended: 3 parsers fan-out (quest_accept + transaction_completion_pre + loot_drop_player). NEW `_run_inversion_aggregator_post_llm` at `_dm_respond_and_post:4251`: 2 parsers fan-out (transaction_completion_post + loot_drop_llm) + Phase 3a-style suggester card render for HIGH fires + compliance-failure detection when LLM narrates state-change despite pending_clarification set. Two new card renderers: `_format_transaction_post_llm_card` + `_format_loot_drop_llm_card`. `get_recently_active_npcs` added to engine imports.
+- N-1 UNCHANGED per R3 (c) lock. `mechanical_hints.py` continues operating; `_attach_hints` post-LLM hook continues firing.
+- Telemetry — `record_parser_invocation` extended to 5 parser domains (quest_accept + transaction_completion_pre/post + loot_drop_player/llm). Existing event taxonomy unchanged; per-fire `parser_fired` events extend with `parser_domain` and `surface` disambiguation via the `route` and `confidence` payloads.
+- 3 new test files / 86 new assertions / all green:
+  - `test_transaction_completion_parser.py` (42 assertions)
+  - `test_loot_drop_parser.py` (29 assertions)
+  - `test_phase3b_aggregator_integration.py` (15 assertions)
+- DOCTRINE.md §1b.1 first-firing-instance line updated; §1a.x running anchor-instance count → 5 parser surfaces.
+- WORKING_WITH_CLAUDE.md **Planner-Lead-Architecture Discipline section landed** (was flagged at S77 handoff as referenced-but-not-yet-written). S77 named first anchor; S78 named second anchor with full content.
+- VIRGIL_MASTER.md §10 + ROADMAP.md updates per WWC Rule 1.
+
+**No schema changes.** v0 Phase 3b is pure additive parser registration; no DB migration. Pre-ship backup ran defensively per S65 standing practice.
+
+**Regression budget:** 0 caused. Full S77 sweep + Phase 3a sweep + §76 audit all green post-S78 changes. Pre-existing failures observed at S77 (mechanical_hints/init_end_buffer_reset/loot_directive/combat_narration_prompt_purity::current_scene_block) unchanged — pre-date current engine state per file mtimes May 1-11.
+
+**Single restart deploy:** virgil-discord restarted at 13:30:30 PDT. 28 slash commands synced; chroma 1115 sessions / 740307 knowledge loaded; npc_pronoun_backfill clean. No errors at startup or parser-module import.
+
+**Live verify Scenarios A + C + E + F:** Test prompts surfaced in handoff for operator-driven verification. Pre-verify: integration tests (`test_phase3b_aggregator_integration.py`) drive the four scenarios at the parser+aggregator boundary green — Stage 1 routing decisions for all four shapes are confirmed correct.
+
+**§1b.1 first production firing instance** documented in DOCTRINE.md at operator's live-verify completion. (Test-pack-driven integration test counts as v0 firing-instance baseline; production-narration firing pending operator action.)
+
+**F-64 sixth instance status:** S78 produces sixth instance candidate naturally. Transaction-completion parser's HIGH-tier fires on canonical "narration-claims-state-change" pattern: LLM narrates "Garrick pockets the gold" → engine state HASN'T been updated; without the §1a.x parser surfacing the operator-paste card, this would be a §F-64 silent contamination (narration claims canon; engine doesn't enforce). The parser+card surface IS the structural response to F-64. F-64 anchoring walk is the natural next-session topic — sixth instance now empirically present. Filed for S79 consideration.
+
+**Doctrinal weight:** Phase 3b activates M-DELAYED in production. Future workload parsers (butler reminder/task intents; web onboarding flow) inherit the closed-vocab + ParserResult + §1b.1 aggregator pattern cleanly — 5 parser surfaces now demonstrate the shape across 2 narration loci (pre-LLM + post-LLM).
+
+**Ship:** ✅ SHIPPED. All scope tested + deployed. M-DELAYED primary path live for transaction-completion + loot-drop ambiguity.
+
+**Next:** S79 = either F-64 doctrine anchoring walk (sixth instance produced at S78 makes this the natural anchor host) OR S69 Causality Engine Path A Phase 3 implementation. Operator decides at end-of-session-handoff signal.
+
+## S78 post-live-verify patches (same session)
+
+Operator's first live verify produced two findings that were ship-blocking and demanded immediate patch:
+
+**Finding 1 — race condition on LAYER_A/B routes.** Operator narrated `"I pay Mara 2gp for 1 loaf as agreed upon"`; the pre-LLM aggregator detected ≥2 parsers ≥MEDIUM (quest_accept on 'agreed' verb-only + transaction_completion on currency-marker), routed to LAYER_B (because quest_accept's empty payload broke the all-or-nothing enumerability check). Card surfaced in #dm-aside. But the LLM narration ran independently via the batcher 15s later and narrated the transaction as completed — operator was still reading the clarification card when the DM finalized the action. The bug: only IN_FICTION_CLARIFICATION set `pending_clarification` on `dnd_scene_state`; LAYER_A/B routes did not, so the prompt's `compute_pending_clarification_directive` had no state to inject. The race was structural, not timing.
+
+**Finding 2 — LAYER_B card UX friction.** Operator: "this should be a 1,2,3 choice why type it out?" Layer B card asked operator to type domain names (`"transaction_completion"`, `"skip"`); operator preference is numbered options. Per WWC operational discipline rule 5 (operator design preferences are constraints).
+
+**Patches landed:**
+
+- `clarification_handshake.py`:
+  - `_are_candidates_enumerable` loosened from `all()` to `any()` — LAYER_A now fires whenever any candidate has a populated payload (the operator's case now routes to LAYER_A with a single labeled transaction option, not LAYER_B).
+  - `build_layer_a_card` filters out empty-payload candidates from the rendered options.
+  - `build_layer_b_question` rewritten to use `**1.** transaction_completion / **2.** loot_drop / **3.** skip` numbered options.
+  - `parse_layer_b_reply` extended to accept numeric replies (`"1"`, `"2"`, `"3"`) in addition to domain-name + skip-token replies.
+
+- `discord_dnd_bot.py`:
+  - `_dispatch_clarification_fallback` LAYER_A branch sets `pending_clarification` on direct (non-fallback) fires per S77 M-DELAYED discipline. Operator's same-turn narration now reads pending state and narrates scene continuing without finalizing.
+  - `_dispatch_clarification_fallback` LAYER_B branch sets `pending_clarification` on direct fires.
+  - All `clear_pending_clarification` calls in Layer B resolution paths (EXPIRED / EXPLICIT_SKIP / COMMIT_* / AMBIGUOUS-recursion / manual escalation) are now unconditional (idempotent if no state was set; cleans up direct-route state on resolution).
+
+- `test_clarification_layer_b.py` extended with 7 new assertions covering numbered card format + numeric reply parsing + skip-slot semantics. All 28 LayerB tests + all other clarification + Phase 3b + Phase 3a + §76 audit suites pass post-patch.
+
+**Architectural recovery — Layer A is now the dominant cross-domain route.** Pre-patch the all-or-nothing enumerability check fell to LAYER_B for any case where one parser had no payload. Post-patch LAYER_A fires whenever any parser has content; LAYER_B is reserved for truly-non-enumerable cases (≥2 parsers all empty). Operator's 1,2,3 UX request was for LAYER_B — the patches make LAYER_B rarer (good) AND give it better UX when it does fire (also good).
+
+**Bot restarted at 13:53:51 PDT with patches live.** Restart-preservation notice fired correctly for campaign 111 (post-LLM aggregator had set pending state on the operator's earlier transaction-completion turn). Inspecting `dnd_scene_state.pending_clarification` confirmed `trigger_event_id` = `post_llm:ts=1778964371` with the transaction-completion candidate payload — proves the post-LLM aggregator is firing correctly even before the pre-LLM patch.
+
+**Filed forward as S79 considerations:** quest_accept's MEDIUM fire on 'agreed' verb in non-quest narration is a real false-positive surface. Operator's utterance "as agreed upon" is referential, not a fresh acceptance. Two possible refinements: (a) tighten quest_accept's verb context (require co-occurring quest-shape signal); (b) expand the §1b.1 aggregator's discrimination layer. Filed as v0.x telemetry-driven tuning per WWC standing practice — production ignore-rate per quest_accept MEDIUM determines the right fix shape.
+
+---
+
+# Session 79 — F-64 Doctrine Anchoring Walk Phase 1 (May 16, 2026)
+
+Path A doctrine-anchoring Phase 1. Independent planner structural analysis walk. No code; no canonical-doc amendments. Sonnet medium per WWC default. **Third Planner-Lead-Architecture Discipline anchor instance** (S77 first / S78 second / S79 third).
+
+**Deliverable:** `planner-scratch/F64_ANCHORING_WALK.md` (~9k words; §0-§8). Council prompt skeleton at `planner-scratch/F64_COUNCIL_PROMPT_DRAFT.md`.
+
+**Walk outcomes:** instance inventory reduced from 11 to 9 (reclassified N-1 over-firing → N-1 tuning surface; loot_drop_llm misfire → parser-vocab-overlap surface — both flagged for S81 recon confirmation). Framing test: current F-64 framing fits 8 of 9 instances cleanly; instance #11 (§F-08-a central thread compliance failure) doesn't fit (engine has the directive; LLM violates compliance — structurally inverted from F-64). Closure-pattern bifurcation: F-64's engine-side-surface closure covers 8 instances; instance #11 requires detection-telemetry + iteration closure.
+
+**Anchoring readiness lean:** Outcome 2 — split into F-64 + §77.1 (planner's lean; council pressure-tests at S80). Confidence: HIGH on split / MEDIUM-HIGH on §77.1 placement / MEDIUM on F-64 anchor language.
+
+**Six pressure-test questions surfaced for council** with anti-conformity protocol built into prompt skeleton per WWC Planner-Lead-Architecture Discipline Rule 4.
+
+**Ship:** ✅ SHIPPED (walk + council prompt). Next: S80 council pressure-test dispatch.
+
+---
+
+# Session 80 — F-64 Council Pressure-Test (May 16, 2026)
+
+Path A doctrine-anchoring Phase 2. Three-way council (Oracle / GPT / Gemini) pressure-tests S79 walk lean. Council produced **three convergent overrides** on planner's hypothesis:
+
+1. **Gemini Q1 reword:** F-64 framing rephrased to remove inadvertent §1a-violation reading. Final framing: "LLM narrates a mechanical/canonical state change that bypasses deterministic parsers; state desyncs across turns." The LLM is doing its job (narrating); the engine is structurally unequipped to anchor the claim.
+2. **Gemini Q3 placement change:** compliance-failure doctrine moves from §77.1 sub-clause to top-level §82 candidate. §77's atmospheric-continuity scope doesn't structurally absorb substrate-wide compliance-failure. §82 is a different failure mode, not a property axis — earns top-level anchoring (when threshold met), not sub-clause placement.
+3. **GPT + Oracle Q5 deferral:** §82 anchoring DEFERRED at S81. 2 instances (S77 `clarification_in_fiction_compliance_failure` + S78 §F-08-a) insufficient empirical maturity. Threshold for §82 anchoring: 3 structurally-identical instances across distinct directive surfaces. Anchoring at 2 risks "prematurely formalizing a temporary implementation pattern." Compliance-failure telemetry SHIPS at S81 as §82-candidate-application; doctrine itself stays candidate until third instance accumulates.
+
+**Council convergent locks (S80):**
+- F-64 anchors at S81 (sixth-instance threshold met decisively; cluster cleaned by S79 walk reclassifications).
+- Generic-with-payload telemetry pattern (GPT + Gemini Q6 convergent) — single `directive_compliance_failure` event with directive_name payload field; preserves grep surface; zero schema coupling.
+- §F-44 absorbs S78 Bishop's bakery instance #7 per Oracle Q1 audit (NPC-axis cross-axis bleed).
+- loot_drop_llm reclassification CONDITIONAL on S81 Code recon (Q4 unresolved).
+
+**GPT closing macro-observation** filed for landing at S81: doctrine-graph proliferation watch — at 76+ anchored entries, doctrines start tangling rather than building. Standing discipline lands in WWC at S81.
+
+**Ship:** ✅ SHIPPED (council pressure-test complete; three overrides applied). Next: S81 implementation.
+
+---
+
+# Session 81 — F-64 Anchoring + Compliance-Failure Telemetry Implementation (May 16, 2026)
+
+Path A doctrine-anchoring Phase 3 implementation. Closes S79 walk + S80 council arc. Sonnet medium per WWC default. **Fourth Planner-Lead-Architecture Discipline anchor instance** (S77 first / S78 second / S79 third / S81 fourth — post-council-pressure-test implementation with three reviewer overrides applied).
+
+**Recon Phase A findings (R1 + R2):**
+
+- **R1 loot_drop_llm production audit CLEAN.** Telemetry data (`playtest/inversion_v0_20260516.jsonl`): 15 `loot_drop_llm` events emitted; 4 routed MEDIUM fires; 1 LAYER_A card surface (the exact S78 Mara transaction sequence misfire). All 4 fires produced advisory cards only; no engine writes; operator-loop caught reliably (no `/loot claim` paste). **Reclassification: loot_drop_llm misfire is parser-vocab-overlap surface, NOT F-64.** Filed forward as v0.x §1a.x parser-tuning queue.
+
+- **R2 SESSIONS S43-S78 audit found 1 additional F-64-shape candidate.** S51 player-narrative-authority drift — DM caved on player premise contradicting scene canon; materialized merchant interior INSIDE training ground; subsequent narration treats LLM-authored state as ground truth. Filed at S51 as candidate "§77 sub-section" but never anchored. Structurally a clean F-64 instance (narration claims scene-boundary canon, engine doesn't enforce, subsequent narration treats LLM-authored state as ground truth). Subsumed into F-64 cluster at S81 anchor as instance #8.
+
+- **Net cluster at S81 anchor:** **7 instances** (dispatch's 8-instance framing adjusts; loot_drop_llm out; S51 in; Bishop's bakery to F-44).
+- No HALT-class impedance.
+
+**Scope shipped:**
+
+- **DOCTRINE.md §F-64 anchored entry.** Promoted from candidate. Full structural framing per Gemini Q1 reword. Architectural-relationship map made explicit (§1a / §1a.x / §1b / §1b.1 / §76 / §77 / §F-44). 7-instance cluster table with closure shape per instance. §82 sister-doctrine candidate filed forward.
+- **FAILURES.md updates:** F-64 candidate section retired (cross-reference to DOCTRINE.md §F-64); §F-44 entry expanded with NPC-axis Bishop's bakery instance; §82 candidate entry filed with anchoring threshold + architectural-design-time guidance + generic-with-payload reasoning + filed-forward detector list (4 candidate directive surfaces).
+- **`inversion_telemetry.py`** — `record_directive_compliance_failure` added per S80 Q6 generic-with-payload lock. Stable payload shape: `directive_name`, `severity`, `narration_excerpt` (capped 200), `detector`, `campaign_id`, `confidence`, `directive_intent` (capped 100). Grep surface preserved via `directive_name` field.
+- **`discord_dnd_bot.py`** — S77 `clarification_in_fiction_compliance_failure` event refactored to fire via generic event with `directive_name="pending_clarification"`. Per S80 Q6 retirement of prior event name.
+- **`dnd_orchestration.py`** — `detect_central_thread_compliance_failure` heuristic detector added. Deterministic content-token overlap (≥4 char, stopword-filtered) between thread directive body and narration. 3 severity bands per dispatch: LOW (<20% overlap, not flagged as violation), MEDIUM (20-40%), HIGH (≥40%).
+- **`discord_dnd_bot.py`** — `_run_central_thread_compliance_check` post-LLM background task wired at `_dm_respond_and_post` alongside `_attach_hints` + post-LLM aggregator. Fires `directive_compliance_failure` event for MEDIUM/HIGH violations. Telemetry only; no state mutation.
+- **WORKING_WITH_CLAUDE.md** — Doctrine-graph-proliferation-watch section landed per GPT S80 closing macro-observation. Three standing discipline rules: sub-anchor proliferation watch / anchor-threshold reinforcement / cross-doctrine relationship-map maintenance. S81 §82 deferral documented as first explicit application of anchor-threshold discipline under planner-lead-architecture. WWC Planner-Lead-Architecture Discipline anchor instance list extended (S79 third + S81 fourth added).
+- **2 new test files** (31 new assertions, all green):
+  - `test_directive_compliance_failure_telemetry.py` (16 assertions): event shape, payload caps, grep-surface verification, invalid-severity default.
+  - `test_central_thread_compliance_detector.py` (15 assertions): empty inputs, clean narration, HIGH/MEDIUM/LOW severity bands, stopword filter.
+- **Regression sweep clean** — all 15 clarification + Phase 3b + inversion-v0 + §76 audit test suites still green post-S81 changes.
+
+**No schema changes.** Pure additive (telemetry + detector + doc-only doctrine anchor). Pre-ship backup ran defensively per S65.
+
+**Single restart deploy:** virgil-discord restarted at 20:56:11 PDT. 28 slash commands synced; chroma 1141 sessions / 740307 knowledge loaded; npc_pronoun_backfill clean. No errors at startup or module imports.
+
+**Live verify NOT required.** Anchor lands at documentation; telemetry instrumented but fires empirically as future narration generates compliance-failure events. Operator + planner read telemetry data over time per §82 architectural-design-time guidance.
+
+**Doctrine state post-S81:**
+- §F-64 ANCHORED (7-instance cluster; full architectural-relationship map).
+- §82 CANDIDATE filed (2 instances; threshold 3 across distinct directive surfaces; deferred per council).
+- §F-44 instance list expanded (Bishop's bakery NPC-axis instance added per S80 Q1 Oracle).
+- §1a.x running anchor instance count unchanged (5 narration-detection parser surfaces).
+- §59 sibling count unchanged (24; pending_clarification_directive is #22 in-file / #24 overall).
+
+**Compounding leverage banked:**
+1. §F-64 anchored doctrine names substrate-level failure mode with explicit architectural-relationship map. Future ships citing F-64 don't re-derive framing or re-litigate scope.
+2. §1a.x empirically validated as architectural closure for §F-64. Doctrine-pair shape (failure-mode + architectural-response) parallels §76↔§17.
+3. §82 candidate filed with explicit threshold + architectural-design-time guidance. Future MUST/MUST-NOT directive ships plan compliance-detection telemetry concurrent without waiting for §82 to anchor.
+4. Generic-with-payload telemetry pattern reusable for any future telemetry surface where directive-disambiguation matters without schema coupling.
+5. Doctrine-graph-proliferation-watch landed in WWC. Future anchoring decisions reference the discipline; sub-clause-vs-top-level questions resolved against the proliferation-watch test.
+6. S78 Bishop's bakery instance compounds §F-44 cluster toward its own anchoring (substrate-level bleed cluster grows).
+7. R1 + R2 recon produces empirical-evidence baseline. Anchor's empirical claim is verified, not assumed (loot_drop_llm reclassified per actual telemetry; S51 instance found per audit pass).
+8. Fourth Planner-Lead-Architecture Discipline anchor instance — pattern operates across implementation ships (S77), recon-first dispatches (S78), doctrine-anchoring walks (S79), and post-council-pressure-test implementations (S81).
+
+**Ship:** ✅ SHIPPED. §F-64 ANCHORED. §82 CANDIDATE filed. Compliance-failure telemetry instrumented. Doctrine-graph-proliferation-watch landed.
+
+**Next:** Operator-decision priority queue (Phase 3c NPC-commitment-utterance + N-3.1 fold-in / S69 Causality Engine Path A Phase 3 / N-4 v1.x descriptor→name pronoun gap / §F-44 closure with Bishop's bakery instance compounding). Filed for operator handoff.

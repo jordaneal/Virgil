@@ -18,13 +18,52 @@
 **Why §1a.x rather than §1a in-place amendment, §1c new doctrine, or §76 footnote:**
 Mirrors §14.1's established sub-numbering pattern. §1a anchor preserved (no doctrine-statement bloat). §1a/§1b two-doctrine pairing unbroken (avoids splitting to §1a/§1b/§1c). The extension is doctrinally derived from §1a's intent (no LLM-decided binding state), not a new separable rule — sub-numbering honors that derivation. Operator + Oracle locked at Inversion v0 review (§11.2 (iii) at S71).
 
-**Architectural anchor instance (first):** S73 Phase 3a quest-acceptance closed-vocab parser (`quest_acceptance_parser.py` + detection insertion at `discord_dnd_bot._extract_and_persist_world` stage 3). Subsequent Inversion v0 surfaces (transaction-completion at S74; loot-drop at S74; NPC-commitment-utterance at S75) inherit §1a.x equivalence per the same four prerequisites.
+**Architectural anchor instance (first):** S73 Phase 3a quest-acceptance closed-vocab parser (`quest_acceptance_parser.py` + detection insertion at `discord_dnd_bot._extract_and_persist_world` stage 3).
+
+**Anchored instances post-S78** (5 narration-detection parser surfaces):
+
+1. `quest_acceptance` (pre-LLM only per S73.1 lesson) — S73 anchor.
+2. `transaction_completion_pre_llm` (player-intent surface) — S78.
+3. `transaction_completion_post_llm` (LLM-paraphrase surface) — S78.
+4. `loot_drop_player` (pre-LLM player-intent surface) — S78.
+5. `loot_drop_llm` (post-LLM LLM-reveal surface) — S78.
+
+All five register against the §1b.1 aggregator (`clarification_handshake.aggregate_parser_outputs`) under unified `ParserResult` shape. Each preserves the four §1a.x prerequisites: closed-vocab, structured-signal co-occurrence, engine-side writer §17 discipline, low-confidence routes to suggester for operator approval.
 
 ---
 
-## §1b — Running-list update (post-N-10, post-S67 audit, post-S73 anchor)
+## §1b.1 — Clarification handshake via #dm-aside (ANCHORED at S77)
 
-§1b validated-suggester pattern (bot proposes, deterministic gate validates, DM approves, system executes) now has six anchored project instances. Filed as running-list observation per S67 audit (B) lean — NOT promoted to formal §1b.1 sub-pattern.
+**Status:** ANCHORED at S77 Inversion v0 Phase 3 implementation ship. Formal sub-clause of §1b per §76.1/.2 sub-numbering precedent.
+
+Sits between §1a.x's *parser fires* and §1b's *operator pastes*. When a closed-vocab parser produces an ambiguous structured signal — multi-domain match, cross-domain semantic equivalence, or 1-parser-MEDIUM with structural markers — §1b.1 inserts an operator-disambiguation step before §1b's validated-suggester gate fires.
+
+**Architecture (final post-S77):**
+
+- **Primary path: M-DELAYED in-fiction clarification.** Engine sets `pending_clarification` flag on `dnd_scene_state` (JSON column, single-writer per §17 via `clarification_handshake.set_pending_clarification`); LLM narrates scene continuing WITHOUT finalizing (per `compute_pending_clarification_directive` injected into `build_dm_context` — 24th §59 sibling); parser fires second-pass on operator's next utterance. HIGH resolution commits via §17 path. Still-ambiguous escalates to Layer A or Layer B fallback.
+
+- **Fallback Layer A: richer suggester card.** Cross-domain enumerable case (≥2 parsers ≥MEDIUM with payload candidates). Multi-paste card to `#dm-aside` (per-candidate paste options + explicit skip). Operator paste IS the §F-59 gate.
+
+- **Fallback Layer B: bidirectional OOC handshake.** No clean candidate enumeration (≥2 parsers ≥MEDIUM, non-enumerable payloads). Free-text question to `#dm-aside` + `bot.wait_for` listener (5-min timeout, channel + author + post-timestamp + !bot filter). Operator OOC reply IS the §F-59 gate per council Shape A.2 lock — naming "operator-deliberate-commit" as authority claim. 2-iteration recursion cap (binary forced-choice card at iter 2; manual decision at iter 3).
+
+**Decentralized parser-output aggregation.** Parsers own ambiguity detection per §1a.x. Aggregator reads parser outputs (HIGH/MEDIUM/LOW + `markers_present`), applies Stage 1 routing rule, never inspects raw markers. Domain-agnostic flagship primitive; v0 wiring covers `quest_accept`; Phase 3b registers `transaction_completion` + `loot_drop` against existing aggregator without refactor.
+
+**M-IMMEDIATE explicitly rejected at v0.** Council pressure-test record across three passes (Oracle/GPT/Gemini) surfaced that the §1a defense of M-IMMEDIATE conflated LLM-narration-as-content (non-§1a-violating; project's existing LLM-mediated workflow) with LLM-narration-as-gate (§1a-violating; not what M-DELAYED does). M-DELAYED preserves §1a cleanly AND honors the Conversational-Runtime Inversion direction-lock litmus ("would a good human DM stop the session to operate software for this?" — answer for M-DELAYED: no, DM clarifies in-fiction; answer for M-IMMEDIATE: yes, OOC menu every ambiguous utterance).
+
+**§F-59 doctrine-refinement candidate filed forward:** Naming "operator-deliberate-commit" as the authority claim, with "paste of slash" and "OOC reply" as instantiating surfaces. Lands at next §F-59-touching ship; not scope-expanded at this anchoring.
+
+**Empirical watch surfaces (per GPT post-council Flag 1+2+4):**
+- Per-parser MEDIUM/HIGH/LOW fire-rate rolling-window snapshot (`parser_calibration_snapshot`, every 50 invocations) — calibration drift detection.
+- Per-scene clarification frequency (planned `clarification_density_snapshot` at scene transition) — operationalization-of-player-speech detection.
+- LLM in-fiction compliance failure tracking (`clarification_in_fiction_compliance_failure`) — empirical signal for prompt tuning when LLM narrates action as completed despite pending directive.
+
+**First firing instance:** S77 ships infrastructure clean (aggregator + directive + schema + telemetry + cards + listener); S78 ships the parsers that activate the M-DELAYED primary path empirically. Transaction-completion + loot-drop parsers register against the §1b.1 aggregator with full `markers_present` discrimination — covering player-intent (pre-LLM) and LLM-completion / LLM-reveal (post-LLM) narration loci. Live verify Scenarios A (transaction direct), C (loot direct), E (multi-domain Layer A), F (M-DELAYED primary) at S78 ship's post-restart verification. Actual production first-firing campaign + utterance documented at operator's live-verify completion.
+
+---
+
+## §1b — Running-list update (post-N-10, post-S73 anchor, post-§1b.1 sub-clause)
+
+§1b validated-suggester pattern (bot proposes, deterministic gate validates, DM approves, system executes) now has six anchored project instances + §1b.1 sub-clause covering the clarification surface across parsers. Filed as running-list observation per S67 audit (B) lean.
 
 **Project instances:**
 
@@ -48,27 +87,39 @@ Mirrors §14.1's established sub-numbering pattern. §1a anchor preserved (no do
 
 ---
 
-## §F-64 — Filed as anchored candidate (post-S68 cluster confirmation)
+## §F-64 — Narration-bypass state desync (ANCHORED at S81)
 
-**Status:** CANDIDATE-WITH-FIVE-INSTANCES. See `FAILURES.md` §F-64 for full instance enumeration and architectural relationship to §F-08 / §76 / §1a.
+**Status:** ANCHORED at S81. Cluster: 7 instances across S51–S78. S79 walk + S80 council pressure-test produced the framing. Three-reviewer convergent override on prior candidate phrasing — Gemini Q1 reworded to remove the inadvertent §1a-violation reading.
 
-**One-line:** Narration claims state change → engine does not enforce → state drifts. LLM narration alone is not a structural state-mutation signal.
+**One-line:** LLM narrates a mechanical/canonical state change that bypasses deterministic parsers; state desyncs across turns.
 
-**Closure pattern across five instances:**
+**Structural framing.** §F-64 names the empirical failure mode where LLM-side narration asserts a state mutation that no deterministic surface (parser + §17 writer + read-back directive) captures. The engine MUST NOT enforce LLM-claimed mutations per §1a; §F-64 names what occurs when the LLM's unbacked claim produces narrative-runtime divergence that compounds across turns. The failure is structural absence of a writer-side surface, not §1a violation by the LLM — the LLM is doing its job (narrating); the engine is structurally unequipped to anchor the narrated claim.
 
-| Instance | Surface | Fix shape |
-|---|---|---|
-| S53 §1.F.c | Activity-signal reset on LLM-extracted NPC was_new | Drop the LLM-extracted signal from §1.F set |
-| S63 §1.F.e | Activity-signal reset on LLM-extracted consequence | Drop pre-emptively (never wired; doc-only) |
-| S66 F-031 | Quest delivery silent inventory fail | Fix writer's empty-string sentinel bug + party-stash bucket |
-| S66 F-035 | Loot evaporation across narration boundary | Auto-claim via verb-vocabulary deterministic parser |
-| S68 N-4 | NPC pronoun drift across turns | Lock pronouns on first occurrence in dedicated column |
+**Architectural relationship to surrounding doctrine:**
 
-**Anchor candidate name (pending N-3.1 ship):** *"Narration-commit gap as systemic contamination surface."*
+- **§1a** — LLM never decides binding state (root invariant). §F-64 is the empirical failure mode that occurs when LLM narration attempts to author state §1a forbids it from deciding. §1a is the rule; §F-64 names the surface where the rule's structural absence (no enforcement) lets the LLM's narration drift past the engine.
+- **§1a.x** — Deterministic-gate authority via narration-detection. §1a.x IS the architectural closure for §F-64's pattern — parser detects intent, §17 writer commits, engine read-back anti-gaslights subsequent narration. Doctrine-pair shape (failure-mode + architectural-response), parallel to §76↔§17 / Path A retirement.
+- **§1b / §1b.1** — Validated-suggester + clarification handshake. Extend §1a.x's closure when parser-detection is ambiguous (operator gate via paste or OOC reply).
+- **§76** — Recursive-hallucination loop. §F-64 is one-way (narration → claim → no enforcement); §76 is two-way (narration → claim → re-injection → drift loop). Adjacent failure modes with distinct architectural responses (§F-64 ↔ §1a.x parser; §76 ↔ closure via Path A retirement or Path B structural break).
+- **§77** — Atmospheric continuity / two-layer enforcement. §77 anchors instruction-side (MUST/MUST-NOT) + information-side (context-block suppression) enforcement for atmospheric directives. §F-64 differs in scope (any state-bearing surface, not just atmospheric) and mechanism (writer-side absence, not instruction-side compliance). §82 candidate names the instruction-side compliance failure mode (see `FAILURES.md` §82).
+- **§F-44** — Cross-axis bleed (chroma campaign-scoped vs NPC extractor name-global). §F-44 is substrate-level bleed; §F-64 is narration-asserted-state-without-write. Cousin doctrines. F-44 instances can manifest as F-64-shape behavior downstream (e.g., S78 Bishop's bakery NPC bleed → LLM narrates Mara at new location based on bled-in chroma context).
 
-**Anchor pending at:** N-3.1 commitment-tracking multi-spec ship, which provides the architectural primitive demonstrating the structural response (narration-detection parser feeding single-writer with read-back-for-anti-gaslight directive). Anchoring at N-3.1 ship gives both the pattern and the response in operator-readable form.
+**Closure pattern:** parser + §17 writer + read-back-for-anti-gaslight directive injection. Each anchored instance follows this shape:
 
-If Inversion v0 folds N-3.1 per §11.4 candidate, doctrine anchoring walk happens at Inversion v0 lock instead of separate N-3.1 spec session. Same outcome via different surface.
+| # | Instance | Surface | Closure |
+|---|---|---|---|
+| 1 | S53 §1.F.c NPC was_new | LLM-extracted activity-signal claims state mutation; engine reset trusts the claim | Drop the LLM-extracted signal from §1.F set (engine stops listening to unreliable LLM claim) |
+| 2 | S63 §1.F.e consequence-DM-side | Same shape, never wired | Pre-emptive doc-only drop |
+| 3 | S66 F-031 quest delivery silent inventory fail | Narration claims reward delivered; writer fails silently on empty-string | Fix writer's empty-string sentinel + party-stash bucket + truthful aside |
+| 4 | S66 F-035 loot evaporation | Narration describes loot drop; engine never auto-claims | Auto-claim via verb-vocabulary deterministic parser (§1a.x application) |
+| 5 | S68 N-4 NPC pronoun drift | Narration uses pronouns; engine has no pronoun anchor | `dnd_npcs.pronouns` column + first-occurrence lock via §17 single-writer + HARD STOP RULE 7 |
+| 6 | S78 baker descriptor→name pronoun gap | Anonymous descriptor "the baker" turn 1 → named "Mara" turn 2; N-4 keys on names, descriptor produces no NPC row | TBD — N-4 v1.x ship surface (alias descriptors to subsequent names; lock pronouns from descriptor context) |
+| 7 | S78 LLM price invention + cross-turn inconsistency | LLM narrates 1gp/loaf turn 1, 3gp/loaf turn 2; engine has no price/economic commitment anchor | TBD — N-3.1 commitment-tracking ship surface (was originally filed as F-64 sixth-instance host; surfaces empirically before architectural ship) |
+| 8 | S51 player-narrative-authority drift | LLM caved on player premise contradicting scene canon; materialized merchant interior INSIDE training ground; subsequent narration treats LLM-authored state as ground truth | TBD — scene-boundary enforcement surface (filed at S51 as candidate "§77 sub-section"; subsumed into §F-64 cluster at S81 anchor per R2 audit) |
+
+**Future instances inherit §1a.x architectural response.** When new state-bearing surface ships, planner verifies §F-64 closure: closed-vocab parser detects intent; §17 writer commits; read-back directive anti-gaslights subsequent LLM narration. Surfaces shipping without this closure pattern earn §F-64 instance status until addressed.
+
+**Sister-doctrine candidate filed:** §82 — Instruction-Side Compliance (FAILURES.md §82 candidate). Where §F-64 names writer-side absence (engine lacks the surface), §82 names instruction-side compliance failure (engine HAS the directive surface; LLM violates compliance). Two architecturally-independent design-time choices, not property-axes of one mechanism. §82 anchoring deferred per S80 council convergent (insufficient empirical maturity at 2 instances; threshold requires 3 structurally-identical instances across distinct directive surfaces).
 
 ---
 
@@ -119,9 +170,9 @@ Four anchored project instances (post-S72.2):
 
 Canonical instance grep across `dnd_orchestration.py` + `dnd_engine.py` + `discord_dnd_bot.py` for `compute_*_directive` / `compute_*_suggester` / `render_*` / `build_*_context` / `compute_setup_plan`.
 
-**Result: 23 instances** (corrected from VIRGIL_MASTER's pre-S72 "17 at S70").
+**Result: 24 instances** post-S77 (`compute_pending_clarification_directive` added; corrected from VIRGIL_MASTER's pre-S72 "17 at S70" and post-S72.1 "23").
 
-**dnd_orchestration.py (21 instances):**
+**dnd_orchestration.py (22 instances):**
 
 | # | Name | Line | Notes |
 |---|---|---|---|
@@ -146,6 +197,7 @@ Canonical instance grep across `dnd_orchestration.py` + `dnd_engine.py` + `disco
 | 19 | `compute_composition_directive` | :4744 | |
 | 20 | `compute_bootstrap_sequence_directive` | :5046 | |
 | 21 | `compute_bootstrap_card_directive` | :5347 | §1b 5th-instance §59 sibling (N-10 Canon Bootstrap) |
+| 22 | `compute_pending_clarification_directive` | :5493 | §1b.1 sub-clause directive composer (S77) |
 
 **dnd_engine.py (1 instance):**
 

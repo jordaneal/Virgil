@@ -68,6 +68,14 @@ EXPECTED_CLASSIFICATION = {
     'last_active_actor':   (False, True,  True,  False),  # canonical name
     'campaign_day':        (False, True,  True,  False),  # integer
     'day_phase':           (False, True,  True,  False),  # fixed enum
+    'current_act_id':      (False, True,  True,  False),  # FK integer (S60)
+    # S77 §1b.1 — JSON metadata written by clarification_handshake's
+    # single-writer set/clear path. Retrieved into compute_pending_
+    # clarification_directive which renders MUST/MUST-NOT prose, BUT the
+    # column itself stores structured candidate data (not free-form
+    # LLM-narrative content). Operator + parser drive writes; LLM never
+    # writes here. 2/4 clean.
+    'pending_clarification': (False, True, True, False),
 }
 
 

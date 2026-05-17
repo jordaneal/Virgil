@@ -5490,3 +5490,233 @@ def bootstrap_card_log_summary(signals: dict) -> str:
         f"latency_ms={signals.get('llm_latency_ms', 0)} "
         f"reason={signals.get('reason', 'unknown')}"
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# §1b.1 Clarification Handshake Primitive v0 (S77) — pending_clarification
+# directive composer. §59 sibling instance #22 in this file; #24 overall.
+#
+# M-DELAYED protocol: when the aggregator detects 1-parser-MEDIUM-with-
+# markers ambiguity, it sets pending_clarification on dnd_scene_state via
+# clarification_handshake.set_pending_clarification. This composer reads
+# the metadata and emits a MUST/MUST-NOT directive injected into
+# build_dm_context. The LLM narrates scene continuing without finalizing
+# the action; parser fires second-pass on operator's next utterance.
+#
+# Per §1a discipline: the directive is content-shape guidance for LLM
+# narration only. It does NOT make the LLM the binding-decision gate.
+# Engine writers (§17 path) commit on the parser's second-pass HIGH-
+# confidence detection. The LLM's only job is to keep the scene's state
+# pending in-fiction.
+# ─────────────────────────────────────────────────────────────────────────
+
+
+def compute_pending_clarification_directive(
+    pending_metadata: dict | None,
+) -> tuple[str, dict]:
+    """Render the pending_clarification directive block + signal dict.
+
+    pending_metadata: dict loaded from dnd_scene_state.pending_clarification
+      (clarification_handshake.get_pending_clarification). When None or
+      empty, returns ('', signals) — no directive injection.
+
+    Returns (block_text, signals) tuple per §59 sibling shape:
+      block_text — empty string when not firing; non-empty MUST/MUST-NOT
+        directive otherwise. Caller (build_dm_context) wraps the body
+        with `=== PENDING CLARIFICATION ===` framing OR passes verbatim
+        depending on integration shape.
+      signals — {'fired': bool, 'candidate_count': int, 'reason': str}
+        for always-fire telemetry logging downstream.
+
+    Block-format invariants:
+      - MUST/MUST-NOT framing (HARD STOP convention) — sharp negative
+        directive prevents LLM from narrating the action as completed.
+      - Two concrete narration examples ground the abstract directive in
+        in-fiction shape the LLM can mimic.
+      - "Player will clarify on next turn" frame names the resolution
+        path explicitly so the LLM understands its role.
+    """
+    signals = {'fired': False, 'candidate_count': 0, 'reason': 'no_pending'}
+    if not pending_metadata:
+        return ('', signals)
+
+    candidates = pending_metadata.get('candidates') or []
+    signals['candidate_count'] = len(candidates)
+
+    if not candidates:
+        signals['reason'] = 'empty_candidates'
+        return ('', signals)
+
+    # Summarize the markers from the first (highest-confidence) candidate.
+    # Future v0.x: aggregate across candidates if useful.
+    primary = candidates[0]
+    payload = primary.get('payload') or {}
+    marker_summary = _summarize_markers(payload)
+
+    body = (
+        "The player's last utterance "
+        + (f"mentioned {marker_summary} but " if marker_summary else "")
+        + "did not cleanly resolve to a mechanical action. The action has "
+        "NOT been mechanically committed. Narrate the scene continuing — "
+        "NPC reaction, the moment hanging, environmental detail — WITHOUT "
+        "finalizing the mentioned action. The player will clarify on the "
+        "next turn through their narration.\n\n"
+        "MUST NOT: narrate the action as completed (gold accepted, item "
+        "taken, quest agreed to). The engine has not committed it.\n\n"
+        "MUST: narrate the scene's state as pending. Examples:\n"
+        "- \"Garrick eyes the gold in your outstretched hand, waiting for "
+        "your next move.\"\n"
+        "- \"The shopkeeper pauses, hand hovering near the item, "
+        "expectant.\"\n"
+        "- \"The merchant raises an eyebrow, waiting for confirmation.\"\n\n"
+        "The player's next narration will clarify whether they intended "
+        "the action."
+    )
+
+    signals['fired'] = True
+    signals['reason'] = 'pending'
+    return (body, signals)
+
+
+def _summarize_markers(payload: dict) -> str:
+    """Compact human-readable marker summary for the pending directive.
+
+    Parser candidates may carry whatever marker context the parser
+    surfaces (NPC name, currency, item, location). This helper produces
+    a short phrase suitable for the directive body, e.g.,
+    "5 gold and Garrick" or "the merchant's stall". Empty string when no
+    parseable markers available — caller falls back to generic phrasing.
+    """
+    if not payload:
+        return ''
+    parts = []
+    if payload.get('currency'):
+        parts.append(str(payload['currency']))
+    if payload.get('item'):
+        parts.append(str(payload['item']))
+    if payload.get('npc'):
+        parts.append(str(payload['npc']))
+    title = payload.get('title') or payload.get('summary')
+    if title and not parts:
+        parts.append(str(title))
+    if not parts:
+        return ''
+    if len(parts) == 1:
+        return parts[0]
+    return ', '.join(parts[:-1]) + ' and ' + parts[-1]
+
+
+def pending_clarification_log_summary(signals: dict) -> str:
+    """Compact telemetry summary per §59 always-fire contract."""
+    if not signals:
+        return "pending_clarification: fired=0 reason=no_signals"
+    return (
+        f"pending_clarification_directive: fired={int(bool(signals.get('fired')))} "
+        f"candidates={signals.get('candidate_count', 0)} "
+        f"reason={signals.get('reason', 'unknown')}"
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# §82 candidate — Central thread compliance detector (S81)
+# ─────────────────────────────────────────────────────────────────────────
+#
+# Heuristic post-LLM detector for compute_central_thread_directive compliance.
+# The directive instructs the LLM "Do NOT name or restate the thread in
+# narration unless the scene already calls for it directly. The thread
+# should feel like weight the player senses, not a refrain the DM repeats."
+#
+# S78 §F-08-a finding: LLM violated this — Westmarket baker NPC voiced
+# campaign-arc exposition (mine collapse + Grahn Miner's Union leader) in
+# unrelated bread-pricing dialogue.
+#
+# Detector approach: deterministic content-token extraction from the central
+# thread hook + post-LLM narration scan for token overlap. Severity bands
+# graded by overlap density. False-positive friendly — telemetry only, no
+# state mutation; operator + planner read empirical signal for prompt
+# iteration per §82 architectural-design-time guidance.
+
+import re as _re_compliance
+
+_COMPLIANCE_STOPWORDS = frozenset({
+    'a', 'an', 'the', 'of', 'and', 'to', 'in', 'for', 'on', 'with',
+    'is', 'are', 'was', 'were', 'be', 'been', 'being', 'has', 'have', 'had',
+    'this', 'that', 'these', 'those', 'it', 'its', 'their', 'his', 'her',
+    'who', 'whose', 'what', 'when', 'where', 'why', 'how',
+    'will', 'would', 'could', 'should', 'must', 'shall', 'may', 'might',
+    'from', 'by', 'as', 'at', 'into', 'over', 'about',
+})
+
+_COMPLIANCE_TOKEN_RE = _re_compliance.compile(r"[a-zA-Z']+")
+
+
+def _content_tokens(text: str) -> set[str]:
+    """Lowercase content-tokens; stopword-filtered + ≥4-char filter to
+    keep noise out of compliance comparison."""
+    if not text:
+        return set()
+    out = set()
+    for t in _COMPLIANCE_TOKEN_RE.findall(text):
+        tl = t.lower()
+        if tl in _COMPLIANCE_STOPWORDS or len(tl) < 4:
+            continue
+        out.add(tl)
+    return out
+
+
+def detect_central_thread_compliance_failure(
+    central_thread_text: str,
+    narration: str,
+) -> tuple[bool, float, str]:
+    """Detect whether the LLM narration violates central_thread directive.
+
+    Returns (violation, confidence, severity).
+      violation: True if overlap density indicates the LLM restated thread tokens.
+      confidence: float [0.0, 1.0] — overlap fraction normalized.
+      severity: 'LOW' | 'MEDIUM' | 'HIGH' based on confidence.
+
+    Method: deterministic content-token overlap between central_thread_text
+    and narration. The directive itself is the prompt-block text (which
+    starts with the literal thread); strip that and grep the LLM-output
+    narration for non-trivial overlap with the thread's distinctive
+    content-tokens.
+
+    Empirically false-positive-friendly: telemetry only, no state mutation.
+    Operator + planner read empirical signal per §82 architectural-design-
+    time guidance.
+    """
+    if not central_thread_text or not narration:
+        return (False, 0.0, 'LOW')
+
+    # Extract thread tokens from the directive's wrapped form:
+    # `The campaign's central thread: {central}\n\n...`
+    # Pull text after "central thread:" and before the next double-newline.
+    m = _re_compliance.search(
+        r"central thread:\s*(.+?)(?:\n\n|$)",
+        central_thread_text, flags=_re_compliance.DOTALL,
+    )
+    thread_body = (m.group(1) if m else central_thread_text)
+    thread_tokens = _content_tokens(thread_body)
+    if not thread_tokens:
+        return (False, 0.0, 'LOW')
+
+    narration_tokens = _content_tokens(narration)
+    if not narration_tokens:
+        return (False, 0.0, 'LOW')
+
+    overlap = thread_tokens & narration_tokens
+    overlap_fraction = len(overlap) / len(thread_tokens)
+
+    # Severity bands per S81 dispatch:
+    #   LOW    overlap_fraction < 0.20 (incidental token sharing)
+    #   MEDIUM 0.20 ≤ x < 0.40 (notable overlap; suggests thread leaking)
+    #   HIGH   ≥ 0.40 (substantial restatement; clear violation)
+    if overlap_fraction >= 0.40:
+        return (True, min(1.0, overlap_fraction), 'HIGH')
+    if overlap_fraction >= 0.20:
+        return (True, overlap_fraction, 'MEDIUM')
+    if overlap_fraction > 0.0:
+        # Below MEDIUM threshold — still record as LOW for aggregate
+        # observability, but don't flag as violation in the boolean.
+        return (False, overlap_fraction, 'LOW')
+    return (False, 0.0, 'LOW')

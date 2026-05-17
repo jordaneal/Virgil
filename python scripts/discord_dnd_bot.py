@@ -30,6 +30,7 @@ import sys
 import asyncio
 import datetime
 import logging
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from dotenv import load_dotenv
@@ -66,6 +67,7 @@ from dnd_engine import (
     get_bound_character_names,
     canonicalize_actor_name,
     npc_upsert, npc_fragmentation_report, npc_list,
+    get_recently_active_npcs,
     stat_incomplete, npc_hydrate_stats, npc_register_avrae_madd, npc_get_by_name,
     location_upsert, location_get, location_get_by_name, location_list,
     set_current_location, get_current_location,
@@ -1692,6 +1694,44 @@ async def on_ready():
     except Exception as e:
         log(f"cache_warm: top-level error err={e}")
 
+    # §1b.1 Clarification Handshake — restart-preservation notice (S77).
+    # M-DELAYED pending_clarification flag survives restart in the DB.
+    # In-memory Layer B listener sessions do not (cleared at module import).
+    # For each campaign that has a non-NULL pending_clarification, post a
+    # one-time notice to #dm-aside so the operator knows the in-fiction
+    # context is preserved and can continue narrating to resolve.
+    try:
+        import clarification_handshake as ch
+        import sqlite3 as _sq
+        from dnd_engine import DB_PATH as _DBP
+        pending_campaigns = ch.list_campaigns_with_pending_clarification()
+        for cid in pending_campaigns:
+            try:
+                conn = _sq.connect(_DBP)
+                row = conn.execute(
+                    "SELECT guild_id FROM dnd_campaigns WHERE id=?",
+                    (cid,),
+                ).fetchone()
+                conn.close()
+                _guild_id = row[0] if row else None
+                if not _guild_id:
+                    continue
+                _guild = bot.get_guild(int(_guild_id))
+                if _guild is None:
+                    continue
+                await _post_dm_aside(
+                    _guild,
+                    "*I just restarted — there was a pending clarification "
+                    "from last turn. Keep playing and I'll pick it up from "
+                    "your next move, or paste the matching slash if you "
+                    "know which one fits.*",
+                )
+                log(f"clarification_restart_notice: campaign={cid}")
+            except Exception as _ne:
+                log(f"clarification_restart_notice: campaign={cid} err={_ne!r}")
+    except Exception as e:
+        log(f"clarification_restart_notice: top-level error err={e}")
+
 
 
 @bot.tree.command(name='refresh', description='Refresh the cached character data from a recent Avrae !sheet.')
@@ -2714,21 +2754,31 @@ async def on_message(message: discord.Message):
                 f"(active='{active['character_name']}' controller={active['controller_id']})")
             return
 
-    # ── Conversational-Runtime Inversion v0 Phase 3a (S73.1) ──────────────
-    # Pre-LLM quest-acceptance detection. Player input contains canonical
-    # acceptance verbs verbatim (`agrees`/`accept`/`I'll take`/etc.). S73's
-    # post-LLM hook missed paraphrased LLM output — moved here per S73.1
-    # repair. Fires after all bailouts (Avrae prefix, init-setup, turn-gate)
-    # pass; before chroma_store + batcher dispatch so the parser sees the
-    # canonical player narration text.
+    # ── Conversational-Runtime Inversion v0 — Phase 3a + §1b.1 (S77) ─────
+    # Pre-LLM aggregator. Per S77 dispatch, the single _run_quest_acceptance
+    # detection task expands into _run_inversion_aggregator which fans out
+    # across all registered v0 parsers (quest-accept at Phase 3a; transaction
+    # + loot-drop register at Phase 3b) and routes per §1b.1 Stage 1 rule:
     #
-    # Soft-fail at call site — detection never blocks player narration delivery.
+    #   - 0 parsers ≥MEDIUM → silent log
+    #   - 1 parser at HIGH → SINGLE_DOMAIN_CLEAR (existing Phase 3a path)
+    #   - 1 parser at MEDIUM with markers → IN_FICTION_CLARIFICATION
+    #     (M-DELAYED primary; pending_clarification flag set, LLM narrates
+    #     scene continuing without finalizing)
+    #   - 1 parser at MEDIUM without markers → SINGLE_DOMAIN_CLEAR
+    #   - ≥2 parsers ≥MEDIUM enumerable → LAYER_A multi-paste card
+    #   - ≥2 parsers ≥MEDIUM non-enumerable → LAYER_B OOC handshake
+    #
+    # Soft-fail at call site — aggregator/detection never blocks narration.
     try:
         asyncio.create_task(
-            _run_quest_acceptance_detection(campaign['id'], action, message.guild)
+            _run_inversion_aggregator(
+                campaign['id'], action, message.guild,
+                str(message.author.id), message,
+            )
         )
     except Exception as e:
-        log(f"inversion_v0_quest_accept: scheduling error "
+        log(f"inversion_v0_aggregator: scheduling error "
             f"campaign={campaign['id']} err={e!r}")
 
     chroma_store(campaign['id'], 'user', f"{display}: {action}")
@@ -3075,6 +3125,900 @@ async def _run_quest_acceptance_detection(campaign_id: int, narration: str,
         f"confidence={result.get('confidence')} "
         f"verb={result.get('matched_verb')!r} "
         f"quest_id={result.get('matched_quest_id')}")
+
+
+async def _run_inversion_aggregator(campaign_id: int, narration: str,
+                                    guild, controller_id: str,
+                                    trigger_message) -> None:
+    """§1b.1 Clarification Handshake aggregator (S77).
+
+    Wraps all v0 parsers, normalizes outputs to ParserResult, applies
+    Stage 1 routing via clarification_handshake.aggregate_parser_outputs,
+    then dispatches per route:
+
+      - SINGLE_DOMAIN_CLEAR: pass through to existing Phase 3a behavior
+        (currently quest-acceptance only at v0; Phase 3b registers
+        transaction + loot-drop)
+      - IN_FICTION_CLARIFICATION: M-DELAYED primary. set_pending_clarification
+        on dnd_scene_state; LLM picks up directive on next narration; parser
+        fires second-pass on operator's next utterance.
+      - LAYER_A: render multi-paste card via _post_dm_aside
+      - LAYER_B: render OOC handshake + bot.wait_for listener (5-min timeout)
+      - SILENT_LOG: silent
+
+    Second-pass detection: when pending_clarification is already set,
+    re-route based on current parser outcomes. HIGH on any parser clears
+    pending and commits via existing §17 path. Still-ambiguous escalates
+    to Layer A/B fallback.
+
+    Soft-fail throughout — aggregator never blocks narration. Telemetry
+    fires per-event per §11.8 always-fire discipline.
+    """
+    from quest_acceptance_parser import parse_quest_acceptance
+    from transaction_completion_parser import (
+        parse_transaction_completion, SURFACE_PRE_LLM as TX_PRE,
+    )
+    from loot_drop_parser import (
+        parse_loot_drop, SURFACE_PRE_LLM as LD_PRE,
+    )
+    from inversion_telemetry import (
+        emit_parse_outcome, emit_clarification_event, record_parser_invocation,
+    )
+    import clarification_handshake as ch
+
+    # Detect second-pass — pending_clarification already set from a prior
+    # utterance. M-DELAYED's second-pass detection path.
+    try:
+        pending_meta = ch.get_pending_clarification(campaign_id)
+    except Exception:
+        pending_meta = None
+
+    # Fan out across registered parsers.
+    parser_results: list[ch.ParserResult] = []
+
+    # ── Quest-acceptance parser (Phase 3a, S73-anchored) ─────────────────
+    try:
+        offered = get_offered_quests(campaign_id)
+    except Exception as e:
+        log(f"inversion_v0_aggregator: offered_lookup error "
+            f"campaign={campaign_id} err={e!r}")
+        offered = []
+    try:
+        qa_result = parse_quest_acceptance(narration, offered, campaign_id)
+    except Exception as e:
+        log(f"inversion_v0_aggregator: quest_accept parse error "
+            f"campaign={campaign_id} err={e!r}")
+        qa_result = {
+            'fired': False, 'confidence': 'low', 'matched_verb': '',
+            'matched_quest_id': None, 'matched_quest_title': '',
+            'dedup_suppressed': False, 'feature_disabled': False,
+        }
+
+    record_parser_invocation('quest_accept', qa_result.get('confidence', 'low'))
+
+    qa_candidate = {}
+    if qa_result.get('matched_quest_id') is not None:
+        qa_candidate = {
+            'title': qa_result.get('matched_quest_title', ''),
+            'slash': f"/quest accept {qa_result.get('matched_quest_id')}",
+        }
+    # quest_accept parser is verb-only at v0 — it does not surface NPC /
+    # currency / item markers itself; structural markers come from the
+    # Phase 3b transaction + loot-drop parsers. Setting markers_present=False
+    # keeps quest_accept MEDIUM routing through SINGLE_DOMAIN_CLEAR (Phase 3a
+    # behavior preserved) rather than the M-DELAYED IN_FICTION path.
+    parser_results.append(ch.ParserResult(
+        domain='quest_accept',
+        confidence=qa_result.get('confidence', 'low'),
+        fired=bool(qa_result.get('fired')),
+        markers_present=False,
+        dedup_suppressed=bool(qa_result.get('dedup_suppressed')),
+        feature_disabled=bool(qa_result.get('feature_disabled')),
+        candidate=qa_candidate,
+    ))
+
+    qa_route = 'silent'
+    if qa_result.get('fired'):
+        qa_route = 'engine' if qa_result.get('confidence') == 'high' else 'suggester'
+    emit_parse_outcome('quest_accept', campaign_id, qa_result, route=qa_route)
+
+    # ── Transaction-completion parser (Phase 3b pre-LLM, S78) ────────────
+    try:
+        scene_loc = None
+        try:
+            scene_state = get_scene_state(campaign_id) or {}
+            scene_loc = scene_state.get('current_location_id')
+        except Exception:
+            scene_state = {}
+        recent_npcs = get_recently_active_npcs(campaign_id, limit=6,
+                                                 location_id=scene_loc) or []
+        # Inventory is keyed by character; use active actor when available.
+        # Pre-LLM hook: scene's last_active_actor is the best heuristic;
+        # falls back to empty list when unset.
+        inventory: list = []
+        try:
+            actor_name = (scene_state or {}).get('last_active_actor', '') or ''
+            if actor_name:
+                inventory = get_inventory(campaign_id, actor_name) or []
+        except Exception:
+            inventory = []
+        tx_result = parse_transaction_completion(
+            narration, recent_npcs, inventory, campaign_id,
+            surface=TX_PRE,
+        )
+    except Exception as e:
+        log(f"inversion_v0_aggregator: transaction_pre parse error "
+            f"campaign={campaign_id} err={e!r}")
+        tx_result = {
+            'fired': False, 'confidence': 'low', 'matched_verb': '',
+            'currency': None, 'npc_name': '', 'item_name': '',
+            'markers_present': False, 'surface': TX_PRE,
+            'dedup_suppressed': False, 'feature_disabled': False,
+        }
+
+    record_parser_invocation('transaction_completion_pre',
+                              tx_result.get('confidence', 'low'))
+
+    tx_candidate = {}
+    if tx_result.get('npc_name') or tx_result.get('currency'):
+        # Build a candidate payload for §1b.1 enumeration. The slash isn't
+        # canonical at v0 (the engine doesn't yet ship a /transaction commit;
+        # transactions surface via /coin operator paste per N-1 bookkeeping
+        # + future engine writer). Suggester card body renders npc + currency.
+        c = tx_result.get('currency') or {}
+        tx_candidate = {
+            'npc': tx_result.get('npc_name', ''),
+            'currency': f"{c.get('amount')}{c.get('denom')}" if c else '',
+            'item': tx_result.get('item_name', ''),
+            'title': 'transaction completion',
+        }
+    parser_results.append(ch.ParserResult(
+        domain='transaction_completion',
+        confidence=tx_result.get('confidence', 'low'),
+        fired=bool(tx_result.get('fired')),
+        markers_present=bool(tx_result.get('markers_present')),
+        dedup_suppressed=bool(tx_result.get('dedup_suppressed')),
+        feature_disabled=bool(tx_result.get('feature_disabled')),
+        candidate=tx_candidate,
+    ))
+    emit_parse_outcome(
+        'transaction_completion_pre', campaign_id, tx_result,
+        route='engine' if tx_result.get('confidence') == 'high'
+        else ('suggester' if tx_result.get('fired') else 'silent'),
+    )
+
+    # ── Loot-drop player-intent parser (Phase 3b pre-LLM, S78) ───────────
+    try:
+        pending = get_pending_loot(campaign_id) or []
+        ld_result = parse_loot_drop(narration, pending, campaign_id, surface=LD_PRE)
+    except Exception as e:
+        log(f"inversion_v0_aggregator: loot_drop_player parse error "
+            f"campaign={campaign_id} err={e!r}")
+        ld_result = {
+            'fired': False, 'confidence': 'low', 'matched_verb': '',
+            'matched_pending_loot_id': None, 'matched_item_name': '',
+            'item_class_marker': '', 'markers_present': False,
+            'surface': LD_PRE, 'dedup_suppressed': False, 'feature_disabled': False,
+        }
+
+    record_parser_invocation('loot_drop_player',
+                              ld_result.get('confidence', 'low'))
+
+    ld_candidate = {}
+    if ld_result.get('matched_item_name') or ld_result.get('item_class_marker'):
+        slash = ''
+        if ld_result.get('matched_pending_loot_id'):
+            slash = f"/loot claim {ld_result['matched_pending_loot_id']}"
+        ld_candidate = {
+            'item': (ld_result.get('matched_item_name')
+                     or ld_result.get('item_class_marker', '')),
+            'slash': slash,
+            'title': 'loot claim',
+        }
+    parser_results.append(ch.ParserResult(
+        domain='loot_drop_player',
+        confidence=ld_result.get('confidence', 'low'),
+        fired=bool(ld_result.get('fired')),
+        markers_present=bool(ld_result.get('markers_present')),
+        dedup_suppressed=bool(ld_result.get('dedup_suppressed')),
+        feature_disabled=bool(ld_result.get('feature_disabled')),
+        candidate=ld_candidate,
+    ))
+    emit_parse_outcome(
+        'loot_drop_player', campaign_id, ld_result,
+        route='engine' if ld_result.get('confidence') == 'high'
+        else ('suggester' if ld_result.get('fired') else 'silent'),
+    )
+
+    # Apply Stage 1 routing.
+    decision = ch.aggregate_parser_outputs(parser_results)
+
+    # Second-pass branch: pending state exists.
+    if pending_meta is not None:
+        # If any parser hit HIGH on this utterance, commit + clear pending.
+        highs = [r for r in parser_results
+                 if r.confidence == 'high' and r.fired]
+        if highs:
+            ch.clear_pending_clarification(campaign_id)
+            emit_clarification_event(
+                'clarification_in_fiction_resolved',
+                campaign_id,
+                {'parser_domains': [r.domain for r in highs]},
+            )
+            # Fall through to existing Phase 3a path — quest_accept's
+            # SINGLE_DOMAIN_CLEAR posts the suggester card / engine writer.
+            if qa_result.get('fired'):
+                card = _format_quest_acceptance_suggester_card(qa_result, offered)
+                if card:
+                    await _post_dm_aside(guild, card)
+                log(f"inversion_v0_aggregator: second_pass_resolved "
+                    f"campaign={campaign_id} domain=quest_accept "
+                    f"verb={qa_result.get('matched_verb')!r}")
+            return
+
+        # Second-pass still ambiguous — escalate to Layer A/B fallback.
+        if decision.route in ('LAYER_A', 'LAYER_B'):
+            await _dispatch_clarification_fallback(
+                campaign_id, decision, narration, guild,
+                controller_id, trigger_message, fallback=True,
+            )
+            return
+
+        # Second-pass with no clean fallback. Clear pending; let narration
+        # proceed (per dispatch's "pending cleared, no resolution" branch).
+        ch.clear_pending_clarification(campaign_id)
+        emit_clarification_event(
+            'clarification_pending_cleared_no_resolution', campaign_id,
+            {'parser_domains': [r.domain for r in parser_results
+                                 if r.fired]},
+        )
+        return
+
+    # First-pass branch: no pending state.
+    if decision.route == 'SILENT_LOG':
+        return
+
+    if decision.route == 'SINGLE_DOMAIN_CLEAR':
+        # Fall through to existing Phase 3a path. Currently only
+        # quest-acceptance ships at v0; render its suggester card if fired.
+        if qa_result.get('fired'):
+            card = _format_quest_acceptance_suggester_card(qa_result, offered)
+            if card:
+                await _post_dm_aside(guild, card)
+            log(f"inversion_v0_aggregator: single_domain_clear "
+                f"campaign={campaign_id} domain=quest_accept "
+                f"confidence={qa_result.get('confidence')}")
+        return
+
+    if decision.route == 'IN_FICTION_CLARIFICATION':
+        # M-DELAYED primary path. Set pending_clarification flag; LLM
+        # narrates scene continuing on next turn via directive injection.
+        trigger_event_id = f"campaign={campaign_id}:ts={int(time.time())}"
+        session = ch.set_pending_clarification(
+            campaign_id=campaign_id,
+            candidates=decision.candidates,
+            trigger_event_id=trigger_event_id,
+        )
+        emit_clarification_event(
+            'clarification_in_fiction_fired', campaign_id,
+            {
+                'parser_domains': [c.get('domain') for c in decision.candidates],
+                'trigger_event_id': trigger_event_id,
+                'layer': 'IN_FICTION',
+            },
+        )
+        log(f"inversion_v0_aggregator: in_fiction_fired "
+            f"campaign={campaign_id} candidates={len(decision.candidates)} "
+            f"trigger={trigger_event_id}")
+        return
+
+    if decision.route in ('LAYER_A', 'LAYER_B'):
+        await _dispatch_clarification_fallback(
+            campaign_id, decision, narration, guild,
+            controller_id, trigger_message, fallback=False,
+        )
+        return
+
+
+async def _run_central_thread_compliance_check(campaign_id: int,
+                                                narration: str) -> None:
+    """§82 candidate detector — central_thread MUST/MUST-NOT compliance.
+
+    Soft-fail post-LLM check. Reads the campaign's skeleton hooks, derives
+    the central_thread directive text, runs deterministic token-overlap
+    detection against the narration. Fires `directive_compliance_failure`
+    telemetry event when overlap density indicates the LLM restated the
+    thread despite the "Do NOT name or restate" directive.
+
+    Telemetry only — no state mutation, no operator-facing surface. The
+    point is to make the failure observable so prompt iteration can be
+    data-driven (per §82 architectural-design-time guidance).
+    """
+    try:
+        from skeleton_loader import parse_skeleton_file
+        from inversion_telemetry import record_directive_compliance_failure
+        import dnd_orchestration as orch
+
+        parsed = parse_skeleton_file(campaign_id)
+        hooks = (parsed or {}).get('hooks') or []
+        central_thread_text = orch.compute_central_thread_directive(hooks)
+        if not central_thread_text:
+            return
+        violation, confidence, severity = (
+            orch.detect_central_thread_compliance_failure(
+                central_thread_text, narration,
+            )
+        )
+        # Record LOW-severity samples too (aggregate observability), but
+        # only fire as a violation when MEDIUM/HIGH.
+        if severity in ('MEDIUM', 'HIGH'):
+            record_directive_compliance_failure(
+                directive_name='central_thread',
+                severity=severity,
+                narration_excerpt=narration,
+                detector='post_llm_token_overlap',
+                campaign_id=campaign_id,
+                confidence=confidence,
+                directive_intent=(
+                    "Do NOT name or restate the thread in narration; "
+                    "shape this turn through indirect signals only"
+                ),
+            )
+            log(f"central_thread_compliance: violation campaign={campaign_id} "
+                f"severity={severity} confidence={confidence:.2f}")
+    except Exception as e:
+        log(f"central_thread_compliance: error campaign={campaign_id} err={e!r}")
+
+
+async def _run_inversion_aggregator_post_llm(campaign_id: int, narration: str,
+                                              guild, controller_id: str) -> None:
+    """§1b.1 Phase 3b post-LLM aggregator (S78). Fires transaction_completion
+    + loot_drop_llm parsers against the DM narration (LLM completion text).
+
+    Distinct from `_run_inversion_aggregator` (pre-LLM): the LLM-side
+    surfaces canonical scene-shape transactions ("Garrick pockets the
+    gold") and reveal-shape loot drops ("the chest reveals a longsword"),
+    which the player-input pre-LLM hook structurally misses.
+
+    quest_accept is NOT run here — S73.1 verified that LLM paraphrase
+    misses canonical acceptance verbs; quest_accept stays at pre-LLM only.
+
+    Layer B listener attribution for post-LLM fires: controller_id falls
+    back to first-actor's Discord user_id from the batched actions. When
+    not resolvable, Layer B post-LLM fires skip the OOC handshake and
+    route through silent-log to avoid blocking on attribution ambiguity.
+
+    Soft-fail throughout — aggregator never blocks downstream.
+    """
+    from transaction_completion_parser import (
+        parse_transaction_completion, SURFACE_POST_LLM as TX_POST,
+    )
+    from loot_drop_parser import (
+        parse_loot_drop, SURFACE_POST_LLM as LD_POST,
+    )
+    from inversion_telemetry import (
+        emit_parse_outcome, emit_clarification_event, record_parser_invocation,
+    )
+    import clarification_handshake as ch
+
+    # Second-pass detection mirrors pre-LLM hook.
+    try:
+        pending_meta = ch.get_pending_clarification(campaign_id)
+    except Exception:
+        pending_meta = None
+
+    parser_results: list[ch.ParserResult] = []
+
+    # ── Transaction-completion post-LLM ─────────────────────────────────
+    try:
+        scene_state = get_scene_state(campaign_id) or {}
+        scene_loc = scene_state.get('current_location_id')
+        recent_npcs = get_recently_active_npcs(campaign_id, limit=6,
+                                                 location_id=scene_loc) or []
+        inventory: list = []
+        try:
+            actor_name = (scene_state or {}).get('last_active_actor', '') or ''
+            if actor_name:
+                inventory = get_inventory(campaign_id, actor_name) or []
+        except Exception:
+            inventory = []
+        tx_result = parse_transaction_completion(
+            narration, recent_npcs, inventory, campaign_id,
+            surface=TX_POST,
+        )
+    except Exception as e:
+        log(f"inversion_v0_aggregator_post_llm: transaction_post parse error "
+            f"campaign={campaign_id} err={e!r}")
+        tx_result = {
+            'fired': False, 'confidence': 'low', 'matched_verb': '',
+            'currency': None, 'npc_name': '', 'item_name': '',
+            'markers_present': False, 'surface': TX_POST,
+            'dedup_suppressed': False, 'feature_disabled': False,
+        }
+
+    record_parser_invocation('transaction_completion_post',
+                              tx_result.get('confidence', 'low'))
+
+    tx_candidate = {}
+    if tx_result.get('npc_name') or tx_result.get('currency'):
+        c = tx_result.get('currency') or {}
+        tx_candidate = {
+            'npc': tx_result.get('npc_name', ''),
+            'currency': f"{c.get('amount')}{c.get('denom')}" if c else '',
+            'item': tx_result.get('item_name', ''),
+            'title': 'transaction completion (LLM-side)',
+        }
+    parser_results.append(ch.ParserResult(
+        domain='transaction_completion',
+        confidence=tx_result.get('confidence', 'low'),
+        fired=bool(tx_result.get('fired')),
+        markers_present=bool(tx_result.get('markers_present')),
+        dedup_suppressed=bool(tx_result.get('dedup_suppressed')),
+        feature_disabled=bool(tx_result.get('feature_disabled')),
+        candidate=tx_candidate,
+    ))
+    emit_parse_outcome(
+        'transaction_completion_post', campaign_id, tx_result,
+        route='engine' if tx_result.get('confidence') == 'high'
+        else ('suggester' if tx_result.get('fired') else 'silent'),
+    )
+
+    # ── Loot-drop LLM-reveal ────────────────────────────────────────────
+    try:
+        pending = get_pending_loot(campaign_id) or []
+        ld_result = parse_loot_drop(narration, pending, campaign_id,
+                                    surface=LD_POST)
+    except Exception as e:
+        log(f"inversion_v0_aggregator_post_llm: loot_drop_llm parse error "
+            f"campaign={campaign_id} err={e!r}")
+        ld_result = {
+            'fired': False, 'confidence': 'low', 'matched_verb': '',
+            'matched_pending_loot_id': None, 'matched_item_name': '',
+            'item_class_marker': '', 'container_marker': '',
+            'markers_present': False, 'surface': LD_POST,
+            'dedup_suppressed': False, 'feature_disabled': False,
+        }
+
+    record_parser_invocation('loot_drop_llm',
+                              ld_result.get('confidence', 'low'))
+
+    ld_candidate = {}
+    if ld_result.get('matched_item_name') or ld_result.get('item_class_marker'):
+        slash = ''
+        if ld_result.get('matched_pending_loot_id'):
+            slash = f"/loot claim {ld_result['matched_pending_loot_id']}"
+        ld_candidate = {
+            'item': (ld_result.get('matched_item_name')
+                     or ld_result.get('item_class_marker', '')),
+            'container': ld_result.get('container_marker', ''),
+            'slash': slash,
+            'title': 'loot reveal (LLM-side)',
+        }
+    parser_results.append(ch.ParserResult(
+        domain='loot_drop_llm',
+        confidence=ld_result.get('confidence', 'low'),
+        fired=bool(ld_result.get('fired')),
+        markers_present=bool(ld_result.get('markers_present')),
+        dedup_suppressed=bool(ld_result.get('dedup_suppressed')),
+        feature_disabled=bool(ld_result.get('feature_disabled')),
+        candidate=ld_candidate,
+    ))
+    emit_parse_outcome(
+        'loot_drop_llm', campaign_id, ld_result,
+        route='engine' if ld_result.get('confidence') == 'high'
+        else ('suggester' if ld_result.get('fired') else 'silent'),
+    )
+
+    # Stage 1 routing
+    decision = ch.aggregate_parser_outputs(parser_results)
+
+    # Second-pass branch: pending_clarification already set.
+    if pending_meta is not None:
+        highs = [r for r in parser_results
+                 if r.confidence == 'high' and r.fired]
+        if highs:
+            ch.clear_pending_clarification(campaign_id)
+            emit_clarification_event(
+                'clarification_in_fiction_resolved',
+                campaign_id,
+                {
+                    'parser_domains': [r.domain for r in highs],
+                    'surface': 'post_llm',
+                },
+            )
+            log(f"inversion_v0_aggregator_post_llm: second_pass_resolved "
+                f"campaign={campaign_id} "
+                f"domains={[r.domain for r in highs]}")
+            return
+        # Compliance-failure detection — pending was set and LLM narrated
+        # something that the transaction parser hit MEDIUM/HIGH on. This
+        # is the empirical signal the directive's MUST/MUST-NOT framing
+        # failed to suppress completion narration.
+        #
+        # S81 refactor: fires via generic record_directive_compliance_failure
+        # event per §82 candidate (S80 council Q6 generic-with-payload lock).
+        # directive_name="pending_clarification" disambiguates per-directive
+        # grep surface without schema coupling. Prior S77 event name
+        # `clarification_in_fiction_compliance_failure` retired.
+        any_fire = [r for r in parser_results if r.fired]
+        if any_fire and tx_result.get('confidence') == 'high':
+            from inversion_telemetry import record_directive_compliance_failure
+            record_directive_compliance_failure(
+                directive_name='pending_clarification',
+                severity='HIGH',
+                narration_excerpt=narration,
+                detector='post_llm_parser_high_on_pending',
+                campaign_id=campaign_id,
+                confidence=0.9,
+                directive_intent=(
+                    "MUST NOT narrate the action as completed; "
+                    "narrate scene continuing while pending"
+                ),
+            )
+            log(f"inversion_v0_aggregator_post_llm: compliance_failure "
+                f"campaign={campaign_id} "
+                f"directive=pending_clarification "
+                f"verb={tx_result.get('matched_verb')!r}")
+        # Layer A/B fallback on post-LLM second-pass is a degraded surface
+        # (no canonical operator-action context); skip OOC handshake.
+        return
+
+    # First-pass branch
+    if decision.route == 'SILENT_LOG':
+        return
+    if decision.route == 'SINGLE_DOMAIN_CLEAR':
+        # Post-LLM HIGH transaction or loot — render Phase-3a-style
+        # suggester card for operator paste.
+        if tx_result.get('fired') and tx_result.get('confidence') == 'high':
+            await _post_dm_aside(
+                guild,
+                _format_transaction_post_llm_card(tx_result),
+            )
+            log(f"inversion_v0_aggregator_post_llm: single_domain_clear "
+                f"campaign={campaign_id} domain=transaction_completion")
+        if ld_result.get('fired') and ld_result.get('confidence') == 'high':
+            await _post_dm_aside(
+                guild,
+                _format_loot_drop_llm_card(ld_result),
+            )
+            log(f"inversion_v0_aggregator_post_llm: single_domain_clear "
+                f"campaign={campaign_id} domain=loot_drop_llm")
+        return
+    if decision.route == 'IN_FICTION_CLARIFICATION':
+        # Post-LLM IN_FICTION is rare — would require the LLM narrating
+        # ambiguous markers on its own. v0 surfaces this if it fires.
+        trigger_event_id = f"campaign={campaign_id}:post_llm:ts={int(time.time())}"
+        ch.set_pending_clarification(
+            campaign_id=campaign_id,
+            candidates=decision.candidates,
+            trigger_event_id=trigger_event_id,
+        )
+        emit_clarification_event(
+            'clarification_in_fiction_fired', campaign_id,
+            {
+                'parser_domains': [c.get('domain') for c in decision.candidates],
+                'trigger_event_id': trigger_event_id,
+                'layer': 'IN_FICTION',
+                'surface': 'post_llm',
+            },
+        )
+        log(f"inversion_v0_aggregator_post_llm: in_fiction_fired "
+            f"campaign={campaign_id} candidates={len(decision.candidates)}")
+        return
+    if decision.route in ('LAYER_A', 'LAYER_B'):
+        # Post-LLM Layer B is degraded surface — skip listener, route to
+        # Layer A card or silent log to avoid attribution ambiguity.
+        if decision.route == 'LAYER_A' or not controller_id:
+            card = ch.build_layer_a_card(decision.candidates,
+                                          narration_excerpt=narration[:140])
+            if card:
+                await _post_dm_aside(guild, card)
+            emit_clarification_event(
+                'clarification_layer_a_fired', campaign_id,
+                {
+                    'parser_domains': [c.get('domain') for c in decision.candidates],
+                    'layer': 'A',
+                    'surface': 'post_llm',
+                },
+            )
+            log(f"inversion_v0_aggregator_post_llm: layer_a_fired "
+                f"campaign={campaign_id}")
+        return
+
+
+def _format_transaction_post_llm_card(tx_result: dict) -> str:
+    """Render the operator-side aside for a HIGH transaction-completion
+    detection from the LLM narration. DM-voice copy per S78 UX pass.
+    """
+    c = tx_result.get('currency') or {}
+    npc = tx_result.get('npc_name', '').strip()
+    item = tx_result.get('item_name', '').strip()
+    amt = f"{c.get('amount')}{c.get('denom')}" if c else ''
+
+    context_bits = []
+    if amt:
+        context_bits.append(f"**{amt}**")
+    if npc:
+        context_bits.append(f"to **{npc}**")
+    if item:
+        context_bits.append(f"for **{item}**")
+    context = ' '.join(context_bits) or 'a trade just happened'
+
+    bookkeeping = (
+        f"`!game coin -{amt}`" if amt else "`!game coin -?gp` (fill in the amount)"
+    )
+    return (
+        f"*Looks like a trade just landed in narration — {context}. "
+        f"Paste {bookkeeping} for Avrae bookkeeping, or skip if the "
+        f"narration didn't actually commit anything.*"
+    )
+
+
+def _format_loot_drop_llm_card(ld_result: dict) -> str:
+    """Render the operator-side aside for a HIGH loot-drop reveal
+    detection from the LLM narration. DM-voice copy.
+    """
+    item = ld_result.get('matched_item_name', '').strip()
+    loot_id = ld_result.get('matched_pending_loot_id')
+    container = ld_result.get('container_marker', '').strip()
+    slash = f"`/loot claim {loot_id}`" if loot_id else "`/loot list`"
+    container_phrase = f" from the {container}" if container else ''
+    item_phrase = f"**{item}**" if item else 'something'
+    return (
+        f"*The narration just revealed {item_phrase}{container_phrase}. "
+        f"Paste {slash} to surface and claim it, or skip if the reveal "
+        f"was just flavor.*"
+    )
+
+
+async def _dispatch_clarification_fallback(campaign_id: int, decision,
+                                          narration: str, guild,
+                                          controller_id: str,
+                                          trigger_message,
+                                          fallback: bool = False) -> None:
+    """Render and post the Layer A or Layer B card. fallback=True means
+    we're escalating from a still-ambiguous second-pass; emit the
+    *_fallback_fired event so production telemetry can distinguish direct
+    cross-domain ambiguity from in-fiction-escalation cases.
+    """
+    from inversion_telemetry import emit_clarification_event
+    import clarification_handshake as ch
+
+    if decision.route == 'LAYER_A':
+        card = ch.build_layer_a_card(decision.candidates,
+                                     narration_excerpt=narration)
+        if card:
+            await _post_dm_aside(guild, card)
+        # Post-S78 live-verify race fix: set pending_clarification so the
+        # narration pipeline (which fires ~15s later via the batcher) reads
+        # the pending flag and the LLM narrates the scene continuing
+        # WITHOUT finalizing the action. Operator paste of the card's slash
+        # commits via §17. The next operator narration's aggregator pass
+        # clears pending (existing pending-clear logic).
+        trigger_event_id = f"campaign={campaign_id}:layer_a:ts={int(time.time())}"
+        if not fallback:
+            ch.set_pending_clarification(
+                campaign_id=campaign_id,
+                candidates=decision.candidates,
+                trigger_event_id=trigger_event_id,
+            )
+        emit_clarification_event(
+            'clarification_layer_a_fallback_fired' if fallback
+            else 'clarification_layer_a_fired',
+            campaign_id,
+            {
+                'parser_domains': [c.get('domain') for c in decision.candidates],
+                'layer': 'A',
+                'fallback': fallback,
+            },
+        )
+        if fallback:
+            ch.clear_pending_clarification(campaign_id)
+        log(f"inversion_v0_aggregator: layer_a_fired "
+            f"campaign={campaign_id} candidates={len(decision.candidates)} "
+            f"fallback={int(fallback)} pending_set={int(not fallback)}")
+        return
+
+    if decision.route == 'LAYER_B':
+        question = ch.build_layer_b_question(decision.candidates,
+                                             narration_excerpt=narration)
+        if question:
+            await _post_dm_aside(guild, question)
+
+        # Post-S78 live-verify race fix: set pending_clarification so the
+        # narration pipeline reads it and the LLM narrates the scene
+        # continuing without finalizing. Operator reply (number or domain)
+        # resolves via the listener.
+        trigger_event_id = f"campaign={campaign_id}:ts={int(time.time())}"
+        if not fallback:
+            ch.set_pending_clarification(
+                campaign_id=campaign_id,
+                candidates=decision.candidates,
+                trigger_event_id=trigger_event_id,
+            )
+
+        session = ch.ClarificationSession(
+            campaign_id=campaign_id,
+            controller_id=controller_id,
+            trigger_event_id=trigger_event_id,
+            candidates=decision.candidates,
+            layer='B',
+            status='PENDING',
+            created_at=time.time(),
+            timeout_at=time.time() + ch.LAYER_B_TIMEOUT_SECONDS,
+        )
+        registered = ch.add_session(session)
+        if not registered:
+            emit_clarification_event(
+                'clarification_cap_hit', campaign_id,
+                {
+                    'parser_domains': [c.get('domain') for c in decision.candidates],
+                    'fallback': fallback,
+                },
+            )
+            log(f"inversion_v0_aggregator: layer_b_cap_hit "
+                f"campaign={campaign_id}")
+            return
+
+        emit_clarification_event(
+            'clarification_layer_b_fallback_fired' if fallback
+            else 'clarification_layer_b_fired',
+            campaign_id,
+            {
+                'parser_domains': [c.get('domain') for c in decision.candidates],
+                'layer': 'B',
+                'fallback': fallback,
+                'trigger_event_id': trigger_event_id,
+            },
+        )
+        log(f"inversion_v0_aggregator: layer_b_fired "
+            f"campaign={campaign_id} candidates={len(decision.candidates)} "
+            f"fallback={int(fallback)}")
+
+        # Wait for OOC reply.
+        try:
+            aside_channel = get_channel(guild, 'aside')
+            channel_id = aside_channel.id if aside_channel else None
+        except Exception:
+            channel_id = None
+        if not channel_id:
+            ch.cancel_session(session, 'EXPIRED')
+            # Pending is set on direct routes (post-S78 race fix) as well
+            # as fallback routes — clear unconditionally on resolution
+            # (idempotent if no state set).
+            ch.clear_pending_clarification(campaign_id)
+            return
+
+        bot_ref = trigger_message._state._get_client() if trigger_message else None
+        if bot_ref is None:
+            # Best-effort fallback — discord.py's Bot is available via the
+            # module global `bot` if we're in the on_message handler chain.
+            bot_ref = globals().get('bot')
+        if bot_ref is None:
+            ch.cancel_session(session, 'EXPIRED')
+            # Pending is set on direct routes (post-S78 race fix) as well
+            # as fallback routes — clear unconditionally on resolution
+            # (idempotent if no state set).
+            ch.clear_pending_clarification(campaign_id)
+            return
+
+        reply = await ch.await_layer_b_reply(
+            bot_ref, channel_id, controller_id,
+            trigger_timestamp=session.created_at,
+        )
+        if reply is None:
+            # Timeout — silent expiry per §11.5 lock.
+            emit_clarification_event(
+                'clarification_expired', campaign_id,
+                {'trigger_event_id': trigger_event_id, 'layer': 'B'},
+            )
+            ch.cancel_session(session, 'EXPIRED')
+            # Pending is set on direct routes (post-S78 race fix) as well
+            # as fallback routes — clear unconditionally on resolution
+            # (idempotent if no state set).
+            ch.clear_pending_clarification(campaign_id)
+            return
+
+        reply_intent = ch.parse_layer_b_reply(
+            reply.content or '', decision.candidates,
+        )
+        intent_kind = reply_intent.get('intent', 'AMBIGUOUS')
+
+        if intent_kind == 'EXPLICIT_SKIP':
+            emit_clarification_event(
+                'clarification_skipped', campaign_id,
+                {'trigger_event_id': trigger_event_id, 'layer': 'B'},
+            )
+            ch.cancel_session(session, 'RESOLVED')
+            ch.clear_pending_clarification(campaign_id)
+            return
+
+        if intent_kind.startswith('COMMIT_'):
+            emit_clarification_event(
+                'clarification_resolved', campaign_id,
+                {
+                    'trigger_event_id': trigger_event_id,
+                    'layer': 'B',
+                    'matched_domain': reply_intent.get('matched_domain', ''),
+                    'time_to_resolve_ms': int(
+                        (time.time() - session.created_at) * 1000
+                    ),
+                },
+            )
+            ch.cancel_session(session, 'RESOLVED')
+            ch.clear_pending_clarification(campaign_id)
+            # The §17 writer for the matched domain fires via the standard
+            # operator-paste flow. Layer B v0 surfaces the OOC reply as
+            # "operator-deliberate-commit" per council Shape A.2 lock; the
+            # downstream writer hookup ships at the per-domain Phase 3b
+            # parser registration. v0 quest_accept only: no auto-writer
+            # invocation here yet.
+            return
+
+        # AMBIGUOUS reply — recursion handling.
+        session.recursion_iteration += 1
+        if session.recursion_iteration < ch.LAYER_B_RECURSION_MAX:
+            recursion_card = ch.build_layer_b_recursion_card(
+                decision.candidates, session.recursion_iteration,
+            )
+            await _post_dm_aside(guild, recursion_card)
+            emit_clarification_event(
+                'clarification_recursion_escalated', campaign_id,
+                {
+                    'trigger_event_id': trigger_event_id,
+                    'iteration': session.recursion_iteration,
+                },
+            )
+            # Recursion listener wait — same channel + controller filter.
+            reply2 = await ch.await_layer_b_reply(
+                bot_ref, channel_id, controller_id,
+                trigger_timestamp=time.time(),
+            )
+            if reply2 is None:
+                emit_clarification_event(
+                    'clarification_expired', campaign_id,
+                    {'trigger_event_id': trigger_event_id, 'layer': 'B',
+                     'iteration': session.recursion_iteration},
+                )
+            else:
+                intent2 = ch.parse_layer_b_reply(
+                    reply2.content or '', decision.candidates,
+                )
+                if intent2.get('intent', '').startswith('COMMIT_'):
+                    emit_clarification_event(
+                        'clarification_resolved', campaign_id,
+                        {
+                            'trigger_event_id': trigger_event_id,
+                            'iteration': session.recursion_iteration,
+                            'matched_domain': intent2.get('matched_domain', ''),
+                        },
+                    )
+                elif intent2.get('intent') == 'EXPLICIT_SKIP':
+                    emit_clarification_event(
+                        'clarification_skipped', campaign_id,
+                        {'trigger_event_id': trigger_event_id,
+                         'iteration': session.recursion_iteration},
+                    )
+                else:
+                    # Still ambiguous on second attempt — manual decision card.
+                    manual_card = ch._build_layer_b_manual_card(decision.candidates)
+                    await _post_dm_aside(guild, manual_card)
+                    emit_clarification_event(
+                        'clarification_recursion_manual', campaign_id,
+                        {'trigger_event_id': trigger_event_id,
+                         'iteration': session.recursion_iteration},
+                    )
+        else:
+            manual_card = ch._build_layer_b_manual_card(decision.candidates)
+            await _post_dm_aside(guild, manual_card)
+            emit_clarification_event(
+                'clarification_recursion_manual', campaign_id,
+                {'trigger_event_id': trigger_event_id,
+                 'iteration': session.recursion_iteration},
+            )
+
+        ch.cancel_session(session, 'RESOLVED')
+        ch.clear_pending_clarification(campaign_id)
 
 
 def _format_quest_acceptance_suggester_card(result: dict,
@@ -3794,6 +4738,30 @@ async def _dm_respond_and_post(campaign, characters, actions: list, combined_act
         asyncio.create_task(_extract_and_persist_world(
             campaign["id"], response, guild, guild_id_int=_sl_guild_id_int
         ))
+        # §1b.1 Phase 3b post-LLM aggregator (S78). Fires transaction-
+        # completion + loot-drop parsers against the LLM narration. Distinct
+        # from the pre-LLM hook at on_message:2727 which scans player input.
+        # Post-LLM surface captures LLM-paraphrased transaction completion
+        # ("Garrick pockets the gold") and LLM reveal narration ("the chest
+        # reveals a longsword"). Soft-fail per S77 discipline.
+        try:
+            asyncio.create_task(_run_inversion_aggregator_post_llm(
+                campaign["id"], response, guild, first_user_id or '',
+            ))
+        except Exception as _post_llm_e:
+            log(f"inversion_v0_aggregator_post_llm: scheduling error "
+                f"campaign={campaign['id']} err={_post_llm_e!r}")
+        # §82 candidate — central_thread compliance detector (S81). Fires
+        # post-LLM heuristic scan for thread-content tokens in narration.
+        # Telemetry only; no state mutation. Empirical signal for prompt
+        # iteration per §82 architectural-design-time guidance.
+        try:
+            asyncio.create_task(_run_central_thread_compliance_check(
+                campaign["id"], response,
+            ))
+        except Exception as _ct_e:
+            log(f"central_thread_compliance: scheduling error "
+                f"campaign={campaign['id']} err={_ct_e!r}")
 
         # Scene Lifecycle v1 — update stale counter AFTER posting (§1.F).
         # §1.F.b: Avrae roll consumed → reset (something mechanical happened).

@@ -837,6 +837,18 @@ def db_init():
     if 'day_phase' not in existing:
         conn2.execute("ALTER TABLE dnd_scene_state ADD COLUMN day_phase TEXT DEFAULT 'Morning'")
         conn2.commit()
+    if 'pending_clarification' not in existing:
+        # §1b.1 Clarification Handshake Primitive v0 (S77). M-DELAYED primary
+        # path: when 1-parser-MEDIUM-with-markers ambiguity is detected, this
+        # column holds JSON metadata so build_dm_context can inject a
+        # pending_clarification directive (LLM narrates scene continuing
+        # without finalizing the action). Single writer: set/clear from
+        # clarification_handshake.py per §17 discipline. Default NULL = no
+        # pending clarification.
+        conn2.execute(
+            "ALTER TABLE dnd_scene_state ADD COLUMN pending_clarification TEXT DEFAULT NULL"
+        )
+        conn2.commit()
     conn2.execute('''CREATE TABLE IF NOT EXISTS dnd_time_advancements (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         campaign_id     INTEGER NOT NULL,
@@ -6524,6 +6536,7 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
                      scene_lifecycle_directive="",
                      active_quest_directive="",
                      composition_directive="",
+                     pending_clarification_directive="",
                      arbitration_block="", arbitration_hardstop_echo="",
                      resolution_block="", resolution_hardstop_echo="",
                      acting_character_names=None,
@@ -6826,6 +6839,24 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
         if scene_lifecycle_directive and not suppress_for_combat_narration else ""
     )
 
+    # §1b.1 Pending Clarification directive (S77) — fires when the
+    # clarification handshake aggregator has set pending_clarification on
+    # dnd_scene_state (1-parser-MEDIUM-with-markers ambiguity detected at
+    # the pre-LLM hook). MUST/MUST-NOT framing keeps the LLM from
+    # narrating the mentioned action as completed; parser fires
+    # second-pass on operator's next utterance. Placed BEFORE narrative-
+    # flavor blocks (history/philosophy/guidance) and AFTER structural-
+    # state blocks (scene_state/companions/premise) so the LLM reads it
+    # as load-bearing engine-state directive, not flavor.
+    # Suppressed during combat narration — clarification surfaces are
+    # exploration/social only at v0; combat ambiguity resolves via
+    # arbitration/init directives.
+    pending_clarification_block = (
+        f"\n\n=== PENDING CLARIFICATION ===\n{pending_clarification_directive}"
+        if pending_clarification_directive and not suppress_for_combat_narration
+        else ""
+    )
+
     # Arbitration block (Track 7 #2) — multi-actor binding verdicts for the
     # current turn. Renders FIRST in the prompt (top placement for response
     # framing per concrete-in-prompt §48); the hardstop echo restates the
@@ -7055,7 +7086,7 @@ def build_dm_context(campaign, characters, relevant_history="", dm_guidance="",
 {tone}
 
 === PARTY ===
-{char_summaries}{companions_section}{premise_section}{current_scene_section}{mode_block}{scene_state_section}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{active_quest_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}{scene_lifecycle_block}
+{char_summaries}{companions_section}{premise_section}{current_scene_section}{mode_block}{scene_state_section}{pending_clarification_block}{quests_section}{char_ctx_section}{inventory_section}{history_section}{philosophy_block_rendered}{guidance_section}{avrae_section}{roll_directive}{capability_directive}{pacing_directive_block}{central_thread_block}{consequence_block}{active_quest_block}{commitment_block}{persistence_block}{loot_block}{combat_redirect_block}{time_directive_block}{scene_lifecycle_block}
 
 === HOW THIS GAME WORKS ===
 
@@ -7821,6 +7852,27 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         log(f"dm_respond: time directive failed: {e}")
         time_text = ""
 
+    # §1b.1 Pending clarification directive (S77) — 24th §59 sibling overall
+    # (22nd in dnd_orchestration.py). Reads pending_clarification metadata
+    # from dnd_scene_state via clarification_handshake.get_pending_clarification
+    # and renders the MUST/MUST-NOT directive only when pending state is set.
+    # Empty string on every other turn — directive injection no-op.
+    # Soft-fail: pending state surfaces preserved in DB even if directive
+    # compose fails; M-DELAYED protocol degrades gracefully (LLM narrates
+    # without the directive, parser still fires second-pass on next utterance).
+    pending_clarification_text = ""
+    pending_clarification_signals: dict = {}
+    try:
+        from clarification_handshake import get_pending_clarification
+        _pending_meta = get_pending_clarification(campaign['id'])
+        pending_clarification_text, pending_clarification_signals = (
+            orch.compute_pending_clarification_directive(_pending_meta)
+        )
+        log(orch.pending_clarification_log_summary(pending_clarification_signals))
+    except Exception as e:
+        log(f"dm_respond: pending_clarification directive failed: {e}")
+        pending_clarification_text = ""
+
     # S67 Fix 2 Phase B — read redirect. Pre-S67 this pulled from
     # `campaign.current_scene` (the closed contamination surface). The
     # blurb feeds multi_query_knowledge_search for CRD3/FIREBALL exemplar
@@ -7903,6 +7955,7 @@ def dm_respond(campaign, characters, player_action, avrae_events=None,
         scene_lifecycle_directive=scene_lifecycle_text,
         active_quest_directive=active_quest_text,
         composition_directive=composition_text,
+        pending_clarification_directive=pending_clarification_text,
         arbitration_block=arbitration_block_text,
         arbitration_hardstop_echo=arbitration_hardstop_text,
         resolution_block=resolution_block_text,

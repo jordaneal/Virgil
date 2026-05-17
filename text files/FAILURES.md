@@ -2,27 +2,62 @@
 
 ---
 
-## §F-64 candidate — Instance-count update (post-S68)
+## §F-64 — ANCHORED at S81
 
-Original F-64 candidate filing (above) named two instances: S53 wired+dropped (NPC was_new) and S63 specced+never-wired+formally-dropped (consequence upsert DM-side).
+Promoted from candidate to anchored doctrine. See `DOCTRINE.md` §F-64 for full anchored entry (cluster table, architectural-relationship map, closure pattern).
 
-Post-S68: five instances on the board, all closed.
+S81 anchor reflects the S79 walk + S80 council pressure-test arc. Cluster lands at 7 instances post-S81 recon Phase A (R1 reclassified loot_drop_llm misfire out as parser-vocab-overlap surface; R2 added S51 player-narrative-authority drift as instance #8 in cluster).
 
-1. S53 §1.F.c NPC was_new — wired and dropped (perverse-incentive surface)
-2. S63 §1.F.e consequence-DM-side — specced never wired, formally dropped (preventive)
-3. S66 F-031 quest delivery silent inventory fail — narration claimed reward delivered, engine never wrote inventory (cascade: `add_item(campaign, '', ...)` returned `'invalid'` silently)
-4. S66 F-035 loot evaporation — narration described loot, engine never auto-claimed (operator burden translated to slash-typing)
-5. S68 N-4 NPC pronoun drift — narration referenced NPCs with pronouns; no engine-side pronoun anchor → LLM re-rolled fresh per turn
+S78 instance #7 (Bishop's bakery NPC bleed) reclassifies to §F-44 cluster per S80 Q1 Oracle convergent. See §F-44 entry below.
 
-Pattern shared across all five: **narration claims a state change; engine does not enforce the state change; the state drifts.** Five-instance cluster names the candidate as architecturally real, not coincidental.
+---
 
-**Sixth instance outstanding:** N-3.1 commitment-tracking multi-spec (HALTed at S68 Phase A; no `dnd_scene_log` indexed by NPC+item; clean fix requires schema work). Filed as the load-bearing candidate ship that may host the formal F-XX anchoring walk. The N-3.1 spec session is the right surface to anchor the doctrine because the architecture being designed IS the structural rule the candidate names.
+## §F-44 — Cross-axis bleed (chroma + NPC extractor)
 
-**Recommended doctrine anchor candidate name (post-anchoring):** *"Narration-commit gap as systemic contamination surface — when narration claims a state mutation that the engine does not deterministically enforce, the claimed state drifts across turns. Engine must enforce state mutations either at narration-detection time (deterministic parser feeding single-writer) or via operator-driven slash gate; LLM narration alone is not a structural state-mutation signal."*
+**Status:** ANCHORED at S25 #6 (chroma bleed); NPC-axis instance added S78 (Bishop's bakery same-NPC-different-location bleed).
 
-**Architectural relationship to existing doctrine:**
-- Sister to §F-08 (Layer 2 narration drift — NPCs never commit). §F-08 names the inverse: LLMs fail to advance scenes. F-64 names the parallel: LLMs claim advancement that didn't structurally happen. Both load-bearing observations land at the same architectural rule: LLM narration alone is not a state-mutation signal.
-- Sister to §76 (LLM-writable persisted state contamination). §76 closes the case where LLM narration writes persisted state and re-reads it as canon. F-64 closes the case where LLM narration claims persisted state without writing it.
-- Cousin to §1a (binding-decision restriction). §1a says LLM never decides binding state. F-64 says LLM narration claiming a binding state change is structurally insufficient without engine enforcement.
+**Original instance (S25 #6):** `get_recently_active_npcs` returned campaign-wide NPCs after `/travel`; tavern NPCs surfaced in subsequent locations. Closed via strict location-scoping (`location_id=` parameter; NULL `location_id` rows silently excluded).
 
-Anchoring waits for N-3.1 ship (operator approval surface for the doctrine framing alongside the architectural primitive that addresses it).
+**S78 NPC-axis instance:** Operator traveled Westmarket Inn → Bishop's Bakery; LLM narrated "Mara" (Westmarket baker) as the baker at Bishop's Bakery, complete with cross-location memory ("she remembers the two gold you handed her earlier"). Two structural causes compound:
+- **Chroma RELEVANT PAST EVENTS retrieval is campaign-scoped, not location-scoped.** Similarity search on "bakery"/"bread"/"baker" at Bishop's Bakery surfaces the Westmarket Mara encounter prose verbatim into prompt context.
+- **NPC extractor name-matching is global per campaign.** When the LLM narrates "Mara" at Bishop's Bakery, the extractor matches the existing Mara NPC row (Westmarket-located) rather than creating a new entity.
+
+**Closure shape (planned):** Symmetric to S25 #6's fix — location-scoped chroma retrieval filter + NPC extractor location-aware matching (when LLM uses a known NPC name at a new location, treat as new NPC entity unless explicit operator confirmation). Both belong on the priority queue.
+
+**F-64 relationship:** F-44 NPC-axis bleed can manifest as F-64-shape behavior downstream (LLM narrates Mara at new location based on bled-in chroma context — narration claims state — Mara is here — that engine doesn't enforce). Counts in F-44 cluster as primary; F-64 manifestation is downstream effect.
+
+---
+
+## §82 candidate — Instruction-Side Compliance (CANDIDATE, 2 instances)
+
+**Status:** CANDIDATE. Anchoring deferred per S80 council convergent (insufficient empirical maturity at 1 anchored + 1 candidate; threshold requires 3 structurally-identical instances across distinct directive surfaces).
+
+**One-line:** LLM violates instruction-side MUST/MUST-NOT directive compliance; narration diverges from engine-declared policy.
+
+**Structural framing:** §82 names the substrate-wide failure mode where the engine's directive surface (MUST/MUST-NOT framing in prompt context) does NOT produce LLM compliance. Distinct from §F-64: §F-64 is writer-side absence (no parser/writer captures narration's state claim); §82 is instruction-side compliance gap (engine HAS the directive surface; LLM violates).
+
+**Architectural response (planned at anchor):** compliance-detection telemetry + prompt-iteration feedback loop. Generic `directive_compliance_failure` event captures violations; operator + planner read telemetry to surface drift; prompt discipline tightens iteratively. Closure is not "enforce harder" (prompts have ceilings) — closure is "make the failure observable so iteration can be data-driven."
+
+**Doctrine-relationship to §77:** §77 anchors two-layer enforcement (instruction-side MUST/MUST-NOT + information-side context-block suppression) for atmospheric directives. §82 differs in scope — substrate-wide instruction-side compliance, not just atmospheric. Co-anchored placement (sub-clause of §77) rejected at S80 per Gemini Q3 reasoning: §77's atmospheric-continuity scope doesn't structurally absorb substrate-wide compliance-failure. §82 earns top-level anchoring (when threshold met), not sub-clause placement.
+
+**Instances:**
+
+1. **S77 `clarification_in_fiction_compliance_failure`** (anchored). LLM violates pending_clarification directive's MUST-NOT-narrate-action-as-completed framing; narration finalizes action despite engine's pending state. Prototype implementation of the compliance-detection-telemetry pattern. At S81 refactored to fire via generic `directive_compliance_failure` event with `directive_name="pending_clarification"`.
+
+2. **S78 §F-08-a central thread compliance failure** (candidate). LLM ignores `compute_central_thread_directive`'s "Do NOT name or restate the thread" framing; bakes central_thread exposition into unrelated NPC dialogue (Westmarket baker narrating mine collapse + Grahn the Miner's Union leader). At S81 instrumented with post-LLM heuristic detector firing `directive_compliance_failure` with `directive_name="central_thread"`.
+
+**Anchoring threshold:** 3 structurally-identical instances across distinct directive surfaces (different §59 sibling directives, not different turns of the same directive). Current empirical evidence: 2 instances. Compliance-failure telemetry SHIPS at S81 as §82-candidate-application; doctrine itself stays candidate until third instance accumulates.
+
+**Why deferred:** Per S80 council (GPT + Oracle + Gemini convergent), anchoring at 2 instances risks "prematurely formalizing a temporary implementation pattern." The architectural-design-time guidance below is already operating empirically — planners can plan compliance-detection telemetry concurrent with new directive ships without §82 anchoring.
+
+**Architectural-design-time guidance for new directive surfaces (planner discipline pre-anchor):** when shipping a new MUST/MUST-NOT directive, plan compliance-detection telemetry concurrent with directive ship. Don't wait for §82 to anchor; the practice is already operating. Each new MUST/MUST-NOT directive earns its own compliance-detection event at directive ship time (per S81 generic-with-payload telemetry pattern: `directive_compliance_failure` with `directive_name="<name>"`).
+
+**Why generic-with-payload (not per-event-named):** Per S80 council convergent on Q6 (GPT + Gemini). Single event type accommodates all directive surfaces; no schema coupling to prompt text. Grep surface preserved (`grep 'directive_name": "<name>"'` works equivalently to per-event-type grep). Per-event-named pattern (S77 prototype) was filed-forward as alternative — operational experience may surface specific directives warranting per-event grep; planner revisits with sharper threshold definition for hybrid.
+
+**Filed forward for downstream detectors (per WWC architectural-design-time guidance):**
+- `_COMBAT_NARRATION_INVARIANTS` 12 MUST/MUST-NOT clauses (compliance detection per clause or aggregate).
+- `compute_commitment_directive` ("Your narration MUST address the prior commitment").
+- `compute_pacing_directive` (tier-imperative MUST framing at high tension).
+- HARD STOP RULES 1-7 (each is a MUST/MUST-NOT framing; #7 specifically for pronoun lock).
+
+§82 doctrine names the pattern; per-directive detector implementation lands at observed-friction.
